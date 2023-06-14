@@ -37,15 +37,27 @@ for x in $ptools; do
 pip3 install $x
 done
 
-wget https://github.com/Kitware/CMake/releases/download/v3.26.4/cmake-3.26.4.tar.gz
-tar -xvzf cmake-3.26.4.tar.gz
-cd cmake-3.26.4
+wget https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/cmake/3.25.1-1ubuntu2/cmake_3.25.1.orig.tar.gz
+tar -xvzf cmake_3.25.1.orig.tar.gz
+cd cmake-3.25.1
 ./configure
 make
 sudo make install
 cd ../
-sudo rm -r cmake-3.26.4
-sudo rm -r cmake-3.26.4.tar.gz
+rm -r cmake-3.25.1
+rm -r cmake_3.25.1.orig.tar.gz
+
+#export PATH=~/usr/bin/cmake:$PATH # if you have problem with path 
+
+# wget https://github.com/Kitware/CMake/releases/download/v3.26.4/cmake-3.26.4.tar.gz
+# tar -xvzf cmake-3.26.4.tar.gz
+# cd cmake-3.26.4
+# ./configure
+# make
+# sudo make install
+# cd ../
+# sudo rm -r cmake-3.26.4
+# sudo rm -r cmake-3.26.4.tar.gz
 
 #
 # Repo for Wakaama++

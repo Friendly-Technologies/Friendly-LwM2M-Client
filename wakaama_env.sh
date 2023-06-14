@@ -37,15 +37,17 @@ for x in $ptools; do
 pip3 install $x
 done
 
-wget https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/cmake/3.25.1-1ubuntu2/cmake_3.25.1.orig.tar.gz
-tar -xvzf cmake_3.25.1.orig.tar.gz
-cd cmake-3.25.1
-./configure
-make
-sudo make install
-cd ../
-rm -r cmake-3.25.1
-rm -r cmake_3.25.1.orig.tar.gz
+sudo snap install cmake --classic # version 3.26
+
+# wget https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/cmake/3.25.1-1ubuntu2/cmake_3.25.1.orig.tar.gz
+# tar -xvzf cmake_3.25.1.orig.tar.gz
+# cd cmake-3.25.1
+# ./configure
+# make
+# sudo make install
+# cd ../
+# rm -r cmake-3.25.1
+# rm -r cmake_3.25.1.orig.tar.gz
 
 #export PATH=~/usr/bin/cmake:$PATH # if you have problem with path 
 

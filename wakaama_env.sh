@@ -20,7 +20,8 @@ git \
 Build-essential \
 clang-format \
 clang-format-14 \
-clang-tools-14"
+clang-tools-14 \
+clang-6.0"
 
 ptools="\
 cmake-format \

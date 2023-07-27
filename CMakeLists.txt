@@ -8,3 +8,6 @@ project(WakaamaPlus CXX)
 set(CMAKE_CXX_STANDARD 17)
 
 add_subdirectory(examples)
+
+# Add library target
+add_library(WakaamaPlus STATIC ${SOURCES})

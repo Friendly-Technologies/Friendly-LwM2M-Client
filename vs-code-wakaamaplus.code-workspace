@@ -43,9 +43,9 @@
 		},
 		"cmake.showSystemKits": true,
 		"cmake.additionalKits": [
-			"${workspaceFolder:2305-WakaamaPlus}/cmake-kits.json"
+			"${workspaceFolder:2305-WakaamaPlus}/vs-code-cmake-kits.json"
 		],
-		"cmake.buildDirectory": "${workspaceFolder}/_build",
+		"cmake.buildDirectory": "${workspaceFolder}/_build"
 	},
 	"extensions": {
 		"recommendations": ["ms-vscode.cpptools-extension-pack"]

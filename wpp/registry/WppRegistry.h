@@ -9,7 +9,6 @@
 #define WPPREGISTRY_H_
 
 #include "Object.h"
-#include "utils.h"
 #include "config.h"
 
 #include "security/Security.h"

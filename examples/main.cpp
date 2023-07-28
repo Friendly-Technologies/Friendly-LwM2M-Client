@@ -2,16 +2,9 @@
 // Name        : ObjectRegestry.cpp
 // Author      : Valentin
 // Version     :
-// Copyright   : Your copyright notice
-// Description : Hello World in C++, Ansi-style
 //============================================================================
 
 #include <iostream>
-#include <type_traits>
-#include <unordered_map>
-#include <map>
-#include <cassert>
-#include <memory>
 #include <thread>
 #include <chrono>
 
@@ -46,7 +39,6 @@ int main()
 {
 	cout << "Test memory consumption:" << endl;
 	memConsuptionCheck();
-
 
 
 	cout << endl << "Test WppRegistry:" << endl;

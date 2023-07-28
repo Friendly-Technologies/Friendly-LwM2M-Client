@@ -7,7 +7,8 @@ project(WakaamaPlus CXX)
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 17)
 
-add_subdirectory(examples)
+# Add sybdirectory with library target
+add_subdirectory(wpp)
 
-# Add library target
-add_library(WakaamaPlus STATIC ${SOURCES})
+# Add sybdirectory with example targets
+add_subdirectory(examples)

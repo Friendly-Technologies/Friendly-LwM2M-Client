@@ -14,7 +14,6 @@
 #include "Resource.h"
 #include "Operation.h"
 #include "types.h"
-#include "utils.h"
 
 namespace wpp {
 

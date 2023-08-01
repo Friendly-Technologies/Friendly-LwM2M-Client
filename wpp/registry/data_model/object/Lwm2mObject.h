@@ -16,6 +16,7 @@
 
 namespace wpp {
 
+// TODO: Add ability to get Instance class by ID
 class Lwm2mObject {
 public:
 	Lwm2mObject(const ObjectInfo &info): _objInfo(info) {}

@@ -12,6 +12,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # TODO: Delete this src file
 set(SOURCES dep.cpp)
 
+add_subdirectory(platform)
 add_subdirectory(connection)
 add_subdirectory(core)
 add_subdirectory(registry)
@@ -23,6 +24,7 @@ add_library(WppLib STATIC ${SOURCES})
 target_include_directories(WppLib PUBLIC 
                             ${CMAKE_CURRENT_SOURCE_DIR}/
                             config/
+                            platform/
                             connection/ 
                             core/ 
                             registry/

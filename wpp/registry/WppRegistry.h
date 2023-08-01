@@ -18,6 +18,7 @@
 namespace wpp {
 
 // TODO: Add ability to check whether some object id is exist
+// TODO: Add ability to get Lwm2mObject by ID
 class WppRegistry {
 private:
 	WppRegistry() {}
@@ -34,7 +35,7 @@ public:
 		return registry;
 	}
 
-	/* ------------- Objects management ------------- */
+	/* ------------- Mandatory objects ------------- */
 	Object<Security>& security() {
 		static const ObjectInfo info = {
 				"Server",					// Name
@@ -53,7 +54,7 @@ public:
 		};
 
 		if (!Object<Security>::isCreated()) Object<Security>::create(info);
-		return *Object<Security>::object();
+		return *Object<Security>::instance();
 	}
 
 	Object<Server>& server() {
@@ -74,7 +75,7 @@ public:
 		};
 
 		if (!Object<Server>::isCreated()) Object<Server>::create(info);
-		return *Object<Server>::object();
+		return *Object<Server>::instance();
 	}
 
 	Object<Device>& device() {
@@ -95,7 +96,7 @@ public:
 		};
 
 		if (!Object<Device>::isCreated()) Object<Device>::create(info);
-		return *Object<Device>::object();
+		return *Object<Device>::instance();
 	}
 };
 

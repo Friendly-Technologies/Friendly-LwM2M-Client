@@ -38,7 +38,7 @@ public:
 	/* ------------- Connection abilities ------------- */
 	SESSION_T connect(Security& security);
 	void disconnect(SESSION_T session);
-	bool isSessionCmp(SESSION_T session1, SESSION_T session2);
+	bool sessionCmp(SESSION_T session1, SESSION_T session2);
 
 	bool receivedPacket(SESSION_T session, uint8_t *data, size_t length);
 	bool sendPacket(SESSION_T session, uint8_t* data, size_t length);
@@ -48,7 +48,7 @@ public:
 
 
 private:
-	static WppConnection *_manager;
+	static WppConnection *_core;
 
 	CONNECT_T _connectClb;
 	DISCONNECT_T _disconnectClb;

@@ -11,9 +11,9 @@
 #include "Object.h"
 #include "config.h"
 
-#include "security/Security.h"
-#include "server/Server.h"
-#include "device/Device.h"
+#include "mandatory/security/Security.h"
+#include "mandatory/server/Server.h"
+#include "mandatory/device/Device.h"
 
 namespace wpp {
 

@@ -5,7 +5,7 @@
  *      Author: valentin
  */
 
-#include "server/Server.h"
+#include "mandatory/server/Server.h"
 
 #include <unordered_map>
 #include <iostream>

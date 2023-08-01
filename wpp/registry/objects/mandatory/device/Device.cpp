@@ -1,11 +1,11 @@
 /*
- * Security.cpp
+ * Device.cpp
  *
  *  Created on: 24 Jul 2023
  *      Author: valentin
  */
 
-#include <security/Security.h>
+#include <mandatory/device/Device.h>
 
 #include <unordered_map>
 #include <iostream>
@@ -17,31 +17,31 @@
 namespace wpp {
 
 /* --------------- Instance implementation part --------------- */
-Resource * Security::getResource(ID_T id) {
+Resource * Device::getResource(ID_T id) {
 	return NULL;
 }
 
-std::vector<Resource *> Security::getResourcesList() {
+std::vector<Resource *> Device::getResourcesList() {
 	std::vector<Resource *> list;
 	return list;
 }
 
-std::vector<Resource *> Security::getResourcesList(const Operation& filter) {
+std::vector<Resource *> Device::getResourcesList(const Operation& filter) {
 	std::vector<Resource *> list;
 	return list;
 }
 
-std::vector<Resource *> Security::getInstantiatedResourcesList() {
+std::vector<Resource *> Device::getInstantiatedResourcesList() {
 	std::vector<Resource *> list;
 	return list;
 }
 
-std::vector<Resource *> Security::getInstantiatedResourcesList(const Operation& filter) {
+std::vector<Resource *> Device::getInstantiatedResourcesList(const Operation& filter) {
 	std::vector<Resource *> list;
 	return list;
 }
 
-void Security::serverOperationNotifier(Operation::TYPE type, ID_T resourceId, ID_T resourceInstanceId) {
+void Device::serverOperationNotifier(Operation::TYPE type, ID_T resourceId, ID_T resourceInstanceId) {
 	switch (type) {
 	case Operation::READ:
 		std::cout << "Security READ -> resourceId:" << resourceId << ", resourceInstanceId:" << resourceInstanceId << std::endl;

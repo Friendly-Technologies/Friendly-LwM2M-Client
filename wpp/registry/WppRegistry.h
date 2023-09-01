@@ -9,11 +9,20 @@
 #define WPPREGISTRY_H_
 
 #include "Object.h"
-#include "config.h"
 
 #include "mandatory/security/Security.h"
 #include "mandatory/server/Server.h"
 #include "mandatory/device/Device.h"
+
+#ifdef ACL_OBJ
+#include "optional/acl/Acl.h"
+#endif
+#ifdef CONN_MONITORING_OBJ
+#include "optional/conn_monitoring/ConnMonitoring.h"
+#endif
+#ifdef FIRMWARE_UPD_OBJ
+#include "optional/firmware_upd/FirmwareUpd.h"
+#endif
 
 namespace wpp {
 
@@ -38,9 +47,9 @@ public:
 	/* ------------- Mandatory objects ------------- */
 	Object<Security>& security() {
 		static const ObjectInfo info = {
-				"Server",					// Name
-				OBJ_ID::SERVER,				// Object ID
-				"urn:oma:lwm2m:oma:1:1.1",	// URN
+				"LWM2M Security",			// Name
+				OBJ_ID::SECURITY,				// Object ID
+				"urn:oma:lwm2m:oma:0:1.1",	// URN
 				{1,1},						// Object version
 				{1,1},						// Lwm2m version
 				IS_SINGLE::MULTIPLE,		// Is single
@@ -59,7 +68,7 @@ public:
 
 	Object<Server>& server() {
 		static const ObjectInfo info = {
-				"Server",					// Name
+				"LwM2M Server",				// Name
 				OBJ_ID::SERVER,				// Object ID
 				"urn:oma:lwm2m:oma:1:1.1",	// URN
 				{1,1},						// Object version
@@ -80,12 +89,12 @@ public:
 
 	Object<Device>& device() {
 		static const ObjectInfo info = {
-				"Server",					// Name
-				OBJ_ID::SERVER,				// Object ID
-				"urn:oma:lwm2m:oma:1:1.1",	// URN
+				"Device",					// Name
+				OBJ_ID::DEVICE,				// Object ID
+				"urn:oma:lwm2m:oma:3:1.1",	// URN
 				{1,1},						// Object version
 				{1,1},						// Lwm2m version
-				IS_SINGLE::MULTIPLE,		// Is single
+				IS_SINGLE::SINGLE,			// Is single
 				IS_MANDATORY::MANDATORY,	// Is Mandatory
 				Operation(Operation::READ|	// Object supported operations
 						  Operation::WRITE|
@@ -98,6 +107,76 @@ public:
 		if (!Object<Device>::isCreated()) Object<Device>::create(info);
 		return *Object<Device>::instance();
 	}
+
+	/* ------------- Optional objects ------------- */
+	#ifdef ACL_OBJ
+	Object<Acl>& acl() {
+		static const ObjectInfo info = {
+				"LwM2M Access Control",		// Name
+				OBJ_ID::ACL,				// Object ID
+				"urn:oma:lwm2m:oma:2",		// URN
+				{1,0},						// Object version
+				{1,0},						// Lwm2m version
+				IS_SINGLE::MULTIPLE,		// Is single
+				IS_MANDATORY::OPTIONAL,		// Is Mandatory
+				Operation(Operation::READ|	// Object supported operations
+						  Operation::WRITE|
+						  Operation::DISCOVER|
+						  Operation::EXECUTE|
+						  Operation::CREATE|
+						  Operation::DELETE),
+		};
+
+		if (!Object<Acl>::isCreated()) Object<Acl>::create(info);
+		return *Object<Acl>::instance();
+	}
+	#endif
+
+	#ifdef CONN_MONITORING_OBJ
+	Object<ConnMonitoring>& connMonitoring() {
+		static const ObjectInfo info = {
+				"Connectivity Monitoring",	// Name
+				OBJ_ID::CONN_MONITORING,	// Object ID
+				"urn:oma:lwm2m:oma:4:1.2 ",	// URN
+				{1,2},						// Object version
+				{1,1},						// Lwm2m version
+				IS_SINGLE::SINGLE,			// Is single
+				IS_MANDATORY::OPTIONAL,		// Is Mandatory
+				Operation(Operation::READ|	// Object supported operations
+						  Operation::WRITE|
+						  Operation::DISCOVER|
+						  Operation::EXECUTE|
+						  Operation::CREATE|
+						  Operation::DELETE),
+		};
+
+		if (!Object<ConnMonitoring>::isCreated()) Object<ConnMonitoring>::create(info);
+		return *Object<ConnMonitoring>::instance();
+	}
+	#endif
+
+	#ifdef FIRMWARE_UPD_OBJ
+		Object<FirmwareUpd>& firmwareUpd() {
+		static const ObjectInfo info = {
+				"Firmware Update",			// Name
+				OBJ_ID::ACFIRMWARE_UPDL,	// Object ID
+				"urn:oma:lwm2m:oma:5",		// URN
+				{1,0},						// Object version
+				{1,0},						// Lwm2m version
+				IS_SINGLE::SINGLE,			// Is single
+				IS_MANDATORY::OPTIONAL,		// Is Mandatory
+				Operation(Operation::READ|	// Object supported operations
+						  Operation::WRITE|
+						  Operation::DISCOVER|
+						  Operation::EXECUTE|
+						  Operation::CREATE|
+						  Operation::DELETE),
+		};
+
+		if (!Object<FirmwareUpd>::isCreated()) Object<FirmwareUpd>::create(info);
+		return *Object<FirmwareUpd>::instance();
+	}
+	#endif
 };
 
 } // namespace wpp

@@ -8,6 +8,12 @@
 
 #!/bin/bash
 
+CLANG="clang-14"
+CLANG_KIT_PATH="/usr/bin/clang"
+
+CLANGPP="clang++-14"
+CLANGPP_KIT_PATH="/usr/bin/clang++"
+
 tools="\
 default-jre \
 libcunit1 \
@@ -17,11 +23,11 @@ ninja-build \
 python3-pip \
 gcovr \
 git \
-Build-essential \
+build-essential \
 clang-format \
 clang-format-14 \
 clang-tools-14 \
-clang-6.0"
+$CLANG"
 
 ptools="\
 cmake-format \
@@ -31,14 +37,49 @@ pexpect \
 pytest"
 
 for x in $tools; do
-sudo apt-get install $x -y
+	sudo apt-get install $x -y
+	if [ $? -ne 0 ]; then
+		echo "Error installing $x."
+		exit 1
+	fi
 done
         
 for x in $ptools; do
-pip3 install $x
+    pip3 install $x
+    if [ $? -ne 0 ]; then
+        echo "Error installing $x with pip."
+        exit 1
+    fi
 done
 
 sudo snap install cmake --classic # version 3.26
+
+# Setup clang kit path
+echo -e "\nSetup clang kit"
+CLANG_PATH=$(which $CLANG)
+if [ -z "$CLANG_PATH" ]; then
+	echo "Error: ${CLANG} not found in PATH."
+	exit 1
+fi
+if [ ! -e "$CLANG_KIT_PATH" ]; then
+	# Create the symbolic link
+	sudo ln -s $CLANG_PATH $CLANG_KIT_PATH
+	echo "$CLANG_KIT_PATH symbolic link created successfully."
+fi
+
+CLANGPP_PATH=$(which $CLANGPP)
+if [ -z "$CLANGPP_PATH" ]; then
+	echo "Error: ${CLANGPP} not found in PATH."
+	exit 1
+fi
+if [ ! -e "$CLANGPP_KIT_PATH" ]; then
+	# Create the symbolic link
+	sudo ln -s $CLANGPP_PATH $CLANGPP_KIT_PATH
+	echo "$CLANGPP_KIT_PATH symbolic link created successfully."
+fi
+echo -e "Setup clang kit DONE"
+
+echo -e "\nSetup environment DONE"
 
 # wget https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/cmake/3.25.1-1ubuntu2/cmake_3.25.1.orig.tar.gz
 # tar -xvzf cmake_3.25.1.orig.tar.gz

@@ -34,5 +34,5 @@ add_subdirectory(registry)
 add_library(WppLib STATIC ${SOURCES})
 # List of directories that will be set for compiler with key -I
 target_include_directories(WppLib PUBLIC ${INCLUDES})
-# List of directories that will be set for compiler with key -I
+# List of preprocessor defines that will be set for compiler with key -D
 target_compile_definitions(WppLib PUBLIC ${COMPILE_DEFINITIONS})

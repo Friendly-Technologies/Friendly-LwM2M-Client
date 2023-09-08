@@ -20,12 +20,23 @@ using BOOL_T = bool;
 using INT_T = int64_t;
 using UINT_T = uint64_t;
 using FLOAT_T = double;
+using STRING_T = std::string;
+/*
+ * Opaque - represent buffer or string as lwm2m_data_t.value.asBuffer
+ */
 using OPAQUE_T = std::vector<uint8_t>;
+/*
+ * ObjLink - (object ID):(instance ID), example: 1:3. 
+ * Represent as two integers in lwm2m_data_t.value.asObjLink.
+ */
 struct OBJ_LINK_T {
 	ID_T objectId;
     ID_T objectInstanceId;
 };
-using STRING_T = std::string;
+/*
+ * CoreLink -  </3/0> or </1/0/>;ssid=101 or </5>,</4>,</55>;ver=1.9,</55/0>.
+ * Represent as string in lwm2m_data_t.value.asBuffer
+ */
 using CORE_LINK_T = std::string;
 /*
  * Keep in mind that while std::function itself is always copy able,
@@ -75,12 +86,12 @@ struct Version {
 
 struct InstanceID {
 	ID_T objectId = ID_T_MAX_VAL;
-    ID_T instanceId = ID_T_MAX_VAL; // TODO: use option<ID_T>
+    ID_T instanceId = ID_T_MAX_VAL;
 };
 
 struct ResourceID{
-    ID_T resourceId = ID_T_MAX_VAL; // TODO: use option<ID_T>
-    ID_T resourceInstanceId = ID_T_MAX_VAL; // TODO: use option<ID_T>
+    ID_T resourceId = ID_T_MAX_VAL;
+    ID_T resourceInstanceId = ID_T_MAX_VAL;
 };
 
 struct DataID{

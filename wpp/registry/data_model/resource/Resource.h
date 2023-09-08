@@ -6,8 +6,6 @@
 #include <type_traits>
 #include <variant>
 
-//TODO: #include "liblwm2m.h"
-#include <dep.h>
 #include "ObjectInfo.h"
 #include "Operation.h"
 #include "types.h"
@@ -129,15 +127,15 @@ public: /* ---------- Public methods for common usage ----------*/
 	template<typename T>
 	bool get(T &value, ID_T resourceInstanceId = SINGLE_INSTANCE_ID) const  = delete;
 
-	// TODO: Investigate behaviour of protocol for deleting resources and their
-	// instances, whether resource  should always has at least one instance
-	// (in MULTIPLE and SINGLE modes)
 	/*
-	 * Remove resource instance if resource is multiple and instance exists
+	 * Remove resource instance if resource is multiple and instance exists,
+	 * if the resource is SINGLE or it has the last instance remove is not
+	 * possible. Because instantiated resources must have at least one instance.
 	 */
 	bool remove(ID_T resourceInstanceId);
+
 	/*
-	 * Remove all instances
+	 * Remove all instances.
 	 */
 	bool clear();
 

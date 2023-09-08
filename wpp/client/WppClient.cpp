@@ -116,9 +116,9 @@ void WppClient::lwm2mContextClose() {
 }
 
 bool WppClient::lwm2mConfigure(const std::string &endpointName, const std::string &msisdn, const std::string &altPath) {
-//TODO:	lwm2m_object_t lwm2m_major_objects[] = {&_registry..security().getLwm2mObject(),
-//										  	    &_registry..server().getLwm2mObject(),
-//										        &_registry..device().getLwm2mObject()};
+//TODO:	lwm2m_object_t lwm2m_major_objects[] = {&_registry.security().getLwm2mObject(),
+//										  	    &_registry.server().getLwm2mObject(),
+//										        &_registry.device().getLwm2mObject()};
 //	uint16_t objectsCnt = sizeof(lwm2m_major_objects)/sizeof(lwm2m_object_t);
 //	char *msisdn_c = msisdn.empty()? NULL : msisdn.c_str();
 //	char *altPath_c = altPath.empty()? NULL : altPath.c_str();

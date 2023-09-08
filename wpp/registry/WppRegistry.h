@@ -55,7 +55,6 @@ public:
 	/* ------------- Registry functionality ------------- */
 	void restoreObject(Lwm2mObject &object) {
 		if (_objRestoreFunc) _objRestoreFunc(object);
-		else object.clear(); // TODO: Validate this behaviour
 	}
 
 	/* ------------- Mandatory objects ------------- */

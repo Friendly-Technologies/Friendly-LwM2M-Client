@@ -42,7 +42,10 @@ int main()
 	cout << "Test memory consumption:" << endl;
 	memConsuptionCheck();
 
+	Platform platform;
+	Connection connection;
 	WppRegistry registry {objRestore};
+	WppClient::create({"Test name", "", ""}, registry, connection, platform);
 
 	cout << endl << "Test WppRegistry:" << endl;
 	Server *server = registry.server().createInstance();
@@ -59,9 +62,6 @@ int main()
 
 
 	cout << endl << "Test WppClient:" << endl;
-	Platform platform;
-	Connection connection;
-	WppClient::create({"Test name", "", ""}, registry, connection, platform);
 	int iterationCnt = 10;
 	while (iterationCnt--) {
 		time_t sleepTime = 1;

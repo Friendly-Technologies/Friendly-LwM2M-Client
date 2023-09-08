@@ -9,28 +9,30 @@ set(CMAKE_CXX_STANDARD 17)
 # This is essential for shared libraries.
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# TODO: Delete this src file
-set(SOURCES dep.cpp)
+# Include file with wpp config
+include(config/config.cmake)
 
+# Variables that will be filled in subdirectories
+set(SOURCES "")
+set(INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/)
+set(COMPILE_DEFINITIONS "")
+
+# TODO: Delete this src file
+set(SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/dep.cpp)
+
+# Add subdiretories with sources
 add_subdirectory(platform)
 add_subdirectory(connection)
 add_subdirectory(core)
 add_subdirectory(registry)
 
-#message("Source files for build: ${SOURCES}")
+# message("INCLUDES: ${INCLUDES}")
+# message("SOURCES: ${SOURCES}")
+# message("COMPILE_DEFINITIONS: ${COMPILE_DEFINITIONS}")
 
+# Creating target as static library
 add_library(WppLib STATIC ${SOURCES})
-# List of directories that will be set for copilator with key -I
-target_include_directories(WppLib PUBLIC 
-                            ${CMAKE_CURRENT_SOURCE_DIR}/
-                            config/
-                            platform/
-                            connection/ 
-                            core/ 
-                            registry/
-                            registry/data_model/instance/
-                            registry/data_model/object/
-                            registry/data_model/resource/
-                            registry/data_model/types/
-                            registry/objects/
-                            )
+# List of directories that will be set for compiler with key -I
+target_include_directories(WppLib PUBLIC ${INCLUDES})
+# List of preprocessor defines that will be set for compiler with key -D
+target_compile_definitions(WppLib PUBLIC ${COMPILE_DEFINITIONS})

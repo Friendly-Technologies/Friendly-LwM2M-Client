@@ -46,7 +46,8 @@
 		"cmake.buildDirectory": "${workspaceFolder}/_build",
 		"cmake.touchbar.advanced": {},
 		"cmake.configureOnOpen": true,
-		"cmake.useProjectStatusView": true
+		"cmake.useProjectStatusView": true,
+		"cmake.cmakeCommunicationMode": "automatic"
 	},
 	"extensions": {
 		"recommendations": ["ms-vscode.cpptools-extension-pack"]

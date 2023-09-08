@@ -48,7 +48,7 @@ lwm2m_client_state_t WppCore::getState() {
 void WppCore::loop(time_t &sleepTime) {
 	int result = 0;// TODO: lwm2m_step(_lwm2m_context, availableTime);
 	if (!result && getState() == STATE_BOOTSTRAPPING) {
-		// TODO: restoreObject(WppRegistry::instance().security());
+		restoreObject(WppRegistry::instance().security());
 		restoreObject(WppRegistry::instance().server());
 	}
 }
@@ -81,7 +81,6 @@ bool WppCore::isObjectRegistered(Lwm2mObject &object) {
 	lwm2m_object_t * lwm2m_object = NULL; // TODO: (lwm2m_object_t *)LWM2M_LIST_FIND(_lwm2m_context->objectList, object.getLwm2mObject().objID);
 	return lwm2m_object != NULL;
 }
-
 
 void WppCore::restoreObject(Lwm2mObject &object) {
 	if (_restoreFunc) _restoreFunc(object);

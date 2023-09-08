@@ -36,7 +36,7 @@ public:
 /* ------------- Object management ------------- */
 	static bool create(const ObjectInfo &info);
 	static bool isCreated();
-	static Object<T>* object();
+	static Object<T>* instance();
 
 /* ------------- Object instance management ------------- */
 	T* createInstance(ID_T instanceID = ID_T_MAX_VAL);
@@ -85,7 +85,7 @@ bool Object<T>::isCreated() {
 }
 
 template<typename T>
-Object<T>* Object<T>::object() {
+Object<T>* Object<T>::instance() {
 	return _object;
 }
 
@@ -220,45 +220,45 @@ ID_T Object<T>::getFirstAvailableInstanceID() {
 template<typename T>
 uint8_t Object<T>::read_clb(lwm2m_context_t * contextP, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP) {
 	// Protect access to instance list
-	std::lock_guard<std::mutex> guard(object()->_instanceGuard); // TODO: it is critical part, and looks like we have conflict here
+	std::lock_guard<std::mutex> guard(instance()->_instanceGuard); // TODO: it is critical part, and looks like we have conflict here
 
-	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
+	if (!instance()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
 
-	return object()->_instances[instanceId]->resourceRead(instanceId, numDataP, dataArrayP);
+	return instance()->_instances[instanceId]->resourceRead(instanceId, numDataP, dataArrayP);
 }
 
 template<typename T>
 uint8_t Object<T>::write_clb(lwm2m_context_t * contextP, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP, lwm2m_write_type_t writeType) {
 	// Protect access to instance list
-	std::lock_guard<std::mutex> guard(object()->_instanceGuard); // TODO: it is critical part, and looks like we have conflict here
+	std::lock_guard<std::mutex> guard(instance()->_instanceGuard); // TODO: it is critical part, and looks like we have conflict here
 
-	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
+	if (!instance()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
 
-	return object()->_instances[instanceId]->resourceWrite(instanceId, numData, dataArray, writeType);
+	return instance()->_instances[instanceId]->resourceWrite(instanceId, numData, dataArray, writeType);
 }
 
 template<typename T>
 uint8_t Object<T>::execute_clb(lwm2m_context_t * contextP, ID_T instanceId, ID_T resourceId, uint8_t * buffer, int length, lwm2m_object_t * objectP) {
 	// Protect access to instance list
-	std::lock_guard<std::mutex> guard(object()->_instanceGuard); // TODO: it is critical part, and looks like we have conflict here
-	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
+	std::lock_guard<std::mutex> guard(instance()->_instanceGuard); // TODO: it is critical part, and looks like we have conflict here
+	if (!instance()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
 
-	return object()->_instances[instanceId]->resourceExecute(instanceId, resourceId, buffer, length);
+	return instance()->_instances[instanceId]->resourceExecute(instanceId, resourceId, buffer, length);
 }
 
 template<typename T>
 uint8_t Object<T>::discover_clb(lwm2m_context_t * contextP, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP) {
 	// Protect access to instance list
-	std::lock_guard<std::mutex> guard(object()->_instanceGuard); // TODO: it is critical part, and looks like we have conflict here
+	std::lock_guard<std::mutex> guard(instance()->_instanceGuard); // TODO: it is critical part, and looks like we have conflict here
 
-	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
+	if (!instance()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
 
-	return object()->_instances[instanceId]->resourceDiscover(instanceId, numDataP, dataArrayP);
+	return instance()->_instances[instanceId]->resourceDiscover(instanceId, numDataP, dataArrayP);
 }
 
 template<typename T>
 uint8_t Object<T>::create_clb(lwm2m_context_t * contextP, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP) {
-	if (!object()->createInstance(instanceId)) return COAP_500_INTERNAL_SERVER_ERROR;
+	if (!instance()->createInstance(instanceId)) return COAP_500_INTERNAL_SERVER_ERROR;
 
 	uint8_t result = write_clb(contextP, instanceId, numData, dataArray, objectP, LWM2M_WRITE_REPLACE_RESOURCES);
 	if (result != COAP_204_CHANGED) {
@@ -271,7 +271,7 @@ uint8_t Object<T>::create_clb(lwm2m_context_t * contextP, ID_T instanceId, int n
 
 template<typename T>
 uint8_t Object<T>::delete_clb(lwm2m_context_t * contextP, ID_T instanceId, lwm2m_object_t * objectP) {
-	return object()->removeInstance(instanceId)? COAP_202_DELETED : COAP_404_NOT_FOUND;
+	return instance()->removeInstance(instanceId)? COAP_202_DELETED : COAP_404_NOT_FOUND;
 }
 
 } // namespace wpp

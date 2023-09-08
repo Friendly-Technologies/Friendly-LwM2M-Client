@@ -8,8 +8,10 @@
 #include <thread>
 #include <chrono>
 
-#include <WppCore.h>
-#include <WppRegistry.h>
+#include "WppClient.h"
+
+#include "Connection.h"
+#include "Platform.h"
 
 using namespace std;
 using namespace wpp;
@@ -31,7 +33,7 @@ void memConsuptionCheck() {
 //   cout << "DATA_VERIFIER_T: " << sizeof(Resource::DATA_VERIFIER_T) << endl;
 }
 
-void restoreObject(Lwm2mObject &object) {
+void objRestore(Lwm2mObject &object) {
 	cout << "Restore object id: " << (ID_T)object.getObjectId() << ", name: " << object.getObjectInfo().name << endl;
 }
 
@@ -40,9 +42,10 @@ int main()
 	cout << "Test memory consumption:" << endl;
 	memConsuptionCheck();
 
+	WppRegistry registry {objRestore};
 
 	cout << endl << "Test WppRegistry:" << endl;
-	Server *server = WppRegistry::instance().server().createInstance();
+	Server *server = registry.server().createInstance();
 
 	INT_T value;
 	server->get(value, Server::SHORT_SERV_ID);
@@ -55,12 +58,14 @@ int main()
 
 
 
-	cout << endl << "Test WppCore:" << endl;
-	WppCore::create("Test name", "", "", restoreObject);
+	cout << endl << "Test WppClient:" << endl;
+	Platform platform;
+	Connection connection;
+	WppClient::create({"Test name", "", ""}, registry, connection, platform);
 	int iterationCnt = 10;
 	while (iterationCnt--) {
 		time_t sleepTime = 1;
-		WppCore::instance()->loop(sleepTime);
+		WppClient::instance()->loop(sleepTime);
 
 		cout << "Iteration: " << iterationCnt << ", sleep: " << sleepTime << endl;
 		std::this_thread::sleep_for(std::chrono::seconds(sleepTime));

@@ -16,7 +16,7 @@
 using namespace std;
 using namespace wpp;
 
-void memConsuptionCheck() {
+void memConsumptionCheck() {
 //   std::shared_ptr<uint8_t> shared_array(new uint8_t[10], std::default_delete<uint8_t[]>());
 //   cout << "Object<Server>: " << sizeof(Object<Server>) << endl;
 //   cout << "Object<Server> serverObj: " << sizeof(serverObj) << endl;
@@ -40,7 +40,7 @@ void objRestore(Lwm2mObject &object) {
 int main()
 {
 	cout << "Test memory consumption:" << endl;
-	memConsuptionCheck();
+	memConsumptionCheck();
 
 	Platform platform;
 	Connection connection;
@@ -65,7 +65,7 @@ int main()
 	int iterationCnt = 10;
 	while (iterationCnt--) {
 		time_t sleepTime = 1;
-		WppClient::instance()->loop(sleepTime);
+		WppClient::client()->loop(sleepTime);
 
 		cout << "Iteration: " << iterationCnt << ", sleep: " << sleepTime << endl;
 		std::this_thread::sleep_for(std::chrono::seconds(sleepTime));

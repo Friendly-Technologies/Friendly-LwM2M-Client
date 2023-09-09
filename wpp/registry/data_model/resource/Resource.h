@@ -17,17 +17,6 @@ namespace wpp {
  */
 class Resource {
 public: /* ---------- Public subtypes ----------*/
-#ifdef __cpp_concepts
-	template<typename T>
-	concept ResourceDataType =  std::same_as<T, BOOL_T>::value ||
-								std::same_as<T, INT_T>::value ||
-								std::same_as<T, UINT_T>::value ||
-								std::same_as<T, FLOAT_T>::value ||
-								std::same_as<T, OPAQUE_T>::value ||
-								std::same_as<T, OBJ_LINK_T>::value ||
-								std::same_as<T, STRING_T>::value ||
-								std::same_as<T, EXECUTE_T>::value;
-#endif // __cpp_concepts
 	enum class DATA_TYPE: uint8_t {
 		BOOL,           // bool
 		INT,            // int64_t
@@ -95,12 +84,6 @@ public: /* ---------- Public methods for common usage ----------*/
 	std::mutex& getGuard();
 
 	/* ---------- Methods for manage resource data ----------*/
-#ifdef __cpp_concepts
-    template<ResourceDataType T>
-    bool set(const T &value, ID_T resourceInstanceId = 0);
-    template<ResourceDataType T>
-	bool get(T &value, ID_T resourceInstanceId = 0);
-#else
     bool set(const BOOL_T &value, ID_T resourceInstanceId = SINGLE_INSTANCE_ID);
     bool set(const INT_T &value, ID_T resourceInstanceId = SINGLE_INSTANCE_ID);
     bool set(const UINT_T &value, ID_T resourceInstanceId = SINGLE_INSTANCE_ID);
@@ -118,7 +101,7 @@ public: /* ---------- Public methods for common usage ----------*/
 	bool get(OBJ_LINK_T &value, ID_T resourceInstanceId = SINGLE_INSTANCE_ID) const;
 	bool get(STRING_T &value, ID_T resourceInstanceId = SINGLE_INSTANCE_ID) const;
 	bool get(EXECUTE_T &value, ID_T resourceInstanceId = SINGLE_INSTANCE_ID) const;
-#endif // __cpp_concepts
+
     /*
      * Disabling implicit conversions
      */
@@ -195,7 +178,7 @@ Resource::DATA_TYPE Resource::_getDataTypeID() const {
 
 template<typename T>
 bool Resource::_set(const T &value, ID_T resourceInstanceId) {
-	std::lock_guard<std::mutex> guard(_resourceGuard); // TODO: it is critical part, and looks like we have conflict here
+	std::lock_guard<std::mutex> guard(_resourceGuard);
 
 	if (!isInstanceIdPossible(resourceInstanceId)) return false;
 	if (!isDataValueValid(value)) return false;
@@ -207,7 +190,7 @@ bool Resource::_set(const T &value, ID_T resourceInstanceId) {
 
 template<typename T>
 bool Resource::_get(T &value, ID_T resourceInstanceId) const {
-	std::lock_guard<std::mutex> guard(_resourceGuard); // TODO: it is critical part, and looks like we have conflict here
+	std::lock_guard<std::mutex> guard(_resourceGuard);
 
 	if (!isDataTypeValid<T>()) return false;
 	if (!isInstanceExist(resourceInstanceId)) return false;

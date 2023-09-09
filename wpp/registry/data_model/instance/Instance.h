@@ -31,8 +31,7 @@ namespace wpp {
  * must immediately call the function lwm2m_resource_value_changed() or the one that encapsulates
  * this call. It is necessary to notify about the change for all resources except those marked as EXECUTE.
  */
-// TODO: Add user notification ability about resource operations
-// TODO: Integrate with WppCore
+// TODO: Add user notification ability about resource operations WRITE, READ, EXECUTE
 class Instance {
 	template<typename T>
 	friend class Object;

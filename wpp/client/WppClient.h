@@ -39,7 +39,7 @@ public:
 	/* ------------- WppClient management ------------- */
 	static bool create(const ClientInfo &info, WppRegistry &registry, WppConnectionI &connection, WppPlatformI &platform);
 	static bool isCreated();
-	static WppClient* instance();
+	static WppClient* client();
 
 	/* ------------- WppClient components ------------- */
 	WppRegistry & registry();

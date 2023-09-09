@@ -76,7 +76,7 @@ public:
 		};
 
 		if (!Object<Security>::isCreated()) Object<Security>::create(info);
-		return *Object<Security>::instance();
+		return *Object<Security>::object();
 	}
 
 	Object<Server>& server() {
@@ -97,10 +97,11 @@ public:
 		};
 
 		if (!Object<Server>::isCreated()) Object<Server>::create(info);
-		return *Object<Server>::instance();
+		return *Object<Server>::object();
 	}
 
 	Object<Device>& device() {
+		// Device Object (ID:3) SHALL NOT be affected by any Delete operation.
 		static const ObjectInfo info = {
 				"Device",					// Name
 				OBJ_ID::DEVICE,				// Object ID
@@ -113,12 +114,11 @@ public:
 						  Operation::WRITE|
 						  Operation::DISCOVER|
 						  Operation::EXECUTE|
-						  Operation::CREATE|
-						  Operation::DELETE),
+						  Operation::CREATE),
 		};
 
 		if (!Object<Device>::isCreated()) Object<Device>::create(info);
-		return *Object<Device>::instance();
+		return *Object<Device>::object();
 	}
 
 	/* ------------- Optional objects ------------- */
@@ -141,7 +141,7 @@ public:
 		};
 
 		if (!Object<Acl>::isCreated()) Object<Acl>::create(info);
-		return *Object<Acl>::instance();
+		return *Object<Acl>::object();
 	}
 	#endif
 
@@ -164,7 +164,7 @@ public:
 		};
 
 		if (!Object<ConnMonitoring>::isCreated()) Object<ConnMonitoring>::create(info);
-		return *Object<ConnMonitoring>::instance();
+		return *Object<ConnMonitoring>::object();
 	}
 	#endif
 
@@ -187,7 +187,7 @@ public:
 		};
 
 		if (!Object<FirmwareUpd>::isCreated()) Object<FirmwareUpd>::create(info);
-		return *Object<FirmwareUpd>::instance();
+		return *Object<FirmwareUpd>::object();
 	}
 	#endif
 

@@ -40,7 +40,7 @@ Resource::Resource(Resource&& resource) {
 	_isMandatory = resource._isMandatory;
 	_dataType = resource._dataType;
 	_instances.insert(std::make_move_iterator(resource._instances.begin()), std::make_move_iterator(resource._instances.end()));
-	_dataVerifier = resource._dataVerifier; // TODO: Check whether copied validator still valid after deleting resource
+	_dataVerifier = resource._dataVerifier;
 	// The guard not inherit original object guard state
 	_resourceGuard.unlock();
 }
@@ -128,7 +128,6 @@ std::mutex& Resource::getGuard() {
 
 
 /* ---------- Methods for get and set resource value ----------*/
-#ifndef __cpp_concepts
 bool Resource::set(const BOOL_T &value, ID_T resourceInstanceId) {
 	return _set(value, resourceInstanceId);
 }
@@ -192,7 +191,6 @@ bool Resource::get(STRING_T &value, ID_T resourceInstanceId) const {
 bool Resource::get(EXECUTE_T &value, ID_T resourceInstanceId) const {
 	return _get(value, resourceInstanceId);
 }
-#endif // __cpp_concepts
 
 bool Resource::remove(ID_T resourceInstanceId) {
 	std::lock_guard<std::mutex> guard(_resourceGuard);

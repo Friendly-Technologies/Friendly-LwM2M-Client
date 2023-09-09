@@ -10,44 +10,62 @@
 namespace wpp {
 
 bool Instance::resourceToLwm2mData(Resource &resource, ID_T instanceId, lwm2m_data_t &data) {
-	std::lock_guard<std::mutex> guard(resource.getGuard()); // TODO: it is critical part, and looks like we have conflict here
-
-	if (!resource.isInstanceExist(instanceId)) return false;
-
 	switch(resource.getDataType()) {
 	case Resource::DATA_TYPE::BOOL: {
-		// TODO: lwm2m_data_encode_bool(std::get<BOOL_T>(resource.getInstances()[instanceId]), data_ptr);
+		BOOL_T value;
+		if (resource.get(value, instanceId)) {
+		// TODO: lwm2m_data_encode_bool(value, data_ptr);
+		}
 		break;
 	}
 	case Resource::DATA_TYPE::TIME:
 	case Resource::DATA_TYPE::INT: {
-			// TODO: lwm2m_data_encode_int(std::get<INT_T>(resource.getInstances()[instanceId]), data_ptr);
+		INT_T value;
+		if (resource.get(value, instanceId)) {
+			// TODO: lwm2m_data_encode_int(value, data_ptr);
+		}
 		break;
 	}
 	case Resource::DATA_TYPE::UINT: {
-			// TODO: lwm2m_data_encode_uint(std::get<UINT_T>(resource.getInstances()[instanceId]), data_ptr);
+		UINT_T value;
+		if (resource.get(value, instanceId)) {
+			// TODO: lwm2m_data_encode_uint(value, data_ptr);
+		}
 		break;
 	}
 	case Resource::DATA_TYPE::FLOAT: {
-			// TODO: lwm2m_data_encode_float(std::get<FLOAT_T>(resource.getInstances()[instanceId], data_ptr);
+		FLOAT_T value;
+		if (resource.get(value, instanceId)) {
+			// TODO: lwm2m_data_encode_float(value, data_ptr);
+		}
 		break;
 	}
 	case Resource::DATA_TYPE::OBJ_LINK: {
-			OBJ_LINK_T &value = std::get<OBJ_LINK_T>(resource.getInstances()[instanceId]);
+			OBJ_LINK_T value;
+			if (resource.get(value, instanceId)) {
 			// TODO: lwm2m_data_encode_objlink(value.objectId, value.objectInstanceId, data_ptr);
+			}
 		break;
 	}
 	case Resource::DATA_TYPE::OPAQUE: {
-			OPAQUE_T &value = std::get<OPAQUE_T>(resource.getInstances()[instanceId]);
+			OPAQUE_T value;
+			if (resource.get(value, instanceId)) {
 			// TODO: lwm2m_data_encode_objlink(value.data(), value.size(), data_ptr);
+			}
 		break;
 	}
 	case Resource::DATA_TYPE::STRING: {
-			// TODO: lwm2m_data_encode_string(std::get<STRING_T>(resource.getInstances()[instanceId]).c_str(), data_ptr);
+			STRING_T value;
+			if (resource.get(value, instanceId)) {
+			// TODO: lwm2m_data_encode_string(value.c_str(), data_ptr);
+			}
 		break;
 	}
 	case Resource::DATA_TYPE::CORE_LINK: {
-			// TODO: lwm2m_data_encode_corelink(std::get<CORE_LINK_T>(resource.getInstances()[instanceId]).c_str(), data_ptr);
+			CORE_LINK_T value;
+			if (resource.get(value, instanceId)) {
+			// TODO: lwm2m_data_encode_corelink(value.c_str(), data_ptr);
+			}
 		break;
 	}
 	default: return false;
@@ -57,9 +75,6 @@ bool Instance::resourceToLwm2mData(Resource &resource, ID_T instanceId, lwm2m_da
 }
 
 bool Instance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &resource, ID_T instanceId) {
-//	 TODO: Here must be lock for resource mutex but then we will can not call Resource::set()
-//	std::lock_guard<std::mutex> guard(resource.getGuard()); // TODO: it is critical part, and looks like we have conflict here
-
 	switch (resource.getDataType()) {
 	case Resource::DATA_TYPE::BOOL: {
 		BOOL_T value;
@@ -190,11 +205,6 @@ uint8_t Instance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * dat
 	// instance creation operation (Ex: ACL object resource 0). I did not
 	// find the necessary description in the documentation, so this question
 	// needs to be investigated in detail.
-	//
-	// DOC: Only in the Bootstrap Interface, the "Bootstrap-Write" MAY target just an Object ID,
-	// which will allow a BootstrapServer in using a TLV, SenML CBOR or SenML JSON formatted
-	// payload, to populate a LwM2M Client in a single message containing several Instances
-	// of the same Object.
 	if (writeType == LWM2M_WRITE_REPLACE_INSTANCE) {
 		std::vector<Resource *> resources = getInstantiatedResourcesList(Operation(Operation::WRITE));
 		for (auto resource : resources) resource->clear();
@@ -206,7 +216,10 @@ uint8_t Instance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * dat
 		//	 TODO: Here must be lock for resource but then we will can not call Resource::set()
 
 		// Check the server operation permission for resource
-		if (!resource->getOperation().isWrite()) return COAP_405_METHOD_NOT_ALLOWED;
+		if (!resource->getOperation().isWrite()) {
+			if (resource->isOptional()) continue;
+			else return COAP_405_METHOD_NOT_ALLOWED;
+		}
 		if ((dataArray[i].type == LWM2M_TYPE_MULTIPLE_RESOURCE && resource->isSingle()) ||
 			(dataArray[i].type != LWM2M_TYPE_MULTIPLE_RESOURCE && resource->isMultiple())) return COAP_405_METHOD_NOT_ALLOWED;
 

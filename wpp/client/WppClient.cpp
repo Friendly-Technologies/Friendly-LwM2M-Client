@@ -33,7 +33,7 @@ bool WppClient::isCreated() {
 	return _client != NULL;
 }
 
-WppClient* WppClient::instance() {
+WppClient* WppClient::client() {
 	return _client;
 }
 

@@ -235,12 +235,15 @@ uint8_t Object<T>::read_clb(lwm2m_context_t * contextP, ID_T instanceId, int * n
 
 template<typename T>
 uint8_t Object<T>::write_clb(lwm2m_context_t * contextP, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP, lwm2m_write_type_t writeType) {
-	// Protect access to instance list
-	std::lock_guard<std::mutex> guard(object()->_instanceGuard);
-
-	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
-
-	return object()->_instances[instanceId]->resourceWrite(instanceId, numData, dataArray, writeType);
+	if (writeType == LWM2M_WRITE_REPLACE_INSTANCE) {
+		delete_clb(contextP, instanceId, objectP);
+		return create_clb(contextP, instanceId, numData, dataArray, objectP);
+	} else {
+		// Protect access to instance list
+		std::lock_guard<std::mutex> guard(object()->_instanceGuard);
+		if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
+		return object()->_instances[instanceId]->resourceWrite(instanceId, numData, dataArray, writeType);
+	}
 }
 
 template<typename T>

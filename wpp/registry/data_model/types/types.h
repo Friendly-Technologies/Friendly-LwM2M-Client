@@ -124,7 +124,7 @@ struct Version {
 
 struct InstanceID {
 	ID_T objectId = ID_T_MAX_VAL;
-    ID_T instanceId = ID_T_MAX_VAL;
+    ID_T objectInstanceId = ID_T_MAX_VAL;
 };
 
 struct ResourceID{

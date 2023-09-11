@@ -78,7 +78,7 @@ protected:
 	/*
 	 * Handles information about resource operation that made server
 	 */
-	void serverOperationNotifier(Operation::TYPE type, ID_T resourceId, ID_T resourceInstanceId = 0) override;
+	void serverOperationNotifier(Operation::TYPE type, ResourceID resource) override;
 
 private:
 	/* --------------- Class helpful methods --------------- */

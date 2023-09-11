@@ -50,22 +50,22 @@ std::vector<Resource *> Server::getInstantiatedResourcesList(const Operation& fi
 	return list;
 }
 
-void Server::serverOperationNotifier(Operation::TYPE type, ID_T resourceId, ID_T resourceInstanceId) {
+void Server::serverOperationNotifier(Operation::TYPE type, ResourceID resource) {
 	switch (type) {
 	case Operation::READ:
-		std::cout << "Server READ -> resourceId:" << resourceId << ", resourceInstanceId:" << resourceInstanceId << std::endl;
+		std::cout << "Server READ -> resourceId:" << resource.resourceId << ", resourceInstanceId:" << resource.resourceInstanceId << std::endl;
 		break;
 	case Operation::WRITE:
-		std::cout << "Server WRITE -> resourceId:" << resourceId << ", resourceInstanceId:" << resourceInstanceId << std::endl;
+		std::cout << "Server WRITE -> resourceId:" << resource.resourceId << ", resourceInstanceId:" << resource.resourceInstanceId << std::endl;
 		break;
 	case Operation::EXECUTE:
-		std::cout << "Server EXECUTE -> resourceId:" << resourceId << ", resourceInstanceId:" << resourceInstanceId << std::endl;
+		std::cout << "Server EXECUTE -> resourceId:" << resource.resourceId << ", resourceInstanceId:" << resource.resourceInstanceId << std::endl;
 		break;
 	case Operation::DISCOVER:
-		std::cout << "Server DISCOVER -> resourceId:" << resourceId << ", resourceInstanceId:" << resourceInstanceId << std::endl;
+		std::cout << "Server DISCOVER -> resourceId:" << resource.resourceId << ", resourceInstanceId:" << resource.resourceInstanceId << std::endl;
 		break;
 	case Operation::DELETE:
-		std::cout << "Server DELETE -> resourceId:" << resourceId << ", resourceInstanceId:" << resourceInstanceId << std::endl;
+		std::cout << "Server DELETE -> resourceId:" << resource.resourceId << ", resourceInstanceId:" << resource.resourceInstanceId << std::endl;
 		break;
 	default: break;
 	}

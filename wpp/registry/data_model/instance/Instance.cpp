@@ -187,7 +187,7 @@ uint8_t Instance::resourceRead(ID_T instanceId, int * numDataP, lwm2m_data_t ** 
 			}
 			// If execution get to this place then operation completed with
 			// success and we can notify Instance implementation about it
-			serverOperationNotifier(Operation::READ, resource->getID(), instanceId);
+			serverOperationNotifier(Operation::READ, {resource->getID(), instanceId});
 		}
 	}
 
@@ -220,7 +220,7 @@ uint8_t Instance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * dat
 		if (writeType == LWM2M_WRITE_REPLACE_RESOURCES) {
 			resource->clear();
 			// Notify Instance implementation about operation
-			serverOperationNotifier(Operation::DELETE, resource->getID());
+			serverOperationNotifier(Operation::DELETE, {resource->getID(), SINGLE_INSTANCE_ID});
 		}
 
 		size_t count = 1;
@@ -240,7 +240,7 @@ uint8_t Instance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * dat
 			}
 			// If execution get to this place then operation completed with
 			// success and we can notify Instance implementation about it
-			serverOperationNotifier(Operation::WRITE, resource->getID(), instanceId);
+			serverOperationNotifier(Operation::WRITE, {resource->getID(), instanceId});
 		}
 	}
 
@@ -264,7 +264,7 @@ uint8_t Instance::resourceExecute(ID_T instanceId, ID_T resourceId, uint8_t * bu
 
 	// If execution get to this place then operation completed with
 	// success and we can notify Instance implementation about it
-	serverOperationNotifier(Operation::EXECUTE, resource->getID());
+	serverOperationNotifier(Operation::EXECUTE, {resource->getID(), SINGLE_INSTANCE_ID});
 
 	return COAP_204_CHANGED;
 }

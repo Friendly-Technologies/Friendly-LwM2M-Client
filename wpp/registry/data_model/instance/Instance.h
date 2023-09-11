@@ -77,7 +77,7 @@ protected: /* Interface used by Instance or Instance implementation class */
      * information about resource operation (READ, WRITE, EXECUTE, DISCOVER, DELETE).
 	 * Called by Instance after resource operation performed by server.
 	 */
-	virtual void serverOperationNotifier(Operation::TYPE type, ID_T resourceId, ID_T resourceInstanceId = 0) = 0;
+	virtual void serverOperationNotifier(Operation::TYPE type, ResourceID resource) = 0;
 
 private: /* Interface used by Object<T> or Instance class */
 	/*

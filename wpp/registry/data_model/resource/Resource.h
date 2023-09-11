@@ -17,20 +17,6 @@ namespace wpp {
  */
 class Resource {
 public: /* ---------- Public subtypes ----------*/
-	enum class DATA_TYPE: uint8_t {
-		BOOL,           // bool
-		INT,            // int64_t
-		UINT,           // uint64_t
-		FLOAT,          // double
-		OBJ_LINK,       // {object ID, instance ID}
-		TIME,         	// Derived from INT
-		OPAQUE,    		// vector<uint8_t>
-		STRING,    		// string
-		CORE_LINK, 		// Derived from STRING
-		EXECUTE,		// Type of executable resources
-		UNDEFINED     	// Undefined type
-	};
-
 	/*
 	 * Universal type for data
 	 */
@@ -44,13 +30,13 @@ public: /* ---------- Public subtypes ----------*/
 
 public: /* ---------- Public methods for common usage ----------*/
     Resource();
-    Resource(ID_T id, const Operation &operation, IS_SINGLE isSingle, IS_MANDATORY isMandatory, DATA_TYPE dataType);
+    Resource(ID_T id, const Operation &operation, IS_SINGLE isSingle, IS_MANDATORY isMandatory, TYPE_ID dataType);
     Resource(const Resource& resource);
     Resource(Resource&& resource);
 
 	/* ---------- Methods for get resource metadata ----------*/
     ID_T getID() const;
-    DATA_TYPE getDataType() const;
+    TYPE_ID getTypeId() const;
     const Operation& getOperation() const;
     bool isMandatory() const;
     bool isOptional() const;
@@ -66,7 +52,7 @@ public: /* ---------- Public methods for common usage ----------*/
 	bool isOperationValid(Operation::TYPE type) const;
 	bool isInstanceIdPossible(ID_T resourceInstanceId) const;
 	bool isInstanceExist(ID_T resourceInstanceId) const;
-	bool isDataTypeCompatible(DATA_TYPE type) const;
+	bool isTypeIdCompatible(TYPE_ID type) const;
 	bool isEmpty() const;
 	size_t instanceCnt() const;
 
@@ -127,9 +113,6 @@ public: /* ---------- Public methods for common usage ----------*/
 
 private:
     template<typename T>
-	DATA_TYPE _getDataTypeID() const;
-
-    template<typename T>
 	bool _set(const T &value, ID_T resourceInstanceId);
 
 	template<typename T>
@@ -140,7 +123,7 @@ private: /* ---------- Private properties ----------*/
     Operation _operation;
     IS_SINGLE _isSingle;
     IS_MANDATORY _isMandatory;
-    DATA_TYPE _dataType;
+    TYPE_ID _typeID;
     mutable std::unordered_map<ID_T, DATA_T> _instances;
     mutable std::mutex _resourceGuard;
     DATA_VERIFIER_T _dataVerifier;
@@ -150,30 +133,8 @@ private: /* ---------- Private properties ----------*/
 /* ---------- Implementation of template methods ----------*/
 template<typename T>
 bool Resource::isDataTypeValid() const {
-	DATA_TYPE typeID = _getDataTypeID<T>();
-	return typeID != DATA_TYPE::UNDEFINED && isDataTypeCompatible(typeID);
-}
-
-#ifdef __cpp_concepts
-template<Resource::ResourceDataType T>
-bool set(const T &value, ID_T resourceInstanceId = 0) { return _set(id, value); }
-template<Resource::ResourceDataType T>
-bool get(T &value, ID_T resourceInstanceId = 0) { return _get(id, value); }
-#endif // __cpp_concepts
-
-template<typename T>
-Resource::DATA_TYPE Resource::_getDataTypeID() const {
-	DATA_TYPE typeID = DATA_TYPE::UNDEFINED;
-	if constexpr (std::is_same<T, BOOL_T>::value) typeID = DATA_TYPE::BOOL;
-	else if constexpr (std::is_same<T, INT_T>::value) typeID = DATA_TYPE::INT;
-	else if constexpr (std::is_same<T, UINT_T>::value) typeID = DATA_TYPE::UINT;
-	else if constexpr (std::is_same<T, FLOAT_T>::value) typeID = DATA_TYPE::FLOAT;
-	else if constexpr (std::is_same<T, OPAQUE_T>::value) typeID = DATA_TYPE::OPAQUE;
-	else if constexpr (std::is_same<T, OBJ_LINK_T>::value) typeID = DATA_TYPE::OBJ_LINK;
-	else if constexpr (std::is_same<T, STRING_T>::value) typeID = DATA_TYPE::STRING;
-	else if constexpr (std::is_same<T, EXECUTE_T>::value) typeID = DATA_TYPE::EXECUTE;
-
-	return typeID;
+	TYPE_ID typeID = dataTypeToID<T>();
+	return typeID != TYPE_ID::UNDEFINED && isTypeIdCompatible(typeID);
 }
 
 template<typename T>

@@ -25,7 +25,7 @@ void memConsumptionCheck() {
 //   cout << "Operation: " << sizeof(Operation{}) << endl;
 //   cout << "IS_MANDATORY: " << sizeof(IS_MANDATORY) << endl;
 //   cout << "IS_SINGLE: " << sizeof(IS_SINGLE) << endl;
-//   cout << "DATA_TYPE: " << sizeof(Resource::DATA_TYPE) << endl;
+//   cout << "TYPE_ID: " << sizeof(Resource::TYPE_ID) << endl;
 //   cout << "DATA_T: " << sizeof(Resource::DATA_T) << endl;
 //   cout << "mutex: " << sizeof(mutex) << endl;
 //   cout << "std::unordered_map<ID_T, DATA_T>: " << sizeof(std::unordered_map<ID_T, Resource::DATA_T>) << endl;

@@ -10,58 +10,58 @@
 namespace wpp {
 
 bool Instance::resourceToLwm2mData(Resource &resource, ID_T instanceId, lwm2m_data_t &data) {
-	switch(resource.getDataType()) {
-	case Resource::DATA_TYPE::BOOL: {
+	switch(resource.getTypeId()) {
+	case TYPE_ID::BOOL: {
 		BOOL_T value;
 		if (resource.get(value, instanceId)) {
 		// TODO: lwm2m_data_encode_bool(value, data_ptr);
 		}
 		break;
 	}
-	case Resource::DATA_TYPE::TIME:
-	case Resource::DATA_TYPE::INT: {
+	case TYPE_ID::TIME:
+	case TYPE_ID::INT: {
 		INT_T value;
 		if (resource.get(value, instanceId)) {
 			// TODO: lwm2m_data_encode_int(value, data_ptr);
 		}
 		break;
 	}
-	case Resource::DATA_TYPE::UINT: {
+	case TYPE_ID::UINT: {
 		UINT_T value;
 		if (resource.get(value, instanceId)) {
 			// TODO: lwm2m_data_encode_uint(value, data_ptr);
 		}
 		break;
 	}
-	case Resource::DATA_TYPE::FLOAT: {
+	case TYPE_ID::FLOAT: {
 		FLOAT_T value;
 		if (resource.get(value, instanceId)) {
 			// TODO: lwm2m_data_encode_float(value, data_ptr);
 		}
 		break;
 	}
-	case Resource::DATA_TYPE::OBJ_LINK: {
+	case TYPE_ID::OBJ_LINK: {
 			OBJ_LINK_T value;
 			if (resource.get(value, instanceId)) {
 			// TODO: lwm2m_data_encode_objlink(value.objectId, value.objectInstanceId, data_ptr);
 			}
 		break;
 	}
-	case Resource::DATA_TYPE::OPAQUE: {
+	case TYPE_ID::OPAQUE: {
 			OPAQUE_T value;
 			if (resource.get(value, instanceId)) {
 			// TODO: lwm2m_data_encode_objlink(value.data(), value.size(), data_ptr);
 			}
 		break;
 	}
-	case Resource::DATA_TYPE::STRING: {
+	case TYPE_ID::STRING: {
 			STRING_T value;
 			if (resource.get(value, instanceId)) {
 			// TODO: lwm2m_data_encode_string(value.c_str(), data_ptr);
 			}
 		break;
 	}
-	case Resource::DATA_TYPE::CORE_LINK: {
+	case TYPE_ID::CORE_LINK: {
 			CORE_LINK_T value;
 			if (resource.get(value, instanceId)) {
 			// TODO: lwm2m_data_encode_corelink(value.c_str(), data_ptr);
@@ -75,36 +75,36 @@ bool Instance::resourceToLwm2mData(Resource &resource, ID_T instanceId, lwm2m_da
 }
 
 bool Instance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &resource, ID_T instanceId) {
-	switch (resource.getDataType()) {
-	case Resource::DATA_TYPE::BOOL: {
+	switch (resource.getTypeId()) {
+	case TYPE_ID::BOOL: {
 		BOOL_T value;
 		if (/*TODO: !lwm2m_data_decode_bool(&data, &value) || */!resource.set(value, instanceId)) return false;
 		break;
 	}
-	case Resource::DATA_TYPE::TIME:
-	case Resource::DATA_TYPE::INT: {
+	case TYPE_ID::TIME:
+	case TYPE_ID::INT: {
 		INT_T value;
 		if (/*TODO: !lwm2m_data_decode_int(&data, &value) || */!resource.set(value, instanceId)) return false;
 		break;
 	}
-	case Resource::DATA_TYPE::UINT: {
+	case TYPE_ID::UINT: {
 		UINT_T value;
 		if (/*TODO: !lwm2m_data_decode_uint(&data, &value) || */!resource.set(value, instanceId)) return false;
 		break;
 	}
-	case Resource::DATA_TYPE::FLOAT: {
+	case TYPE_ID::FLOAT: {
 		FLOAT_T value;
 		if (/*TODO: !lwm2m_data_decode_float(&data, &value) || */!resource.set(value, instanceId)) return false;
 		break;
 	}
-	case Resource::DATA_TYPE::OBJ_LINK: {
+	case TYPE_ID::OBJ_LINK: {
 		// TODO: It is necessary to check in practice, it is not completely clear how to convert data
 		// TODO: Convertation algorithm is not clear
 		if (data.type != LWM2M_TYPE_OBJECT_LINK) return false;
 		if (resource.set(OBJ_LINK_T{ID_T_MAX_VAL, ID_T_MAX_VAL}, instanceId)) return false;
 		break;
 	}
-	case Resource::DATA_TYPE::OPAQUE: {
+	case TYPE_ID::OPAQUE: {
 		// TODO: It is necessary to check in practice, it is not completely clear how to convert data
 		if (data.type != LWM2M_TYPE_OPAQUE) return false;
 		size_t len = data.value.asBuffer.length;
@@ -112,7 +112,7 @@ bool Instance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &resource,
 		if (resource.set(OPAQUE_T(buffer, buffer + len), instanceId)) return false;
 		break;
 	}
-	case Resource::DATA_TYPE::STRING: {
+	case TYPE_ID::STRING: {
 		// TODO: It is necessary to check in practice, it is not completely clear how to convert data
 		if (data.type != LWM2M_TYPE_OPAQUE && data.type != LWM2M_TYPE_STRING) return false;
 		size_t len = data.value.asBuffer.length;
@@ -120,7 +120,7 @@ bool Instance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &resource,
 		if (resource.set(STRING_T(buffer, buffer + len), instanceId)) return false;
 		break;
 	}
-	case Resource::DATA_TYPE::CORE_LINK: {
+	case TYPE_ID::CORE_LINK: {
 		// TODO: It is necessary to check in practice, it is not completely clear how to convert data
 		if (data.type != LWM2M_TYPE_OPAQUE && data.type != LWM2M_TYPE_STRING && data.type != LWM2M_TYPE_CORE_LINK) return false;
 		size_t len = data.value.asBuffer.length;

@@ -16,6 +16,26 @@ namespace wpp {
 using ID_T = uint16_t;
 #define ID_T_MAX_VAL (LWM2M_MAX_ID)
 
+/*
+ * Wpp data types ID
+ */
+enum class TYPE_ID: uint8_t {
+	BOOL,           // bool
+	INT,            // int64_t
+	UINT,           // uint64_t
+	FLOAT,          // double
+	OBJ_LINK,       // {object ID, instance ID}
+	TIME,         	// Derived from INT
+	OPAQUE,    		// vector<uint8_t>
+	STRING,    		// string
+	CORE_LINK, 		// Derived from STRING
+	EXECUTE,		// Type of executable resources
+	UNDEFINED     	// Undefined type
+};
+
+/*
+ * Wpp data types bindings
+ */
 using BOOL_T = bool;
 using INT_T = int64_t;
 using UINT_T = uint64_t;
@@ -47,6 +67,24 @@ using CORE_LINK_T = std::string;
  * you try to call the copied std::function.
  */
 using EXECUTE_T = std::function<void(ID_T, const OPAQUE_T&)>;
+
+/*
+ * Determining type ID by real type
+ */
+template<typename T>
+TYPE_ID dataTypeToID() {
+	TYPE_ID typeID = TYPE_ID::UNDEFINED;
+	if constexpr (std::is_same<T, BOOL_T>::value) typeID = TYPE_ID::BOOL;
+	else if constexpr (std::is_same<T, INT_T>::value) typeID = TYPE_ID::INT;
+	else if constexpr (std::is_same<T, UINT_T>::value) typeID = TYPE_ID::UINT;
+	else if constexpr (std::is_same<T, FLOAT_T>::value) typeID = TYPE_ID::FLOAT;
+	else if constexpr (std::is_same<T, OPAQUE_T>::value) typeID = TYPE_ID::OPAQUE;
+	else if constexpr (std::is_same<T, OBJ_LINK_T>::value) typeID = TYPE_ID::OBJ_LINK;
+	else if constexpr (std::is_same<T, STRING_T>::value) typeID = TYPE_ID::STRING;
+	else if constexpr (std::is_same<T, EXECUTE_T>::value) typeID = TYPE_ID::EXECUTE;
+
+	return typeID;
+}
 
 /*
  * Data validation function types

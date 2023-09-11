@@ -12,12 +12,12 @@ namespace wpp {
 /* ---------- Public methods for common usage ----------*/
 
 Resource::Resource():
-	_id(ID_T_MAX_VAL), _operation(), _isSingle(IS_SINGLE::MULTIPLE), _isMandatory(IS_MANDATORY::OPTIONAL), _dataType(DATA_TYPE::UNDEFINED) {
+	_id(ID_T_MAX_VAL), _operation(), _isSingle(IS_SINGLE::MULTIPLE), _isMandatory(IS_MANDATORY::OPTIONAL), _typeID(TYPE_ID::UNDEFINED) {
 	_resourceGuard.unlock();
 }
 
-Resource::Resource(ID_T id, const Operation &operation, IS_SINGLE isSingle, IS_MANDATORY isMandatory, DATA_TYPE dataType):
-	_id(id), _operation(operation), _isSingle(isSingle), _isMandatory(isMandatory), _dataType(dataType) {
+Resource::Resource(ID_T id, const Operation &operation, IS_SINGLE isSingle, IS_MANDATORY isMandatory, TYPE_ID dataType):
+	_id(id), _operation(operation), _isSingle(isSingle), _isMandatory(isMandatory), _typeID(dataType) {
 	_resourceGuard.unlock();
 }
 
@@ -26,7 +26,7 @@ Resource::Resource(const Resource& resource) {
 	_operation = resource._operation;
 	_isSingle = resource._isSingle;
 	_isMandatory = resource._isMandatory;
-	_dataType = resource._dataType;
+	_typeID = resource._typeID;
 	_instances = resource._instances;
 	_dataVerifier = resource._dataVerifier;
 	// The guard not inherit original object guard state
@@ -38,7 +38,7 @@ Resource::Resource(Resource&& resource) {
 	_operation = resource._operation;
 	_isSingle = resource._isSingle;
 	_isMandatory = resource._isMandatory;
-	_dataType = resource._dataType;
+	_typeID = resource._typeID;
 	_instances.insert(std::make_move_iterator(resource._instances.begin()), std::make_move_iterator(resource._instances.end()));
 	_dataVerifier = resource._dataVerifier;
 	// The guard not inherit original object guard state
@@ -49,8 +49,8 @@ ID_T Resource::getID() const {
 	return _id;
 }
 
-Resource::DATA_TYPE Resource::getDataType() const {
-	return _dataType;
+TYPE_ID Resource::getTypeId() const {
+	return _typeID;
 }
 
 const Operation& Resource::getOperation() const {
@@ -85,19 +85,19 @@ bool Resource::isInstanceExist(ID_T resourceInstanceId) const {
 	return _instances.find(resourceInstanceId) != _instances.end();
 }
 
-bool Resource::isDataTypeCompatible(DATA_TYPE type) const {
+bool Resource::isTypeIdCompatible(TYPE_ID type) const {
 	switch (type) {
-	case DATA_TYPE::INT:
-	case DATA_TYPE::TIME:
-		return _dataType == DATA_TYPE::INT || _dataType == DATA_TYPE::TIME;
+	case TYPE_ID::INT:
+	case TYPE_ID::TIME:
+		return _typeID == TYPE_ID::INT || _typeID == TYPE_ID::TIME;
 
-	case DATA_TYPE::STRING:
-	case DATA_TYPE::CORE_LINK:
-		return _dataType == DATA_TYPE::STRING || _dataType == DATA_TYPE::CORE_LINK;
+	case TYPE_ID::STRING:
+	case TYPE_ID::CORE_LINK:
+		return _typeID == TYPE_ID::STRING || _typeID == TYPE_ID::CORE_LINK;
 	default: break;
 	}
 
-	return _dataType == type;
+	return _typeID == type;
 }
 
 bool Resource::isEmpty() const {
@@ -216,14 +216,14 @@ bool Resource::setDataVerifier(const DATA_VERIFIER_T &verifier) {
 }
 
 bool Resource::isDataVerifierValid(const DATA_VERIFIER_T &verifier) const {
-	if (std::holds_alternative<VERIFY_BOOL_T>(verifier) && std::get<VERIFY_BOOL_T>(verifier)) return _dataType == DATA_TYPE::BOOL;
-	else if (std::holds_alternative<VERIFY_INT_T>(verifier) && std::get<VERIFY_INT_T>(verifier)) return _dataType == DATA_TYPE::INT;
-	else if (std::holds_alternative<VERIFY_UINT_T>(verifier) && std::get<VERIFY_UINT_T>(verifier)) return _dataType == DATA_TYPE::UINT;
-	else if (std::holds_alternative<VERIFY_FLOAT_T>(verifier) && std::get<VERIFY_FLOAT_T>(verifier)) return _dataType == DATA_TYPE::FLOAT;
-	else if (std::holds_alternative<VERIFY_OPAQUE_T>(verifier) && std::get<VERIFY_OPAQUE_T>(verifier)) return _dataType == DATA_TYPE::OPAQUE;
-	else if (std::holds_alternative<VERIFY_OBJ_LINK_T>(verifier) && std::get<VERIFY_OBJ_LINK_T>(verifier)) return _dataType == DATA_TYPE::OBJ_LINK;
-	else if (std::holds_alternative<VERIFY_STRING_T>(verifier) && std::get<VERIFY_STRING_T>(verifier)) return _dataType == DATA_TYPE::STRING;
-	else if (std::holds_alternative<VERIFY_EXECUTE_T>(verifier) && std::get<VERIFY_EXECUTE_T>(verifier)) return _dataType == DATA_TYPE::EXECUTE;
+	if (std::holds_alternative<VERIFY_BOOL_T>(verifier) && std::get<VERIFY_BOOL_T>(verifier)) return _typeID == TYPE_ID::BOOL;
+	else if (std::holds_alternative<VERIFY_INT_T>(verifier) && std::get<VERIFY_INT_T>(verifier)) return _typeID == TYPE_ID::INT;
+	else if (std::holds_alternative<VERIFY_UINT_T>(verifier) && std::get<VERIFY_UINT_T>(verifier)) return _typeID == TYPE_ID::UINT;
+	else if (std::holds_alternative<VERIFY_FLOAT_T>(verifier) && std::get<VERIFY_FLOAT_T>(verifier)) return _typeID == TYPE_ID::FLOAT;
+	else if (std::holds_alternative<VERIFY_OPAQUE_T>(verifier) && std::get<VERIFY_OPAQUE_T>(verifier)) return _typeID == TYPE_ID::OPAQUE;
+	else if (std::holds_alternative<VERIFY_OBJ_LINK_T>(verifier) && std::get<VERIFY_OBJ_LINK_T>(verifier)) return _typeID == TYPE_ID::OBJ_LINK;
+	else if (std::holds_alternative<VERIFY_STRING_T>(verifier) && std::get<VERIFY_STRING_T>(verifier)) return _typeID == TYPE_ID::STRING;
+	else if (std::holds_alternative<VERIFY_EXECUTE_T>(verifier) && std::get<VERIFY_EXECUTE_T>(verifier)) return _typeID == TYPE_ID::EXECUTE;
 	else return false;
 }
 

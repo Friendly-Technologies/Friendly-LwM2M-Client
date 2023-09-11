@@ -87,14 +87,14 @@ private:
 private:
     std::unordered_map<ID_T, Resource> _resources = {
     	//  KEY            				 VALUE
-    	{SHORT_SERV_ID, 			  {SHORT_SERV_ID, 				Operation(Operation::READ),                  IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, Resource::DATA_TYPE::INT}},
-		{LIFETIME, 					  {LIFETIME, 					Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, Resource::DATA_TYPE::INT}},
-		{DISABLE,       			  {DISABLE,       				Operation(Operation::EXECUTE),               IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  Resource::DATA_TYPE::EXECUTE}},
-		{NOTIFICATION_STORING, 		  {NOTIFICATION_STORING, 		Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, Resource::DATA_TYPE::BOOL}},
-		{BUINDING,      			  {BUINDING,      				Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, Resource::DATA_TYPE::STRING}},
-		{REGISTRATION_UPDATE_TRIGGER, {REGISTRATION_UPDATE_TRIGGER, Operation(Operation::EXECUTE), 				 IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, Resource::DATA_TYPE::EXECUTE}},
-		{APN_LINK,      		      {APN_LINK,      				Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  Resource::DATA_TYPE::OBJ_LINK}},
-    	{TRIGGER,       			  {TRIGGER,      				Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  Resource::DATA_TYPE::BOOL}},
+    	{SHORT_SERV_ID, 			  {SHORT_SERV_ID, 				Operation(Operation::READ),                  IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::INT}},
+		{LIFETIME, 					  {LIFETIME, 					Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::INT}},
+		{DISABLE,       			  {DISABLE,       				Operation(Operation::EXECUTE),               IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::EXECUTE}},
+		{NOTIFICATION_STORING, 		  {NOTIFICATION_STORING, 		Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::BOOL}},
+		{BUINDING,      			  {BUINDING,      				Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::STRING}},
+		{REGISTRATION_UPDATE_TRIGGER, {REGISTRATION_UPDATE_TRIGGER, Operation(Operation::EXECUTE), 				 IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::EXECUTE}},
+		{APN_LINK,      		      {APN_LINK,      				Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::OBJ_LINK}},
+    	{TRIGGER,       			  {TRIGGER,      				Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::BOOL}},
     };
 };
 

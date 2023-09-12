@@ -17,6 +17,10 @@
 #include "WppRegistry.h"
 #include "Lwm2mObject.h"
 
+// TODO: Fix this bed approach
+class WppConnectionI;
+class ClientInfo;
+
 //TODO: #include "liblwm2m.h"
 #include <dep.h>
 
@@ -31,29 +35,31 @@ public:
 	};
 
 private:
-	WppClient(const ClientInfo &info, WppRegistry &registry, WppConnectionI &connection, WppPlatformI &platform);
+	WppClient(const ClientInfo &info, WppConnectionI &connection, WppPlatformI &platform);
 
 public:
 	~WppClient();
 
 	/* ------------- WppClient management ------------- */
-	static bool create(const ClientInfo &info, WppRegistry &registry, WppConnectionI &connection, WppPlatformI &platform);
+	static bool create(const ClientInfo &info, WppConnectionI &connection, WppPlatformI &platform);
 	static bool isCreated();
 	static WppClient* client();
 
 	/* ------------- WppClient components ------------- */
-	WppRegistry & registry();
 	WppConnectionI & connection();
 	WppPlatformI & platform();
 
 	/* ------------- Wakaama core state processing ------------- */
-	lwm2m_context_t * getContext();
-
 	lwm2m_client_state_t getState();
+
+	/*
+	 * Try to take registry internaly.
+	 */
 	void loop(time_t &sleepTime);
 
-	bool updateServerRegistration(Server &server, bool withObjects);
+	bool updateServerRegistration(INT_T serverId, bool withObjects);
 	bool updateServerRegistration(bool withObjects);
+
 	void deregister();
 
 	/* ------------- Wakaama core object managing ------------- */
@@ -65,15 +71,22 @@ public:
 	void notifyValueChanged(const DataID &data);
 
 private:
-	/* ------------- Wakaama core initialisation ------------- */
+	/* ------------- Wakaama client initialisation ------------- */
+	void init();
+	bool isInitialized();
+
 	bool lwm2mContextOpen();
 	void lwm2mContextClose();
+	lwm2m_context_t * getContext();
+
 	bool lwm2mConfigure(const std::string &endpointName, const std::string &msisdn, const std::string &altPath);
 
 private:
 	static WppClient *_client;
 
-	WppRegistry &_registry;
+	bool _isInit;
+	ClientInfo _info;
+
 	WppConnectionI &_connection;
 	WppPlatformI &_platform;
 

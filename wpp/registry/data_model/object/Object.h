@@ -12,13 +12,13 @@
 #include <variant>
 
 #include "Lwm2mObject.h"
-#include "Instance.h"
+#include "InstanceI.h"
 #include "types.h"
 
 namespace wpp {
 
 /*
- * Object<T> is class that implements manipulation with Instance interface class and his inheritors.
+ * Object<T> is class that implements manipulation withInstanceI interface class and his inheritors.
  * The main target of this class is to encapsulate operations like instance create and delete, binding
  * instance callbacks to core interface, for avoid multiple definition of this mechanism in instance
  * implementation classes.
@@ -71,7 +71,7 @@ private:
 	 * the instance.
 	 */
 	std::mutex _instanceGuard;
-	std::unordered_map<ID_T, Instance*> _instances; // TODO: maybe here is better to use share_ptr instead simple Instance*
+	std::unordered_map<ID_T, InstanceI*> _instances; // TODO: maybe here is better to use share_ptr instead simpleInstanceI*
 };
 
 

@@ -16,7 +16,7 @@
 
 namespace wpp {
 
-/* --------------- Instance implementation part --------------- */
+/* ---------------InstanceI implementation part --------------- */
 Resource * Device::getResource(ID_T id) {
 	return NULL;
 }

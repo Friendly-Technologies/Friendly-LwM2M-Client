@@ -8,17 +8,17 @@
 #ifndef DEVICE_H_
 #define DEVICE_H_
 
-#include "Instance.h"
+#include "InstanceI.h"
 #include "ObjectInfo.h"
 
 namespace wpp {
 
-class Device: public Instance {
+class Device: public InstanceI {
 public:
-	Device(OBJ_ID objID, ID_T instanceID): Instance(objID, instanceID) {
+	Device(OBJ_ID objID, ID_T instanceID): InstanceI(objID, instanceID) {
 	}
 protected:
-	/* --------------- Instance implementation part --------------- */
+	/* ---------------InstanceI implementation part --------------- */
 	/*
 	 * Returns Resource object if it is exist
 	 */

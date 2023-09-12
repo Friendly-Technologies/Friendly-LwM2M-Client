@@ -42,13 +42,17 @@ int main()
 	cout << "Test memory consumption:" << endl;
 	memConsumptionCheck();
 
+	// Client initialization
 	Platform platform;
 	Connection connection;
-	WppRegistry registry {objRestore};
-	WppClient::create({"Test name", "", ""}, registry, connection, platform);
+	WppClient::create({"Test name", "", ""}, connection, platform);
+	WppRegistry::create(objRestore);
+
+	// Taking ownership for registry
+	WppRegistry *registry = WppRegistry::takeOwnership();
 
 	cout << endl << "Test WppRegistry:" << endl;
-	Server *server = registry.server().createInstance();
+	Server *server = registry->server().createInstance();
 
 	INT_T value;
 	server->get(value, Server::SHORT_SERV_ID);
@@ -59,7 +63,8 @@ int main()
 	server->get(execute, Server::DISABLE);
 	execute(Server::SHORT_SERV_ID, OPAQUE_T());
 
-
+	// Giving ownership to registry
+	WppRegistry::giveOwnership();
 
 	cout << endl << "Test WppClient:" << endl;
 	int iterationCnt = 10;

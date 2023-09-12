@@ -13,6 +13,8 @@
 namespace wpp {
 
 class WppPlatformI {
+	friend class WppClient;
+	
 public:
 	WppPlatformI() {}
 	virtual ~WppPlatformI() {}

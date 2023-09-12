@@ -47,9 +47,9 @@ extern "C" {
 
     /*---------- Connection bindings ----------*/
     void * lwm2m_connect_server(uint16_t secObjInstID, void * userData) {
-		if (!wpp::WppClient::isCreated()) return NULL;
+		if (!wpp::WppClient::isCreated() || !wpp::WppRegistry::isCreated()) return NULL;
 
-		wpp::Security *security = wpp::WppClient::client()->registry().security().getInstance(secObjInstID);
+		wpp::Security *security = wpp::WppRegistry::registry()->security().getInstance(secObjInstID);
 		if (!security) return NULL;
 
 		return wpp::WppClient::client()->connection().connect(*security);
@@ -62,12 +62,11 @@ extern "C" {
 
 	uint8_t lwm2m_buffer_send(void * sessionH, uint8_t * buffer, size_t length, void * userData) {
 		if (!wpp::WppClient::isCreated()) return COAP_500_INTERNAL_SERVER_ERROR;
-		return wpp::WppClient::client()->connection().sendPacket(sessionH, buffer, length)? COAP_NO_ERROR : COAP_500_INTERNAL_SERVER_ERROR;
+		return wpp::WppClient::client()->connection().sendPacket({sessionH, length, buffer})? COAP_NO_ERROR : COAP_500_INTERNAL_SERVER_ERROR;
 	}
 
 	bool lwm2m_session_is_equal(void * session1, void * session2, void * userData) {
 		if (!wpp::WppClient::isCreated()) return false;
 		return wpp::WppClient::client()->connection().sessionCmp(session1, session2);
 	}
-
 }

@@ -1,5 +1,5 @@
 /*
- * InstanceI.h
+ *InstanceII.h
  *
  *  Created on: 6 Jul 2023
  *      Author: valentin
@@ -18,7 +18,7 @@
 namespace wpp {
 
 /*
- * Instance is interface class that implements manipulation with derived class resources.
+ *InstanceI is interface class that implements manipulation with derived class resources.
  * The main target of this class is to encapsulate operations like resource write and read by core, for avoid
  * multiple definition of this mechanism in instance implementation classes. And give generalised
  * interface to resources for core(server).
@@ -32,23 +32,23 @@ namespace wpp {
  * this call. It is necessary to notify about the change for all resources except those marked as EXECUTE.
  */
 // TODO: Add user notification ability about resource operations WRITE, READ, EXECUTE
-class Instance {
+class InstanceI {
 	template<typename T>
 	friend class Object;
 
 public: /* Interface that can be used by user */
-	Instance(OBJ_ID objID, ID_T instanceID): _objID(objID), _instanceID(instanceID) {}
-	virtual ~Instance() {}
+	InstanceI(OBJ_ID objID, ID_T instanceID): _objID(objID), _instanceID(instanceID) {}
+	virtual ~InstanceI() {}
 
-	Instance(const Instance&) = delete;
-	Instance(Instance&&) = delete;
-	Instance& operator=(const Instance&) = delete;
-	Instance& operator=(Instance&&) = delete;
+	InstanceI(const InstanceI&) = delete;
+	InstanceI(InstanceI&&) = delete;
+	InstanceI& operator=(const InstanceI&) = delete;
+	InstanceI& operator=(InstanceI&&) = delete;
 
 	OBJ_ID getObjectID() { return _objID;}
 	ID_T getInstanceID() { return _instanceID;}
 
-protected: /* Interface used by Instance or Instance implementation class */
+protected: /* Interface used byInstanceI orInstanceI implementation class */
 	/*
 	 * This method must be implemented by derived class,
 	 * and return resource if it is exists.
@@ -75,11 +75,11 @@ protected: /* Interface used by Instance or Instance implementation class */
 	/*
 	 * This method must be implemented by derived class, and handle
      * information about resource operation (READ, WRITE, EXECUTE, DISCOVER, DELETE).
-	 * Called by Instance after resource operation performed by server.
+	 * Called byInstanceI after resource operation performed by server.
 	 */
 	virtual void serverOperationNotifier(Operation::TYPE type, ResourceID resource) = 0;
 
-private: /* Interface used by Object<T> or Instance class */
+private: /* Interface used by Object<T> orInstanceI class */
 	/*
 	 * This methods can be used for convert resource to lwm2m_data_t
 	 * structure representation, or fill resource with lwm2m_data_t data.

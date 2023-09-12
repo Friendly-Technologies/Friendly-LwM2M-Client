@@ -13,10 +13,9 @@ namespace wpp {
 
 WppClient *WppClient::_client = NULL;
 
-WppClient::WppClient(const ClientInfo &info, WppRegistry &registry, WppConnectionI &connection, WppPlatformI &platform): 
-	_registry(registry), _connection(connection), _platform(platform) {
-	lwm2mContextOpen();
-	lwm2mConfigure(info.endpointName, info.msisdn, info.altPath);
+WppClient::WppClient(const ClientInfo &info, WppConnectionI &connection, WppPlatformI &platform): 
+	_info(info), _connection(connection), _platform(platform) {
+	_isInit = false;
 }
 
 WppClient::~WppClient() {
@@ -24,8 +23,8 @@ WppClient::~WppClient() {
 }
 
 /* ------------- WppClient management ------------- */
-bool WppClient::create(const ClientInfo &info, WppRegistry &registry, WppConnectionI &connection, WppPlatformI &platform) {
-	_client = new WppClient(info, registry, connection, platform);
+bool WppClient::create(const ClientInfo &info, WppConnectionI &connection, WppPlatformI &platform) {
+	_client = new WppClient(info, connection, platform);
 	return true;
 }
 
@@ -38,10 +37,6 @@ WppClient* WppClient::client() {
 }
 
 /* ------------- WppClient components ------------- */
-WppRegistry & WppClient::registry() {
-	return _registry;
-}
-
 WppConnectionI & WppClient::connection() {
 	return _connection;
 }
@@ -51,25 +46,27 @@ WppPlatformI & WppClient::platform() {
 }
 
 /* ------------- Wakaama core state processing ------------- */
-lwm2m_context_t * WppClient::getContext() {
-	return _lwm2m_context;
-}
-
 lwm2m_client_state_t WppClient::getState() {
 	return _lwm2m_context->state;
 }
 
 void WppClient::loop(time_t &sleepTime) {
+	WppRegistry *reg = WppRegistry::takeOwnership();
+	if (!reg) return;
+	if (!isInitialized()) init();
+
+	if (connection().getPacketQueueSize()) connection().handlePacketsInQueue(getContext());
+
 	int result = 0;// TODO: lwm2m_step(_lwm2m_context, availableTime);
 	if (!result && getState() == STATE_BOOTSTRAPPING) {
-		_registry.restoreObject(_registry.security());
-		_registry.restoreObject(_registry.server());
+		reg->restoreObject(reg->security());
+		reg->restoreObject(reg->server());
 	}
+
+	WppRegistry::giveOwnership();
 }
 
-bool WppClient::updateServerRegistration(Server &server, bool withObjects) {
-	INT_T serverId;
-	if (!server.get(serverId, Server::SHORT_SERV_ID)) return false;
+bool WppClient::updateServerRegistration(INT_T serverId, bool withObjects) {
 	return true;// TODO: !lwm2m_update_registration(_lwm2m_context, serverId, withObjects);
 }
 
@@ -104,7 +101,17 @@ void WppClient::notifyValueChanged(const DataID &data) {
 }
 
 
-/* ------------- Wakaama core initialisation ------------- */
+/* ------------- Wakaama client initialisation ------------- */
+void WppClient::init() {
+	lwm2mContextOpen();
+	lwm2mConfigure(_info.endpointName, _info.msisdn, _info.altPath);
+	_isInit = true;
+}
+
+bool WppClient::isInitialized() {
+	return _isInit;
+}
+
 bool WppClient::lwm2mContextOpen() {
 	_lwm2m_context = new lwm2m_context_t; // TODO: lwm2m_init(this);
 	return _lwm2m_context != NULL;
@@ -113,6 +120,10 @@ bool WppClient::lwm2mContextOpen() {
 void WppClient::lwm2mContextClose() {
 	// TODO: lwm2m_close(_lwm2m_context);
 	_lwm2m_context = NULL;
+}
+
+lwm2m_context_t * WppClient::getContext() {
+	return _lwm2m_context;
 }
 
 bool WppClient::lwm2mConfigure(const std::string &endpointName, const std::string &msisdn, const std::string &altPath) {

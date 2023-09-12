@@ -8,12 +8,12 @@
 #ifndef SERVER_H_
 #define SERVER_H_
 
-#include "Instance.h"
+#include "InstanceI.h"
 #include "ObjectInfo.h"
 
 namespace wpp {
 
-class Server : public Instance {
+class Server : public InstanceI {
 public:
 	enum ID: ID_T {
 		SHORT_SERV_ID = 0,
@@ -27,7 +27,7 @@ public:
 	};
 
 public:
-	Server(OBJ_ID objID, ID_T instanceID): Instance(objID, instanceID) {
+	Server(OBJ_ID objID, ID_T instanceID): InstanceI(objID, instanceID) {
 		_resourcesInit();
 	}
 
@@ -60,18 +60,18 @@ public:
 	void userPerformedOperation(Operation::TYPE type, ID_T resourceId, ID_T resourceInstanceId = 0);
 
 protected:
-	/* --------------- Instance implementation part --------------- */
+	/* ---------------InstanceI implementation part --------------- */
 	/*
 	 * Returns Resource object if it is exist
 	 */
 	Resource * getResource(ID_T id) override;
 	/*
-	 * Returns return list with available resources
+	 * Returns list with available resources
 	 */
 	std::vector<Resource *> getResourcesList() override;
 	std::vector<Resource *> getResourcesList(const Operation& filter) override;
 	/*
-	 * Returns return list with available instantiated resources
+	 * Returns list with available instantiated resources
 	 */
 	std::vector<Resource *> getInstantiatedResourcesList() override;
 	std::vector<Resource *> getInstantiatedResourcesList(const Operation& filter) override;

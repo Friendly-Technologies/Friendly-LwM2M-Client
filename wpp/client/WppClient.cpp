@@ -55,13 +55,15 @@ void WppClient::loop(time_t &sleepTime) {
 	if (!reg) return;
 	if (!isInitialized()) init();
 
-	if (connection().getPacketQueueSize()) connection().handlePacketsInQueue(getContext());
-
+	// Handle wakaama core state
 	int result = 0;// TODO: lwm2m_step(_lwm2m_context, availableTime);
 	if (!result && getState() == STATE_BOOTSTRAPPING) {
 		reg->restoreObject(reg->security());
 		reg->restoreObject(reg->server());
 	}
+
+	// Handle packets retreived from server
+	if (connection().getPacketQueueSize()) connection().handlePacketsInQueue(getContext());
 
 	WppRegistry::giveOwnership();
 }

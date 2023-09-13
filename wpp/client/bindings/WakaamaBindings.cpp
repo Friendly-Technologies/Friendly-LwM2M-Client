@@ -1,4 +1,6 @@
 #include "WppClient.h"
+
+//TODO: #include "liblwm2m.h"
 #include "dep.h"
 
 extern "C" {

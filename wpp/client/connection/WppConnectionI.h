@@ -10,14 +10,14 @@
 
 #include <string>
 
-#include "WppClient.h"
 #include "WppRegistry.h"
-
 #include "SafeQueue.h"
 
 #define WPP_CONN_I_PACKETS_QUEUE_SIZE 10
 
 namespace wpp {
+
+class WppClient;
 
 class WppConnectionI {
 	friend class WppClient;

@@ -11,6 +11,8 @@
 #include <string>
 
 namespace wpp {
+	
+class WppClient;
 
 class WppPlatformI {
 	friend class WppClient;

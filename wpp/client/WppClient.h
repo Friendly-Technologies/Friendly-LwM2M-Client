@@ -11,21 +11,19 @@
 #include <string>
 #include <functional>
 
-#include "WppPlatformI.h"
-#include "WppConnectionI.h"
-
 #include "WppRegistry.h"
 #include "Lwm2mObject.h"
-
-// TODO: Fix this bed approach
-class WppConnectionI;
-class ClientInfo;
+#include "WppPlatformI.h"
+#include "WppConnectionI.h"
 
 //TODO: #include "liblwm2m.h"
 #include <dep.h>
 
 namespace wpp {
 
+class WppPlatformI;
+class WppConnectionI;
+ 
 class WppClient {
 public:
 	struct ClientInfo {

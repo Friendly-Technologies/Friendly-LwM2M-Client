@@ -35,7 +35,7 @@ WppRegistry* WppRegistry::registry() {
 
 
 /* ------------- Registry functionality ------------- */
-void WppRegistry::restoreObject(Lwm2mObject &object) {
+void WppRegistry::restoreObject(WppRegistry &registry, Lwm2mObject &object) {
     if (_objRestoreFunc) _objRestoreFunc(object);
 }
 

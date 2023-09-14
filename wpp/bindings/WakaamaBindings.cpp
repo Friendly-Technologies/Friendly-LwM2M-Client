@@ -6,6 +6,7 @@
 
 namespace wpp {
 
+// TODO: Investigate other approaches to share the connection() with wakaama core code
 WppClient * wpp_client() {
     return WppClient::client();
 }

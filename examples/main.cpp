@@ -11,7 +11,6 @@
 #include "WppClient.h"
 
 #include "Connection.h"
-#include "Platform.h"
 
 using namespace std;
 using namespace wpp;
@@ -43,13 +42,12 @@ int main()
 	memConsumptionCheck();
 
 	// Client initialization
-	Platform platform;
 	Connection connection;
-	WppClient::create({"Test name", "", ""}, connection, platform);
+	WppClient::create({"Test name", "", ""}, connection);
 	
 	WppClient *client = WppClient::takeOwnership();
 	if (!client) {
-		cout << endl << "ERR: WppClient can not be created" << endl;
+		cout << endl << "ERR: WppClient can not be taken" << endl;
 		return -1;
 	}
 

@@ -23,6 +23,9 @@ set(SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/dep.cpp)
 # Add subdiretories with sources
 add_subdirectory(client)
 add_subdirectory(registry)
+add_subdirectory(platform)
+add_subdirectory(connection)
+add_subdirectory(bindings)
 add_subdirectory(utils)
 
 # message("INCLUDES: ${INCLUDES}")

@@ -1,4 +1,5 @@
 #include "WppClient.h"
+#include "WppPlatform.h"
 
 //TODO: #include "liblwm2m.h"
 #include "dep.h"
@@ -7,11 +8,6 @@ namespace wpp {
 
 WppClient * wpp_client() {
     return WppClient::client();
-}
-
-WppPlatformI * wpp_platform() {
-    if (wpp_client()) return NULL;
-    return &wpp_client()->platform();
 }
 
 WppConnectionI * wpp_connection() {
@@ -27,41 +23,33 @@ extern "C" {
     // use it for WakaamaPlus, looks like we need custom allocator for
     // std containers or we should use custom containers
     void * lwm2m_malloc(size_t s) {
-        if (!wpp::WppClient::isCreated()) return NULL;
-        return wpp::wpp_platform()->malloc(s);
+        return wpp::WppPlatform::malloc(s);
     }
 
     void lwm2m_free(void * p) {
-        if (!wpp::WppClient::isCreated()) return;
-        wpp::wpp_platform()->free(p);
+        wpp::WppPlatform::free(p);
     }
 
     char * lwm2m_strdup(const char * str) {
-        if (!wpp::WppClient::isCreated()) return NULL;
-        return wpp::wpp_platform()->strdup(str);
+        return wpp::WppPlatform::strdup(str);
     }
 
     int lwm2m_strncmp(const char * s1, const char * s2, size_t n) {
-        if (!wpp::WppClient::isCreated()) return 0;
-        return wpp::wpp_platform()->strncmp(s1, s2, n);
+        return wpp::WppPlatform::strncmp(s1, s2, n);
     }
 
     int lwm2m_strcasecmp(const char * str1, const char * str2) {
-        if (!wpp::WppClient::isCreated()) return 0;
-        return wpp::wpp_platform()->strcasecmp(str1, str2);
+        return wpp::WppPlatform::strcasecmp(str1, str2);
     }
 
     time_t lwm2m_gettime(void) {
-        if (!wpp::WppClient::isCreated()) return 0;
-        return wpp::wpp_platform()->getTime();
+        return wpp::WppPlatform::getTime();
     }
 
     void lwm2m_printf(const char * format, ...) {
-        if (!wpp::WppClient::isCreated()) return;
-        
         va_list ap;
         va_start(ap, format);
-        wpp::wpp_platform()->print(format, ap);
+        wpp::WppPlatform::print(format, ap);
         va_end(ap);
     }
 

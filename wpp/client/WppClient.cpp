@@ -14,7 +14,7 @@ namespace wpp {
 WppClient *WppClient::_client = NULL;
 std::mutex WppClient::_clientGuard;
 
-WppClient::WppClient(const ClientInfo &info, WppConnectionI &connection, WppPlatformI &platform): _connection(connection), _platform(platform) {
+WppClient::WppClient(const ClientInfo &info, WppConnectionI &connection): _connection(connection) {
 	lwm2mContextOpen();
 	lwm2mConfigure(info.endpointName, info.msisdn, info.altPath);
 }
@@ -24,8 +24,8 @@ WppClient::~WppClient() {
 }
 
 /* ------------- WppClient management ------------- */
-bool WppClient::create(const ClientInfo &info, WppConnectionI &connection, WppPlatformI &platform) {
-	_client = new WppClient(info, connection, platform);
+bool WppClient::create(const ClientInfo &info, WppConnectionI &connection) {
+	_client = new WppClient(info, connection);
 	return true;
 }
 
@@ -46,10 +46,6 @@ void WppClient::giveOwnership() {
 /* ------------- WppClient components ------------- */
 WppConnectionI & WppClient::connection() {
 	return _connection;
-}
-
-WppPlatformI & WppClient::platform() {
-	return _platform;
 }
 
 WppRegistry & WppClient::registry() {

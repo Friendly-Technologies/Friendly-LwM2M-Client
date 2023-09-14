@@ -1,30 +1,30 @@
-#include "Platform.h"
+#include "WppPlatform.h"
 
 
-void* Platform::malloc(size_t size) {
+void* wpp::WppPlatform::malloc(size_t size) {
     return NULL; //TODO: Implement
 }
 
-void Platform::free(void *memPtr) {
+void wpp::WppPlatform::free(void *memPtr) {
     //TODO: Implement
 }
 
-time_t Platform::getTime(void) {
+time_t wpp::WppPlatform::getTime(void) {
     return 0; //TODO: Implement
 }
 
-char* Platform::strdup(const char *str) {
+char* wpp::WppPlatform::strdup(const char *str) {
     return NULL; //TODO: Implement
 }
 
-int Platform::strncmp(const char *str1, const char *str2, size_t num) {
+int wpp::WppPlatform::strncmp(const char *str1, const char *str2, size_t num) {
     return 0; //TODO: Implement
 }
 
-int Platform::strcasecmp(const char *str1, const char *str2) {
+int wpp::WppPlatform::strcasecmp(const char *str1, const char *str2) {
     return 0; //TODO: Implement
 }
 
-void Platform::print(const char * msg, va_list arg) {
+void wpp::WppPlatform::print(const char * msg, va_list arg) {
     //TODO: Implement
 }

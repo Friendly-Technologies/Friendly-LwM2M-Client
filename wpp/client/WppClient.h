@@ -12,8 +12,6 @@
 #include <functional>
 
 #include "WppRegistry.h"
-#include "Lwm2mObject.h"
-#include "WppPlatformI.h"
 #include "WppConnectionI.h"
 
 //TODO: #include "liblwm2m.h"
@@ -21,7 +19,6 @@
 
 namespace wpp {
 
-class WppPlatformI;
 class WppConnectionI;
  
 /*
@@ -41,13 +38,13 @@ public:
 	};
 
 private:
-	WppClient(const ClientInfo &info, WppConnectionI &connection, WppPlatformI &platform);
+	WppClient(const ClientInfo &info, WppConnectionI &connection);
 
 public:
 	~WppClient();
 
 	/* ------------- WppClient management ------------- */
-	static bool create(const ClientInfo &info, WppConnectionI &connection, WppPlatformI &platform);
+	static bool create(const ClientInfo &info, WppConnectionI &connection);
 	static bool isCreated();
 	
 	/*
@@ -65,7 +62,6 @@ public:
 
 	/* ------------- WppClient components ------------- */
 	WppConnectionI & connection();
-	WppPlatformI & platform();
 	WppRegistry & registry();
 
 	/* ------------- Wakaama core state processing ------------- */
@@ -105,7 +101,6 @@ private:
 
 	WppRegistry _registry;
 	WppConnectionI &_connection;
-	WppPlatformI &_platform;
 
 	lwm2m_context_t *_lwm2m_context;
 };

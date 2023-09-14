@@ -18,7 +18,7 @@
 namespace wpp {
 
 /*
- *InstanceI is interface class that implements manipulation with derived class resources.
+ * InstanceI is interface class that implements manipulation with derived class resources.
  * The main target of this class is to encapsulate operations like resource write and read by core, for avoid
  * multiple definition of this mechanism in instance implementation classes. And give generalised
  * interface to resources for core(server).

@@ -206,8 +206,7 @@ uint8_t InstanceI::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * da
 	for (int i = 0; i < numData; i++) {
 		Resource *resource = getResource(dataArray[i].id);
 		if (!resource) return COAP_404_NOT_FOUND;
-		//	 TODO: Here must be lock for resource but then we will can not call Resource::set()
-
+	
 		// Check the server operation permission for resource
 		if (!resource->getOperation().isWrite()) {
 			if (resource->isOptional()) continue;
@@ -288,8 +287,6 @@ uint8_t InstanceI::resourceDiscover(ID_T instanceId, int * numDataP, lwm2m_data_
 		lwm2m_data_t *data = (*dataArrayP) + i;
 		Resource *resource = getResource(data->id);
 		if (resource == NULL) return COAP_404_NOT_FOUND;
-
-		std::lock_guard<std::mutex> guard(resource->getGuard());
 
 		//  Note that availability is not mandatory for optional resources
 		if (resource->isEmpty() && resource->isMandatory()) return COAP_404_NOT_FOUND;

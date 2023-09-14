@@ -32,7 +32,7 @@ void memConsumptionCheck() {
 //   cout << "DATA_VERIFIER_T: " << sizeof(Resource::DATA_VERIFIER_T) << endl;
 }
 
-void objRestore(Lwm2mObject &object) {
+void objRestore(WppRegistry &reg, Lwm2mObject &object) {
 	cout << "Restore object id: " << (ID_T)object.getObjectId() << ", name: " << object.getObjectInfo().name << endl;
 }
 
@@ -43,7 +43,7 @@ int main()
 
 	// Client initialization
 	Connection connection;
-	WppClient::create({"Test name", "", ""}, connection);
+	WppClient::create({"Test name", "", ""}, connection, objRestore);
 	
 	WppClient *client = WppClient::takeOwnership();
 	if (!client) {
@@ -51,9 +51,8 @@ int main()
 		return -1;
 	}
 
-	WppRegistry &registry = client->registry();
-
 	cout << endl << "Test WppRegistry:" << endl;
+	WppRegistry &registry = client->registry();
 	Server *server = registry.server().createInstance();
 
 	INT_T value;

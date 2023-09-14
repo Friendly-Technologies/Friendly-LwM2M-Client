@@ -39,13 +39,13 @@ public:
 	};
 
 private:
-	WppClient(const ClientInfo &info, WppConnectionI &connection);
+	WppClient(const ClientInfo &info, WppConnectionI &connection, const WppRegistry::OBJ_RESTORE_T &objRestoreFunc);
 
 public:
 	~WppClient();
 
 	/* ------------- WppClient management ------------- */
-	static bool create(const ClientInfo &info, WppConnectionI &connection);
+	static bool create(const ClientInfo &info, WppConnectionI &connection, const WppRegistry::OBJ_RESTORE_T &objRestoreFunc);
 	static bool isCreated();
 	
 	/*

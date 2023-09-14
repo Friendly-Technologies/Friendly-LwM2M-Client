@@ -57,20 +57,13 @@ private:
 	static uint8_t create_clb(lwm2m_context_t * contextP, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP);
 	static uint8_t delete_clb(lwm2m_context_t * contextP, ID_T instanceId, lwm2m_object_t * objectP);
 #ifdef LWM2M_RAW_BLOCK1_REQUESTS
+	// TODO Implement this functionality
 	static uint8_t block1Ccreate_clb(lwm2m_context_t * contextP, lwm2m_uri_t * uriP, lwm2m_media_type_t format, uint8_t * buffer, int length, lwm2m_object_t * objectP, uint32_t block_num, uint8_t block_more);
 	static uint8_t block1Write_clb(lwm2m_context_t * contextP, lwm2m_uri_t * uriP, lwm2m_media_type_t format, uint8_t * buffer, int length, lwm2m_object_t * objectP, uint32_t block_num, uint8_t block_more);
 	static uint8_t block1Execute_clb(lwm2m_context_t * contextP, lwm2m_uri_t * uriP, uint8_t * buffer, int length, lwm2m_object_t * objectP, uint32_t block_num, uint8_t block_more);
 #endif
 private:
 	static Object<T> *_object;
-	/*
-	 * TODO: This mutex protects instances only from simultaneous access from the wakaama core side,
-	 * but if the user has a direct link to one of the instances, he can perform actions on the
-	 * same object at the same time as the server, which can lead to critical errors if the object is
-	 * deleted by one of the side. It is necessary to redesign the architecture of user access to 
-	 * the instance.
-	 */
-	std::mutex _instanceGuard;
 	std::unordered_map<ID_T, InstanceI*> _instances; // TODO: maybe here is better to use share_ptr instead simpleInstanceI*
 };
 
@@ -157,8 +150,6 @@ T* Object<T>::createInstance(ID_T instanceId) {
 
 template<typename T>
 bool Object<T>::removeInstance(ID_T instanceId) {
-	// Protect access to instance list
-	std::lock_guard<std::mutex> guard(_instanceGuard);
 	// If user want to delete instance with ID that does not exist, then we can not do it
 	if (!isInstanceExist(instanceId)) return false;
 
@@ -174,9 +165,6 @@ bool Object<T>::removeInstance(ID_T instanceId) {
 
 template<typename T>
 void Object<T>::clear() {
-	// Protect access to instance list
-	std::lock_guard<std::mutex> guard(_instanceGuard);
-
 	// TODO: Deleting registered instances from core object
 //	while (_lwm2m_object->instanceList != NULL) {
 //		security_instance_t * securityInstance = (security_instance_t *)_lwm2m_object->instanceList;
@@ -189,8 +177,6 @@ void Object<T>::clear() {
 
 template<typename T>
 T* Object<T>::getInstance(ID_T instanceID) {
-	// Protect access to instance list
-	std::lock_guard<std::mutex> guard(_instanceGuard);
 	// If user want to access instance with ID that does not exist, then we can not do it
 	if (!isInstanceExist(instanceID)) return NULL;
 	return static_cast<T*>(_instances[instanceID]);
@@ -225,9 +211,6 @@ ID_T Object<T>::getFirstAvailableInstanceID() {
 
 template<typename T>
 uint8_t Object<T>::read_clb(lwm2m_context_t * contextP, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP) {
-	// Protect access to instance list
-	std::lock_guard<std::mutex> guard(object()->_instanceGuard);
-
 	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
 
 	return object()->_instances[instanceId]->resourceRead(instanceId, numDataP, dataArrayP);
@@ -239,8 +222,6 @@ uint8_t Object<T>::write_clb(lwm2m_context_t * contextP, ID_T instanceId, int nu
 		delete_clb(contextP, instanceId, objectP);
 		return create_clb(contextP, instanceId, numData, dataArray, objectP);
 	} else {
-		// Protect access to instance list
-		std::lock_guard<std::mutex> guard(object()->_instanceGuard);
 		if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
 		return object()->_instances[instanceId]->resourceWrite(instanceId, numData, dataArray, writeType);
 	}
@@ -248,20 +229,13 @@ uint8_t Object<T>::write_clb(lwm2m_context_t * contextP, ID_T instanceId, int nu
 
 template<typename T>
 uint8_t Object<T>::execute_clb(lwm2m_context_t * contextP, ID_T instanceId, ID_T resourceId, uint8_t * buffer, int length, lwm2m_object_t * objectP) {
-	// Protect access to instance list
-	std::lock_guard<std::mutex> guard(object()->_instanceGuard);
 	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
-
 	return object()->_instances[instanceId]->resourceExecute(instanceId, resourceId, buffer, length);
 }
 
 template<typename T>
 uint8_t Object<T>::discover_clb(lwm2m_context_t * contextP, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP) {
-	// Protect access to instance list
-	std::lock_guard<std::mutex> guard(object()->_instanceGuard);
-
 	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
-
 	return object()->_instances[instanceId]->resourceDiscover(instanceId, numDataP, dataArrayP);
 }
 

@@ -46,7 +46,7 @@ public:
 	using OBJ_RESTORE_T = std::function<void(WppRegistry &, Lwm2mObject &)>;
 
 public:
-	WppRegistry() {}
+	WppRegistry(const OBJ_RESTORE_T &objRestoreFunc);
 	~WppRegistry() {}
 
 	WppRegistry(const WppRegistry&) = delete;
@@ -55,7 +55,6 @@ public:
 	WppRegistry& operator=(WppRegistry&&) = delete;
 
 	/* ------------- Registry functionality ------------- */
-	void setRestoreObjectClb(const OBJ_RESTORE_T &objRestoreFunc);
 	void restoreObject(Lwm2mObject &object);
 
 	/* ------------- Mandatory objects ------------- */

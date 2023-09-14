@@ -19,6 +19,7 @@
 
 namespace wpp {
 
+// TODO: Review relationship between WppClient and WppConnectionI
 class WppConnectionI;
  
 /*

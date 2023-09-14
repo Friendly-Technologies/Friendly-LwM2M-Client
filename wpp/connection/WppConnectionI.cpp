@@ -11,6 +11,12 @@
 
 namespace wpp {
 
+WppConnectionI::WppConnectionI() {}
+
+WppConnectionI::~WppConnectionI() {
+	clearPacketQueue();
+}
+
 /* ------------- Connection abilities ------------- */
 
 bool WppConnectionI::addPacketToQueue(Packet packet) {
@@ -31,6 +37,16 @@ uint8_t WppConnectionI::getPacketQueueSize() {
 	return packets.size();
 }
 
+void WppConnectionI::clearPacketQueue() {
+	while (packets.size()) {
+		Packet *pkt = packets.front();
+		if (pkt && pkt->buffer) {
+			delete [] pkt->buffer;
+		}
+		packets.pop();
+	}
+}
+
 bool WppConnectionI::setDataBlockSize(uint16_t size) {
 	return true;// TODO: lwm2m_set_coap_block_size(size);
 }
@@ -40,13 +56,13 @@ uint16_t WppConnectionI::getDataBlockSize()  {
 }
 
 void WppConnectionI::handlePacketsInQueue(lwm2m_context_t *context) {
-	for (size_t i = 0; i < packets.size(); i++) {
-		Packet pkt;
-		packets.at(i, &pkt);
+	while (packets.size()) {
+		Packet *pkt = packets.front();
+		if (pkt && pkt->buffer) {
+			//lwm2m_handle_packet(context, pkt->buffer, pkt->length, pkt->session);
+			delete [] pkt->buffer;
+		}
 		packets.pop();
-
-		//lwm2m_handle_packet(context, pkt->buffer, pkt->length, pkt->session);
-		delete [] pkt.buffer;
 	}
 }
 

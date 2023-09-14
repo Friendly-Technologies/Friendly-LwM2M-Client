@@ -50,6 +50,8 @@ public:
 	 * corresponds to what was written to the queue. The user needs
 	 * to pass a pointer to the memory allocated for this type.
 	 */
+	bool front(T* data);
+	bool back(T* data);
 	bool at(size_t i, T* data);
 
 	bool is_empty();
@@ -158,6 +160,34 @@ template <typename T, size_t SIZE>
 T* SafeQueue<T, SIZE>::at(size_t i) {
 	if (is_empty() || i >= size()) return NULL;
 	return __buffer + ((__front_i + i) % SIZE);
+}
+
+template <typename T, size_t SIZE>
+bool SafeQueue<T, SIZE>::front(T* data) {
+	if (!__pop_guard.try_lock()) return false;
+
+	if (!data || is_empty()) {
+		__pop_guard.unlock();
+		return false;
+	}
+	memcpy((uint8_t *)data, (uint8_t *)(__buffer + __front_i), sizeof(T));
+
+	__pop_guard.unlock();
+	return true;
+}
+
+template <typename T, size_t SIZE>
+bool SafeQueue<T, SIZE>::back(T* data) {
+	if (!__push_guard.try_lock()) return false;
+
+	if (!data || is_empty()) {
+		__push_guard.unlock();
+		return false;
+	}
+	memcpy((uint8_t *)data, (uint8_t *)(__buffer + __back_i), sizeof(T));
+
+	__push_guard.unlock();
+	return true;
 }
 
 template <typename T, size_t SIZE>

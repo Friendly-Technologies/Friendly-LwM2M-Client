@@ -32,8 +32,8 @@ public:
 	};
 
 public:
-	WppConnectionI() {}
-	virtual ~WppConnectionI() {}
+	WppConnectionI();
+	virtual ~WppConnectionI();
 
 	WppConnectionI(const WppConnectionI&) = delete;
 	WppConnectionI(WppConnectionI&&) = delete;
@@ -68,7 +68,13 @@ public:
 	uint8_t getPacketQueueSize();
 
 	/*
-	 * Interface for setup and get information about block size
+	 * TODO: It can lead to memory double-free if
+	 * simultaneously called with handlePacketsInQueue().
+	 */
+	void clearPacketQueue();
+
+	/*
+	 * Interface for setup and get information about COAP block size
 	 */
 	bool setDataBlockSize(uint16_t size);
 	uint16_t getDataBlockSize();

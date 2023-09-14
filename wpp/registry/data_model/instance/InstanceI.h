@@ -79,7 +79,7 @@ protected: /* Interface used byInstanceI orInstanceI implementation class */
 	 */
 	virtual void serverOperationNotifier(Operation::TYPE type, ResourceID resource) = 0;
 
-private: /* Interface used by Object<T> orInstanceI class */
+private: /* Interface used by Object<T> or InstanceI class */
 	/*
 	 * This methods can be used for convert resource to lwm2m_data_t
 	 * structure representation, or fill resource with lwm2m_data_t data.

@@ -73,7 +73,7 @@ public:
 	bool setDataBlockSize(uint16_t size);
 	uint16_t getDataBlockSize();
 
-protected:
+private:
 	/*
 	* This method is called by AppClient in loop() if the queue contains at least one message.
 	* And processes all the messages found in the queue. If an error occurred during the

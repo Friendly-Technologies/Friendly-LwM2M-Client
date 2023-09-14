@@ -46,13 +46,17 @@ int main()
 	Platform platform;
 	Connection connection;
 	WppClient::create({"Test name", "", ""}, connection, platform);
-	WppRegistry::create(objRestore);
+	
+	WppClient *client = WppClient::takeOwnership();
+	if (!client) {
+		cout << endl << "ERR: WppClient can not be created" << endl;
+		return -1;
+	}
 
-	// Taking ownership for registry
-	WppRegistry *registry = WppRegistry::takeOwnership();
+	WppRegistry &registry = client->registry();
 
 	cout << endl << "Test WppRegistry:" << endl;
-	Server *server = registry->server().createInstance();
+	Server *server = registry.server().createInstance();
 
 	INT_T value;
 	server->get(value, Server::SHORT_SERV_ID);
@@ -64,13 +68,16 @@ int main()
 	execute(Server::SHORT_SERV_ID, OPAQUE_T());
 
 	// Giving ownership to registry
-	WppRegistry::giveOwnership();
+	WppClient::giveOwnership();
 
 	cout << endl << "Test WppClient:" << endl;
 	int iterationCnt = 10;
 	while (iterationCnt--) {
 		time_t sleepTime = 1;
-		WppClient::client()->loop(sleepTime);
+
+		WppClient *client = WppClient::takeOwnership();
+		if (client) client->loop(sleepTime);
+		WppClient::giveOwnership();
 
 		cout << "Iteration: " << iterationCnt << ", sleep: " << sleepTime << endl;
 		std::this_thread::sleep_for(std::chrono::seconds(sleepTime));

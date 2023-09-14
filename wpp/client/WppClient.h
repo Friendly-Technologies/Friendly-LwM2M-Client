@@ -24,7 +24,15 @@ namespace wpp {
 class WppPlatformI;
 class WppConnectionI;
  
+/*
+ * To interact with the WppClient, it is necessary to take ownership of it,
+ * even if control was transferred from the WppClient to the user-registered
+ * callback, the user has the right to interact only with the obtained data
+ * through parameters.
+ */
 class WppClient {
+	friend WppClient * wpp_client();
+
 public:
 	struct ClientInfo {
 		std::string endpointName;
@@ -41,11 +49,24 @@ public:
 	/* ------------- WppClient management ------------- */
 	static bool create(const ClientInfo &info, WppConnectionI &connection, WppPlatformI &platform);
 	static bool isCreated();
-	static WppClient* client();
+	
+	/*
+	 * At the same time, only one actor can have access to the client, this is done
+	 * in order to synchronize access to the registry and avoid possible simultaneous
+	 * writing/reading/deleting of Instance or Resource.
+	 * 
+	 * To gain access to the client, the user must call takeOwnership() which
+	 * returns a pointer to the client, or NULL if the client is occupied by
+	 * another actor or uninitialized. After the client is finished, the user
+	 * must call giveOwnership().
+	 */
+	static WppClient* takeOwnership();
+	static void giveOwnership();
 
 	/* ------------- WppClient components ------------- */
 	WppConnectionI & connection();
 	WppPlatformI & platform();
+	WppRegistry & registry();
 
 	/* ------------- Wakaama core state processing ------------- */
 	lwm2m_client_state_t getState();
@@ -70,8 +91,7 @@ public:
 
 private:
 	/* ------------- Wakaama client initialisation ------------- */
-	void init();
-	bool isInitialized();
+	static WppClient * client();
 
 	bool lwm2mContextOpen();
 	void lwm2mContextClose();
@@ -81,10 +101,9 @@ private:
 
 private:
 	static WppClient *_client;
+	static std::mutex _clientGuard;
 
-	bool _isInit;
-	ClientInfo _info;
-
+	WppRegistry _registry;
 	WppConnectionI &_connection;
 	WppPlatformI &_platform;
 

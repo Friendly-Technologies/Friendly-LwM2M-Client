@@ -18,7 +18,7 @@
 namespace wpp {
 
 /*
- * Object<T> is class that implements manipulation withInstanceI interface class and his inheritors.
+ * Object<T> is class that implements manipulation with InstanceI interface class and his inheritors.
  * The main target of this class is to encapsulate operations like instance create and delete, binding
  * instance callbacks to core interface, for avoid multiple definition of this mechanism in instance
  * implementation classes.

@@ -271,7 +271,7 @@ uint8_t InstanceI::resourceExecute(ID_T instanceId, ID_T resourceId, uint8_t * b
 uint8_t InstanceI::resourceDiscover(ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP) {
 	// Requested each resource
 	if (!*numDataP) {
-		std::vector<Resource *> resources = getInstantiatedResourcesList();
+		std::vector<Resource *> resources = getResourcesList();
 
 		// TODO: *dataArrayP = lwm2m_data_new(readResources.size());
 		if (*dataArrayP == NULL) return COAP_500_INTERNAL_SERVER_ERROR;

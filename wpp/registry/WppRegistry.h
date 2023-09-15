@@ -31,6 +31,7 @@ namespace wpp {
 // TODO: Split mandatory and optional registers
 // TODO: Add ability to check whether some object id is exist
 // TODO: Add ability to get Lwm2mObject by ID
+// TODO: Try to redesign the registry and objects to simplify access
 class WppRegistry {
 public:
 	/*

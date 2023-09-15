@@ -5,11 +5,11 @@
  *      Author: valentin
  */
 
-#include "InstanceI.h"
+#include "IInstance.h"
 
 namespace wpp {
 
-bool InstanceI::resourceToLwm2mData(Resource &resource, ID_T instanceId, lwm2m_data_t &data) {
+bool IInstance::resourceToLwm2mData(Resource &resource, ID_T instanceId, lwm2m_data_t &data) {
 	switch(resource.getTypeId()) {
 	case TYPE_ID::BOOL: {
 		BOOL_T value;
@@ -43,7 +43,7 @@ bool InstanceI::resourceToLwm2mData(Resource &resource, ID_T instanceId, lwm2m_d
 	case TYPE_ID::OBJ_LINK: {
 			OBJ_LINK_T value;
 			if (resource.get(value, instanceId)) {
-			// TODO: lwm2m_data_encode_objlink(value.objectId, value.objectInstanceId, data_ptr);
+			// TODO: lwm2m_data_encode_objlink(value.objectId, value.objectIInstanced, data_ptr);
 			}
 		break;
 	}
@@ -74,7 +74,7 @@ bool InstanceI::resourceToLwm2mData(Resource &resource, ID_T instanceId, lwm2m_d
 	return true;
 }
 
-bool InstanceI::lwm2mDataToResource(const lwm2m_data_t &data, Resource &resource, ID_T instanceId) {
+bool IInstance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &resource, ID_T instanceId) {
 	switch (resource.getTypeId()) {
 	case TYPE_ID::BOOL: {
 		BOOL_T value;
@@ -134,7 +134,7 @@ bool InstanceI::lwm2mDataToResource(const lwm2m_data_t &data, Resource &resource
 	return true;
 }
 
-uint8_t InstanceI::resourceRead(ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP) {
+uint8_t IInstance::resourceRead(ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP) {
 	// Requested each resource
 	if (!*numDataP) {
 		std::vector<Resource *> readResources = getInstantiatedResourcesList(Operation(Operation::READ));
@@ -186,7 +186,7 @@ uint8_t InstanceI::resourceRead(ID_T instanceId, int * numDataP, lwm2m_data_t **
 				else return COAP_404_NOT_FOUND;
 			}
 			// If execution get to this place then operation completed with
-			// success and we can notifyInstanceI implementation about it
+			// success and we can notifyIInstance implementation about it
 			serverOperationNotifier(Operation::READ, {resource->getID(), instanceId});
 		}
 	}
@@ -194,7 +194,7 @@ uint8_t InstanceI::resourceRead(ID_T instanceId, int * numDataP, lwm2m_data_t **
 	return COAP_205_CONTENT;
 }
 
-uint8_t InstanceI::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_write_type_t writeType) {
+uint8_t IInstance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_write_type_t writeType) {
 	// Protect access to instance list
 
 	// TODO: In some cases, according to the implementation of the wakaama,
@@ -218,7 +218,7 @@ uint8_t InstanceI::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * da
 		// Clear resource data if we need to replace it
 		if (writeType == LWM2M_WRITE_REPLACE_RESOURCES) {
 			resource->clear();
-			// NotifyInstanceI implementation about operation
+			// NotifyIInstance implementation about operation
 			serverOperationNotifier(Operation::DELETE, {resource->getID(), SINGLE_INSTANCE_ID});
 		}
 
@@ -238,7 +238,7 @@ uint8_t InstanceI::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * da
 				else return COAP_404_NOT_FOUND;
 			}
 			// If execution get to this place then operation completed with
-			// success and we can notifyInstanceI implementation about it
+			// success and we can notifyIInstance implementation about it
 			serverOperationNotifier(Operation::WRITE, {resource->getID(), instanceId});
 		}
 	}
@@ -246,7 +246,7 @@ uint8_t InstanceI::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * da
 	return COAP_204_CHANGED;
 }
 
-uint8_t InstanceI::resourceExecute(ID_T instanceId, ID_T resourceId, uint8_t * buffer, int length) {
+uint8_t IInstance::resourceExecute(ID_T instanceId, ID_T resourceId, uint8_t * buffer, int length) {
 	Resource *resource = getResource(resourceId);
 	if (!resource) return COAP_404_NOT_FOUND;
 	// Check the server operation permission for resource
@@ -262,13 +262,13 @@ uint8_t InstanceI::resourceExecute(ID_T instanceId, ID_T resourceId, uint8_t * b
 	execute(resourceId, OPAQUE_T(buffer, buffer + length));
 
 	// If execution get to this place then operation completed with
-	// success and we can notifyInstanceI implementation about it
+	// success and we can notifyIInstance implementation about it
 	serverOperationNotifier(Operation::EXECUTE, {resource->getID(), SINGLE_INSTANCE_ID});
 
 	return COAP_204_CHANGED;
 }
 
-uint8_t InstanceI::resourceDiscover(ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP) {
+uint8_t IInstance::resourceDiscover(ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP) {
 	// Requested each resource
 	if (!*numDataP) {
 		std::vector<Resource *> resources = getResourcesList();
@@ -298,7 +298,7 @@ uint8_t InstanceI::resourceDiscover(ID_T instanceId, int * numDataP, lwm2m_data_
 //			for (const auto& pair : resource->getInstances()) {
 //				*(dataCnt++).id = pair.first;
 				// If execution get to this place then operation completed with
-				// success and we can notifyInstanceI implementation about it
+				// success and we can notifyIInstance implementation about it
 //				serverOperationNotifier(Operation::DISCOVER, resource->getID(), pair.first);
 //			}
 //			lwm2m_data_encode_instances(subData, resource->instanceCnt(), data);

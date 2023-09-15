@@ -1,12 +1,12 @@
 /*
- * WppConnectionI.h
+ * IWppConnection.h
  *
  *  Created on: 22 Jul 2023
  *      Author: valentin
  */
 
-#ifndef WppConnectionI_H_
-#define WppConnectionI_H_
+#ifndef IWppConnection_H_
+#define IWppConnection_H_
 
 #include <string>
 
@@ -19,7 +19,7 @@ namespace wpp {
 
 class WppClient;
 
-class WppConnectionI {
+class IWppConnection {
 	friend class WppClient;
 
 public:
@@ -32,13 +32,13 @@ public:
 	};
 
 public:
-	WppConnectionI();
-	virtual ~WppConnectionI();
+	IWppConnection();
+	virtual ~IWppConnection();
 
-	WppConnectionI(const WppConnectionI&) = delete;
-	WppConnectionI(WppConnectionI&&) = delete;
-	WppConnectionI& operator=(const WppConnectionI&) = delete;
-	WppConnectionI& operator=(WppConnectionI&&) = delete;
+	IWppConnection(const IWppConnection&) = delete;
+	IWppConnection(IWppConnection&&) = delete;
+	IWppConnection& operator=(const IWppConnection&) = delete;
+	IWppConnection& operator=(IWppConnection&&) = delete;
 
 	/* ------------- Connection abilities ------------- */
 	/*
@@ -93,4 +93,4 @@ private:
 
 } /* namespace wpp */
 
-#endif /* WppConnectionI_H_ */
+#endif /* IWppConnection_H_ */

@@ -12,15 +12,15 @@
 #include <functional>
 
 #include "WppRegistry.h"
-#include "WppConnectionI.h"
+#include "IWppConnection.h"
 
 //TODO: #include "liblwm2m.h"
 #include <dep.h>
 
 namespace wpp {
 
-// TODO: Review relationship between WppClient and WppConnectionI
-class WppConnectionI;
+// TODO: Review relationship between WppClient and IWppConnection
+class IWppConnection;
  
 /*
  * To interact with the WppClient, it is necessary to take ownership of it,
@@ -39,13 +39,13 @@ public:
 	};
 
 private:
-	WppClient(const ClientInfo &info, WppConnectionI &connection, const WppRegistry::OBJ_RESTORE_T &objRestoreFunc);
+	WppClient(const ClientInfo &info, IWppConnection &connection, const WppRegistry::OBJ_RESTORE_T &objRestoreFunc);
 
 public:
 	~WppClient();
 
 	/* ------------- WppClient management ------------- */
-	static bool create(const ClientInfo &info, WppConnectionI &connection, const WppRegistry::OBJ_RESTORE_T &objRestoreFunc);
+	static bool create(const ClientInfo &info, IWppConnection &connection, const WppRegistry::OBJ_RESTORE_T &objRestoreFunc);
 	static bool isCreated();
 	
 	/*
@@ -62,7 +62,7 @@ public:
 	static void giveOwnership();
 
 	/* ------------- WppClient components ------------- */
-	WppConnectionI & connection();
+	IWppConnection & connection();
 	WppRegistry & registry();
 
 	/* ------------- Wakaama core state processing ------------- */
@@ -101,7 +101,7 @@ private:
 	static std::mutex _clientGuard;
 
 	WppRegistry _registry;
-	WppConnectionI &_connection;
+	IWppConnection &_connection;
 
 	lwm2m_context_t *_lwm2m_context;
 };

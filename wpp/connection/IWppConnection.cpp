@@ -1,25 +1,25 @@
 /*
- * WppConnectionI.cpp
+ * IWppConnection.cpp
  *
  *  Created on: 22 Jul 2023
  *      Author: valentin
  */
 
-#include "WppConnectionI.h"
+#include "IWppConnection.h"
 
 //TODO: #include "liblwm2m.h"
 
 namespace wpp {
 
-WppConnectionI::WppConnectionI() {}
+IWppConnection::IWppConnection() {}
 
-WppConnectionI::~WppConnectionI() {
+IWppConnection::~IWppConnection() {
 	clearPacketQueue();
 }
 
 /* ------------- Connection abilities ------------- */
 
-bool WppConnectionI::addPacketToQueue(Packet packet) {
+bool IWppConnection::addPacketToQueue(Packet packet) {
 	Packet tmpPkt = packet;
 
 	tmpPkt.buffer = new uint8_t[packet.length];
@@ -33,11 +33,11 @@ bool WppConnectionI::addPacketToQueue(Packet packet) {
 	return true;
 }
 
-uint8_t WppConnectionI::getPacketQueueSize() {
+uint8_t IWppConnection::getPacketQueueSize() {
 	return packets.size();
 }
 
-void WppConnectionI::clearPacketQueue() {
+void IWppConnection::clearPacketQueue() {
 	while (packets.size()) {
 		Packet *pkt = packets.front();
 		if (pkt && pkt->buffer) {
@@ -47,15 +47,15 @@ void WppConnectionI::clearPacketQueue() {
 	}
 }
 
-bool WppConnectionI::setDataBlockSize(uint16_t size) {
+bool IWppConnection::setDataBlockSize(uint16_t size) {
 	return true;// TODO: lwm2m_set_coap_block_size(size);
 }
 
-uint16_t WppConnectionI::getDataBlockSize()  {
+uint16_t IWppConnection::getDataBlockSize()  {
 	return 0; // TODO: lwm2m_get_coap_block_size();
 }
 
-void WppConnectionI::handlePacketsInQueue(lwm2m_context_t *context) {
+void IWppConnection::handlePacketsInQueue(lwm2m_context_t *context) {
 	while (packets.size()) {
 		Packet *pkt = packets.front();
 		if (pkt && pkt->buffer) {

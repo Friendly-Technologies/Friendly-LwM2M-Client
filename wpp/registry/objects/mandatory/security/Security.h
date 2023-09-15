@@ -8,17 +8,17 @@
 #ifndef SECURITY_H_
 #define SECURITY_H_
 
-#include "InstanceI.h"
+#include "IInstance.h"
 #include "ObjectInfo.h"
 
 namespace wpp {
 
-class Security: public InstanceI {
+class Security: public IInstance {
 public:
-	Security(OBJ_ID objID, ID_T instanceID): InstanceI(objID, instanceID) {
+	Security(OBJ_ID objID, ID_T instanceID): IInstance(objID, instanceID) {
 	}
 protected:
-	/* ---------------InstanceI implementation part --------------- */
+	/* ---------------IInstance implementation part --------------- */
 	/*
 	 * Returns Resource object if it is exist
 	 */

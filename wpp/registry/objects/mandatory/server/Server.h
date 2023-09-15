@@ -8,12 +8,12 @@
 #ifndef SERVER_H_
 #define SERVER_H_
 
-#include "InstanceI.h"
+#include "IInstance.h"
 #include "ObjectInfo.h"
 
 namespace wpp {
 
-class Server : public InstanceI {
+class Server : public IInstance {
 public:
 	enum ID: ID_T {
 		SHORT_SERV_ID = 0,
@@ -27,7 +27,7 @@ public:
 	};
 
 public:
-	Server(OBJ_ID objID, ID_T instanceID): InstanceI(objID, instanceID) {
+	Server(OBJ_ID objID, ID_T instanceID): IInstance(objID, instanceID) {
 		_resourcesInit();
 	}
 
@@ -60,7 +60,7 @@ public:
 	void userPerformedOperation(Operation::TYPE type, ID_T resourceId, ID_T resourceInstanceId = 0);
 
 protected:
-	/* ---------------InstanceI implementation part --------------- */
+	/* ---------------IInstance implementation part --------------- */
 	/*
 	 * Returns Resource object if it is exist
 	 */

@@ -11,7 +11,7 @@ WppClient * wpp_client() {
     return WppClient::client();
 }
 
-WppConnectionI * wpp_connection() {
+IWppConnection * wpp_connection() {
     if (wpp_client()) return NULL;
     return &wpp_client()->connection();
 }

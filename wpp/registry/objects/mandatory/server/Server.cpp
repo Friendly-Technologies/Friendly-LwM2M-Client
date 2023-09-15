@@ -15,7 +15,7 @@
 #include "types.h"
 
 namespace wpp {
-/* ---------------InstanceI implementation part --------------- */
+/* ---------------IInstance implementation part --------------- */
 Resource * Server::getResource(ID_T id) {
 	// Check if resource ID is valid
 	if (_resources.find(id) == _resources.end()) return NULL;

@@ -16,7 +16,7 @@
 
 namespace wpp {
 
-/* ---------------InstanceI implementation part --------------- */
+/* ---------------IInstance implementation part --------------- */
 Resource * Security::getResource(ID_T id) {
 	return NULL;
 }

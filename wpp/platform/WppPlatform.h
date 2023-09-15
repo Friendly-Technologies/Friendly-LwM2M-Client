@@ -12,6 +12,10 @@
 
 namespace wpp {
 
+/*
+ * This class uses the Linker Callback pattern.
+ * Implementation of methods is carried out on the user side.
+ */
 class WppPlatform {
 public:
 	static void* malloc(size_t size);

@@ -1,9 +1,9 @@
 #ifndef CONNECTION_H
 #define CONNECTION_H
 
-#include "WppConnectionI.h"
+#include "IWppConnection.h"
 
-class Connection : public wpp::WppConnectionI {
+class Connection : public wpp::IWppConnection {
 public:
     Connection() {}
     ~Connection() {}

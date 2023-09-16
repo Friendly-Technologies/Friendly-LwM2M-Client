@@ -101,8 +101,8 @@ private:
 	static WppClient *_client;
 	static std::mutex _clientGuard;
 
-	WppRegistry _registry;
 	IWppConnection &_connection;
+	WppRegistry _registry;
 
 	lwm2m_context_t *_lwm2m_context;
 };

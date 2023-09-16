@@ -99,7 +99,7 @@ bool WppClient::isObjectRegistered(Lwm2mObject &object) {
 
 /* ------------- Wakaama core observer notify ------------- */
 void WppClient::notifyValueChanged(const DataID &data) {
-	lwm2m_uri_t uri = {data.instance.objectId, data.instance.objectInstanceId, data.resource.resourceId, data.resource.resourceInstanceId};
+	lwm2m_uri_t uri = {data.instance.objId, data.instance.objInstId, data.resource.resId, data.resource.resInstId};
 	// TODO: lwm2m_resource_value_changed(_lwm2m_context, &uri);
 }
 

@@ -45,24 +45,24 @@ std::vector<Resource *> Device::getInstantiatedResourcesList(const Operation& fi
 	return list;
 }
 
-void Device::serverOperationNotifier(Operation::TYPE type, const ResourceID &resourceId) {
-	observerNotify(*this, resourceId, type);
-	
+void Device::serverOperationNotifier(Operation::TYPE type, const ResourceID &resId) {
+	observerNotify(*this, resId, type);
+
 	switch (type) {
 	case Operation::READ:
-		std::cout << "Security READ -> resourceId:" << resourceId.resourceId << ", resourceInstanceId:" << resourceId.resourceInstanceId << std::endl;
+		std::cout << "Security READ -> resId:" << resId.resId << ", resInstId:" << resId.resInstId << std::endl;
 		break;
 	case Operation::WRITE:
-		std::cout << "Security WRITE -> resourceId:" << resourceId.resourceId << ", resourceInstanceId:" << resourceId.resourceInstanceId << std::endl;
+		std::cout << "Security WRITE -> resId:" << resId.resId << ", resInstId:" << resId.resInstId << std::endl;
 		break;
 	case Operation::EXECUTE:
-		std::cout << "Security EXECUTE -> resourceId:" << resourceId.resourceId << ", resourceInstanceId:" << resourceId.resourceInstanceId << std::endl;
+		std::cout << "Security EXECUTE -> resId:" << resId.resId << ", resInstId:" << resId.resInstId << std::endl;
 		break;
 	case Operation::DISCOVER:
-		std::cout << "Security DISCOVER -> resourceId:" << resourceId.resourceId << ", resourceInstanceId:" << resourceId.resourceInstanceId << std::endl;
+		std::cout << "Security DISCOVER -> resId:" << resId.resId << ", resInstId:" << resId.resInstId << std::endl;
 		break;
 	case Operation::DELETE:
-		std::cout << "Security DELETE -> resourceId:" << resourceId.resourceId << ", resourceInstanceId:" << resourceId.resourceInstanceId << std::endl;
+		std::cout << "Security DELETE -> resId:" << resId.resId << ", resInstId:" << resId.resInstId << std::endl;
 		break;
 	default: break;
 	}

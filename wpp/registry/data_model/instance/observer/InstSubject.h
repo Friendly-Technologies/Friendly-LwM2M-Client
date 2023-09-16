@@ -21,19 +21,19 @@ public:
 	void unsubscribe(IInstObserver<T> *observer) {
         _observers.erase(std::find(_observers.begin(), _observers.end(), observer));
     }
-    
+
 protected:
     /*
 	 * Notify observers about operation
 	 */
-	void observerNotify(T &inst, const ResourceID &resourceId, Operation::TYPE type) {
+	void observerNotify(T &inst, const ResourceID &resId, Operation::TYPE type) {
         for(IInstObserver<T>* observer : _observers) {
             if (type == Operation::TYPE::READ) {
-                observer->resourceRead(inst, resourceId);
+                observer->resourceRead(inst, resId);
             } else if (type == Operation::TYPE::WRITE) {
-                observer->resourceWrite(inst, resourceId);
+                observer->resourceWrite(inst, resId);
             } else if (type == Operation::TYPE::EXECUTE) {
-                observer->resourceExecute(inst, resourceId);
+                observer->resourceExecute(inst, resId);
             }
         }
     }

@@ -54,7 +54,7 @@ protected: /* Interface used by IInstance implementation class */
 	 * and return resource if it is exists.
 	 * If resource does not exist then return NULL.
 	 */
-	virtual Resource * getResource(ID_T resourceId) = 0;
+	virtual Resource * getResource(ID_T resId) = 0;
 
 	/*
 	 * This method must be implemented by derived class,
@@ -77,7 +77,7 @@ protected: /* Interface used by IInstance implementation class */
      * information about resource operation (READ, WRITE, EXECUTE, DISCOVER, DELETE).
 	 * Called byIInstance after resource operation performed by server.
 	 */
-	virtual void serverOperationNotifier(Operation::TYPE type, const ResourceID &resourceId) = 0;
+	virtual void serverOperationNotifier(Operation::TYPE type, const ResourceID &resId) = 0;
 
 private: /* Interface used by Object<T> or IInstance class */
 	/*
@@ -90,7 +90,7 @@ private: /* Interface used by Object<T> or IInstance class */
 	/* ------------- Server callback ------------- */
 	uint8_t resourceRead(ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP);
 	uint8_t resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_write_type_t writeType);
-	uint8_t resourceExecute(ID_T instanceId, ID_T resourceId, uint8_t * buffer, int length);
+	uint8_t resourceExecute(ID_T instanceId, ID_T resId, uint8_t * buffer, int length);
 	uint8_t resourceDiscover(ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP);
 
 protected:

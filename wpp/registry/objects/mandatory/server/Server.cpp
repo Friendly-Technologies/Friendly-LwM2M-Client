@@ -22,40 +22,40 @@ Server::Server(OBJ_ID objID, ID_T instanceID): IInstance(objID, instanceID) {
 
 /* --------------- User helpful methods for manage resources data --------------- */
 
-bool Server::clear(ID_T resourceId) {
-	Resource *const resource = getResource(resourceId);
+bool Server::clear(ID_T resId) {
+	Resource *const resource = getResource(resId);
 	if (!resource) return false;
 
 	bool result = resource->clear();
 	if (result) {
-		userPerformedOperation(Operation::DELETE, resourceId);
+		userPerformedOperation(Operation::DELETE, resId);
 	}
 
 	return resource->clear();
 }
 
-bool Server::remove(ID_T resourceId, ID_T resourceInstanceId) {
-	Resource *const resource = getResource(resourceId);
+bool Server::remove(ID_T resId, ID_T resInstId) {
+	Resource *const resource = getResource(resId);
 	if (!resource) return false;
 
-	bool result = resource->remove(resourceInstanceId);
+	bool result = resource->remove(resInstId);
 	if (result) {
-		userPerformedOperation(Operation::DELETE, resourceId, resourceInstanceId);
+		userPerformedOperation(Operation::DELETE, resId, resInstId);
 	}
 
 	return result;
 }
 
-void Server::userPerformedOperation(Operation::TYPE type, ID_T resourceId, ID_T resourceInstanceId) {
+void Server::userPerformedOperation(Operation::TYPE type, ID_T resId, ID_T resInstId) {
 	switch (type) {
 	case Operation::READ:
-		std::cout << "User READ -> resourceId:" << resourceId << ", resourceInstanceId:" << resourceInstanceId << std::endl;
+		std::cout << "User READ -> resId:" << resId << ", resInstId:" << resInstId << std::endl;
 		break;
 	case Operation::WRITE:
-		std::cout << "User WRITE -> resourceId:" << resourceId << ", resourceInstanceId:" << resourceInstanceId << std::endl;
+		std::cout << "User WRITE -> resId:" << resId << ", resInstId:" << resInstId << std::endl;
 		break;
 	case Operation::DELETE:
-		std::cout << "User DELETE -> resourceId:" << resourceId << ", resourceInstanceId:" << resourceInstanceId << std::endl;
+		std::cout << "User DELETE -> resId:" << resId << ", resInstId:" << resInstId << std::endl;
 		break;
 	default: break;
 	}
@@ -96,24 +96,24 @@ std::vector<Resource *> Server::getInstantiatedResourcesList(const Operation& fi
 	return list;
 }
 
-void Server::serverOperationNotifier(Operation::TYPE type, const ResourceID &resourceId) {
-	observerNotify(*this, resourceId, type);
+void Server::serverOperationNotifier(Operation::TYPE type, const ResourceID &resId) {
+	observerNotify(*this, resId, type);
 
 	switch (type) {
 	case Operation::READ:
-		std::cout << "Server READ -> resourceId:" << resourceId.resourceId << ", resourceInstanceId:" << resourceId.resourceInstanceId << std::endl;
+		std::cout << "Server READ -> resId:" << resId.resId << ", resInstId:" << resId.resInstId << std::endl;
 		break;
 	case Operation::WRITE:
-		std::cout << "Server WRITE -> resourceId:" << resourceId.resourceId << ", resourceInstanceId:" << resourceId.resourceInstanceId << std::endl;
+		std::cout << "Server WRITE -> resId:" << resId.resId << ", resInstId:" << resId.resInstId << std::endl;
 		break;
 	case Operation::EXECUTE:
-		std::cout << "Server EXECUTE -> resourceId:" << resourceId.resourceId << ", resourceInstanceId:" << resourceId.resourceInstanceId << std::endl;
+		std::cout << "Server EXECUTE -> resId:" << resId.resId << ", resInstId:" << resId.resInstId << std::endl;
 		break;
 	case Operation::DISCOVER:
-		std::cout << "Server DISCOVER -> resourceId:" << resourceId.resourceId << ", resourceInstanceId:" << resourceId.resourceInstanceId << std::endl;
+		std::cout << "Server DISCOVER -> resId:" << resId.resId << ", resInstId:" << resId.resInstId << std::endl;
 		break;
 	case Operation::DELETE:
-		std::cout << "Server DELETE -> resourceId:" << resourceId.resourceId << ", resourceInstanceId:" << resourceId.resourceInstanceId << std::endl;
+		std::cout << "Server DELETE -> resId:" << resId.resId << ", resInstId:" << resId.resInstId << std::endl;
 		break;
 	default: break;
 	}

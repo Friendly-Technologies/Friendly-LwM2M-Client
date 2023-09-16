@@ -50,8 +50,8 @@ public: /* ---------- Public methods for common usage ----------*/
 	bool isDataValueValid(const T &data) const;
 	bool isDataVerifierValid(const DATA_VERIFIER_T &verifier) const;
 	bool isOperationValid(Operation::TYPE type) const;
-	bool isInstanceIdPossible(ID_T resourceInstanceId) const;
-	bool isInstanceExist(ID_T resourceInstanceId) const;
+	bool isInstanceIdPossible(ID_T resInstId) const;
+	bool isInstanceExist(ID_T resInstId) const;
 	bool isTypeIdCompatible(TYPE_ID type) const;
 	bool isEmpty() const;
 	size_t instanceCnt() const;
@@ -70,38 +70,38 @@ public: /* ---------- Public methods for common usage ----------*/
 	std::mutex& getGuard();
 
 	/* ---------- Methods for manage resource data ----------*/
-    bool set(const BOOL_T &value, ID_T resourceInstanceId = SINGLE_INSTANCE_ID);
-    bool set(const INT_T &value, ID_T resourceInstanceId = SINGLE_INSTANCE_ID);
-    bool set(const UINT_T &value, ID_T resourceInstanceId = SINGLE_INSTANCE_ID);
-    bool set(const FLOAT_T &value, ID_T resourceInstanceId = SINGLE_INSTANCE_ID);
-    bool set(const OPAQUE_T &value, ID_T resourceInstanceId = SINGLE_INSTANCE_ID);
-    bool set(const OBJ_LINK_T &value, ID_T resourceInstanceId = SINGLE_INSTANCE_ID);
-    bool set(const STRING_T &value, ID_T resourceInstanceId = SINGLE_INSTANCE_ID);
-	bool set(const EXECUTE_T &value, ID_T resourceInstanceId = SINGLE_INSTANCE_ID);
+    bool set(const BOOL_T &value, ID_T resInstId = SINGLE_INSTANCE_ID);
+    bool set(const INT_T &value, ID_T resInstId = SINGLE_INSTANCE_ID);
+    bool set(const UINT_T &value, ID_T resInstId = SINGLE_INSTANCE_ID);
+    bool set(const FLOAT_T &value, ID_T resInstId = SINGLE_INSTANCE_ID);
+    bool set(const OPAQUE_T &value, ID_T resInstId = SINGLE_INSTANCE_ID);
+    bool set(const OBJ_LINK_T &value, ID_T resInstId = SINGLE_INSTANCE_ID);
+    bool set(const STRING_T &value, ID_T resInstId = SINGLE_INSTANCE_ID);
+	bool set(const EXECUTE_T &value, ID_T resInstId = SINGLE_INSTANCE_ID);
 
-    bool get(BOOL_T &value, ID_T resourceInstanceId = SINGLE_INSTANCE_ID) const;
-	bool get(INT_T &value, ID_T resourceInstanceId = SINGLE_INSTANCE_ID) const;
-	bool get(UINT_T &value, ID_T resourceInstanceId = SINGLE_INSTANCE_ID) const;
-	bool get(FLOAT_T &value, ID_T resourceInstanceId = SINGLE_INSTANCE_ID) const;
-	bool get(OPAQUE_T &value, ID_T resourceInstanceId = SINGLE_INSTANCE_ID) const;
-	bool get(OBJ_LINK_T &value, ID_T resourceInstanceId = SINGLE_INSTANCE_ID) const;
-	bool get(STRING_T &value, ID_T resourceInstanceId = SINGLE_INSTANCE_ID) const;
-	bool get(EXECUTE_T &value, ID_T resourceInstanceId = SINGLE_INSTANCE_ID) const;
+    bool get(BOOL_T &value, ID_T resInstId = SINGLE_INSTANCE_ID) const;
+	bool get(INT_T &value, ID_T resInstId = SINGLE_INSTANCE_ID) const;
+	bool get(UINT_T &value, ID_T resInstId = SINGLE_INSTANCE_ID) const;
+	bool get(FLOAT_T &value, ID_T resInstId = SINGLE_INSTANCE_ID) const;
+	bool get(OPAQUE_T &value, ID_T resInstId = SINGLE_INSTANCE_ID) const;
+	bool get(OBJ_LINK_T &value, ID_T resInstId = SINGLE_INSTANCE_ID) const;
+	bool get(STRING_T &value, ID_T resInstId = SINGLE_INSTANCE_ID) const;
+	bool get(EXECUTE_T &value, ID_T resInstId = SINGLE_INSTANCE_ID) const;
 
     /*
      * Disabling implicit conversions
      */
     template<typename T>
-    bool set(const T &value, ID_T resourceInstanceId = SINGLE_INSTANCE_ID) = delete;
+    bool set(const T &value, ID_T resInstId = SINGLE_INSTANCE_ID) = delete;
 	template<typename T>
-	bool get(T &value, ID_T resourceInstanceId = SINGLE_INSTANCE_ID) const  = delete;
+	bool get(T &value, ID_T resInstId = SINGLE_INSTANCE_ID) const  = delete;
 
 	/*
 	 * Remove resource instance if resource is multiple and instance exists,
 	 * if the resource is SINGLE or it has the last instance remove is not
 	 * possible. Because instantiated resources must have at least one instance.
 	 */
-	bool remove(ID_T resourceInstanceId);
+	bool remove(ID_T resInstId);
 
 	/*
 	 * Remove all instances.
@@ -113,10 +113,10 @@ public: /* ---------- Public methods for common usage ----------*/
 
 private:
     template<typename T>
-	bool _set(const T &value, ID_T resourceInstanceId);
+	bool _set(const T &value, ID_T resInstId);
 
 	template<typename T>
-	bool _get(T &value, ID_T resourceInstanceId) const;
+	bool _get(T &value, ID_T resInstId) const;
 
 private: /* ---------- Private properties ----------*/
     ID_T _id;
@@ -138,25 +138,25 @@ bool Resource::isDataTypeValid() const {
 }
 
 template<typename T>
-bool Resource::_set(const T &value, ID_T resourceInstanceId) {
+bool Resource::_set(const T &value, ID_T resInstId) {
 	std::lock_guard<std::mutex> guard(_resourceGuard);
 
-	if (!isInstanceIdPossible(resourceInstanceId)) return false;
+	if (!isInstanceIdPossible(resInstId)) return false;
 	if (!isDataValueValid(value)) return false;
 
-	_instances[resourceInstanceId] = value;
+	_instances[resInstId] = value;
 
 	return true;
 }
 
 template<typename T>
-bool Resource::_get(T &value, ID_T resourceInstanceId) const {
+bool Resource::_get(T &value, ID_T resInstId) const {
 	std::lock_guard<std::mutex> guard(_resourceGuard);
 
 	if (!isDataTypeValid<T>()) return false;
-	if (!isInstanceExist(resourceInstanceId)) return false;
+	if (!isInstanceExist(resInstId)) return false;
 
-	value = std::get<T>(_instances[resourceInstanceId]);
+	value = std::get<T>(_instances[resInstId]);
 
 	return true;
 }

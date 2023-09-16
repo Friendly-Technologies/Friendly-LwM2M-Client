@@ -50,8 +50,8 @@ using OPAQUE_T = std::vector<uint8_t>;
  * Represent as two integers in lwm2m_data_t.value.asObjLink.
  */
 struct OBJ_LINK_T {
-	ID_T objectId;
-    ID_T objectInstanceId;
+	ID_T objId;
+    ID_T objInstId;
 };
 /*
  * CoreLink -  </3/0> or </1/0/>;ssid=101 or </5>,</4>,</55>;ver=1.9,</55/0>.
@@ -123,13 +123,13 @@ struct Version {
 };
 
 struct InstanceID {
-	ID_T objectId = ID_T_MAX_VAL;
-    ID_T objectInstanceId = ID_T_MAX_VAL;
+	ID_T objId = ID_T_MAX_VAL;
+    ID_T objInstId = ID_T_MAX_VAL;
 };
 
 struct ResourceID{
-    ID_T resourceId = ID_T_MAX_VAL;
-    ID_T resourceInstanceId = ID_T_MAX_VAL;
+    ID_T resId = ID_T_MAX_VAL;
+    ID_T resInstId = ID_T_MAX_VAL;
 };
 
 struct DataID{

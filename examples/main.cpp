@@ -44,16 +44,16 @@ class ServerObserver: public IObjObserver<Server>, public IInstObserver<Server> 
 		cout << "instanceDeleting: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
 	}
 
-	virtual void resourceRead(Server &inst, const ResourceID &resourceId) override {
-        cout << "resourceRead: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resourceId.resourceId << ":" << resourceId.resourceInstanceId << endl;
+	virtual void resourceRead(Server &inst, const ResourceID &resId) override {
+        cout << "resourceRead: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
     }
 
-    virtual void resourceWrite(Server &inst, const ResourceID &resourceId) override {
-        cout << "resourceWrite: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resourceId.resourceId << ":" << resourceId.resourceInstanceId << endl;
+    virtual void resourceWrite(Server &inst, const ResourceID &resId) override {
+        cout << "resourceWrite: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
     }
 
-    virtual void resourceExecute(Server &inst, const ResourceID &resourceId) override {
-        cout << "resourceExecute: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resourceId.resourceId << ":" << resourceId.resourceInstanceId << endl;
+    virtual void resourceExecute(Server &inst, const ResourceID &resId) override {
+        cout << "resourceExecute: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
     }
 };
 
@@ -120,8 +120,8 @@ int main()
 	while (iterationCnt--) {
 		time_t sleepTime = 1;
 
-		WppClient *client = WppClient::takeOwnership();
-		if (client) client->loop(sleepTime);
+		WppClient *tmpClient = WppClient::takeOwnership();
+		if (tmpClient) tmpClient->loop(sleepTime);
 		WppClient::giveOwnership();
 
 		cout << "Iteration: " << iterationCnt << ", sleep: " << sleepTime << endl;

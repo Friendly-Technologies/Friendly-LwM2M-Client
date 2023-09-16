@@ -55,7 +55,7 @@ private:
 /* ------------- Lwm2m core callback ------------- */
 	static uint8_t read_clb(lwm2m_context_t * contextP, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP);
 	static uint8_t write_clb(lwm2m_context_t * contextP, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP, lwm2m_write_type_t writeType);
-	static uint8_t execute_clb(lwm2m_context_t * contextP, ID_T instanceId, ID_T resourceId, uint8_t * buffer, int length, lwm2m_object_t * objectP);
+	static uint8_t execute_clb(lwm2m_context_t * contextP, ID_T instanceId, ID_T resId, uint8_t * buffer, int length, lwm2m_object_t * objectP);
 	static uint8_t discover_clb(lwm2m_context_t * contextP, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP);
 	static uint8_t create_clb(lwm2m_context_t * contextP, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP);
 	static uint8_t delete_clb(lwm2m_context_t * contextP, ID_T instanceId, lwm2m_object_t * objectP);
@@ -235,9 +235,9 @@ uint8_t Object<T>::write_clb(lwm2m_context_t * contextP, ID_T instanceId, int nu
 }
 
 template<typename T>
-uint8_t Object<T>::execute_clb(lwm2m_context_t * contextP, ID_T instanceId, ID_T resourceId, uint8_t * buffer, int length, lwm2m_object_t * objectP) {
+uint8_t Object<T>::execute_clb(lwm2m_context_t * contextP, ID_T instanceId, ID_T resId, uint8_t * buffer, int length, lwm2m_object_t * objectP) {
 	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
-	return object()->_instances[instanceId]->resourceExecute(instanceId, resourceId, buffer, length);
+	return object()->_instances[instanceId]->resourceExecute(instanceId, resId, buffer, length);
 }
 
 template<typename T>

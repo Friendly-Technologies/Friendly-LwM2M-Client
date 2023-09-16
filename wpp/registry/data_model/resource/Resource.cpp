@@ -77,12 +77,12 @@ bool Resource::isOperationValid(Operation::TYPE type) const {
 	return _operation.isSupported(type);
 }
 
-bool Resource::isInstanceIdPossible(ID_T resourceInstanceId) const {
-	return isMultiple() || resourceInstanceId == SINGLE_INSTANCE_ID;
+bool Resource::isInstanceIdPossible(ID_T resInstId) const {
+	return isMultiple() || resInstId == SINGLE_INSTANCE_ID;
 }
 
-bool Resource::isInstanceExist(ID_T resourceInstanceId) const {
-	return _instances.find(resourceInstanceId) != _instances.end();
+bool Resource::isInstanceExist(ID_T resInstId) const {
+	return _instances.find(resInstId) != _instances.end();
 }
 
 bool Resource::isTypeIdCompatible(TYPE_ID type) const {
@@ -128,75 +128,75 @@ std::mutex& Resource::getGuard() {
 
 
 /* ---------- Methods for get and set resource value ----------*/
-bool Resource::set(const BOOL_T &value, ID_T resourceInstanceId) {
-	return _set(value, resourceInstanceId);
+bool Resource::set(const BOOL_T &value, ID_T resInstId) {
+	return _set(value, resInstId);
 }
 
-bool Resource::set(const INT_T &value, ID_T resourceInstanceId) {
-	return _set(value, resourceInstanceId);
+bool Resource::set(const INT_T &value, ID_T resInstId) {
+	return _set(value, resInstId);
 }
 
-bool Resource::set(const UINT_T &value, ID_T resourceInstanceId) {
-	return _set(value, resourceInstanceId);
+bool Resource::set(const UINT_T &value, ID_T resInstId) {
+	return _set(value, resInstId);
 }
 
-bool Resource::set(const FLOAT_T &value, ID_T resourceInstanceId) {
-	return _set(value, resourceInstanceId);
+bool Resource::set(const FLOAT_T &value, ID_T resInstId) {
+	return _set(value, resInstId);
 }
 
-bool Resource::set(const OPAQUE_T &value, ID_T resourceInstanceId) {
-	return _set(value, resourceInstanceId);
+bool Resource::set(const OPAQUE_T &value, ID_T resInstId) {
+	return _set(value, resInstId);
 }
 
-bool Resource::set(const OBJ_LINK_T &value, ID_T resourceInstanceId) {
-	return _set(value, resourceInstanceId);
+bool Resource::set(const OBJ_LINK_T &value, ID_T resInstId) {
+	return _set(value, resInstId);
 }
 
-bool Resource::set(const STRING_T &value, ID_T resourceInstanceId) {
-	return _set(value, resourceInstanceId);
+bool Resource::set(const STRING_T &value, ID_T resInstId) {
+	return _set(value, resInstId);
 }
 
-bool Resource::set(const EXECUTE_T &value, ID_T resourceInstanceId) {
-	return _set(value, resourceInstanceId);
+bool Resource::set(const EXECUTE_T &value, ID_T resInstId) {
+	return _set(value, resInstId);
 }
 
-bool Resource::get(BOOL_T &value, ID_T resourceInstanceId) const {
-	return _get(value, resourceInstanceId);
+bool Resource::get(BOOL_T &value, ID_T resInstId) const {
+	return _get(value, resInstId);
 }
 
-bool Resource::get(INT_T &value, ID_T resourceInstanceId) const {
-	return _get(value, resourceInstanceId);
+bool Resource::get(INT_T &value, ID_T resInstId) const {
+	return _get(value, resInstId);
 }
 
-bool Resource::get(UINT_T &value, ID_T resourceInstanceId) const {
-	return _get(value, resourceInstanceId);
+bool Resource::get(UINT_T &value, ID_T resInstId) const {
+	return _get(value, resInstId);
 }
 
-bool Resource::get(FLOAT_T &value, ID_T resourceInstanceId) const {
-	return _get(value, resourceInstanceId);
+bool Resource::get(FLOAT_T &value, ID_T resInstId) const {
+	return _get(value, resInstId);
 }
 
-bool Resource::get(OPAQUE_T &value, ID_T resourceInstanceId) const {
-	return _get(value, resourceInstanceId);
+bool Resource::get(OPAQUE_T &value, ID_T resInstId) const {
+	return _get(value, resInstId);
 }
 
-bool Resource::get(OBJ_LINK_T &value, ID_T resourceInstanceId) const {
-	return _get(value, resourceInstanceId);
+bool Resource::get(OBJ_LINK_T &value, ID_T resInstId) const {
+	return _get(value, resInstId);
 }
 
-bool Resource::get(STRING_T &value, ID_T resourceInstanceId) const {
-	return _get(value, resourceInstanceId);
+bool Resource::get(STRING_T &value, ID_T resInstId) const {
+	return _get(value, resInstId);
 }
 
-bool Resource::get(EXECUTE_T &value, ID_T resourceInstanceId) const {
-	return _get(value, resourceInstanceId);
+bool Resource::get(EXECUTE_T &value, ID_T resInstId) const {
+	return _get(value, resInstId);
 }
 
-bool Resource::remove(ID_T resourceInstanceId) {
+bool Resource::remove(ID_T resInstId) {
 	std::lock_guard<std::mutex> guard(_resourceGuard);
 
-	if (!isInstanceExist(resourceInstanceId) || isSingle()) return false;
-	_instances.erase(resourceInstanceId);
+	if (!isInstanceExist(resInstId) || isSingle()) return false;
+	_instances.erase(resInstId);
 
 	return true;
 }

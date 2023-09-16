@@ -43,7 +43,7 @@ bool IInstance::resourceToLwm2mData(Resource &resource, ID_T instanceId, lwm2m_d
 	case TYPE_ID::OBJ_LINK: {
 			OBJ_LINK_T value;
 			if (resource.get(value, instanceId)) {
-			// TODO: lwm2m_data_encode_objlink(value.objectId, value.objectIInstanced, data_ptr);
+			// TODO: lwm2m_data_encode_objlink(value.objId, value.objectIInstanced, data_ptr);
 			}
 		break;
 	}
@@ -178,16 +178,16 @@ uint8_t IInstance::resourceRead(ID_T instanceId, int * numDataP, lwm2m_data_t **
 		}
 
 		// If resource is single then this loop execute only once
-		for (size_t i = 0; i < count; i++) {
-			ID_T instanceId = resource->isSingle()? SINGLE_INSTANCE_ID : data_ptr[i].id;
+		for (size_t j = 0; j < count; j++) {
+			ID_T resInstId = resource->isSingle()? SINGLE_INSTANCE_ID : data_ptr[j].id;
 			//  Note that availability is not mandatory for optional resources
-			if (!resourceToLwm2mData(*resource, instanceId, *data)) {
+			if (!resourceToLwm2mData(*resource, resInstId, data_ptr[j])) {
 				if (resource->isOptional()) continue;
 				else return COAP_404_NOT_FOUND;
 			}
 			// If execution get to this place then operation completed with
 			// success and we can notifyIInstance implementation about it
-			serverOperationNotifier(Operation::READ, {resource->getID(), instanceId});
+			serverOperationNotifier(Operation::READ, {resource->getID(), resInstId});
 		}
 	}
 
@@ -230,24 +230,24 @@ uint8_t IInstance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * da
 		}
 
 		// If resource is single then this loop execute only once
-		for (size_t i = 0; i < count; i++) {
-			ID_T instanceId = resource->isSingle()? SINGLE_INSTANCE_ID : data_ptr[i].id;
+		for (size_t j = 0; j < count; j++) {
+			ID_T resInstId = resource->isSingle()? SINGLE_INSTANCE_ID : data_ptr[j].id;
 			//  Note that availability is not mandatory for optional resources
-			if (!lwm2mDataToResource(dataArray[i], *resource, instanceId)) {
+			if (!lwm2mDataToResource(data_ptr[j], *resource, resInstId)) {
 				if (resource->isOptional()) continue;
 				else return COAP_404_NOT_FOUND;
 			}
 			// If execution get to this place then operation completed with
 			// success and we can notifyIInstance implementation about it
-			serverOperationNotifier(Operation::WRITE, {resource->getID(), instanceId});
+			serverOperationNotifier(Operation::WRITE, {resource->getID(), resInstId});
 		}
 	}
 
 	return COAP_204_CHANGED;
 }
 
-uint8_t IInstance::resourceExecute(ID_T instanceId, ID_T resourceId, uint8_t * buffer, int length) {
-	Resource *resource = getResource(resourceId);
+uint8_t IInstance::resourceExecute(ID_T instanceId, ID_T resId, uint8_t * buffer, int length) {
+	Resource *resource = getResource(resId);
 	if (!resource) return COAP_404_NOT_FOUND;
 	// Check the server operation permission for resource
 	if (!resource->getOperation().isExecute()) return COAP_405_METHOD_NOT_ALLOWED;
@@ -259,7 +259,7 @@ uint8_t IInstance::resourceExecute(ID_T instanceId, ID_T resourceId, uint8_t * b
 		else return COAP_405_METHOD_NOT_ALLOWED;
 	}
 
-	execute(resourceId, OPAQUE_T(buffer, buffer + length));
+	execute(resId, OPAQUE_T(buffer, buffer + length));
 
 	// If execution get to this place then operation completed with
 	// success and we can notifyIInstance implementation about it

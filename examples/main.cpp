@@ -120,8 +120,8 @@ int main()
 	while (iterationCnt--) {
 		time_t sleepTime = 1;
 
-		WppClient *tmpClient = WppClient::takeOwnership();
-		if (tmpClient) tmpClient->loop(sleepTime);
+		client = WppClient::takeOwnership();
+		if (client) client->loop(sleepTime);
 		WppClient::giveOwnership();
 
 		cout << "Iteration: " << iterationCnt << ", sleep: " << sleepTime << endl;

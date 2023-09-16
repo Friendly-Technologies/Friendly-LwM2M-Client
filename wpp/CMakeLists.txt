@@ -41,6 +41,9 @@ set(SOURCES "")
 set(INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/)
 set(COMPILE_DEFINITIONS "")
 
+# Include file with wpp config
+include(config/config.cmake)
+
 # TODO: Delete this src file
 set(SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/dep.cpp)
 
@@ -50,7 +53,6 @@ add_subdirectory(registry)
 add_subdirectory(platform)
 add_subdirectory(connection)
 add_subdirectory(utils)
-add_subdirectory(config)
 
 # message("INCLUDES: ${INCLUDES}")
 # message("SOURCES: ${SOURCES}")

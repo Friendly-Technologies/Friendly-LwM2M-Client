@@ -8,6 +8,7 @@
 #ifndef SECURITY_H_
 #define SECURITY_H_
 
+#include "SecurityConfig.h"
 #include "SecurityInfo.h"
 #include "IInstance.h"
 #include "InstSubject.h"

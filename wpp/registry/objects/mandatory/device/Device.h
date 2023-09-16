@@ -8,6 +8,7 @@
 #ifndef DEVICE_H_
 #define DEVICE_H_
 
+#include "DeviceConfig.h"
 #include "DeviceInfo.h"
 #include "IInstance.h"
 #include "InstSubject.h"

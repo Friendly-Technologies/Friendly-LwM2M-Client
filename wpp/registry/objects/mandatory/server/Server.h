@@ -8,6 +8,7 @@
 #ifndef SERVER_H_
 #define SERVER_H_
 
+#include "ServerConfig.h"
 #include "ServerInfo.h"
 #include "IInstance.h"
 #include "InstSubject.h"

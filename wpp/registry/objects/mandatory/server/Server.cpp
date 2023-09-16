@@ -20,17 +20,6 @@ Server::Server(OBJ_ID objID, ID_T instanceID): IInstance(objID, instanceID) {
 	resourcesInit();
 }
 
-/* ------------- Observer management ------------- */
-void Server::subscribe(IInstObserver<Server> *observer) {
-	if (!observer) return;
-	if (std::find(_observers.begin(), _observers.end(), observer) == _observers.end()) 
-		_observers.push_back(observer);
-}
-
-void Server::unsubscribe(IInstObserver<Server> *observer) {
-	_observers.erase(std::find(_observers.begin(), _observers.end(), observer));
-}
-
 /* --------------- User helpful methods for manage resources data --------------- */
 
 bool Server::clear(ID_T resourceId) {
@@ -108,7 +97,7 @@ std::vector<Resource *> Server::getInstantiatedResourcesList(const Operation& fi
 }
 
 void Server::serverOperationNotifier(Operation::TYPE type, const ResourceID &resourceId) {
-	notify(resourceId, type);
+	observerNotify(*this, resourceId, type);
 
 	switch (type) {
 	case Operation::READ:
@@ -148,18 +137,6 @@ void Server::resourcesInit() {
 
 	_resources[TRIGGER].setDataVerifier((VERIFY_BOOL_T)([](const BOOL_T& value) { return value == false; }));
 	_resources[TRIGGER].set(false);
-}
-
-void Server::notify(const ResourceID &resourceId, Operation::TYPE type) {
-	for(IInstObserver<Server>* observer : _observers) {
-		if (type == Operation::TYPE::READ) {
-			observer->resourceRead(*this, resourceId);
-		} else if (type == Operation::TYPE::WRITE) {
-			observer->resourceWrite(*this, resourceId);
-		} else if (type == Operation::TYPE::EXECUTE) {
-			observer->resourceExecute(*this, resourceId);
-		}
-	}
 }
 
 } /* namespace wpp */

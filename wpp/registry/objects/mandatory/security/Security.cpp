@@ -46,6 +46,8 @@ std::vector<Resource *> Security::getInstantiatedResourcesList(const Operation& 
 }
 
 void Security::serverOperationNotifier(Operation::TYPE type, const ResourceID &resourceId) {
+	observerNotify(*this, resourceId, type);
+	
 	switch (type) {
 	case Operation::READ:
 		std::cout << "Security READ -> resourceId:" << resourceId.resourceId << ", resourceInstanceId:" << resourceId.resourceInstanceId << std::endl;

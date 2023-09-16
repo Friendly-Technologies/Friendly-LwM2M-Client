@@ -57,8 +57,25 @@ class ServerObserver: public IObjObserver<Server>, public IInstObserver<Server> 
     }
 };
 
-void objRestore(WppRegistry &reg, Lwm2mObject &object) {
-	cout << "Restore object id: " << (ID_T)object.getObjectID() << ", name: " << object.getObjectInfo().name << endl;
+void objRestore(WppRegistry &reg, OBJ_ID id) {
+	cout << "Restore object id: " << (ID_T)id << endl;
+	
+	switch (id) {
+	case OBJ_ID::SERVER:
+		reg.server().clear();
+		reg.server().createInstance();
+		break;
+	case OBJ_ID::SECURITY:
+		reg.security().clear();
+		reg.security().createInstance();
+		break;
+	case OBJ_ID::DEVICE:
+		reg.device().clear();
+		reg.security().createInstance();
+		break;
+	default:
+		break;
+	}
 }
 
 int main()

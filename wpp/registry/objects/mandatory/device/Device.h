@@ -10,10 +10,11 @@
 
 #include "IInstance.h"
 #include "ObjectInfo.h"
+#include "InstSubject.h"
 
 namespace wpp {
 
-class Device: public IInstance {
+class Device: public IInstance, public InstSubject<Device> {
 public:
 	Device(OBJ_ID objID, ID_T instanceID);
 

@@ -10,10 +10,11 @@
 
 #include "IInstance.h"
 #include "ObjectInfo.h"
+#include "InstSubject.h"
 
 namespace wpp {
 
-class Security: public IInstance {
+class Security: public IInstance, public InstSubject<Security> {
 public:
 	Security(OBJ_ID objID, ID_T instanceID);
 	

@@ -10,11 +10,11 @@
 
 #include "IInstance.h"
 #include "ObjectInfo.h"
-#include "IInstObserver.h"
+#include "InstSubject.h"
 
 namespace wpp {
 
-class Server : public IInstance {
+class Server : public IInstance, public InstSubject<Server> {
 public:
 	enum ID: ID_T {
 		SHORT_SERV_ID = 0,
@@ -29,15 +29,6 @@ public:
 
 public:
 	Server(OBJ_ID objID, ID_T instanceID);
-
-
-	/* ------------- Observer management ------------- */
-	/*
-	 * Subscribers will be notified about the write, delete
-	 * and execute of instance resources initiated by server.
-	 */
-	void subscribe(IInstObserver<Server> *observer);
-	void unsubscribe(IInstObserver<Server> *observer);
 
 	/* --------------- User helpful methods for manage resources data --------------- */
 	/*
@@ -95,14 +86,8 @@ private:
 	 */
 	void resourcesInit();
 
-	/*
-	 * Notify observers about operation
-	 */
-	void notify(const ResourceID &resourceId, Operation::TYPE type); 
-
 
 private:
-	std::vector<IInstObserver<Server> *> _observers;
     std::unordered_map<ID_T, Resource> _resources = {
     	//  KEY            				 VALUE
     	{SHORT_SERV_ID, 			  {SHORT_SERV_ID, 				Operation(Operation::READ),                  IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::INT}},

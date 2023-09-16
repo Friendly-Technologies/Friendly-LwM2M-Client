@@ -218,7 +218,7 @@ uint8_t IInstance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * da
 		// Clear resource data if we need to replace it
 		if (writeType == LWM2M_WRITE_REPLACE_RESOURCES) {
 			resource->clear();
-			// NotifyIInstance implementation about operation
+			// Notify IInstance implementation about operation
 			serverOperationNotifier(Operation::DELETE, {resource->getID(), SINGLE_INSTANCE_ID});
 		}
 
@@ -238,7 +238,7 @@ uint8_t IInstance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * da
 				else return COAP_404_NOT_FOUND;
 			}
 			// If execution get to this place then operation completed with
-			// success and we can notifyIInstance implementation about it
+			// success and we can notify IInstance implementation about it
 			serverOperationNotifier(Operation::WRITE, {resource->getID(), resInstId});
 		}
 	}
@@ -262,7 +262,7 @@ uint8_t IInstance::resourceExecute(ID_T instanceId, ID_T resId, uint8_t * buffer
 	execute(resId, OPAQUE_T(buffer, buffer + length));
 
 	// If execution get to this place then operation completed with
-	// success and we can notifyIInstance implementation about it
+	// success and we can notify IInstance implementation about it
 	serverOperationNotifier(Operation::EXECUTE, {resource->getID(), SINGLE_INSTANCE_ID});
 
 	return COAP_204_CHANGED;

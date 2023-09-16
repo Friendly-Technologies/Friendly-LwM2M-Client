@@ -8,8 +8,8 @@
 #ifndef SERVER_H_
 #define SERVER_H_
 
+#include "ServerInfo.h"
 #include "IInstance.h"
-#include "ObjectInfo.h"
 #include "InstSubject.h"
 
 namespace wpp {

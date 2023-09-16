@@ -61,139 +61,23 @@ public:
 	/* ------------- Registry functionality ------------- */
 	void restoreObject(OBJ_ID id);
 
-	/* ------------- Mandatory objects ------------- */
-	Object<Security>& security() {
-		static const ObjectInfo info = {
-				"LWM2M Security",			// Name
-				OBJ_ID::SECURITY,			// Object ID
-				"urn:oma:lwm2m:oma:0:1.1",	// URN
-				{1,1},						// Object version
-				{1,1},						// Lwm2m version
-				IS_SINGLE::MULTIPLE,		// Is single
-				IS_MANDATORY::MANDATORY,	// Is Mandatory
-				Operation(Operation::READ|	// Object supported operations
-						  Operation::WRITE|
-						  Operation::DISCOVER|
-						  Operation::EXECUTE|
-						  Operation::CREATE|
-						  Operation::DELETE),
-		};
+	/* ------------- Mandatory objects start ------------- */
+	Object<Security>& security();
+	Object<Server>& server();
+	Object<Device>& device();
+	/* ------------- Mandatory objects end ------------- */
 
-		if (!Object<Security>::isCreated()) Object<Security>::create(info);
-		return *Object<Security>::object();
-	}
-
-	Object<Server>& server() {
-		static const ObjectInfo info = {
-				"LwM2M Server",				// Name
-				OBJ_ID::SERVER,				// Object ID
-				"urn:oma:lwm2m:oma:1:1.1",	// URN
-				{1,1},						// Object version
-				{1,1},						// Lwm2m version
-				IS_SINGLE::MULTIPLE,		// Is single
-				IS_MANDATORY::MANDATORY,	// Is Mandatory
-				Operation(Operation::READ|	// Object supported operations
-						  Operation::WRITE|
-						  Operation::DISCOVER|
-						  Operation::EXECUTE|
-						  Operation::CREATE|
-						  Operation::DELETE),
-		};
-
-		if (!Object<Server>::isCreated()) Object<Server>::create(info);
-		return *Object<Server>::object();
-	}
-
-	Object<Device>& device() {
-		// Device Object (ID:3) SHALL NOT be affected by any Delete operation.
-		static const ObjectInfo info = {
-				"Device",					// Name
-				OBJ_ID::DEVICE,				// Object ID
-				"urn:oma:lwm2m:oma:3:1.1",	// URN
-				{1,1},						// Object version
-				{1,1},						// Lwm2m version
-				IS_SINGLE::SINGLE,			// Is single
-				IS_MANDATORY::MANDATORY,	// Is Mandatory
-				Operation(Operation::READ|	// Object supported operations
-						  Operation::WRITE|
-						  Operation::DISCOVER|
-						  Operation::EXECUTE|
-						  Operation::CREATE),
-		};
-
-		if (!Object<Device>::isCreated()) Object<Device>::create(info);
-		return *Object<Device>::object();
-	}
-
-	/* ------------- Optional objects ------------- */
+	/* ------------- Optional objects start ------------- */
 	#ifdef ACL_OBJ
-	Object<Acl>& acl() {
-		static const ObjectInfo info = {
-				"LwM2M Access Control",		// Name
-				OBJ_ID::ACL,				// Object ID
-				"urn:oma:lwm2m:oma:2",		// URN
-				{1,0},						// Object version
-				{1,0},						// Lwm2m version
-				IS_SINGLE::MULTIPLE,		// Is single
-				IS_MANDATORY::OPTIONAL,		// Is Mandatory
-				Operation(Operation::READ|	// Object supported operations
-						  Operation::WRITE|
-						  Operation::DISCOVER|
-						  Operation::EXECUTE|
-						  Operation::CREATE|
-						  Operation::DELETE),
-		};
-
-		if (!Object<Acl>::isCreated()) Object<Acl>::create(info);
-		return *Object<Acl>::object();
-	}
+	Object<Acl>& acl();
 	#endif
-
 	#ifdef CONN_MONITORING_OBJ
-	Object<ConnMonitoring>& connMonitoring() {
-		static const ObjectInfo info = {
-				"Connectivity Monitoring",	// Name
-				OBJ_ID::CONN_MONITORING,	// Object ID
-				"urn:oma:lwm2m:oma:4:1.2 ",	// URN
-				{1,2},						// Object version
-				{1,1},						// Lwm2m version
-				IS_SINGLE::SINGLE,			// Is single
-				IS_MANDATORY::OPTIONAL,		// Is Mandatory
-				Operation(Operation::READ|	// Object supported operations
-						  Operation::WRITE|
-						  Operation::DISCOVER|
-						  Operation::EXECUTE|
-						  Operation::CREATE|
-						  Operation::DELETE),
-		};
-
-		if (!Object<ConnMonitoring>::isCreated()) Object<ConnMonitoring>::create(info);
-		return *Object<ConnMonitoring>::object();
-	}
+	Object<ConnMonitoring>& connMonitoring();
 	#endif
-
 	#ifdef FIRMWARE_UPD_OBJ
-		Object<FirmwareUpd>& firmwareUpd() {
-		static const ObjectInfo info = {
-				"Firmware Update",			// Name
-				OBJ_ID::ACFIRMWARE_UPDL,	// Object ID
-				"urn:oma:lwm2m:oma:5",		// URN
-				{1,0},						// Object version
-				{1,0},						// Lwm2m version
-				IS_SINGLE::SINGLE,			// Is single
-				IS_MANDATORY::OPTIONAL,		// Is Mandatory
-				Operation(Operation::READ|	// Object supported operations
-						  Operation::WRITE|
-						  Operation::DISCOVER|
-						  Operation::EXECUTE|
-						  Operation::CREATE|
-						  Operation::DELETE),
-		};
-
-		if (!Object<FirmwareUpd>::isCreated()) Object<FirmwareUpd>::create(info);
-		return *Object<FirmwareUpd>::object();
-	}
+		Object<FirmwareUpd>& firmwareUpd();
 	#endif
+	/* ------------- Optional objects end ------------- */
 
 private:
 	OBJ_RESTORE_T _objRestoreFunc;

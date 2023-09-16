@@ -8,8 +8,8 @@
 #ifndef SECURITY_H_
 #define SECURITY_H_
 
+#include "SecurityInfo.h"
 #include "IInstance.h"
-#include "ObjectInfo.h"
 #include "InstSubject.h"
 
 namespace wpp {

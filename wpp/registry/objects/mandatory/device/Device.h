@@ -8,8 +8,8 @@
 #ifndef DEVICE_H_
 #define DEVICE_H_
 
+#include "DeviceInfo.h"
 #include "IInstance.h"
-#include "ObjectInfo.h"
 #include "InstSubject.h"
 
 namespace wpp {

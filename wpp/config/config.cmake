@@ -1,3 +1,7 @@
+# Options that define here determine availability of general components
+# Settings for the behavior of a particular component should be in a
+# separate .h file near the definition of the component itself.
+
 # Loging start
 option(ENABLE_LOGS "Enable logs for Wakaama and WakaamaPlus" ON)
 if (ENABLE_LOGS)

@@ -61,8 +61,8 @@ void WppClient::loop(time_t &sleepTime) {
 	// Handle wakaama core state
 	int result = 0;// TODO: lwm2m_step(_lwm2m_context, availableTime);
 	if (!result && getState() == STATE_BOOTSTRAPPING) {
-		registry().restoreObject(registry().security());
-		registry().restoreObject(registry().server());
+		registry().restoreObject(registry().security().getObjectID());
+		registry().restoreObject(registry().server().getObjectID());
 	}
 
 	// Handle packets retreived from server

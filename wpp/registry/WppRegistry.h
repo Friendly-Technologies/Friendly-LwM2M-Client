@@ -47,7 +47,7 @@ public:
 	 * but will throw a std::bad_function_call exception at runtime if
 	 * you try to call the copied std::function.
 	 */
-	using OBJ_RESTORE_T = std::function<void(WppRegistry &, Lwm2mObject &)>;
+	using OBJ_RESTORE_T = std::function<void(WppRegistry &, OBJ_ID)>;
 
 public:
 	WppRegistry(const OBJ_RESTORE_T &objRestoreFunc);
@@ -59,7 +59,7 @@ public:
 	WppRegistry& operator=(WppRegistry&&) = delete;
 
 	/* ------------- Registry functionality ------------- */
-	void restoreObject(Lwm2mObject &object);
+	void restoreObject(OBJ_ID id);
 
 	/* ------------- Mandatory objects ------------- */
 	Object<Security>& security() {

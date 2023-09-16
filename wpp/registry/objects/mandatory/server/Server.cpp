@@ -13,6 +13,7 @@
 #include "Resource.h"
 #include "Operation.h"
 #include "types.h"
+#include "WppLogs.h"
 
 namespace wpp {
 
@@ -49,13 +50,13 @@ bool Server::remove(ID_T resId, ID_T resInstId) {
 void Server::userPerformedOperation(Operation::TYPE type, ID_T resId, ID_T resInstId) {
 	switch (type) {
 	case Operation::READ:
-		std::cout << "User READ -> resId:" << resId << ", resInstId:" << resInstId << std::endl;
+		WPP_LOGD_ARG("User READ -> resId: %d, resInstId: %d\n", resId, resInstId);
 		break;
 	case Operation::WRITE:
-		std::cout << "User WRITE -> resId:" << resId << ", resInstId:" << resInstId << std::endl;
+		WPP_LOGD_ARG("User WRITE -> resId: %d, resInstId: %d\n", resId, resInstId);
 		break;
 	case Operation::DELETE:
-		std::cout << "User DELETE -> resId:" << resId << ", resInstId:" << resInstId << std::endl;
+		WPP_LOGD_ARG("User DELETE -> resId: %d, resInstId: %d\n", resId, resInstId);
 		break;
 	default: break;
 	}

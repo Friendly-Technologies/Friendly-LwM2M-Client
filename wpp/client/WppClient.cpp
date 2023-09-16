@@ -6,6 +6,7 @@
  */
 
 #include "WppClient.h"
+#include "WppLogs.h"
 
 //TODO: #include "liblwm2m.h"
 

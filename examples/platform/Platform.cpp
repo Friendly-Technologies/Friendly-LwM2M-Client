@@ -26,5 +26,5 @@ int wpp::WppPlatform::strcasecmp(const char *str1, const char *str2) {
 }
 
 void wpp::WppPlatform::print(const char * msg, va_list arg) {
-    //TODO: Implement
+    vfprintf(stderr, msg, arg);
 }

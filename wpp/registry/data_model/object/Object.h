@@ -12,10 +12,13 @@
 #include <variant>
 
 #include "Lwm2mObject.h"
+#include "IObjObserver.h"
 #include "IInstance.h"
 #include "types.h"
 
 namespace wpp {
+
+class WppRegistry;
 
 /*
  * Object<T> is class that implements manipulation with IInstance interface class and his inheritors.
@@ -27,15 +30,23 @@ namespace wpp {
 template<typename T>
 class Object : public Lwm2mObject {
 private:
-	Object(const ObjectInfo &info);
+	Object(WppRegistry &registry, const ObjectInfo &info);
 
 public:
 	~Object();
 
 /* ------------- Object management ------------- */
-	static bool create(const ObjectInfo &info);
+	static bool create(WppRegistry &registry, const ObjectInfo &info);
 	static bool isCreated();
 	static Object<T>* object();
+
+/* ------------- Observer management ------------- */
+	/*
+	 * Subscribers will be notified about the creation
+	 * and deletion of object instances initiated by server.
+	 */
+	void subscribe(IObjObserver *observer);
+	void unsubscribe(IObjObserver *observer);
 
 /* ------------- Object instance management ------------- */
 	T* createInstance(ID_T instanceID = ID_T_MAX_VAL);
@@ -49,7 +60,10 @@ public:
 private:
 	ID_T getFirstAvailableInstanceID();
 
-	/* ------------- Lwm2m core callback ------------- */
+/* ------------- Notification management ------------- */
+	void notify(ID_T instanceId, Operation::TYPE type);
+
+/* ------------- Lwm2m core callback ------------- */
 	static uint8_t read_clb(lwm2m_context_t * contextP, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP);
 	static uint8_t write_clb(lwm2m_context_t * contextP, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP, lwm2m_write_type_t writeType);
 	static uint8_t execute_clb(lwm2m_context_t * contextP, ID_T instanceId, ID_T resourceId, uint8_t * buffer, int length, lwm2m_object_t * objectP);
@@ -64,32 +78,20 @@ private:
 #endif
 private:
 	static Object<T> *_object;
+
+	WppRegistry &_registry;
+
 	std::unordered_map<ID_T, IInstance*> _instances; // TODO: maybe here is better to use share_ptr instead simple IInstance*
+	std::vector<IObjObserver*> _observers;
 };
 
 
-/* ---------- Implementation of template methods ----------*/
+/* ---------- Implementation of methods ----------*/
 template<typename T>
 Object<T> *Object<T>::_object = NULL;
 
 template<typename T>
-bool Object<T>::create(const ObjectInfo &info) {
-	_object = new Object<T>(info);
-	return true;
-}
-
-template<typename T>
-bool Object<T>::isCreated() {
-	return _object != NULL;
-}
-
-template<typename T>
-Object<T>* Object<T>::object() {
-	return _object;
-}
-
-template<typename T>
-Object<T>::Object(const ObjectInfo &info): Lwm2mObject(info) {
+Object<T>::Object(WppRegistry &registry, const ObjectInfo &info): _registry(registry), Lwm2mObject(info) {
 	// Initialising core object representation
 	_lwm2m_object.objID 	   = (ID_T)_objInfo.objID;
 	_lwm2m_object.instanceList = NULL;
@@ -126,6 +128,49 @@ Object<T>::~Object() {
 	}
 }
 
+/* ------------- Object management ------------- */
+template<typename T>
+bool Object<T>::create(WppRegistry &registry, const ObjectInfo &info) {
+	_object = new Object<T>(registry, info);
+	return true;
+}
+
+template<typename T>
+bool Object<T>::isCreated() {
+	return _object != NULL;
+}
+
+template<typename T>
+Object<T>* Object<T>::object() {
+	return _object;
+}
+
+/* ------------- Observer management ------------- */
+template<typename T>
+void Object<T>::subscribe(IObjObserver *observer) {
+	if (!observer) return;
+	if (std::find(_observers.begin(), _observers.end(), observer) == _observers.end()) 
+		_observers.push_back(observer);
+}
+
+template<typename T>
+void Object<T>::unsubscribe(IObjObserver *observer) {
+	_observers.erase(std::find(_observers.begin(), _observers.end(), observer));
+}
+
+template<typename T>
+void Object<T>::notify(ID_T instanceId, Operation::TYPE type) {
+	InstanceID id = {(ID_T)getObjectId(), instanceId};
+	for(IObjObserver* observer : _observers) {
+		if (type == Operation::TYPE::CREATE) {
+			observer->instanceCreated(_registry, id);
+		} else if (type == Operation::TYPE::DELETE) {
+			observer->instanceDeleting(_registry, id);
+		}
+	}
+}
+
+/* ------------- Object instance management ------------- */
 template<typename T>
 T* Object<T>::createInstance(ID_T instanceId) {
 	// If object is single and instance has already exist, then we can not create new one and return NULL
@@ -209,6 +254,7 @@ ID_T Object<T>::getFirstAvailableInstanceID() {
 	return id;
 }
 
+/* ------------- Lwm2m core callback ------------- */
 template<typename T>
 uint8_t Object<T>::read_clb(lwm2m_context_t * contextP, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP) {
 	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
@@ -243,6 +289,9 @@ template<typename T>
 uint8_t Object<T>::create_clb(lwm2m_context_t * contextP, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP) {
 	if (!object()->createInstance(instanceId)) return COAP_500_INTERNAL_SERVER_ERROR;
 
+	// Notify user about creating instance
+	object()->notify(instanceId, Operation::TYPE::CREATE);
+
 	uint8_t result = write_clb(contextP, instanceId, numData, dataArray, objectP, LWM2M_WRITE_REPLACE_RESOURCES);
 	if (result != COAP_204_CHANGED) {
 		delete_clb(contextP, instanceId, objectP);
@@ -254,6 +303,11 @@ uint8_t Object<T>::create_clb(lwm2m_context_t * contextP, ID_T instanceId, int n
 
 template<typename T>
 uint8_t Object<T>::delete_clb(lwm2m_context_t * contextP, ID_T instanceId, lwm2m_object_t * objectP) {
+	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
+
+	// Notify user about deleting instance
+	object()->notify(instanceId, Operation::TYPE::DELETE);
+
 	return object()->removeInstance(instanceId)? COAP_202_DELETED : COAP_404_NOT_FOUND;
 }
 

@@ -9,6 +9,7 @@
 #include <chrono>
 
 #include "WppClient.h"
+#include "IObjObserver.h"
 
 #include "Connection.h"
 
@@ -32,6 +33,17 @@ void memConsumptionCheck() {
 //   cout << "DATA_VERIFIER_T: " << sizeof(Resource::DATA_VERIFIER_T) << endl;
 }
 
+class ObjObserver: public IObjObserver {
+	public:
+    void instanceCreated(WppRegistry &reg, const InstanceID &id) override {
+        cout << "instanceCreated: " << id.objectId << ":" << id.objectInstanceId << endl;
+    }
+
+    void instanceDeleting(WppRegistry &reg, const InstanceID &id) override {
+		cout << "instanceDeleting: " << id.objectId << ":" << id.objectInstanceId << endl;
+	}
+};
+
 void objRestore(WppRegistry &reg, Lwm2mObject &object) {
 	cout << "Restore object id: " << (ID_T)object.getObjectId() << ", name: " << object.getObjectInfo().name << endl;
 }
@@ -53,7 +65,12 @@ int main()
 
 	cout << endl << "Test WppRegistry:" << endl;
 	WppRegistry &registry = client->registry();
-	Server *server = registry.server().createInstance();
+
+	Object<Server> &serverObj = registry.server();
+	ObjObserver observer;
+	serverObj.subscribe(&observer);
+
+	Server *server = serverObj.createInstance();
 
 	INT_T value;
 	server->get(value, Server::SHORT_SERV_ID);

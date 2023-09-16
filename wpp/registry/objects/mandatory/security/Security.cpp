@@ -16,6 +16,10 @@
 
 namespace wpp {
 
+Security::Security(OBJ_ID objID, ID_T instanceID): IInstance(objID, instanceID) {
+	resourcesInit();
+}
+
 /* ---------------IInstance implementation part --------------- */
 Resource * Security::getResource(ID_T id) {
 	return NULL;
@@ -60,6 +64,10 @@ void Security::serverOperationNotifier(Operation::TYPE type, ResourceID resource
 		break;
 	default: break;
 	}
+}
+
+/* --------------- Class private methods --------------- */
+void Security::resourcesInit() {
 }
 
 } /* namespace wpp */

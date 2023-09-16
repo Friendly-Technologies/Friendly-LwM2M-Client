@@ -27,9 +27,7 @@ public:
 	};
 
 public:
-	Server(OBJ_ID objID, ID_T instanceID): IInstance(objID, instanceID) {
-		_resourcesInit();
-	}
+	Server(OBJ_ID objID, ID_T instanceID);
 
 	/* --------------- User helpful methods for manage resources data --------------- */
 	/*
@@ -81,8 +79,11 @@ protected:
 	void serverOperationNotifier(Operation::TYPE type, ResourceID resource) override;
 
 private:
-	/* --------------- Class helpful methods --------------- */
-	void _resourcesInit();
+	/* --------------- Class private methods --------------- */
+	/*
+	 * Initialize resources with defoult values
+	 */
+	void resourcesInit();
 
 private:
     std::unordered_map<ID_T, Resource> _resources = {

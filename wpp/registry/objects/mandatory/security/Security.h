@@ -15,8 +15,8 @@ namespace wpp {
 
 class Security: public IInstance {
 public:
-	Security(OBJ_ID objID, ID_T instanceID): IInstance(objID, instanceID) {
-	}
+	Security(OBJ_ID objID, ID_T instanceID);
+	
 protected:
 	/* ---------------IInstance implementation part --------------- */
 	/*
@@ -37,6 +37,13 @@ protected:
 	 * Handles information about resource operation that made server
 	 */
 	void serverOperationNotifier(Operation::TYPE type, ResourceID resource) override;
+
+private:
+	/* --------------- Class private methods --------------- */
+	/*
+	 * Initialize resources with defoult values
+	 */
+	void resourcesInit();
 };
 
 } /* namespace wpp */

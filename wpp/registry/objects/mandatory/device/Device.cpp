@@ -16,6 +16,10 @@
 
 namespace wpp {
 
+Device::Device(OBJ_ID objID, ID_T instanceID): IInstance(objID, instanceID) {
+	resourcesInit();
+}
+
 /* ---------------IInstance implementation part --------------- */
 Resource * Device::getResource(ID_T id) {
 	return NULL;
@@ -60,6 +64,10 @@ void Device::serverOperationNotifier(Operation::TYPE type, ResourceID resource) 
 		break;
 	default: break;
 	}
+}
+
+/* --------------- Class private methods --------------- */
+void Device::resourcesInit() {
 }
 
 } /* namespace wpp */

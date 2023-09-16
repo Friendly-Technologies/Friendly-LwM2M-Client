@@ -28,6 +28,9 @@
 
 namespace wpp {
 
+template<typename T>
+class Object;
+
 // TODO: Split mandatory and optional registers
 // TODO: Add ability to check whether some object id is exist
 // TODO: Add ability to get Lwm2mObject by ID
@@ -76,7 +79,7 @@ public:
 						  Operation::DELETE),
 		};
 
-		if (!Object<Security>::isCreated()) Object<Security>::create(info);
+		if (!Object<Security>::isCreated()) Object<Security>::create(*this, info);
 		return *Object<Security>::object();
 	}
 
@@ -97,7 +100,7 @@ public:
 						  Operation::DELETE),
 		};
 
-		if (!Object<Server>::isCreated()) Object<Server>::create(info);
+		if (!Object<Server>::isCreated()) Object<Server>::create(*this, info);
 		return *Object<Server>::object();
 	}
 
@@ -118,7 +121,7 @@ public:
 						  Operation::CREATE),
 		};
 
-		if (!Object<Device>::isCreated()) Object<Device>::create(info);
+		if (!Object<Device>::isCreated()) Object<Device>::create(*this, info);
 		return *Object<Device>::object();
 	}
 
@@ -141,7 +144,7 @@ public:
 						  Operation::DELETE),
 		};
 
-		if (!Object<Acl>::isCreated()) Object<Acl>::create(info);
+		if (!Object<Acl>::isCreated()) Object<Acl>::create(*this, info);
 		return *Object<Acl>::object();
 	}
 	#endif
@@ -164,7 +167,7 @@ public:
 						  Operation::DELETE),
 		};
 
-		if (!Object<ConnMonitoring>::isCreated()) Object<ConnMonitoring>::create(info);
+		if (!Object<ConnMonitoring>::isCreated()) Object<ConnMonitoring>::create(*this, info);
 		return *Object<ConnMonitoring>::object();
 	}
 	#endif
@@ -187,7 +190,7 @@ public:
 						  Operation::DELETE),
 		};
 
-		if (!Object<FirmwareUpd>::isCreated()) Object<FirmwareUpd>::create(info);
+		if (!Object<FirmwareUpd>::isCreated()) Object<FirmwareUpd>::create(*this, info);
 		return *Object<FirmwareUpd>::object();
 	}
 	#endif

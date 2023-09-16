@@ -1,5 +1,5 @@
-#ifndef IOBSERVER_H_
-#define IOBSERVER_H_
+#ifndef IOBJOBSERVER_H_
+#define IOBJOBSERVER_H_
 
 #include "Object.h"
 
@@ -26,4 +26,4 @@ public:
 
 } // namespace wpp
 
-#endif /* IOBSERVER_H_ */
+#endif /* IOBJOBSERVER_H_ */

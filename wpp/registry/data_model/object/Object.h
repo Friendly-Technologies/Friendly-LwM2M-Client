@@ -26,7 +26,6 @@ class WppRegistry;
  * instance callbacks to core interface, for avoid multiple definition of this mechanism in instance
  * implementation classes.
  */
-// TODO: Add user notification ability about instance operations CREATE, DELETE, DISCOVER
 template<typename T>
 class Object : public Lwm2mObject {
 private:

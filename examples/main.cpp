@@ -10,6 +10,7 @@
 
 #include "WppClient.h"
 #include "IObjObserver.h"
+#include "IInstObserver.h"
 
 #include "Connection.h"
 
@@ -33,19 +34,31 @@ void memConsumptionCheck() {
 //   cout << "DATA_VERIFIER_T: " << sizeof(Resource::DATA_VERIFIER_T) << endl;
 }
 
-class ObjObserver: public IObjObserver<Server> {
+class ServerObserver: public IObjObserver<Server>, public IInstObserver<Server> {
 	public:
     void instanceCreated(Object<Server> &object, ID_T instanceId) override {
-        cout << "instanceCreated: " << (ID_T)object.getObjectId() << ":" << instanceId << endl;
+        cout << "instanceCreated: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
     }
 
     void instanceDeleting(Object<Server> &object, ID_T instanceId) override {
-		cout << "instanceDeleting: " << (ID_T)object.getObjectId() << ":" << instanceId << endl;
+		cout << "instanceDeleting: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
 	}
+
+	virtual void resourceRead(Server &inst, const ResourceID &resourceId) override {
+        cout << "resourceRead: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resourceId.resourceId << ":" << resourceId.resourceInstanceId << endl;
+    }
+
+    virtual void resourceWrite(Server &inst, const ResourceID &resourceId) override {
+        cout << "resourceWrite: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resourceId.resourceId << ":" << resourceId.resourceInstanceId << endl;
+    }
+
+    virtual void resourceExecute(Server &inst, const ResourceID &resourceId) override {
+        cout << "resourceExecute: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resourceId.resourceId << ":" << resourceId.resourceInstanceId << endl;
+    }
 };
 
 void objRestore(WppRegistry &reg, Lwm2mObject &object) {
-	cout << "Restore object id: " << (ID_T)object.getObjectId() << ", name: " << object.getObjectInfo().name << endl;
+	cout << "Restore object id: " << (ID_T)object.getObjectID() << ", name: " << object.getObjectInfo().name << endl;
 }
 
 int main()
@@ -67,10 +80,11 @@ int main()
 	WppRegistry &registry = client->registry();
 
 	Object<Server> &serverObj = registry.server();
-	ObjObserver observer;
+	ServerObserver observer;
 	serverObj.subscribe(&observer);
 
 	Server *server = serverObj.createInstance();
+	server->subscribe(&observer);
 
 	INT_T value;
 	server->get(value, Server::SHORT_SERV_ID);

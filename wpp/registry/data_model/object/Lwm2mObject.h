@@ -27,7 +27,7 @@ public:
 	Lwm2mObject& operator=(const Lwm2mObject&) = delete;
 	Lwm2mObject& operator=(Lwm2mObject&&) = delete;
 
-	OBJ_ID getObjectId() { return _objInfo.objID; }
+	OBJ_ID getObjectID() { return _objInfo.objID; }
 	lwm2m_object_t& getLwm2mObject() { return _lwm2m_object; }
 	const ObjectInfo& getObjectInfo() { return _objInfo; }
 

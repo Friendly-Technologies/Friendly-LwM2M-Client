@@ -10,6 +10,7 @@
 
 #include "IInstance.h"
 #include "ObjectInfo.h"
+#include "IInstObserver.h"
 
 namespace wpp {
 
@@ -28,6 +29,15 @@ public:
 
 public:
 	Server(OBJ_ID objID, ID_T instanceID);
+
+
+	/* ------------- Observer management ------------- */
+	/*
+	 * Subscribers will be notified about the write, delete
+	 * and execute of instance resources initiated by server.
+	 */
+	void subscribe(IInstObserver<Server> *observer);
+	void unsubscribe(IInstObserver<Server> *observer);
 
 	/* --------------- User helpful methods for manage resources data --------------- */
 	/*
@@ -76,7 +86,7 @@ protected:
 	/*
 	 * Handles information about resource operation that made server
 	 */
-	void serverOperationNotifier(Operation::TYPE type, ResourceID resource) override;
+	void serverOperationNotifier(Operation::TYPE type, const ResourceID &resourceId) override;
 
 private:
 	/* --------------- Class private methods --------------- */
@@ -85,7 +95,14 @@ private:
 	 */
 	void resourcesInit();
 
+	/*
+	 * Notify observers about operation
+	 */
+	void notify(const ResourceID &resourceId, Operation::TYPE type); 
+
+
 private:
+	std::vector<IInstObserver<Server> *> _observers;
     std::unordered_map<ID_T, Resource> _resources = {
     	//  KEY            				 VALUE
     	{SHORT_SERV_ID, 			  {SHORT_SERV_ID, 				Operation(Operation::READ),                  IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::INT}},

@@ -46,9 +46,9 @@ public: /* Interface that can be used by user */
 	IInstance& operator=(IInstance&&) = delete;
 
 	OBJ_ID getObjectID() { return _objID;}
-	ID_T getIInstanceD() { return _instanceID;}
+	ID_T getInstanceID() { return _instanceID;}
 
-protected: /* Interface used byIInstance orIInstance implementation class */
+protected: /* Interface used by IInstance implementation class */
 	/*
 	 * This method must be implemented by derived class,
 	 * and return resource if it is exists.
@@ -77,7 +77,7 @@ protected: /* Interface used byIInstance orIInstance implementation class */
      * information about resource operation (READ, WRITE, EXECUTE, DISCOVER, DELETE).
 	 * Called byIInstance after resource operation performed by server.
 	 */
-	virtual void serverOperationNotifier(Operation::TYPE type, ResourceID resource) = 0;
+	virtual void serverOperationNotifier(Operation::TYPE type, const ResourceID &resourceId) = 0;
 
 private: /* Interface used by Object<T> or IInstance class */
 	/*

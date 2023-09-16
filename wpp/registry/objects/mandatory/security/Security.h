@@ -36,7 +36,7 @@ protected:
 	/*
 	 * Handles information about resource operation that made server
 	 */
-	void serverOperationNotifier(Operation::TYPE type, ResourceID resource) override;
+	void serverOperationNotifier(Operation::TYPE type, const ResourceID &resourceId) override;
 
 private:
 	/* --------------- Class private methods --------------- */

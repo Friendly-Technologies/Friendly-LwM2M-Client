@@ -29,8 +29,6 @@ class IWppConnection;
  * through parameters.
  */
 class WppClient {
-	friend WppClient * wpp_client();
-
 public:
 	struct ClientInfo {
 		std::string endpointName;
@@ -47,6 +45,11 @@ public:
 	/* ------------- WppClient management ------------- */
 	static bool create(const ClientInfo &info, IWppConnection &connection, const WppRegistry::OBJ_RESTORE_T &objRestoreFunc);
 	static bool isCreated();
+
+	/*
+	 * TODO: Find other approach to share client with internal components
+	 */
+	static WppClient * client();
 	
 	/*
 	 * At the same time, only one actor can have access to the client, this is done
@@ -88,8 +91,6 @@ public:
 
 private:
 	/* ------------- Wakaama client initialisation ------------- */
-	static WppClient * client();
-
 	bool lwm2mContextOpen();
 	void lwm2mContextClose();
 	lwm2m_context_t * getContext();

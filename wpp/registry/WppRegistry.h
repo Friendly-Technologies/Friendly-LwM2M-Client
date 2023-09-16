@@ -16,13 +16,13 @@
 #include "mandatory/server/Server.h"
 #include "mandatory/device/Device.h"
 
-#ifdef ACL_OBJ
+#if ACL_OBJ
 #include "optional/acl/Acl.h"
 #endif
-#ifdef CONN_MONITORING_OBJ
+#if CONN_MONITORING_OBJ
 #include "optional/conn_monitoring/ConnMonitoring.h"
 #endif
-#ifdef FIRMWARE_UPD_OBJ
+#if FIRMWARE_UPD_OBJ
 #include "optional/firmware_upd/FirmwareUpd.h"
 #endif
 
@@ -68,13 +68,13 @@ public:
 	/* ------------- Mandatory objects end ------------- */
 
 	/* ------------- Optional objects start ------------- */
-	#ifdef ACL_OBJ
+	#if ACL_OBJ
 	Object<Acl>& acl();
 	#endif
-	#ifdef CONN_MONITORING_OBJ
+	#if CONN_MONITORING_OBJ
 	Object<ConnMonitoring>& connMonitoring();
 	#endif
-	#ifdef FIRMWARE_UPD_OBJ
+	#if FIRMWARE_UPD_OBJ
 		Object<FirmwareUpd>& firmwareUpd();
 	#endif
 	/* ------------- Optional objects end ------------- */

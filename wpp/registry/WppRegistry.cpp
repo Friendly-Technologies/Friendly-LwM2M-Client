@@ -29,13 +29,13 @@ Object<Device>& WppRegistry::device() {
 /* ------------- Mandatory objects end ------------- */
 
 /* ------------- Optional objects start ------------- */
-#ifdef ACL_OBJ
+#if ACL_OBJ
 #endif
 
-#ifdef CONN_MONITORING_OBJ
+#if CONN_MONITORING_OBJ
 #endif
 
-#ifdef FIRMWARE_UPD_OBJ
+#if FIRMWARE_UPD_OBJ
 #endif
 /* ------------- Optional objects end ------------- */
 

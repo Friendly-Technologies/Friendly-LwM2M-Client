@@ -26,29 +26,43 @@
 
 namespace wpp {
 
+// TODO: Split mandatory and optional registers
 // TODO: Add ability to check whether some object id is exist
 // TODO: Add ability to get Lwm2mObject by ID
 class WppRegistry {
-private:
-	WppRegistry() {}
+public:
+	/*
+	 * OBJ_RESTORE_T represents callback that notifies user about the requirement of restoring the object state to default
+	 *
+	 * NOTE: Keep in mind that while std::function itself is always copy able,
+	 * it might hold a callable object (like a lambda) that captures
+	 * variables which may not be copy able. If you try to copy a
+	 * std::function that holds a non-copyable callable, it will compile,
+	 * but will throw a std::bad_function_call exception at runtime if
+	 * you try to call the copied std::function.
+	 */
+	using OBJ_RESTORE_T = std::function<void(Lwm2mObject &)>;
 
 public:
+	WppRegistry(const OBJ_RESTORE_T &objRestoreFunc) : _objRestoreFunc(objRestoreFunc) {}
+	~WppRegistry() {}
+
 	WppRegistry(const WppRegistry&) = delete;
 	WppRegistry(WppRegistry&&) = delete;
 	WppRegistry& operator=(const WppRegistry&) = delete;
 	WppRegistry& operator=(WppRegistry&&) = delete;
 
-	/* ------------- Registry management ------------- */
-	static WppRegistry& instance() {
-		static WppRegistry registry;
-		return registry;
+	/* ------------- Registry functionality ------------- */
+	void restoreObject(Lwm2mObject &object) {
+		if (_objRestoreFunc) _objRestoreFunc(object);
+		else object.clear(); // TODO: Validate this behaviour
 	}
 
 	/* ------------- Mandatory objects ------------- */
 	Object<Security>& security() {
 		static const ObjectInfo info = {
 				"LWM2M Security",			// Name
-				OBJ_ID::SECURITY,				// Object ID
+				OBJ_ID::SECURITY,			// Object ID
 				"urn:oma:lwm2m:oma:0:1.1",	// URN
 				{1,1},						// Object version
 				{1,1},						// Lwm2m version
@@ -177,6 +191,9 @@ public:
 		return *Object<FirmwareUpd>::instance();
 	}
 	#endif
+
+private:
+	OBJ_RESTORE_T _objRestoreFunc;
 };
 
 } // namespace wpp

@@ -190,6 +190,11 @@ uint8_t Instance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * dat
 	// instance creation operation (Ex: ACL object resource 0). I did not
 	// find the necessary description in the documentation, so this question
 	// needs to be investigated in detail.
+	//
+	// DOC: Only in the Bootstrap Interface, the "Bootstrap-Write" MAY target just an Object ID,
+	// which will allow a BootstrapServer in using a TLV, SenML CBOR or SenML JSON formatted
+	// payload, to populate a LwM2M Client in a single message containing several Instances
+	// of the same Object.
 	if (writeType == LWM2M_WRITE_REPLACE_INSTANCE) {
 		std::vector<Resource *> resources = getInstantiatedResourcesList(Operation(Operation::WRITE));
 		for (auto resource : resources) resource->clear();

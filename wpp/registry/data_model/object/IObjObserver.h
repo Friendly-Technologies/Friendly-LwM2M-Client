@@ -1,12 +1,14 @@
 #ifndef IOBSERVER_H_
 #define IOBSERVER_H_
 
-#include "WppRegistry.h"
+#include "Object.h"
 
 namespace wpp {
 
-class WppRegistry;
+template <typename T>
+class Object;
 
+template <typename T>
 class IObjObserver {
 public:
     virtual ~IObjObserver() {};
@@ -14,12 +16,12 @@ public:
      * Notifies observer immediately after creating instance by server. 
      * Instance is already created during this call.
      */
-    virtual void instanceCreated(WppRegistry &reg, const InstanceID &id) = 0;
+    virtual void instanceCreated(Object<T> &object, ID_T instanceId) = 0;
     /*
      * Notifies observer about instance deleting by server. 
      * Instance will be deleted after completing this call.
      */
-    virtual void instanceDeleting(WppRegistry &reg, const InstanceID &id) = 0;
+    virtual void instanceDeleting(Object<T> &object, ID_T instanceId) = 0;
 };
 
 } // namespace wpp

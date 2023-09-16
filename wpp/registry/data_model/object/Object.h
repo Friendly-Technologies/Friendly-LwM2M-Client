@@ -30,13 +30,13 @@ class WppRegistry;
 template<typename T>
 class Object : public Lwm2mObject {
 private:
-	Object(WppRegistry &registry, const ObjectInfo &info);
+	Object(const ObjectInfo &info);
 
 public:
 	~Object();
 
 /* ------------- Object management ------------- */
-	static bool create(WppRegistry &registry, const ObjectInfo &info);
+	static bool create(const ObjectInfo &info);
 	static bool isCreated();
 	static Object<T>* object();
 
@@ -45,8 +45,8 @@ public:
 	 * Subscribers will be notified about the creation
 	 * and deletion of object instances initiated by server.
 	 */
-	void subscribe(IObjObserver *observer);
-	void unsubscribe(IObjObserver *observer);
+	void subscribe(IObjObserver<T> *observer);
+	void unsubscribe(IObjObserver<T> *observer);
 
 /* ------------- Object instance management ------------- */
 	T* createInstance(ID_T instanceID = ID_T_MAX_VAL);
@@ -79,10 +79,8 @@ private:
 private:
 	static Object<T> *_object;
 
-	WppRegistry &_registry;
-
 	std::unordered_map<ID_T, IInstance*> _instances; // TODO: maybe here is better to use share_ptr instead simple IInstance*
-	std::vector<IObjObserver*> _observers;
+	std::vector<IObjObserver<T>*> _observers;
 };
 
 
@@ -91,7 +89,7 @@ template<typename T>
 Object<T> *Object<T>::_object = NULL;
 
 template<typename T>
-Object<T>::Object(WppRegistry &registry, const ObjectInfo &info): _registry(registry), Lwm2mObject(info) {
+Object<T>::Object(const ObjectInfo &info): Lwm2mObject(info) {
 	// Initialising core object representation
 	_lwm2m_object.objID 	   = (ID_T)_objInfo.objID;
 	_lwm2m_object.instanceList = NULL;
@@ -130,8 +128,8 @@ Object<T>::~Object() {
 
 /* ------------- Object management ------------- */
 template<typename T>
-bool Object<T>::create(WppRegistry &registry, const ObjectInfo &info) {
-	_object = new Object<T>(registry, info);
+bool Object<T>::create(const ObjectInfo &info) {
+	_object = new Object<T>(info);
 	return true;
 }
 
@@ -147,25 +145,24 @@ Object<T>* Object<T>::object() {
 
 /* ------------- Observer management ------------- */
 template<typename T>
-void Object<T>::subscribe(IObjObserver *observer) {
+void Object<T>::subscribe(IObjObserver<T> *observer) {
 	if (!observer) return;
 	if (std::find(_observers.begin(), _observers.end(), observer) == _observers.end()) 
 		_observers.push_back(observer);
 }
 
 template<typename T>
-void Object<T>::unsubscribe(IObjObserver *observer) {
+void Object<T>::unsubscribe(IObjObserver<T> *observer) {
 	_observers.erase(std::find(_observers.begin(), _observers.end(), observer));
 }
 
 template<typename T>
 void Object<T>::notify(ID_T instanceId, Operation::TYPE type) {
-	InstanceID id = {(ID_T)getObjectId(), instanceId};
-	for(IObjObserver* observer : _observers) {
+	for(IObjObserver<T>* observer : _observers) {
 		if (type == Operation::TYPE::CREATE) {
-			observer->instanceCreated(_registry, id);
+			observer->instanceCreated(*this, instanceId);
 		} else if (type == Operation::TYPE::DELETE) {
-			observer->instanceDeleting(_registry, id);
+			observer->instanceDeleting(*this, instanceId);
 		}
 	}
 }

@@ -33,14 +33,14 @@ void memConsumptionCheck() {
 //   cout << "DATA_VERIFIER_T: " << sizeof(Resource::DATA_VERIFIER_T) << endl;
 }
 
-class ObjObserver: public IObjObserver {
+class ObjObserver: public IObjObserver<Server> {
 	public:
-    void instanceCreated(WppRegistry &reg, const InstanceID &id) override {
-        cout << "instanceCreated: " << id.objectId << ":" << id.objectInstanceId << endl;
+    void instanceCreated(Object<Server> &object, ID_T instanceId) override {
+        cout << "instanceCreated: " << (ID_T)object.getObjectId() << ":" << instanceId << endl;
     }
 
-    void instanceDeleting(WppRegistry &reg, const InstanceID &id) override {
-		cout << "instanceDeleting: " << id.objectId << ":" << id.objectInstanceId << endl;
+    void instanceDeleting(Object<Server> &object, ID_T instanceId) override {
+		cout << "instanceDeleting: " << (ID_T)object.getObjectId() << ":" << instanceId << endl;
 	}
 };
 

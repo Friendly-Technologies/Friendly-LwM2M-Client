@@ -79,7 +79,7 @@ public:
 						  Operation::DELETE),
 		};
 
-		if (!Object<Security>::isCreated()) Object<Security>::create(*this, info);
+		if (!Object<Security>::isCreated()) Object<Security>::create(info);
 		return *Object<Security>::object();
 	}
 
@@ -100,7 +100,7 @@ public:
 						  Operation::DELETE),
 		};
 
-		if (!Object<Server>::isCreated()) Object<Server>::create(*this, info);
+		if (!Object<Server>::isCreated()) Object<Server>::create(info);
 		return *Object<Server>::object();
 	}
 
@@ -121,7 +121,7 @@ public:
 						  Operation::CREATE),
 		};
 
-		if (!Object<Device>::isCreated()) Object<Device>::create(*this, info);
+		if (!Object<Device>::isCreated()) Object<Device>::create(info);
 		return *Object<Device>::object();
 	}
 
@@ -144,7 +144,7 @@ public:
 						  Operation::DELETE),
 		};
 
-		if (!Object<Acl>::isCreated()) Object<Acl>::create(*this, info);
+		if (!Object<Acl>::isCreated()) Object<Acl>::create(info);
 		return *Object<Acl>::object();
 	}
 	#endif
@@ -167,7 +167,7 @@ public:
 						  Operation::DELETE),
 		};
 
-		if (!Object<ConnMonitoring>::isCreated()) Object<ConnMonitoring>::create(*this, info);
+		if (!Object<ConnMonitoring>::isCreated()) Object<ConnMonitoring>::create(info);
 		return *Object<ConnMonitoring>::object();
 	}
 	#endif
@@ -190,7 +190,7 @@ public:
 						  Operation::DELETE),
 		};
 
-		if (!Object<FirmwareUpd>::isCreated()) Object<FirmwareUpd>::create(*this, info);
+		if (!Object<FirmwareUpd>::isCreated()) Object<FirmwareUpd>::create(info);
 		return *Object<FirmwareUpd>::object();
 	}
 	#endif

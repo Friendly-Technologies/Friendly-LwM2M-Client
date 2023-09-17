@@ -12,19 +12,29 @@
 
 #include "Object.h"
 
+/* ------------- Mandatory objects include start ------------- */
+#if MANDATORY_SECURITY_OBJ
 #include "mandatory/security/Security.h"
+#endif
+#if MANDATORY_SERVER_OBJ
 #include "mandatory/server/Server.h"
+#endif
+#if MANDATORY_DEVICE_OBJ
 #include "mandatory/device/Device.h"
+#endif
+/* ------------- Mandatory objects include end ------------- */
 
-#if ACL_OBJ
+/* ------------- Optional objects include start ------------- */
+#if OPTIONAL_ACL_OBJ
 #include "optional/acl/Acl.h"
 #endif
-#if CONN_MONITORING_OBJ
+#if OPTIONAL_CONN_MONITORING_OBJ
 #include "optional/conn_monitoring/ConnMonitoring.h"
 #endif
-#if FIRMWARE_UPD_OBJ
+#if OPTIONAL_FIRMWARE_UPD_OBJ
 #include "optional/firmware_upd/FirmwareUpd.h"
 #endif
+/* ------------- Optional objects include end ------------- */
 
 namespace wpp {
 
@@ -61,23 +71,29 @@ public:
 	/* ------------- Registry functionality ------------- */
 	void restoreObject(OBJ_ID id);
 
-	/* ------------- Mandatory objects start ------------- */
+	/* ------------- Mandatory objects prototype start ------------- */
+	#if MANDATORY_SECURITY_OBJ
 	Object<Security>& security();
+	#endif
+	#if MANDATORY_SERVER_OBJ
 	Object<Server>& server();
+	#endif
+	#if MANDATORY_DEVICE_OBJ
 	Object<Device>& device();
-	/* ------------- Mandatory objects end ------------- */
+	#endif
+	/* ------------- Mandatory objects prototype end ------------- */
 
-	/* ------------- Optional objects start ------------- */
-	#if ACL_OBJ
+	/* ------------- Optional objects prototype start ------------- */
+	#if OPTIONAL_ACL_OBJ
 	Object<Acl>& acl();
 	#endif
-	#if CONN_MONITORING_OBJ
+	#if OPTIONAL_CONN_MONITORING_OBJ
 	Object<ConnMonitoring>& connMonitoring();
 	#endif
-	#if FIRMWARE_UPD_OBJ
+	#if OPTIONAL_FIRMWARE_UPD_OBJ
 		Object<FirmwareUpd>& firmwareUpd();
 	#endif
-	/* ------------- Optional objects end ------------- */
+	/* ------------- Optional objects prototype end ------------- */
 
 private:
 	OBJ_RESTORE_T _objRestoreFunc;

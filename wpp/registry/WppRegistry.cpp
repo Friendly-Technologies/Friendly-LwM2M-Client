@@ -11,33 +11,37 @@ void WppRegistry::restoreObject(OBJ_ID id) {
     if (_objRestoreFunc) _objRestoreFunc(*this, id);
 }
 
-/* ------------- Mandatory objects start ------------- */
+/* ------------- Mandatory objects prototype start ------------- */
+#if MANDATORY_SECURITY_OBJ
 Object<Security>& WppRegistry::security() {
     if (!Object<Security>::isCreated()) Object<Security>::create(SECURITY_OBJ_INFO);
     return *Object<Security>::object();
 }
-
+#endif
+#if MANDATORY_SERVER_OBJ
 Object<Server>& WppRegistry::server() {
     if (!Object<Server>::isCreated()) Object<Server>::create(SERVER_OBJ_INFO);
     return *Object<Server>::object();
 }
-
+#endif
+#if MANDATORY_DEVICE_OBJ
 Object<Device>& WppRegistry::device() {
     if (!Object<Device>::isCreated()) Object<Device>::create(DEVICE_OBJ_INFO);
     return *Object<Device>::object();
 }
-/* ------------- Mandatory objects end ------------- */
+#endif
+/* ------------- Mandatory objects prototype end ------------- */
 
-/* ------------- Optional objects start ------------- */
-#if ACL_OBJ
+/* ------------- Optional objects prototype start ------------- */
+#if OPTIONAL_ACL_OBJ
 #endif
 
-#if CONN_MONITORING_OBJ
+#if OPTIONAL_CONN_MONITORING_OBJ
 #endif
 
-#if FIRMWARE_UPD_OBJ
+#if OPTIONAL_FIRMWARE_UPD_OBJ
 #endif
-/* ------------- Optional objects end ------------- */
+/* ------------- Optional objects prototype end ------------- */
 
 
 } //wpp

@@ -9,23 +9,39 @@ if (ENABLE_LOGS)
 endif()
 # Loging end
 
+# Mandatory object option starts with MANDATORY_
 # Mandatory objects start
+option(MANDATORY_SECURITY_OBJ "Include mandatory Security object in the build" ON)
+if (MANDATORY_SECURITY_OBJ)
+    set(COMPILE_DEFINITIONS ${COMPILE_DEFINITIONS} MANDATORY_SECURITY_OBJ=1)
+endif()
+
+option(MANDATORY_SERVER_OBJ "Include mandatory Server object in the build" ON)
+if (SERVER_OBJ)
+    set(COMPILE_DEFINITIONS ${COMPILE_DEFINITIONS} MANDATORY_SERVER_OBJ=1)
+endif()
+
+option(MANDATORY_DEVICE_OBJ "Include mandatory Device object in the build" ON)
+if (MANDATORY_DEVICE_OBJ)
+    set(COMPILE_DEFINITIONS ${COMPILE_DEFINITIONS} MANDATORY_DEVICE_OBJ=1)
+endif()
 # Mandatory objects end
 
+# Optional object option starts with OPTIONAL_
 # Optional objects start
-option(ACL_OBJ "Include ACL object in the build" OFF)
+option(OPTIONAL_ACL_OBJ "Include optional ACL object in the build" OFF)
 if (ACL_OBJ)
-    set(COMPILE_DEFINITIONS ${COMPILE_DEFINITIONS} ACL_OBJ=1)
+    set(COMPILE_DEFINITIONS ${COMPILE_DEFINITIONS} OPTIONAL_ACL_OBJ=1)
 endif()
 
-option(CONN_MONITORING_OBJ "Include Connection monitoring object in the build" OFF)
-if (CONN_MONITORING_OBJ)
-    set(COMPILE_DEFINITIONS ${COMPILE_DEFINITIONS} CONN_MONITORING_OBJ=1)
+option(OPTIONAL_CONN_MONITORING_OBJ "Include optional Connection monitoring object in the build" OFF)
+if (OPTIONAL_CONN_MONITORING_OBJ)
+    set(COMPILE_DEFINITIONS ${COMPILE_DEFINITIONS} OPTIONAL_CONN_MONITORING_OBJ=1)
 endif()
 
-option(FIRMWARE_UPD_OBJ "Include Firmware update in the build" OFF)
-if (FIRMWARE_UPD_OBJ)
-    set(COMPILE_DEFINITIONS ${COMPILE_DEFINITIONS} FIRMWARE_UPD_OBJ=1)
+option(OPTIONAL_FIRMWARE_UPD_OBJ "Include optional Firmware update in the build" OFF)
+if (OPTIONAL_FIRMWARE_UPD_OBJ)
+    set(COMPILE_DEFINITIONS ${COMPILE_DEFINITIONS} OPTIONAL_FIRMWARE_UPD_OBJ=1)
 endif()
 # Optional objects end
 

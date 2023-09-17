@@ -35,6 +35,7 @@ public:
 	virtual bool isInstanceExist(ID_T instanceID) = 0;
 
 	virtual void clear() = 0;
+	virtual void restore() = 0;
 
 protected:
 	lwm2m_object_t _lwm2m_object;

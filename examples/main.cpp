@@ -36,6 +36,12 @@ void memConsumptionCheck() {
 
 class ServerObserver: public IObjObserver<Server>, public IInstObserver<Server> {
 	public:
+	void objectRestore(Object<Server> &object) override {
+		cout << "objectRestore: " << (ID_T)object.getObjectID() << endl;
+		object.clear();
+		object.createInstance();
+	}
+
     void instanceCreated(Object<Server> &object, ID_T instanceId) override {
         cout << "instanceCreated: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
     }
@@ -57,27 +63,6 @@ class ServerObserver: public IObjObserver<Server>, public IInstObserver<Server> 
     }
 };
 
-void objRestore(WppRegistry &reg, OBJ_ID id) {
-	cout << "Restore object id: " << (ID_T)id << endl;
-	
-	switch (id) {
-	case OBJ_ID::SERVER:
-		reg.server().clear();
-		reg.server().createInstance();
-		break;
-	case OBJ_ID::SECURITY:
-		reg.security().clear();
-		reg.security().createInstance();
-		break;
-	case OBJ_ID::DEVICE:
-		reg.device().clear();
-		reg.security().createInstance();
-		break;
-	default:
-		break;
-	}
-}
-
 int main()
 {
 	cout << "Test memory consumption:" << endl;
@@ -85,7 +70,7 @@ int main()
 
 	// Client initialization
 	Connection connection;
-	WppClient::create({"Test name", "", ""}, connection, objRestore);
+	WppClient::create({"Test name", "", ""}, connection);
 	
 	WppClient *client = WppClient::takeOwnership();
 	if (!client) {

@@ -47,29 +47,13 @@ class Object;
 // TODO: Try to redesign the registry and objects to simplify access
 class WppRegistry {
 public:
-	/*
-	 * OBJ_RESTORE_T represents callback that notifies user about the requirement of restoring the object state to default
-	 *
-	 * NOTE: Keep in mind that while std::function itself is always copy able,
-	 * it might hold a callable object (like a lambda) that captures
-	 * variables which may not be copy able. If you try to copy a
-	 * std::function that holds a non-copyable callable, it will compile,
-	 * but will throw a std::bad_function_call exception at runtime if
-	 * you try to call the copied std::function.
-	 */
-	using OBJ_RESTORE_T = std::function<void(WppRegistry &, OBJ_ID)>;
-
-public:
-	WppRegistry(const OBJ_RESTORE_T &objRestoreFunc);
+	WppRegistry() {}
 	~WppRegistry() {}
 
 	WppRegistry(const WppRegistry&) = delete;
 	WppRegistry(WppRegistry&&) = delete;
 	WppRegistry& operator=(const WppRegistry&) = delete;
 	WppRegistry& operator=(WppRegistry&&) = delete;
-
-	/* ------------- Registry functionality ------------- */
-	void restoreObject(OBJ_ID id);
 
 	/* ------------- Mandatory objects prototype start ------------- */
 	#if MANDATORY_SECURITY_OBJ
@@ -94,9 +78,6 @@ public:
 		Object<FirmwareUpd>& firmwareUpd();
 	#endif
 	/* ------------- Optional objects prototype end ------------- */
-
-private:
-	OBJ_RESTORE_T _objRestoreFunc;
 };
 
 } // namespace wpp

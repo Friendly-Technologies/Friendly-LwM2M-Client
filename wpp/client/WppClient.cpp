@@ -16,7 +16,7 @@ namespace wpp {
 WppClient *WppClient::_client = NULL;
 std::mutex WppClient::_clientGuard;
 
-WppClient::WppClient(const ClientInfo &info, IWppConnection &connection, const WppRegistry::OBJ_RESTORE_T &objRestoreFunc): _info(info), _connection(connection), _registry(objRestoreFunc) {
+WppClient::WppClient(const ClientInfo &info, IWppConnection &connection): _info(info), _connection(connection), _registry() {
 	lwm2mContextOpen();
 }
 
@@ -25,11 +25,11 @@ WppClient::~WppClient() {
 }
 
 /* ------------- WppClient management ------------- */
-bool WppClient::create(const ClientInfo &info, IWppConnection &connection, const WppRegistry::OBJ_RESTORE_T &objRestoreFunc) {
+bool WppClient::create(const ClientInfo &info, IWppConnection &connection) {
 	if (isCreated()) return true;
 	
 	WPP_LOGD_ARG(TAG, "Creating WppClient instance with info: endpoint->%s, msisdn->%s, altPath->%s", info.endpointName.c_str(), info.msisdn.c_str(), info.altPath.c_str());
-	_client = new WppClient(info, connection, objRestoreFunc);
+	_client = new WppClient(info, connection);
 	
 	// Try to configure client with user data
 	bool result = _client->lwm2mConfigure(info.endpointName, info.msisdn, info.altPath);
@@ -83,8 +83,8 @@ void WppClient::loop(time_t &sleepTime) {
 	WPP_LOGD_ARG(TAG, "Processing internal state: result -> %d, state -> %d", result, getState());
 	if (!result && getState() == STATE_BOOTSTRAPPING) {
 		WPP_LOGW(TAG, "Trying to restore security and server objects");
-		registry().restoreObject(registry().security().getObjectID());
-		registry().restoreObject(registry().server().getObjectID());
+		registry().security().restore();
+		registry().server().restore();
 	}
 
 	WPP_LOGD(TAG, "Handling server packets if they exists");

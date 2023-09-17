@@ -44,6 +44,7 @@ public:
 	T* createInstance(ID_T instanceID = ID_T_MAX_VAL);
 	bool removeInstance(ID_T instanceID);
 	void clear() override;
+	void restore() override;
 
 	T* getInstance(ID_T instanceID = 0);
 	size_t instanceCnt() override;
@@ -179,6 +180,11 @@ void Object<T>::clear() {
 //	}
 
 	_instances.clear();
+}
+
+template<typename T>
+void Object<T>::restore() {
+    this->observerDoAction(*this, ObjSubject<T>::Action::RESTORE);
 }
 
 template<typename T>

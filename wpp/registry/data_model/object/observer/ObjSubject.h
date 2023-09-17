@@ -14,6 +14,11 @@ class Object;
 template <typename T>
 class ObjSubject {
 public:
+    enum Action : uint8_t {
+        RESTORE,
+    };
+
+public:
     /*
 	 * Subscribers will be notified about the creation
 	 * and deletion of object instances initiated by server.
@@ -37,6 +42,16 @@ protected:
                 observer->instanceCreated(obj, instanceId);
             } else if (type == Operation::TYPE::DELETE) {
                 observer->instanceDeleting(obj, instanceId);
+            }
+        }
+    }
+    /*
+     * Requests observer to do action
+     */
+    void observerDoAction(Object<T> &obj, Action action) {
+        for(IObjObserver<T>* observer : _observers) {
+            if (action == Action::RESTORE) {
+                observer->objectRestore(obj);
             }
         }
     }

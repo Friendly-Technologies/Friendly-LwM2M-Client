@@ -1,8 +1,12 @@
 #include "WppRegistry.h"
-
 #include "WppClient.h"
+#include "WppLogs.h"
 
 namespace wpp {
+
+WppRegistry::WppRegistry() {
+    WPP_LOGD(TAG_WPP_REG, "Creating registry instance");
+}
 
 /* ------------- Mandatory objects prototype start ------------- */
 #if MANDATORY_SECURITY_OBJ

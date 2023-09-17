@@ -5,6 +5,14 @@
 // TODO: #include "liblwm2m.h"
 #include "dep.h"
 
+/* ---------- WPP components log TAGs start ---------- */
+#define TAG_WPP_CLIENT      "WppClient"
+#define TAG_WPP_CONN        "IWppConnection"
+#define TAG_WPP_REG         "WppRegistry"
+#define TAG_WPP_OBJ         "Object<T>"
+#define TAG_WPP_INST        "IInstance"
+/* ---------- WPP components log TAGs end ---------- */
+
 /* ---------- Logs config start ---------- */
 #define LOGS_LEVEL_DEBUG    0
 #define LOGS_LEVEL_INFO     1

@@ -47,7 +47,7 @@ class Object;
 // TODO: Try to redesign the registry and objects to simplify access
 class WppRegistry {
 public:
-	WppRegistry() {}
+	WppRegistry();
 	~WppRegistry() {}
 
 	WppRegistry(const WppRegistry&) = delete;

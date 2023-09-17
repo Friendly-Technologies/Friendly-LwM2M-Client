@@ -9,8 +9,6 @@
 #include "WppLogs.h"
 //TODO: #include "liblwm2m.h"
 
-#define TAG "WppClient"
-
 namespace wpp {
 
 WppClient *WppClient::_client = NULL;
@@ -28,13 +26,13 @@ WppClient::~WppClient() {
 bool WppClient::create(const ClientInfo &info, IWppConnection &connection) {
 	if (isCreated()) return true;
 	
-	WPP_LOGD_ARG(TAG, "Creating WppClient instance with info: endpoint->%s, msisdn->%s, altPath->%s", info.endpointName.c_str(), info.msisdn.c_str(), info.altPath.c_str());
+	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Creating WppClient instance with info: endpoint->%s, msisdn->%s, altPath->%s", info.endpointName.c_str(), info.msisdn.c_str(), info.altPath.c_str());
 	_client = new WppClient(info, connection);
 	
 	// Try to configure client with user data
 	bool result = _client->lwm2mConfigure(info.endpointName, info.msisdn, info.altPath);
 	if (!result) {
-		WPP_LOGE(TAG, "Error during client configuration");
+		WPP_LOGE(TAG_WPP_CLIENT, "Error during client configuration");
 		delete _client;
 		_client = NULL;
 	}
@@ -51,14 +49,14 @@ WppClient * WppClient::client() {
 }
 
 WppClient* WppClient::takeOwnership() {
-	WPP_LOGD(TAG, "Taking ownership of client instance");
+	WPP_LOGD(TAG_WPP_CLIENT, "Taking ownership of client instance");
     if (!_clientGuard.try_lock()) return NULL;
-	WPP_LOGD(TAG, "Lock acquired, transferring ownership");
+	WPP_LOGD(TAG_WPP_CLIENT, "Lock acquired, transferring ownership");
     return _client;
 }
 
 void WppClient::giveOwnership() {
-	WPP_LOGD(TAG, "Giving ownership of client instance");
+	WPP_LOGD(TAG_WPP_CLIENT, "Giving ownership of client instance");
     _clientGuard.unlock();
 }
 
@@ -80,42 +78,42 @@ lwm2m_client_state_t WppClient::getState() {
 void WppClient::loop(time_t &sleepTime) {
 	// Handle wakaama core state
 	int result = 0;// TODO: lwm2m_step(_lwm2m_context, availableTime);
-	WPP_LOGD_ARG(TAG, "Processing internal state: result -> %d, state -> %d", result, getState());
+	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Processing internal state: result -> %d, state -> %d", result, getState());
 	if (!result && getState() == STATE_BOOTSTRAPPING) {
-		WPP_LOGW(TAG, "Trying to restore security and server objects");
+		WPP_LOGW(TAG_WPP_CLIENT, "Trying to restore security and server objects");
 		registry().security().restore();
 		registry().server().restore();
 	}
 
-	WPP_LOGD(TAG, "Handling server packets if they exists");
+	WPP_LOGD(TAG_WPP_CLIENT, "Handling server packets if they exists");
 	// Handle packets retreived from server
 	if (connection().getPacketQueueSize()) connection().handlePacketsInQueue(getContext());
 }
 
 bool WppClient::updateServerRegistration(INT_T serverId, bool withObjects) {
-	WPP_LOGD_ARG(TAG, "Update registration to server: ID -> %d, withObjects -> %d", serverId, withObjects);
+	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Update registration to server: ID -> %d, withObjects -> %d", serverId, withObjects);
 	return true;// TODO: !lwm2m_update_registration(_lwm2m_context, serverId, withObjects);
 }
 
 bool WppClient::updateServerRegistration(bool withObjects) {
-	WPP_LOGD_ARG(TAG, "Update registration to each server: withObjects -> %d", withObjects);
+	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Update registration to each server: withObjects -> %d", withObjects);
 	return true;// TODO: !lwm2m_update_registration(_lwm2m_context, 0, withObjects);
 }
 
 void WppClient::deregister() {
-	WPP_LOGI(TAG, "Unregister with each server");
+	WPP_LOGI(TAG_WPP_CLIENT, "Unregister with each server");
 	// TODO: lwm2m_deregister(_lwm2m_context);
 }
 
 
 /* ------------- Wakaama core object managing ------------- */
 bool WppClient::registerObject(Lwm2mObject &object) {
-	WPP_LOGD_ARG(TAG, "Register object with id: %d", object.getObjectID());
+	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Register object with id: %d", object.getObjectID());
 	return true;// TODO: !lwm2m_add_object(_lwm2m_context, &object.getLwm2mObject());
 }
 
 bool WppClient::deregisterObject(Lwm2mObject &object) {
-	WPP_LOGD_ARG(TAG, "Deregister object with id: %d", object.getObjectID());
+	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Deregister object with id: %d", object.getObjectID());
 	return true;// TODO: !lwm2m_remove_object(_lwm2m_context, &object.getLwm2mObject().objID);
 }
 
@@ -127,7 +125,7 @@ bool WppClient::isObjectRegistered(Lwm2mObject &object) {
 
 /* ------------- Wakaama core observer notify ------------- */
 void WppClient::notifyValueChanged(const DataID &data) {
-	WPP_LOGD_ARG(TAG, "Notify value changed: objID=%d, instID=%d, resID=%d, resInstID=%d", data.instance.objId, data.instance.objInstId, data.resource.resId, data.resource.resInstId);	
+	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Notify value changed: objID=%d, instID=%d, resID=%d, resInstID=%d", data.instance.objId, data.instance.objInstId, data.resource.resId, data.resource.resInstId);	
 	lwm2m_uri_t uri = {data.instance.objId, data.instance.objInstId, data.resource.resId, data.resource.resInstId};
 	// TODO: lwm2m_resource_value_changed(_lwm2m_context, &uri);
 }

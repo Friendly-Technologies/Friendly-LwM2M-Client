@@ -17,7 +17,7 @@ if (MANDATORY_SECURITY_OBJ)
 endif()
 
 option(MANDATORY_SERVER_OBJ "Include mandatory Server object in the build" ON)
-if (SERVER_OBJ)
+if (MANDATORY_SERVER_OBJ)
     set(COMPILE_DEFINITIONS ${COMPILE_DEFINITIONS} MANDATORY_SERVER_OBJ=1)
 endif()
 

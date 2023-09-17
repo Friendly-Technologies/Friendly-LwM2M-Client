@@ -3,10 +3,9 @@
 # separate .h file near the definition of the component itself.
 
 # Loging start
-option(ENABLE_LOGS "Enable logs for Wakaama and WakaamaPlus" ON)
+option(ENABLE_LOGS "Enable logs for WakaamaPlus" ON)
 if (ENABLE_LOGS)
     set(COMPILE_DEFINITIONS ${COMPILE_DEFINITIONS} ENABLE_LOGS=1)
-    set(COMPILE_DEFINITIONS ${COMPILE_DEFINITIONS} LWM2M_WITH_LOGS=1)
 endif()
 # Loging end
 

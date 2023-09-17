@@ -10,6 +10,7 @@
 
 #include <string>
 
+#include "WppClient.h"
 #include "WppRegistry.h"
 #include "SafeQueue.h"
 

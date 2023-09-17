@@ -6,6 +6,7 @@
  */
 
 #include "IInstance.h"
+#include "WppLogs.h"
 
 namespace wpp {
 
@@ -151,14 +152,21 @@ uint8_t IInstance::resourceRead(ID_T instanceId, int * numDataP, lwm2m_data_t **
 		lwm2m_data_t *data = (*dataArrayP) + i;
 
 		Resource *resource = getResource(data->id);
-		if (resource == NULL) return COAP_404_NOT_FOUND;
+		//  Note that availability is not mandatory for optional resources
+		if (resource == NULL || resource->isEmpty()) {
+			if (resource->isOptional()) {
+				WPP_LOGW_ARG(TAG_WPP_INST, "Optional resource does not exist: %d:%d:%d", _objID, _instanceID, data->id);
+				continue;
+			} else {
+				WPP_LOGE_ARG(TAG_WPP_INST, "Mandatory resource does not exist: %d:%d:%d", _objID, _instanceID, data->id);
+				return COAP_404_NOT_FOUND;
+			}
+		}
 
 		// Check the server operation permission for resource
-		if (!resource->getOperation().isRead()) return COAP_405_METHOD_NOT_ALLOWED;
-		//  Note that availability is not mandatory for optional resources
-		if (resource->isEmpty()) {
-			if (resource->isOptional()) continue;
-			else return COAP_404_NOT_FOUND;
+		if (!resource->getOperation().isRead()) {
+			WPP_LOGE_ARG(TAG_WPP_INST, "Server does not have permission for read resource: %d:%d:%d", _objID, _instanceID, data->id);
+			return COAP_405_METHOD_NOT_ALLOWED;
 		}
 
 		// if has been received data for multiple resource with not allocated memory
@@ -182,8 +190,13 @@ uint8_t IInstance::resourceRead(ID_T instanceId, int * numDataP, lwm2m_data_t **
 			ID_T resInstId = resource->isSingle()? SINGLE_INSTANCE_ID : data_ptr[j].id;
 			//  Note that availability is not mandatory for optional resources
 			if (!resourceToLwm2mData(*resource, resInstId, data_ptr[j])) {
-				if (resource->isOptional()) continue;
-				else return COAP_404_NOT_FOUND;
+				if (resource->isOptional()) {
+					WPP_LOGW_ARG(TAG_WPP_INST, "Problem with converting optional resource to lwm2mData: %d:%d:%d:%d", _objID, _instanceID, data->id, resInstId);
+					continue;
+				} else {
+					WPP_LOGE_ARG(TAG_WPP_INST, "Problem with converting mandatory resource to lwm2mData: %d:%d:%d:%d", _objID, _instanceID, data->id, resInstId);
+					return COAP_404_NOT_FOUND;
+				}
 			}
 			// If execution get to this place then operation completed with
 			// success and we can notifyIInstance implementation about it
@@ -205,18 +218,30 @@ uint8_t IInstance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * da
 	
 	for (int i = 0; i < numData; i++) {
 		Resource *resource = getResource(dataArray[i].id);
-		if (!resource) return COAP_404_NOT_FOUND;
+		if (resource == NULL) {
+			if (resource->isOptional()) {
+				WPP_LOGW_ARG(TAG_WPP_INST, "Optional resource does not exist: %d:%d:%d", _objID, _instanceID, dataArray[i].id);
+				continue;
+			} else {
+				WPP_LOGE_ARG(TAG_WPP_INST, "Mandatory resource does not exist: %d:%d:%d", _objID, _instanceID, dataArray[i].id);
+				return COAP_404_NOT_FOUND;
+			}
+		}
 	
 		// Check the server operation permission for resource
 		if (!resource->getOperation().isWrite()) {
-			if (resource->isOptional()) continue;
-			else return COAP_405_METHOD_NOT_ALLOWED;
+			WPP_LOGE_ARG(TAG_WPP_INST, "Server does not have permission for write resource: %d:%d:%d", _objID, _instanceID, dataArray[i].id);
+			return COAP_405_METHOD_NOT_ALLOWED;
 		}
 		if ((dataArray[i].type == LWM2M_TYPE_MULTIPLE_RESOURCE && resource->isSingle()) ||
-			(dataArray[i].type != LWM2M_TYPE_MULTIPLE_RESOURCE && resource->isMultiple())) return COAP_405_METHOD_NOT_ALLOWED;
+			(dataArray[i].type != LWM2M_TYPE_MULTIPLE_RESOURCE && resource->isMultiple())) {
+				WPP_LOGE_ARG(TAG_WPP_INST, "Server can not write multiple resource to single and vise verse: %d:%d:%d", _objID, _instanceID, dataArray[i].id);
+				return COAP_405_METHOD_NOT_ALLOWED;
+		}
 
 		// Clear resource data if we need to replace it
 		if (writeType == LWM2M_WRITE_REPLACE_RESOURCES) {
+			WPP_LOGD_ARG(TAG_WPP_INST, "Clear resource before write: %d:%d:%d", _objID, _instanceID, dataArray[i].id);
 			resource->clear();
 			// Notify IInstance implementation about operation
 			serverOperationNotifier(Operation::DELETE, {resource->getID(), SINGLE_INSTANCE_ID});
@@ -234,8 +259,13 @@ uint8_t IInstance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * da
 			ID_T resInstId = resource->isSingle()? SINGLE_INSTANCE_ID : data_ptr[j].id;
 			//  Note that availability is not mandatory for optional resources
 			if (!lwm2mDataToResource(data_ptr[j], *resource, resInstId)) {
-				if (resource->isOptional()) continue;
-				else return COAP_404_NOT_FOUND;
+				if (resource->isOptional()) {
+					WPP_LOGW_ARG(TAG_WPP_INST, "Problem with converting lwm2mData to optional resource: %d:%d:%d:%d", _objID, _instanceID, dataArray[i].id, resInstId);
+					continue;
+				} else {
+					WPP_LOGE_ARG(TAG_WPP_INST, "Problem with converting lwm2mData to mandatory resource: %d:%d:%d:%d", _objID, _instanceID, dataArray[i].id, resInstId);
+					return COAP_404_NOT_FOUND;
+				}
 			}
 			// If execution get to this place then operation completed with
 			// success and we can notify IInstance implementation about it
@@ -247,16 +277,21 @@ uint8_t IInstance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * da
 }
 
 uint8_t IInstance::resourceExecute(ID_T instanceId, ID_T resId, uint8_t * buffer, int length) {
-	Resource *resource = getResource(resId);
-	if (!resource) return COAP_404_NOT_FOUND;
-	// Check the server operation permission for resource
-	if (!resource->getOperation().isExecute()) return COAP_405_METHOD_NOT_ALLOWED;
-
 	EXECUTE_T execute;
-	if (!resource->get(execute) || execute) {
-		//  Note that availability is not mandatory for optional resources
-		if (resource->isOptional()) return COAP_204_CHANGED;
-		else return COAP_405_METHOD_NOT_ALLOWED;
+	Resource *resource = getResource(resId);
+	if (!resource || !resource->get(execute) || !execute) {
+		if (resource->isOptional()) {
+			WPP_LOGW_ARG(TAG_WPP_INST, "Optional resource does not exist: %d:%d:%d", _objID, _instanceID, resId);
+			return COAP_204_CHANGED;
+		} else {
+			WPP_LOGE_ARG(TAG_WPP_INST, "Mandatory resource does not exist: %d:%d:%d", _objID, _instanceID, resId);
+			return COAP_405_METHOD_NOT_ALLOWED;
+		}
+	}
+	// Check the server operation permission for resource
+	if (!resource->getOperation().isExecute()) {
+		WPP_LOGE_ARG(TAG_WPP_INST, "Server does not have permission for execute resource: %d:%d:%d", _objID, _instanceID, resId);
+		return COAP_405_METHOD_NOT_ALLOWED;
 	}
 
 	execute(resId, OPAQUE_T(buffer, buffer + length));
@@ -286,10 +321,16 @@ uint8_t IInstance::resourceDiscover(ID_T instanceId, int * numDataP, lwm2m_data_
 	for (int i = 0; i < *numDataP; i++) {
 		lwm2m_data_t *data = (*dataArrayP) + i;
 		Resource *resource = getResource(data->id);
-		if (resource == NULL) return COAP_404_NOT_FOUND;
+		if (resource == NULL || resource->isEmpty()) {
+			if (resource->isOptional()) {
+				WPP_LOGW_ARG(TAG_WPP_INST, "Optional resource does not exist: %d:%d:%d", _objID, _instanceID, data->id);
+				continue;
+			} else {
+				WPP_LOGE_ARG(TAG_WPP_INST, "Mandatory resource does not exist: %d:%d:%d", _objID, _instanceID, data->id);
+				return COAP_404_NOT_FOUND;
+			}
+		}
 
-		//  Note that availability is not mandatory for optional resources
-		if (resource->isEmpty() && resource->isMandatory()) return COAP_404_NOT_FOUND;
 		// if has been received data for multiple resource with not allocated memory
 		// then we ourselves allocate memory for instances
 		if (resource->isMultiple() && data->type != LWM2M_TYPE_MULTIPLE_RESOURCE) {

@@ -72,6 +72,7 @@ void IWppConnection::handlePacketsInQueue(lwm2m_context_t *context) {
 		}
 		packets.pop();
 	}
+	WPP_LOGD(TAG, "Done");
 }
 
 extern "C" {

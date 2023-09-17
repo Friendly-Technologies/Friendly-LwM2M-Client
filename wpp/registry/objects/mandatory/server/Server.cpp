@@ -15,6 +15,8 @@
 #include "types.h"
 #include "WppLogs.h"
 
+#define TAG "Server"
+
 namespace wpp {
 
 Server::Server(OBJ_ID objID, ID_T instanceID): IInstance(objID, instanceID) {
@@ -50,13 +52,13 @@ bool Server::remove(ID_T resId, ID_T resInstId) {
 void Server::userPerformedOperation(Operation::TYPE type, ID_T resId, ID_T resInstId) {
 	switch (type) {
 	case Operation::READ:
-		WPP_LOGD_ARG("User READ -> resId: %d, resInstId: %d\n", resId, resInstId);
+		WPP_LOGD_ARG(TAG, "User READ -> resId: %d, resInstId: %d\n", resId, resInstId);
 		break;
 	case Operation::WRITE:
-		WPP_LOGD_ARG("User WRITE -> resId: %d, resInstId: %d\n", resId, resInstId);
+		WPP_LOGD_ARG(TAG, "User WRITE -> resId: %d, resInstId: %d\n", resId, resInstId);
 		break;
 	case Operation::DELETE:
-		WPP_LOGD_ARG("User DELETE -> resId: %d, resInstId: %d\n", resId, resInstId);
+		WPP_LOGD_ARG(TAG, "User DELETE -> resId: %d, resInstId: %d\n", resId, resInstId);
 		break;
 	default: break;
 	}

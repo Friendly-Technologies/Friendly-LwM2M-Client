@@ -101,6 +101,7 @@ private:
 	static WppClient *_client;
 	static std::mutex _clientGuard;
 
+	ClientInfo _info;
 	IWppConnection &_connection;
 	WppRegistry _registry;
 

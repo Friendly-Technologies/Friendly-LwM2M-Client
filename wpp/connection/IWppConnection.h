@@ -12,7 +12,6 @@
 
 //TODO: #include "liblwm2m.h"
 #include "dep.h"
-#include "mandatory/security/Security.h"
 #include "SafeQueue.h"
 
 #define WPP_CONN_I_PACKETS_QUEUE_SIZE 10
@@ -20,6 +19,7 @@
 namespace wpp {
 
 class WppClient;
+class Security;
 
 class IWppConnection {
 	friend class WppClient;

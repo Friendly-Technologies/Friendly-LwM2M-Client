@@ -1,5 +1,5 @@
 /*
- * WppPlatformI.h
+ * WppPlatform.h
  *
  *  Created on: 31 Jul 2023
  *      Author: valentin
@@ -18,12 +18,7 @@ namespace wpp {
  */
 class WppPlatform {
 public:
-	static void* malloc(size_t size);
-	static void free(void *memPtr);
-	static time_t getTime(void);
-	static char* strdup(const char *str);
-    static int strncmp(const char *str1, const char *str2, size_t num);
-    static int strcasecmp(const char *str1, const char *str2);
+    static time_t getTime(void);
     static void print(const char * msg, va_list arg);
     static void print(const char * msg, ...) {
         va_list ap;

@@ -1,31 +1,39 @@
 #include "WppPlatform.h"
 
+#include <cstring>
+
 //TODO: #include "liblwm2m.h"
 #include "dep.h"
 
 extern "C" {
     /*---------- Platform bindings ----------*/
-    // TODO: If we use user defined malloc for wakama then we also must
-    // use it for WakaamaPlus, looks like we need custom allocator for
-    // std containers or we should use custom containers
     void * lwm2m_malloc(size_t s) {
-        return wpp::WppPlatform::malloc(s);
+        return new uint8_t[s];
     }
 
     void lwm2m_free(void * p) {
-        wpp::WppPlatform::free(p);
+        delete [] p;
     }
 
     char * lwm2m_strdup(const char * str) {
-        return wpp::WppPlatform::strdup(str);
+        if (!str) return NULL;
+
+        const int len = strlen(str) + 1;
+        char * const buf = lwm2m_malloc(len);
+        if (buf) {
+            memset(buf, 0, len);
+            memcpy(buf, str, len - 1);
+        }
+
+        return buf;
     }
 
     int lwm2m_strncmp(const char * s1, const char * s2, size_t n) {
-        return wpp::WppPlatform::strncmp(s1, s2, n);
+        return strncmp(s1, s2, n);
     }
 
     int lwm2m_strcasecmp(const char * str1, const char * str2) {
-        return wpp::WppPlatform::strcasecmp(str1, str2);
+        return strcasecmp(str1, str2);
     }
 
     time_t lwm2m_gettime(void) {

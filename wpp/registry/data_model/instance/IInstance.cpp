@@ -10,6 +10,36 @@
 
 namespace wpp {
 
+bool IInstance::clear(ID_T resId) {
+	Resource *const resource = getResource(resId);
+	if (!resource) return false;
+
+	bool result = resource->clear();
+	if (result) {
+		client().notifyValueChanged({_id, {resId,}});
+		userOperationNotifier(Operation::DELETE, {resId,});
+	}
+
+	return resource->clear();
+}
+
+bool IInstance::remove(const ResourceID &resId) {
+	Resource *const resource = getResource(resId.resInstId);
+	if (!resource) return false;
+
+	bool result = resource->remove(resId.resInstId);
+	if (result) {
+		client().notifyValueChanged({_id, {resId.resId, resId.resInstId}});
+		userOperationNotifier(Operation::DELETE, {resId.resId, resId.resInstId});
+	}
+
+	return result;
+}
+
+WppClient& IInstance::client() {
+	return _client;
+}
+
 bool IInstance::resourceToLwm2mData(Resource &resource, ID_T instanceId, lwm2m_data_t &data) {
 	switch(resource.getTypeId()) {
 	case TYPE_ID::BOOL: {
@@ -155,17 +185,17 @@ uint8_t IInstance::resourceRead(ID_T instanceId, int * numDataP, lwm2m_data_t **
 		//  Note that availability is not mandatory for optional resources
 		if (resource == NULL || resource->isEmpty()) {
 			if (resource->isOptional()) {
-				WPP_LOGW_ARG(TAG_WPP_INST, "Optional resource does not exist: %d:%d:%d", _objID, _instanceID, data->id);
+				WPP_LOGW_ARG(TAG_WPP_INST, "Optional resource does not exist: %d:%d:%d", _id.objId, _id.objInstId, data->id);
 				continue;
 			} else {
-				WPP_LOGE_ARG(TAG_WPP_INST, "Mandatory resource does not exist: %d:%d:%d", _objID, _instanceID, data->id);
+				WPP_LOGE_ARG(TAG_WPP_INST, "Mandatory resource does not exist: %d:%d:%d", _id.objId, _id.objInstId, data->id);
 				return COAP_404_NOT_FOUND;
 			}
 		}
 
 		// Check the server operation permission for resource
 		if (!resource->getOperation().isRead()) {
-			WPP_LOGE_ARG(TAG_WPP_INST, "Server does not have permission for read resource: %d:%d:%d", _objID, _instanceID, data->id);
+			WPP_LOGE_ARG(TAG_WPP_INST, "Server does not have permission for read resource: %d:%d:%d", _id.objId, _id.objInstId, data->id);
 			return COAP_405_METHOD_NOT_ALLOWED;
 		}
 
@@ -191,10 +221,10 @@ uint8_t IInstance::resourceRead(ID_T instanceId, int * numDataP, lwm2m_data_t **
 			//  Note that availability is not mandatory for optional resources
 			if (!resourceToLwm2mData(*resource, resInstId, data_ptr[j])) {
 				if (resource->isOptional()) {
-					WPP_LOGW_ARG(TAG_WPP_INST, "Problem with converting optional resource to lwm2mData: %d:%d:%d:%d", _objID, _instanceID, data->id, resInstId);
+					WPP_LOGW_ARG(TAG_WPP_INST, "Problem with converting optional resource to lwm2mData: %d:%d:%d:%d", _id.objId, _id.objInstId, data->id, resInstId);
 					continue;
 				} else {
-					WPP_LOGE_ARG(TAG_WPP_INST, "Problem with converting mandatory resource to lwm2mData: %d:%d:%d:%d", _objID, _instanceID, data->id, resInstId);
+					WPP_LOGE_ARG(TAG_WPP_INST, "Problem with converting mandatory resource to lwm2mData: %d:%d:%d:%d", _id.objId, _id.objInstId, data->id, resInstId);
 					return COAP_404_NOT_FOUND;
 				}
 			}
@@ -220,28 +250,28 @@ uint8_t IInstance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * da
 		Resource *resource = getResource(dataArray[i].id);
 		if (resource == NULL) {
 			if (resource->isOptional()) {
-				WPP_LOGW_ARG(TAG_WPP_INST, "Optional resource does not exist: %d:%d:%d", _objID, _instanceID, dataArray[i].id);
+				WPP_LOGW_ARG(TAG_WPP_INST, "Optional resource does not exist: %d:%d:%d", _id.objId, _id.objInstId, dataArray[i].id);
 				continue;
 			} else {
-				WPP_LOGE_ARG(TAG_WPP_INST, "Mandatory resource does not exist: %d:%d:%d", _objID, _instanceID, dataArray[i].id);
+				WPP_LOGE_ARG(TAG_WPP_INST, "Mandatory resource does not exist: %d:%d:%d", _id.objId, _id.objInstId, dataArray[i].id);
 				return COAP_404_NOT_FOUND;
 			}
 		}
 	
 		// Check the server operation permission for resource
 		if (!resource->getOperation().isWrite()) {
-			WPP_LOGE_ARG(TAG_WPP_INST, "Server does not have permission for write resource: %d:%d:%d", _objID, _instanceID, dataArray[i].id);
+			WPP_LOGE_ARG(TAG_WPP_INST, "Server does not have permission for write resource: %d:%d:%d", _id.objId, _id.objInstId, dataArray[i].id);
 			return COAP_405_METHOD_NOT_ALLOWED;
 		}
 		if ((dataArray[i].type == LWM2M_TYPE_MULTIPLE_RESOURCE && resource->isSingle()) ||
 			(dataArray[i].type != LWM2M_TYPE_MULTIPLE_RESOURCE && resource->isMultiple())) {
-				WPP_LOGE_ARG(TAG_WPP_INST, "Server can not write multiple resource to single and vise verse: %d:%d:%d", _objID, _instanceID, dataArray[i].id);
+				WPP_LOGE_ARG(TAG_WPP_INST, "Server can not write multiple resource to single and vise verse: %d:%d:%d", _id.objId, _id.objInstId, dataArray[i].id);
 				return COAP_405_METHOD_NOT_ALLOWED;
 		}
 
 		// Clear resource data if we need to replace it
 		if (writeType == LWM2M_WRITE_REPLACE_RESOURCES) {
-			WPP_LOGD_ARG(TAG_WPP_INST, "Clear resource before write: %d:%d:%d", _objID, _instanceID, dataArray[i].id);
+			WPP_LOGD_ARG(TAG_WPP_INST, "Clear resource before write: %d:%d:%d", _id.objId, _id.objInstId, dataArray[i].id);
 			resource->clear();
 			// Notify IInstance implementation about operation
 			serverOperationNotifier(Operation::DELETE, {resource->getID(), SINGLE_INSTANCE_ID});
@@ -260,10 +290,10 @@ uint8_t IInstance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * da
 			//  Note that availability is not mandatory for optional resources
 			if (!lwm2mDataToResource(data_ptr[j], *resource, resInstId)) {
 				if (resource->isOptional()) {
-					WPP_LOGW_ARG(TAG_WPP_INST, "Problem with converting lwm2mData to optional resource: %d:%d:%d:%d", _objID, _instanceID, dataArray[i].id, resInstId);
+					WPP_LOGW_ARG(TAG_WPP_INST, "Problem with converting lwm2mData to optional resource: %d:%d:%d:%d", _id.objId, _id.objInstId, dataArray[i].id, resInstId);
 					continue;
 				} else {
-					WPP_LOGE_ARG(TAG_WPP_INST, "Problem with converting lwm2mData to mandatory resource: %d:%d:%d:%d", _objID, _instanceID, dataArray[i].id, resInstId);
+					WPP_LOGE_ARG(TAG_WPP_INST, "Problem with converting lwm2mData to mandatory resource: %d:%d:%d:%d", _id.objId, _id.objInstId, dataArray[i].id, resInstId);
 					return COAP_404_NOT_FOUND;
 				}
 			}
@@ -281,16 +311,16 @@ uint8_t IInstance::resourceExecute(ID_T instanceId, ID_T resId, uint8_t * buffer
 	Resource *resource = getResource(resId);
 	if (!resource || !resource->get(execute) || !execute) {
 		if (resource->isOptional()) {
-			WPP_LOGW_ARG(TAG_WPP_INST, "Optional resource does not exist: %d:%d:%d", _objID, _instanceID, resId);
+			WPP_LOGW_ARG(TAG_WPP_INST, "Optional resource does not exist: %d:%d:%d", _id.objId, _id.objInstId, resId);
 			return COAP_204_CHANGED;
 		} else {
-			WPP_LOGE_ARG(TAG_WPP_INST, "Mandatory resource does not exist: %d:%d:%d", _objID, _instanceID, resId);
+			WPP_LOGE_ARG(TAG_WPP_INST, "Mandatory resource does not exist: %d:%d:%d", _id.objId, _id.objInstId, resId);
 			return COAP_405_METHOD_NOT_ALLOWED;
 		}
 	}
 	// Check the server operation permission for resource
 	if (!resource->getOperation().isExecute()) {
-		WPP_LOGE_ARG(TAG_WPP_INST, "Server does not have permission for execute resource: %d:%d:%d", _objID, _instanceID, resId);
+		WPP_LOGE_ARG(TAG_WPP_INST, "Server does not have permission for execute resource: %d:%d:%d", _id.objId, _id.objInstId, resId);
 		return COAP_405_METHOD_NOT_ALLOWED;
 	}
 
@@ -323,10 +353,10 @@ uint8_t IInstance::resourceDiscover(ID_T instanceId, int * numDataP, lwm2m_data_
 		Resource *resource = getResource(data->id);
 		if (resource == NULL || resource->isEmpty()) {
 			if (resource->isOptional()) {
-				WPP_LOGW_ARG(TAG_WPP_INST, "Optional resource does not exist: %d:%d:%d", _objID, _instanceID, data->id);
+				WPP_LOGW_ARG(TAG_WPP_INST, "Optional resource does not exist: %d:%d:%d", _id.objId, _id.objInstId, data->id);
 				continue;
 			} else {
-				WPP_LOGE_ARG(TAG_WPP_INST, "Mandatory resource does not exist: %d:%d:%d", _objID, _instanceID, data->id);
+				WPP_LOGE_ARG(TAG_WPP_INST, "Mandatory resource does not exist: %d:%d:%d", _id.objId, _id.objInstId, data->id);
 				return COAP_404_NOT_FOUND;
 			}
 		}

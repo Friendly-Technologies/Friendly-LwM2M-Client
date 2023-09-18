@@ -1,8 +1,6 @@
 #ifndef IOBJOBSERVER_H_
 #define IOBJOBSERVER_H_
 
-#include "Object.h"
-
 namespace wpp {
 
 template <typename T>

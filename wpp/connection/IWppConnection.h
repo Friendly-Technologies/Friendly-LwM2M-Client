@@ -10,8 +10,9 @@
 
 #include <string>
 
-#include "WppClient.h"
-#include "WppRegistry.h"
+//TODO: #include "liblwm2m.h"
+#include "dep.h"
+#include "mandatory/security/Security.h"
 #include "SafeQueue.h"
 
 #define WPP_CONN_I_PACKETS_QUEUE_SIZE 10

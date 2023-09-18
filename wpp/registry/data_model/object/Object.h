@@ -20,7 +20,7 @@
 
 namespace wpp {
 
-class WppRegistry;
+class WppClient;
 
 /*
  * Object<T> is class that implements manipulation with IInstance interface class and his inheritors.
@@ -31,13 +31,13 @@ class WppRegistry;
 template<typename T>
 class Object : public Lwm2mObject, public ObjSubject<T> {
 private:
-	Object(const ObjectInfo &info);
+	Object(WppClient &client, const ObjectInfo &info);
 
 public:
 	~Object();
 
 /* ------------- Object management ------------- */
-	static bool create(const ObjectInfo &info);
+	static bool create(WppClient &client, const ObjectInfo &info);
 	static bool isCreated();
 	static Object<T>* object();
 
@@ -69,7 +69,8 @@ private:
 #endif
 private:
 	static Object<T> *_object;
-
+	
+	WppClient &_client;
 	std::unordered_map<ID_T, IInstance*> _instances; // TODO: maybe here is better to use share_ptr instead simple IInstance*
 };
 
@@ -79,7 +80,7 @@ template<typename T>
 Object<T> *Object<T>::_object = NULL;
 
 template<typename T>
-Object<T>::Object(const ObjectInfo &info): Lwm2mObject(info) {
+Object<T>::Object(WppClient &client, const ObjectInfo &info): Lwm2mObject(info), _client(client) {
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "Creating object with ID -> %d", (ID_T)info.objID);
 
 	// Initialising core object representation
@@ -120,8 +121,8 @@ Object<T>::~Object() {
 
 /* ------------- Object management ------------- */
 template<typename T>
-bool Object<T>::create(const ObjectInfo &info) {
-	_object = new Object<T>(info);
+bool Object<T>::create(WppClient &client, const ObjectInfo &info) {
+	_object = new Object<T>(client, info);
 	return true;
 }
 
@@ -160,7 +161,7 @@ T* Object<T>::createInstance(ID_T instanceId) {
 //	 _lwm2m_object.instanceList = LWM2M_LIST_ADD(_lwm2m_object.instanceList, element);
 
 	// Creating new instance
-	_instances[instanceId] = new T(_objInfo.objID, instanceId);
+	_instances[instanceId] = new T(_client, {(ID_T)_objInfo.objID, instanceId});
 	return static_cast<T*>(_instances[instanceId]);
 }
 

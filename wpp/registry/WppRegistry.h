@@ -38,6 +38,8 @@
 
 namespace wpp {
 
+class WppClient;
+
 template<typename T>
 class Object;
 
@@ -47,7 +49,7 @@ class Object;
 // TODO: Try to redesign the registry and objects to simplify access
 class WppRegistry {
 public:
-	WppRegistry();
+	WppRegistry(WppClient &client);
 	~WppRegistry() {}
 
 	WppRegistry(const WppRegistry&) = delete;
@@ -78,6 +80,9 @@ public:
 		Object<FirmwareUpd>& firmwareUpd();
 	#endif
 	/* ------------- Optional objects prototype end ------------- */
+
+private:
+	WppClient &_client;
 };
 
 } // namespace wpp

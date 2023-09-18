@@ -10,17 +10,18 @@
 
 #include <string>
 #include <functional>
-
-#include "WppRegistry.h"
-#include "IWppConnection.h"
+#include <mutex>
 
 //TODO: #include "liblwm2m.h"
-#include <dep.h>
+#include "dep.h"
+#include "types.h"
+#include "Lwm2mObject.h"
 
 namespace wpp {
 
 // TODO: Review relationship between WppClient and IWppConnection
 class IWppConnection;
+class WppRegistry;
  
 /*
  * To interact with the WppClient, it is necessary to take ownership of it,
@@ -45,11 +46,6 @@ public:
 	/* ------------- WppClient management ------------- */
 	static bool create(const ClientInfo &info, IWppConnection &connection);
 	static bool isCreated();
-
-	/*
-	 * TODO: Find other approach to share client with internal components
-	 */
-	static WppClient * client();
 	
 	/*
 	 * At the same time, only one actor can have access to the client, this is done
@@ -103,7 +99,7 @@ private:
 
 	ClientInfo _info;
 	IWppConnection &_connection;
-	WppRegistry _registry;
+	WppRegistry *_registry;
 
 	lwm2m_context_t *_lwm2m_context;
 };

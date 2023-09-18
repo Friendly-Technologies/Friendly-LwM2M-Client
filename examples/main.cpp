@@ -9,6 +9,7 @@
 #include <chrono>
 
 #include "WppClient.h"
+#include "WppRegistry.h"
 #include "IObjObserver.h"
 #include "IInstObserver.h"
 
@@ -89,12 +90,12 @@ int main()
 	server->subscribe(&observer);
 
 	INT_T value;
-	server->get(value, Server::SHORT_SERV_ID);
+	server->get(Server::SHORT_SERV_ID, value);
 	cout << "Resource Server::SHORT_SERV_ID read: " << value << endl;
 
 	EXECUTE_T execute;
 	cout << "Resource Server::DISABLE execute: " << endl;
-	server->get(execute, Server::DISABLE);
+	server->get(Server::DISABLE, execute);
 	execute(Server::SHORT_SERV_ID, OPAQUE_T());
 
 	// Giving ownership to registry

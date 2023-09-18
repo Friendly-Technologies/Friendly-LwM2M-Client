@@ -29,35 +29,7 @@ public:
 	};
 
 public:
-	Server(OBJ_ID objID, ID_T instanceID);
-
-	/* --------------- User helpful methods for manage resources data --------------- */
-	/*
-	 * Sets resource value
-	 */
-	template<typename T>
-	bool set(const T &value, ID_T resId, ID_T resInstId = 0);
-
-	/*
-	 * Returns copy of resource value
-	 */
-	template<typename T>
-	bool get(T &value, ID_T resId, ID_T resInstId = 0);
-
-	/*
-	 * Removes all instances from resource
-	 */
-	bool clear(ID_T resId);
-
-	/*
-	 * Removes resource instance with specified ID from MULTIPLE resource
-	 */
-	bool remove(ID_T resId, ID_T resInstId);
-
-	/*
-	 * Handles information about resource operation that made user
-	 */
-	void userPerformedOperation(Operation::TYPE type, ID_T resId, ID_T resInstId = 0);
+	Server(WppClient &client, const InstanceID &id);
 
 protected:
 	/* ---------------IInstance implementation part --------------- */
@@ -79,11 +51,16 @@ protected:
 	 * Handles information about resource operation that made server
 	 */
 	void serverOperationNotifier(Operation::TYPE type, const ResourceID &resId) override;
+	/*
+	 * Handles information about resource operation that made user
+	 */
+	void userOperationNotifier(Operation::TYPE type, const ResourceID &resId) override;
 
 private:
 	/* --------------- Class private methods --------------- */
 	/*
-	 * Initialize resources with defoult values
+	 * Initialize resources with default values.
+	 * Resource always must have at least one instance.
 	 */
 	void resourcesInit();
 
@@ -101,41 +78,6 @@ private:
     	{TRIGGER,       			  {TRIGGER,      				Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::BOOL}},
     };
 };
-
-
-/* ---------- Implementation of template methods ----------*/
-/*
- * Sets resource value
- */
-template<typename T>
-bool Server::set(const T &value, ID_T resId, ID_T resInstId) {
-	Resource *const resource = getResource(resId);
-	if (!resource) return false;
-
-	bool result = resource->set(value, resInstId);
-	if (result) {
-		//TODO: Call lwm2m_resource_value_changed
-		userPerformedOperation(Operation::WRITE, resId, resInstId);
-	}
-
-	return result;
-}
-
-/*
- * Returns copy of resource value
- */
-template<typename T>
-bool Server::get(T &value, ID_T resId, ID_T resInstId) {
-	Resource *const resource = getResource(resId);
-	if (!resource) return false;
-
-	bool result = resource->get(value, resInstId);
-	if (result) {
-		userPerformedOperation(Operation::READ, resId, resInstId);
-	}
-
-	return result;
-}
 
 } /* namespace wpp */
 

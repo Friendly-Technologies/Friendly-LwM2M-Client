@@ -6,8 +6,8 @@
  */
 
 #include "IWppConnection.h"
-//TODO: #include "liblwm2m.h"
-#include "dep.h"
+#include "WppClient.h"
+#include "WppRegistry.h"
 #include "WppLogs.h"
 
 namespace wpp {

@@ -17,7 +17,7 @@ namespace wpp {
 
 class Security: public IInstance, public InstSubject<Security> {
 public:
-	Security(OBJ_ID objID, ID_T instanceID);
+	Security(WppClient &client, const InstanceID &id);
 	
 protected:
 	/* ---------------IInstance implementation part --------------- */
@@ -26,12 +26,12 @@ protected:
 	 */
 	Resource * getResource(ID_T id) override;
 	/*
-	 * Returns return list with available resources
+	 * Returns list with available resources
 	 */
 	std::vector<Resource *> getResourcesList() override;
 	std::vector<Resource *> getResourcesList(const Operation& filter) override;
 	/*
-	 * Returns return list with available instantiated resources
+	 * Returns list with available instantiated resources
 	 */
 	std::vector<Resource *> getInstantiatedResourcesList() override;
 	std::vector<Resource *> getInstantiatedResourcesList(const Operation& filter) override;
@@ -39,11 +39,16 @@ protected:
 	 * Handles information about resource operation that made server
 	 */
 	void serverOperationNotifier(Operation::TYPE type, const ResourceID &resId) override;
+	/*
+	 * Handles information about resource operation that made user
+	 */
+	void userOperationNotifier(Operation::TYPE type, const ResourceID &resId) override;
 
 private:
 	/* --------------- Class private methods --------------- */
 	/*
-	 * Initialize resources with defoult values
+	 * Initialize resources with default values.
+	 * Resource always must have at least one instance.
 	 */
 	void resourcesInit();
 };

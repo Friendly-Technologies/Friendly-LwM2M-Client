@@ -15,7 +15,7 @@ namespace wpp {
 WppClient *WppClient::_client = NULL;
 std::mutex WppClient::_clientGuard;
 
-WppClient::WppClient(const ClientInfo &info, IWppConnection &connection): _info(info), _connection(connection) {
+WppClient::WppClient(IWppConnection &connection): _connection(connection) {
 	 _registry = new WppRegistry(*this);
 	lwm2mContextOpen();
 }
@@ -30,7 +30,7 @@ bool WppClient::create(const ClientInfo &info, IWppConnection &connection) {
 	if (isCreated()) return true;
 	
 	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Creating WppClient instance with info: endpoint->%s, msisdn->%s, altPath->%s", info.endpointName.c_str(), info.msisdn.c_str(), info.altPath.c_str());
-	_client = new WppClient(info, connection);
+	_client = new WppClient(connection);
 	
 	// Try to configure client with user data
 	bool result = _client->lwm2mConfigure(info.endpointName, info.msisdn, info.altPath);

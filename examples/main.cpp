@@ -99,7 +99,7 @@ int main()
 	execute(Server::SHORT_SERV_ID, OPAQUE_T());
 
 	// Giving ownership to registry
-	WppClient::giveOwnership();
+	client->giveOwnership();
 
 	cout << endl << "Test WppClient:" << endl;
 	int iterationCnt = 10;
@@ -108,7 +108,7 @@ int main()
 
 		client = WppClient::takeOwnership();
 		if (client) client->loop(sleepTime);
-		WppClient::giveOwnership();
+		client->giveOwnership();
 
 		cout << "Iteration: " << iterationCnt << ", sleep: " << sleepTime << endl;
 		std::this_thread::sleep_for(std::chrono::seconds(sleepTime));

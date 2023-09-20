@@ -38,7 +38,7 @@ public:
 	};
 
 private:
-	WppClient(const ClientInfo &info, IWppConnection &connection);
+	WppClient(IWppConnection &connection);
 
 public:
 	~WppClient();
@@ -58,7 +58,7 @@ public:
 	 * must call giveOwnership().
 	 */
 	static WppClient* takeOwnership();
-	static void giveOwnership();
+	void giveOwnership();
 
 	/* ------------- WppClient components ------------- */
 	IWppConnection & connection();
@@ -97,7 +97,6 @@ private:
 	static WppClient *_client;
 	static std::mutex _clientGuard;
 
-	ClientInfo _info;
 	IWppConnection &_connection;
 	WppRegistry *_registry;
 

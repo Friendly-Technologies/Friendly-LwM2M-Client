@@ -10,8 +10,7 @@
 
 #include <string>
 
-//TODO: #include "liblwm2m.h"
-#include "dep.h"
+#include "liblwm2m.h"
 #include "SafeQueue.h"
 
 #define WPP_CONN_I_PACKETS_QUEUE_SIZE 10

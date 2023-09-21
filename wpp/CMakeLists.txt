@@ -1,5 +1,5 @@
 # Project's name
-project(WppLib CXX)
+project(Wpp CXX)
 
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 17)
@@ -21,7 +21,6 @@ add_compile_options(
     -Wswitch-default
     -Wwrite-strings
     -pedantic
-
     # Reduce noise: Unused parameters are common in this ifdef-littered code-base, but of no danger
     -Wno-unused-parameter
     # Reduce noise: Too many false positives
@@ -29,8 +28,7 @@ add_compile_options(
     # TODO: Remove this two configs after integreting with wakaama
     -Wno-unused-but-set-variable
     -Wno-unused-variable
-
-     # Turn (most) warnings into errors
+    # Turn (most) warnings into errors
     -Werror
     # Disabled because of existing, non-trivially fixable code
     -Wno-error=cast-align
@@ -38,14 +36,11 @@ add_compile_options(
 
 # Variables that will be filled in subdirectories
 set(SOURCES "")
-set(INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/)
+set(INCLUDES "")
 set(COMPILE_DEFINITIONS "")
 
 # Include file with wpp config
 include(config/config.cmake)
-
-# TODO: Delete this src file
-set(SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/dep.cpp)
 
 # Add subdiretories with sources
 add_subdirectory(client)
@@ -59,8 +54,10 @@ add_subdirectory(utils)
 # message("COMPILE_DEFINITIONS: ${COMPILE_DEFINITIONS}")
 
 # Creating target as static library
-add_library(WppLib STATIC ${SOURCES})
+add_library(Wpp STATIC ${SOURCES})
+# Link Wakaama that implements core functionality to Wpp
+target_link_libraries(Wpp PUBLIC WakaamaCore)
 # List of directories that will be set for compiler with key -I
-target_include_directories(WppLib PUBLIC ${INCLUDES})
+target_include_directories(Wpp PUBLIC ${INCLUDES})
 # List of preprocessor defines that will be set for compiler with key -D
-target_compile_definitions(WppLib PUBLIC ${COMPILE_DEFINITIONS})
+target_compile_definitions(Wpp PUBLIC ${COMPILE_DEFINITIONS})

@@ -2,8 +2,7 @@
 
 #include <cstring>
 
-//TODO: #include "liblwm2m.h"
-#include "dep.h"
+#include "liblwm2m.h"
 
 extern "C" {
     /*---------- Platform bindings ----------*/

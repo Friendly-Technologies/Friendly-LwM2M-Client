@@ -11,8 +11,7 @@
 #include "types.h"
 #include "ObjectInfo.h"
 
-//TODO: #include "liblwm2m.h"
-#include <dep.h>
+#include "liblwm2m.h"
 
 namespace wpp {
 

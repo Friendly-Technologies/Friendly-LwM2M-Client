@@ -2,8 +2,7 @@
 #define WPP_LOGS_H
 
 #include "WppPlatform.h"
-// TODO: #include "liblwm2m.h"
-#include "dep.h"
+#include "liblwm2m.h"
 
 /* ---------- WPP components log TAGs start ---------- */
 #define TAG_WPP_CLIENT      "WppClient"

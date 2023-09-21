@@ -6,6 +6,7 @@
  */
 
 #include "IWppConnection.h"
+
 #include "WppClient.h"
 #include "WppRegistry.h"
 #include "WppLogs.h"

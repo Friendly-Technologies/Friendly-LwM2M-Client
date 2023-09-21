@@ -6,8 +6,7 @@
 #include <functional>
 #include <variant>
 
-//TODO: #include "liblwm2m.h"
-#include <dep.h>
+#include "liblwm2m.h"
 
 namespace wpp {
 

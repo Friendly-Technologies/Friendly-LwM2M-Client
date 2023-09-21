@@ -2,13 +2,11 @@
 cmake_minimum_required(VERSION 3.13)
 
 # Project's name
-project(WakaamaPlus CXX)
+project(WakaamaPlus)
 
-# Set the C++ standard
-set(CMAKE_CXX_STANDARD 17)
-
-# Add sybdirectory with library target
+# Add subdirectory with wakaama core library target
+add_subdirectory(wakaama_core)
+# Add subdirectory with wpp library target
 add_subdirectory(wpp)
-
-# Add sybdirectory with example targets
+# Add subdirectory with examples targets
 add_subdirectory(examples)

@@ -12,8 +12,7 @@
 #include <functional>
 #include <mutex>
 
-//TODO: #include "liblwm2m.h"
-#include "dep.h"
+#include "liblwm2m.h"
 #include "types.h"
 #include "Lwm2mObject.h"
 

@@ -43,4 +43,4 @@ add_executable(WakaamaPlusTest ${SOURCES})
 # List of directories that will be set for compiler with key -I
 target_include_directories(WakaamaPlusTest PUBLIC ${INCLUDES})
 
-target_link_libraries(WakaamaPlusTest WppLib)
+target_link_libraries(WakaamaPlusTest Wpp)

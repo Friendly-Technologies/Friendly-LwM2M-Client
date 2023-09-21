@@ -436,17 +436,38 @@ class XmlToCppObjectGenerator:
         # return name, object_id, resources_list, is_mandatory
         return object_meta, resources_list
 
-    def update_object_id_file(self, object_dict):
+    def update_object_id_file(self, object_dict, object_define, path_to_file):
         stop_string_m = "/* ------------- Mandatory objects ID end ------------- */"
         stop_string_o = "/* ------------- Optional objects ID end ------------- */"
         stop_string = stop_string_m if object_dict["is_mandatory"] else stop_string_o
         new_content = ''
-        path_to_file = "../wpp/registry/ObjectID.h"
         with open(path_to_file, 'r') as f:
             for i in f:
-                # if " ".join(i.split()) == "MAX_ID = ID_T_MAX_VAL,":
                 if " ".join(i.split()) == stop_string:
-                    new_content += f"\t{object_dict['object_name'].replace(' ', '')} = {object_dict['object_id']},\n"
+                    new_content += \
+                        f"#ifdef {object_define}\n" \
+                        f"\t{object_dict['object_name'].replace(' ', '').upper()} = {object_dict['object_id']},\n" \
+                        f"#endif /* {object_define} */\n\n"
+                new_content += i
+        f.close()
+        with open(path_to_file, 'w') as f:
+            f.write(new_content)
+        f.close()
+
+    def update_config_cmake_file(self, object_dict, object_define, path_to_file):
+        stop_string_m = "# Mandatory objects end"
+        stop_string_o = "# Optional objects end"
+        stop_string = stop_string_m if object_dict["is_mandatory"] else stop_string_o
+        new_content = ''
+        with open(path_to_file, 'r') as f:
+            for i in f:
+                if " ".join(i.split()) == stop_string:
+                    new_content += \
+                        f"""\noption({object_define} """ \
+                        f""""Include {"mandatory" if object_dict["is_mandatory"] else "optional"} """ \
+                        f"""{object_dict["object_name"]} object in the build" {"ON" if object_dict["is_mandatory"] else "OFF"})\n""" \
+                        f"""if ({object_define})\n\tset(COMPILE_DEFINITIONS ${{COMPILE_DEFINITIONS}} {object_define} = 1)""" \
+                        f"""\nendif()\n\n"""
                 new_content += i
         f.close()
         with open(path_to_file, 'w') as f:
@@ -481,7 +502,11 @@ class XmlToCppObjectGenerator:
         self.create_file(f"{path_to_files}/CMakeList", "txt", generated_cmake_list)
         self.create_file(f"{path_to_files}/{class_name}Info", "h", generated_info_header)
         self.create_file(f"{path_to_files}/{class_name}Config", "h", generated_config)
-        self.update_object_id_file(object_dict)
+
+        object_define_prefix = "MANDATORY" if object_dict["is_mandatory"] else "OPTIONAL"
+        object_define = f"{object_define_prefix}_{object_name}_OBJ"
+        self.update_object_id_file(object_dict, object_define, "../wpp/registry/ObjectID.h")
+        self.update_config_cmake_file(object_dict, object_define, "../wpp/config/config.cmake")
 
 
 parser = OptionParser()

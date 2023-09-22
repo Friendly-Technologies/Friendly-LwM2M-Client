@@ -33,6 +33,11 @@ class Object : public Lwm2mObject, public ObjSubject<T> {
 private:
 	Object(WppClient &client, const ObjectInfo &info);
 
+	Object(const Object&) = delete;
+	Object(Object&&) = delete;
+	Object& operator=(const Object&) = delete;
+	Object& operator=(Object&&) = delete;
+
 public:
 	~Object();
 
@@ -48,6 +53,7 @@ public:
 	void restore() override;
 
 	T* instance(ID_T instanceID = 0);
+	const std::unordered_map<ID_T, T*> & getInstances();
 	size_t instanceCnt() override;
 	bool isInstanceExist(ID_T instanceID) override;
 
@@ -114,9 +120,7 @@ Object<T>::Object(WppClient &client, const ObjectInfo &info): Lwm2mObject(info),
 
 template<typename T>
 Object<T>::~Object() {
-	for(const auto& pair : _instances) {
-		delete pair.second;
-	}
+	clear();
 }
 
 /* ------------- Object management ------------- */
@@ -153,13 +157,14 @@ T* Object<T>::createInstance(ID_T instanceId) {
 	}
 
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "Creating instance %d:%d", getObjectID(), instanceId);
-	// TODO: Creation and registration new instance in core object
-//	 lwm2m_list_t *element = (lwm2m_list_t *)lwm2m_malloc(sizeof(lwm2m_list_t));
-//	 if (NULL == element) return NULL;
-//	 element->next = NULL;
-//	 element->id = instanceId;
-//	 _lwm2m_object.instanceList = LWM2M_LIST_ADD(_lwm2m_object.instanceList, element);
+	// Creation and registration new instance in core object
+	 lwm2m_list_t *element = (lwm2m_list_t *)lwm2m_malloc(sizeof(lwm2m_list_t));
+	 if (NULL == element) return NULL;
+	 element->next = NULL;
+	 element->id = instanceId;
+	 _lwm2m_object.instanceList = LWM2M_LIST_ADD(_lwm2m_object.instanceList, element);
 
+	// TODO: Use lwm2m_object_t.instanceList and its elements lwm2m_list_t * for save instances instead std:: conatainer
 	// Creating new instance
 	_instances[instanceId] = new T(_client, {(ID_T)_objInfo.objID, instanceId});
 	return static_cast<T*>(_instances[instanceId]);
@@ -171,10 +176,10 @@ bool Object<T>::removeInstance(ID_T instanceId) {
 	if (!isInstanceExist(instanceId)) return false;
 
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "Removing instance %d:%d", getObjectID(), instanceId);
-	// TODO: Deleting registered instance from core object
-//	 lwm2m_list_t *element = NULL;
-//	 _lwm2m_object.instanceList = LWM2M_LIST_RM(_lwm2m_object.instanceList, instanceID, (lwm2m_list_t **)&element);
-//	 if (NULL != element) lwm2m_free(element);
+	// Deleting registered instance from core object
+	 lwm2m_list_t *element = NULL;
+	 _lwm2m_object.instanceList = LWM2M_LIST_RM(_lwm2m_object.instanceList, instanceId, (lwm2m_list_t **)&element);
+	 if (NULL != element) lwm2m_free(element);
 
 	delete _instances[instanceId];
 	_instances.erase(instanceId);
@@ -184,14 +189,15 @@ bool Object<T>::removeInstance(ID_T instanceId) {
 template<typename T>
 void Object<T>::clear() {
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "Clearing object with ID -> %d", getObjectID());
-	// TODO: Deleting registered instances from core object
-//	while (_lwm2m_object->instanceList != NULL) {
-//		security_instance_t * securityInstance = (security_instance_t *)_lwm2m_object->instanceList;
-//		_lwm2m_object->instanceList = _lwm2m_object->instanceList->next;
-//		lwm2m_free(securityInstance);
-//	}
+	// Deleting registered instances from core object
+	while (_lwm2m_object.instanceList != NULL) {
+		lwm2m_list_t * instance = (lwm2m_list_t *)_lwm2m_object.instanceList;
+		_lwm2m_object.instanceList = _lwm2m_object.instanceList->next;
+		lwm2m_free(instance);
 
-	_instances.clear();
+		delete _instances[instance->id];
+		_instances.erase(instance->id);
+	}
 }
 
 template<typename T>
@@ -205,6 +211,11 @@ T* Object<T>::instance(ID_T instanceID) {
 	// If user want to access instance with ID that does not exist, then we can not do it
 	if (!isInstanceExist(instanceID)) return NULL;
 	return static_cast<T*>(_instances[instanceID]);
+}
+
+template<typename T>
+const std::unordered_map<ID_T, T*> & Object<T>::getInstances() {
+	return _instances;
 }
 
 template<typename T>

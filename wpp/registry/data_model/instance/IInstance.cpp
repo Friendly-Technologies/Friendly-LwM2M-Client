@@ -44,59 +44,43 @@ bool IInstance::resourceToLwm2mData(Resource &resource, ID_T instanceId, lwm2m_d
 	switch(resource.getTypeId()) {
 	case TYPE_ID::BOOL: {
 		BOOL_T value;
-		if (resource.get(value, instanceId)) {
-		// TODO: lwm2m_data_encode_bool(value, data_ptr);
-		}
+		if (resource.get(value, instanceId)) lwm2m_data_encode_bool(value, &data);
 		break;
 	}
 	case TYPE_ID::TIME:
 	case TYPE_ID::INT: {
 		INT_T value;
-		if (resource.get(value, instanceId)) {
-			// TODO: lwm2m_data_encode_int(value, data_ptr);
-		}
+		if (resource.get(value, instanceId)) lwm2m_data_encode_int(value, &data);
 		break;
 	}
 	case TYPE_ID::UINT: {
 		UINT_T value;
-		if (resource.get(value, instanceId)) {
-			// TODO: lwm2m_data_encode_uint(value, data_ptr);
-		}
+		if (resource.get(value, instanceId)) lwm2m_data_encode_uint(value, &data);
 		break;
 	}
 	case TYPE_ID::FLOAT: {
 		FLOAT_T value;
-		if (resource.get(value, instanceId)) {
-			// TODO: lwm2m_data_encode_float(value, data_ptr);
-		}
+		if (resource.get(value, instanceId)) lwm2m_data_encode_float(value, &data);
 		break;
 	}
 	case TYPE_ID::OBJ_LINK: {
-			OBJ_LINK_T value;
-			if (resource.get(value, instanceId)) {
-			// TODO: lwm2m_data_encode_objlink(value.objId, value.objectIInstanced, data_ptr);
-			}
+		OBJ_LINK_T value;
+		if (resource.get(value, instanceId)) lwm2m_data_encode_objlink(value.objId, value.objInstId, &data);
 		break;
 	}
 	case TYPE_ID::OPAQUE: {
-			OPAQUE_T value;
-			if (resource.get(value, instanceId)) {
-			// TODO: lwm2m_data_encode_objlink(value.data(), value.size(), data_ptr);
-			}
+		OPAQUE_T value;
+		if (resource.get(value, instanceId)) lwm2m_data_encode_opaque(value.data(), value.size(), &data);
 		break;
 	}
 	case TYPE_ID::STRING: {
-			STRING_T value;
-			if (resource.get(value, instanceId)) {
-			// TODO: lwm2m_data_encode_string(value.c_str(), data_ptr);
-			}
+		STRING_T value;
+		if (resource.get(value, instanceId)) lwm2m_data_encode_string(value.c_str(), &data);
 		break;
 	}
 	case TYPE_ID::CORE_LINK: {
-			CORE_LINK_T value;
-			if (resource.get(value, instanceId)) {
-			// TODO: lwm2m_data_encode_corelink(value.c_str(), data_ptr);
-			}
+		CORE_LINK_T value;
+		if (resource.get(value, instanceId)) lwm2m_data_encode_corelink(value.c_str(), &data);
 		break;
 	}
 	default: return false;
@@ -109,28 +93,27 @@ bool IInstance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &resource
 	switch (resource.getTypeId()) {
 	case TYPE_ID::BOOL: {
 		BOOL_T value;
-		if (/*TODO: !lwm2m_data_decode_bool(&data, &value) || */!resource.set(value, instanceId)) return false;
+		if (!lwm2m_data_decode_bool(&data, &value) || !resource.set(value, instanceId)) return false;
 		break;
 	}
 	case TYPE_ID::TIME:
 	case TYPE_ID::INT: {
 		INT_T value;
-		if (/*TODO: !lwm2m_data_decode_int(&data, &value) || */!resource.set(value, instanceId)) return false;
+		if (!lwm2m_data_decode_int(&data, &value) || !resource.set(value, instanceId)) return false;
 		break;
 	}
 	case TYPE_ID::UINT: {
 		UINT_T value;
-		if (/*TODO: !lwm2m_data_decode_uint(&data, &value) || */!resource.set(value, instanceId)) return false;
+		if (!lwm2m_data_decode_uint(&data, &value) || !resource.set(value, instanceId)) return false;
 		break;
 	}
 	case TYPE_ID::FLOAT: {
 		FLOAT_T value;
-		if (/*TODO: !lwm2m_data_decode_float(&data, &value) || */!resource.set(value, instanceId)) return false;
+		if (!lwm2m_data_decode_float(&data, &value) || !resource.set(value, instanceId)) return false;
 		break;
 	}
 	case TYPE_ID::OBJ_LINK: {
 		// TODO: It is necessary to check in practice, it is not completely clear how to convert data
-		// TODO: Convertation algorithm is not clear
 		if (data.type != LWM2M_TYPE_OBJECT_LINK) return false;
 		if (resource.set(OBJ_LINK_T{ID_T_MAX_VAL, ID_T_MAX_VAL}, instanceId)) return false;
 		break;
@@ -166,11 +149,13 @@ bool IInstance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &resource
 }
 
 uint8_t IInstance::resourceRead(ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP) {
+	// TODO: Read-Composite Operation for now not supported
+
 	// Requested each resource
 	if (!*numDataP) {
 		std::vector<Resource *> readResources = getInstantiatedResourcesList(Operation(Operation::READ));
 
-		// TODO: *dataArrayP = lwm2m_data_new(readResources.size());
+		*dataArrayP = lwm2m_data_new(readResources.size());
 		if (*dataArrayP == NULL) return COAP_500_INTERNAL_SERVER_ERROR;
 		*numDataP = readResources.size();
 
@@ -202,10 +187,10 @@ uint8_t IInstance::resourceRead(ID_T instanceId, int * numDataP, lwm2m_data_t **
 		// if has been received data for multiple resource with not allocated memory
 		// then we ourselves allocate memory for instances
 		if (resource->isMultiple() && data->type != LWM2M_TYPE_MULTIPLE_RESOURCE) {
-	//		 TODO: lwm2m_data_t *subData = lwm2m_data_new(resource.instanceCnt());
-	//		lwm2m_data_t *dataCnt = subData;
-	//		for (const auto& pair : resource->getInstances()) *(dataCnt++).id = pair.first;
-	//		lwm2m_data_encode_instances(subData, resource->instanceCnt(), *data);
+			lwm2m_data_t *subData = lwm2m_data_new(resource->instanceCnt());
+			lwm2m_data_t *dataCnt = subData;
+			for (const auto& pair : resource->getInstances()) (dataCnt++)->id = pair.first;
+			lwm2m_data_encode_instances(subData, resource->instanceCnt(), data);
 		}
 
 		size_t count = 1;
@@ -245,6 +230,7 @@ uint8_t IInstance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * da
 	// instance creation operation (Ex: ACL object resource 0). I did not
 	// find the necessary description in the documentation, so this question
 	// needs to be investigated in detail.
+	// TODO: Write-Composite Operation for now not supported
 	
 	for (int i = 0; i < numData; i++) {
 		Resource *resource = getResource(dataArray[i].id);
@@ -338,7 +324,7 @@ uint8_t IInstance::resourceDiscover(ID_T instanceId, int * numDataP, lwm2m_data_
 	if (!*numDataP) {
 		std::vector<Resource *> resources = getResourcesList();
 
-		// TODO: *dataArrayP = lwm2m_data_new(readResources.size());
+		*dataArrayP = lwm2m_data_new(resources.size());
 		if (*dataArrayP == NULL) return COAP_500_INTERNAL_SERVER_ERROR;
 		*numDataP = resources.size();
 
@@ -364,15 +350,15 @@ uint8_t IInstance::resourceDiscover(ID_T instanceId, int * numDataP, lwm2m_data_
 		// if has been received data for multiple resource with not allocated memory
 		// then we ourselves allocate memory for instances
 		if (resource->isMultiple() && data->type != LWM2M_TYPE_MULTIPLE_RESOURCE) {
-//			 TODO: lwm2m_data_t *subData = lwm2m_data_new(resource->instanceCnt());
-//			lwm2m_data_t *dataCnt = subData;
-//			for (const auto& pair : resource->getInstances()) {
-//				*(dataCnt++).id = pair.first;
+			lwm2m_data_t *subData = lwm2m_data_new(resource->instanceCnt());
+			lwm2m_data_t *dataCnt = subData;
+			for (const auto& pair : resource->getInstances()) {
+				(dataCnt++)->id = pair.first;
 				// If execution get to this place then operation completed with
 				// success and we can notifyIInstance implementation about it
-//				serverOperationNotifier(Operation::DISCOVER, resource->getID(), pair.first);
-//			}
-//			lwm2m_data_encode_instances(subData, resource->instanceCnt(), data);
+				serverOperationNotifier(Operation::DISCOVER, {resource->getID(), pair.first});
+			}
+			lwm2m_data_encode_instances(subData, resource->instanceCnt(), data);
 		}
 	}
 	return COAP_205_CONTENT;

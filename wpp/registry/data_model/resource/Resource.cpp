@@ -110,22 +110,9 @@ size_t Resource::instanceCnt() const {
 
 
 /* ---------- Extended abilities for access directly to resource data for avoid coping ----------*/
-std::unordered_map<ID_T,Resource::DATA_T>& Resource::getInstances() {
+const std::unordered_map<ID_T, Resource::DATA_T>& Resource::getInstances() {
 	return _instances;
 }
-
-bool Resource::takeOwnership() {
-	return _resourceGuard.try_lock();
-}
-
-void Resource::giveOwnership() {
-	_resourceGuard.unlock();
-}
-
-std::mutex& Resource::getGuard() {
-	return _resourceGuard;
-}
-
 
 /* ---------- Methods for get and set resource value ----------*/
 bool Resource::set(const BOOL_T &value, ID_T resInstId) {

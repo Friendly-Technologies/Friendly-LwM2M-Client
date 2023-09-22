@@ -57,17 +57,7 @@ public: /* ---------- Public methods for common usage ----------*/
 	size_t instanceCnt() const;
 
 	/* ---------- Extended abilities for access directly to resource data for avoid coping ----------*/
-	/*
-	 * Before call of this method must be called takeOwnership()
-	 * that must return true for guaranty unique property rights
-	 * to the resource.
-	 * After using of resource must be called giveOwnership() for
-	 * get it available for other.
-	 */
-	std::unordered_map<ID_T, DATA_T>& getInstances();
-	bool takeOwnership();
-	void giveOwnership();
-	std::mutex& getGuard();
+	const std::unordered_map<ID_T, DATA_T>& getInstances();
 
 	/* ---------- Methods for manage resource data ----------*/
     bool set(const BOOL_T &value, ID_T resInstId = SINGLE_INSTANCE_ID);

@@ -39,8 +39,10 @@ set(COMPILE_DEFINITIONS "")
 set(SOURCES main.cpp)
 
 # Add subdiretories with sources
-add_subdirectory(connection)
 add_subdirectory(platform)
+add_subdirectory(server)
+add_subdirectory(security)
+add_subdirectory(device)
 
 add_executable(WakaamaPlusTest ${SOURCES})
 # List of directories that will be set for compiler with key -I

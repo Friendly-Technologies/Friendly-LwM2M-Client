@@ -64,7 +64,6 @@ private:
 	 */
 	void resourcesInit();
 
-
 private:
     std::unordered_map<ID_T, Resource> _resources = {
     	//  KEY            				 VALUE

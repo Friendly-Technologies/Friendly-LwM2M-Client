@@ -17,6 +17,16 @@ namespace wpp {
 
 class Security: public IInstance, public InstSubject<Security> {
 public:
+	enum ID: ID_T {
+		SERVER_URI = 0,
+		BOOTSTRAP_SERVER = 1,
+		SECURITY_MODE = 2,
+		PUBLIC_KEY = 3,
+		SERVER_PUBLIC_KEY = 4,
+		SECRET_KEY = 5,
+	};
+
+public:
 	Security(WppClient &client, const InstanceID &id);
 	
 protected:
@@ -51,6 +61,17 @@ private:
 	 * Resource always must have at least one instance.
 	 */
 	void resourcesInit();
+
+private:
+    std::unordered_map<ID_T, Resource> _resources = {
+    	//  KEY            				 VALUE
+    	{SERVER_URI, 		{SERVER_URI, 		Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::STRING}},
+		{BOOTSTRAP_SERVER, 	{BOOTSTRAP_SERVER, 	Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::BOOL}},
+		{SECURITY_MODE,     {SECURITY_MODE,     Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::INT}},
+		{PUBLIC_KEY, 		{PUBLIC_KEY, 		Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::OPAQUE}},
+		{SERVER_PUBLIC_KEY, {SERVER_PUBLIC_KEY, Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::OPAQUE}},
+		{SECRET_KEY, 		{SECRET_KEY, 		Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::OPAQUE}},
+	};
 };
 
 } /* namespace wpp */

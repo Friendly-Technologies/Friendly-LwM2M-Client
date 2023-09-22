@@ -87,6 +87,9 @@ void Device::userOperationNotifier(Operation::TYPE type, const ResourceID &resId
 
 /* --------------- Class private methods --------------- */
 void Device::resourcesInit() {
+	_resources[REBOOT].set((STRING_T)"");
+	_resources[ERROR_CODE].set((INT_T)0);
+	_resources[SUPPORTED_BINDINGS].set((STRING_T)"U");
 }
 
 } /* namespace wpp */

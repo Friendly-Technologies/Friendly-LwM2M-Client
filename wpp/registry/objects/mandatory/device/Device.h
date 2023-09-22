@@ -17,6 +17,13 @@ namespace wpp {
 
 class Device: public IInstance, public InstSubject<Device> {
 public:
+	enum ID: ID_T {
+		REBOOT = 4,
+		ERROR_CODE = 11,
+		SUPPORTED_BINDINGS = 16,
+	};
+
+public:
 	Device(WppClient &client, const InstanceID &id);
 
 protected:
@@ -51,6 +58,14 @@ private:
 	 * Resource always must have at least one instance.
 	 */
 	void resourcesInit();
+	
+private:
+    std::unordered_map<ID_T, Resource> _resources = {
+    	//  KEY            				 VALUE
+    	{REBOOT, 			  {REBOOT, 				Operation(Operation::EXECUTE),  IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::EXECUTE}},
+		{ERROR_CODE, 		  {ERROR_CODE, 			Operation(Operation::READ), 	IS_SINGLE::MULTIPLE, IS_MANDATORY::MANDATORY, TYPE_ID::INT}},
+		{SUPPORTED_BINDINGS,  {SUPPORTED_BINDINGS,  Operation(Operation::READ),     IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::STRING}},
+	};
 };
 
 } /* namespace wpp */

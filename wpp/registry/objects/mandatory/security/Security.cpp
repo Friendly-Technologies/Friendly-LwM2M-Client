@@ -87,6 +87,12 @@ void Security::userOperationNotifier(Operation::TYPE type, const ResourceID &res
 
 /* --------------- Class private methods --------------- */
 void Security::resourcesInit() {
+	_resources[SERVER_URI].set((STRING_T)"");
+	_resources[BOOTSTRAP_SERVER].set(false);
+	_resources[SECURITY_MODE].set((INT_T)LWM2M_SECURITY_MODE_NONE);
+	_resources[PUBLIC_KEY].set(OPAQUE_T());
+	_resources[SERVER_PUBLIC_KEY].set(OPAQUE_T());
+	_resources[SECRET_KEY].set(OPAQUE_T());
 }
 
 } /* namespace wpp */

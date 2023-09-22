@@ -3,31 +3,31 @@
 
 #include <iostream>
 #include "WppRegistry.h"
-#include "IObjObserver.h"
-#include "IInstObserver.h"
+#include "IWppObjObserver.h"
+#include "IWppInstObserver.h"
 
 using namespace wpp;
 using namespace std;
 
-class DeviceImpl: public IObjObserver<Device>, public IInstObserver<Device> {
+class DeviceImpl: public IWppObjObserver<Device>, public IWppInstObserver<Device> {
 	public:
-    void init(Object<Device> &deviceObj) {
+    void init(WppObject<Device> &deviceObj) {
         deviceObj.subscribe(this);
         wpp::Device *device = deviceObj.createInstance();
         device->subscribe(this);
     }
 
-	void objectRestore(Object<Device> &object) override {
+	void objectRestore(WppObject<Device> &object) override {
 		cout << "Device: objectRestore: " << (ID_T)object.getObjectID() << endl;
 		object.clear();
         init(object);
 	}
 
-    void instanceCreated(Object<Device> &object, ID_T instanceId) override {
+    void instanceCreated(WppObject<Device> &object, ID_T instanceId) override {
         cout << "Device: instanceCreated: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
     }
 
-    void instanceDeleting(Object<Device> &object, ID_T instanceId) override {
+    void instanceDeleting(WppObject<Device> &object, ID_T instanceId) override {
 		cout << "Device: instanceDeleting: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
 	}
 

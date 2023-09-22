@@ -3,31 +3,31 @@
 
 #include <iostream>
 #include "WppRegistry.h"
-#include "IObjObserver.h"
-#include "IInstObserver.h"
+#include "IWppObjObserver.h"
+#include "IWppInstObserver.h"
 
 using namespace wpp;
 using namespace std;
 
-class ServerImpl: public IObjObserver<Server>, public IInstObserver<Server> {
+class ServerImpl: public IWppObjObserver<Server>, public IWppInstObserver<Server> {
 	public:
-    void init(Object<Server> &serverObj) {
+    void init(WppObject<Server> &serverObj) {
         serverObj.subscribe(this);
         wpp::Server *server = serverObj.createInstance();
         server->subscribe(this);
     }
 
-	void objectRestore(Object<Server> &object) override {
+	void objectRestore(WppObject<Server> &object) override {
 		cout << "Server: objectRestore: " << (ID_T)object.getObjectID() << endl;
 		object.clear();
         init(object);
 	}
 
-    void instanceCreated(Object<Server> &object, ID_T instanceId) override {
+    void instanceCreated(WppObject<Server> &object, ID_T instanceId) override {
         cout << "Server: instanceCreated: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
     }
 
-    void instanceDeleting(Object<Server> &object, ID_T instanceId) override {
+    void instanceDeleting(WppObject<Server> &object, ID_T instanceId) override {
 		cout << "Server: instanceDeleting: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
 	}
 

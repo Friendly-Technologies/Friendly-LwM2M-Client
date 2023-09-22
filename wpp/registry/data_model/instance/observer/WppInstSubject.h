@@ -1,24 +1,24 @@
 #ifndef WPP_INST_SUBJECT_H_
 #define WPP_INST_SUBJECT_H_
 
-#include "Operation.h"
-#include "IInstObserver.h"
+#include "WppOperation.h"
+#include "IWppInstObserver.h"
 
 namespace wpp {
 
 template <typename T>
-class InstSubject {
+class WppInstSubject {
 public:
     /*
 	 * Subscribers will be notified about the write, delete
 	 * and execute of instance resources initiated by server.
 	 */
-	void subscribe(IInstObserver<T> *observer) {
+	void subscribe(IWppInstObserver<T> *observer) {
     if (!observer) return;
     if (std::find(_observers.begin(), _observers.end(), observer) == _observers.end()) 
         _observers.push_back(observer);
     }
-	void unsubscribe(IInstObserver<T> *observer) {
+	void unsubscribe(IWppInstObserver<T> *observer) {
         _observers.erase(std::find(_observers.begin(), _observers.end(), observer));
     }
 
@@ -26,20 +26,20 @@ protected:
     /*
 	 * Notify observers about operation
 	 */
-	void observerNotify(T &inst, const ResourceID &resId, Operation::TYPE type) {
-        for(IInstObserver<T>* observer : _observers) {
-            if (type == Operation::TYPE::READ) {
+	void observerNotify(T &inst, const ResourceID &resId, WppOperation::TYPE type) {
+        for(IWppInstObserver<T>* observer : _observers) {
+            if (type == WppOperation::TYPE::READ) {
                 observer->resourceRead(inst, resId);
-            } else if (type == Operation::TYPE::WRITE) {
+            } else if (type == WppOperation::TYPE::WRITE) {
                 observer->resourceWrite(inst, resId);
-            } else if (type == Operation::TYPE::EXECUTE) {
+            } else if (type == WppOperation::TYPE::EXECUTE) {
                 observer->resourceExecute(inst, resId);
             }
         }
     }
 
 private:
-    std::vector<IInstObserver<T> *> _observers;
+    std::vector<IWppInstObserver<T> *> _observers;
 };
 
 }

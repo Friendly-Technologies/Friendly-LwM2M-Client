@@ -11,7 +11,7 @@
 #include <iostream>
 
 #include "Resource.h"
-#include "Operation.h"
+#include "WppOperation.h"
 #include "types.h"
 #include "WppLogs.h"
 
@@ -19,66 +19,66 @@
 
 namespace wpp {
 
-Security::Security(WppClient &client, const InstanceID &id): IInstance(client, id) {
+Security::Security(WppClient &client, const InstanceID &id): IWppInstance(client, id) {
 	resourcesInit();
 }
 
-/* ---------------IInstance implementation part --------------- */
-Resource * Security::getResource(ID_T id) {
+/* ---------------IWppInstance implementation part --------------- */
+WppResource * Security::getResource(ID_T id) {
 	return NULL;
 }
 
-std::vector<Resource *> Security::getResourcesList() {
-	std::vector<Resource *> list;
+std::vector<WppResource *> Security::getResourcesList() {
+	std::vector<WppResource *> list;
 	return list;
 }
 
-std::vector<Resource *> Security::getResourcesList(const Operation& filter) {
-	std::vector<Resource *> list;
+std::vector<WppResource *> Security::getResourcesList(const WppOperation& filter) {
+	std::vector<WppResource *> list;
 	return list;
 }
 
-std::vector<Resource *> Security::getInstantiatedResourcesList() {
-	std::vector<Resource *> list;
+std::vector<WppResource *> Security::getInstantiatedResourcesList() {
+	std::vector<WppResource *> list;
 	return list;
 }
 
-std::vector<Resource *> Security::getInstantiatedResourcesList(const Operation& filter) {
-	std::vector<Resource *> list;
+std::vector<WppResource *> Security::getInstantiatedResourcesList(const WppOperation& filter) {
+	std::vector<WppResource *> list;
 	return list;
 }
 
-void Security::serverOperationNotifier(Operation::TYPE type, const ResourceID &resId) {
+void Security::serverOperationNotifier(WppOperation::TYPE type, const ResourceID &resId) {
 	observerNotify(*this, resId, type);
 	switch (type) {
-	case Operation::READ:
+	case WppOperation::READ:
 		WPP_LOGD_ARG(TAG, "Server READ -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
 		break;
-	case Operation::WRITE:
+	case WppOperation::WRITE:
 		WPP_LOGD_ARG(TAG, "Server WRITE -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
 		break;
-	case Operation::EXECUTE:
+	case WppOperation::EXECUTE:
 		WPP_LOGD_ARG(TAG, "Server EXECUTE -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
 		break;
-	case Operation::DISCOVER:
+	case WppOperation::DISCOVER:
 		WPP_LOGD_ARG(TAG, "Server DISCOVER -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
 		break;
-	case Operation::DELETE:
+	case WppOperation::DELETE:
 		WPP_LOGD_ARG(TAG, "Server DELETE -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
 		break;
 	default: break;
 	}
 }
 
-void Security::userOperationNotifier(Operation::TYPE type, const ResourceID &resId) {
+void Security::userOperationNotifier(WppOperation::TYPE type, const ResourceID &resId) {
 	switch (type) {
-	case Operation::READ:
+	case WppOperation::READ:
 		WPP_LOGD_ARG(TAG, "User READ -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
 		break;
-	case Operation::WRITE:
+	case WppOperation::WRITE:
 		WPP_LOGD_ARG(TAG, "User WRITE -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
 		break;
-	case Operation::DELETE:
+	case WppOperation::DELETE:
 		WPP_LOGD_ARG(TAG, "User DELETE -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
 		break;
 	default: break;

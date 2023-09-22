@@ -5,42 +5,42 @@
  *      Author: valentin
  */
 
-#include "IInstance.h"
+#include "IWppInstance.h"
 #include "WppLogs.h"
 
 namespace wpp {
 
-bool IInstance::clear(ID_T resId) {
-	Resource *const resource = getResource(resId);
+bool IWppInstance::clear(ID_T resId) {
+	WppResource *const resource = getResource(resId);
 	if (!resource) return false;
 
 	bool result = resource->clear();
 	if (result) {
 		client().notifyValueChanged({_id, {resId,}});
-		userOperationNotifier(Operation::DELETE, {resId,});
+		userOperationNotifier(WppOperation::DELETE, {resId,});
 	}
 
 	return resource->clear();
 }
 
-bool IInstance::remove(const ResourceID &resId) {
-	Resource *const resource = getResource(resId.resInstId);
+bool IWppInstance::remove(const ResourceID &resId) {
+	WppResource *const resource = getResource(resId.resInstId);
 	if (!resource) return false;
 
 	bool result = resource->remove(resId.resInstId);
 	if (result) {
 		client().notifyValueChanged({_id, {resId.resId, resId.resInstId}});
-		userOperationNotifier(Operation::DELETE, {resId.resId, resId.resInstId});
+		userOperationNotifier(WppOperation::DELETE, {resId.resId, resId.resInstId});
 	}
 
 	return result;
 }
 
-WppClient& IInstance::client() {
+WppClient& IWppInstance::client() {
 	return _client;
 }
 
-bool IInstance::resourceToLwm2mData(Resource &resource, ID_T instanceId, lwm2m_data_t &data) {
+bool IWppInstance::resourceToLwm2mData(WppResource &resource, ID_T instanceId, lwm2m_data_t &data) {
 	switch(resource.getTypeId()) {
 	case TYPE_ID::BOOL: {
 		BOOL_T value;
@@ -89,7 +89,7 @@ bool IInstance::resourceToLwm2mData(Resource &resource, ID_T instanceId, lwm2m_d
 	return true;
 }
 
-bool IInstance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &resource, ID_T instanceId) {
+bool IWppInstance::lwm2mDataToResource(const lwm2m_data_t &data, WppResource &resource, ID_T instanceId) {
 	switch (resource.getTypeId()) {
 	case TYPE_ID::BOOL: {
 		BOOL_T value;
@@ -148,12 +148,12 @@ bool IInstance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &resource
 	return true;
 }
 
-uint8_t IInstance::resourceRead(ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP) {
-	// TODO: Read-Composite Operation for now not supported
+uint8_t IWppInstance::resourceRead(ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP) {
+	// TODO: Read-Composite WppOperation for now not supported
 
 	// Requested each resource
 	if (!*numDataP) {
-		std::vector<Resource *> readResources = getInstantiatedResourcesList(Operation(Operation::READ));
+		std::vector<WppResource *> readResources = getInstantiatedResourcesList(WppOperation(WppOperation::READ));
 
 		*dataArrayP = lwm2m_data_new(readResources.size());
 		if (*dataArrayP == NULL) return COAP_500_INTERNAL_SERVER_ERROR;
@@ -166,7 +166,7 @@ uint8_t IInstance::resourceRead(ID_T instanceId, int * numDataP, lwm2m_data_t **
 	for (int i = 0; i < *numDataP; i++) {
 		lwm2m_data_t *data = (*dataArrayP) + i;
 
-		Resource *resource = getResource(data->id);
+		WppResource *resource = getResource(data->id);
 		//  Note that availability is not mandatory for optional resources
 		if (resource == NULL || resource->isEmpty()) {
 			if (resource->isOptional()) {
@@ -214,15 +214,15 @@ uint8_t IInstance::resourceRead(ID_T instanceId, int * numDataP, lwm2m_data_t **
 				}
 			}
 			// If execution get to this place then operation completed with
-			// success and we can notifyIInstance implementation about it
-			serverOperationNotifier(Operation::READ, {resource->getID(), resInstId});
+			// success and we can notifyIWppInstance implementation about it
+			serverOperationNotifier(WppOperation::READ, {resource->getID(), resInstId});
 		}
 	}
 
 	return COAP_205_CONTENT;
 }
 
-uint8_t IInstance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_write_type_t writeType) {
+uint8_t IWppInstance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_write_type_t writeType) {
 	// Protect access to instance list
 
 	// TODO: In some cases, according to the implementation of the wakaama,
@@ -230,10 +230,10 @@ uint8_t IInstance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * da
 	// instance creation operation (Ex: ACL object resource 0). I did not
 	// find the necessary description in the documentation, so this question
 	// needs to be investigated in detail.
-	// TODO: Write-Composite Operation for now not supported
+	// TODO: Write-Composite WppOperation for now not supported
 	
 	for (int i = 0; i < numData; i++) {
-		Resource *resource = getResource(dataArray[i].id);
+		WppResource *resource = getResource(dataArray[i].id);
 		if (resource == NULL) {
 			if (resource->isOptional()) {
 				WPP_LOGW_ARG(TAG_WPP_INST, "Optional resource does not exist: %d:%d:%d", _id.objId, _id.objInstId, dataArray[i].id);
@@ -259,8 +259,8 @@ uint8_t IInstance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * da
 		if (writeType == LWM2M_WRITE_REPLACE_RESOURCES) {
 			WPP_LOGD_ARG(TAG_WPP_INST, "Clear resource before write: %d:%d:%d", _id.objId, _id.objInstId, dataArray[i].id);
 			resource->clear();
-			// Notify IInstance implementation about operation
-			serverOperationNotifier(Operation::DELETE, {resource->getID(), SINGLE_INSTANCE_ID});
+			// Notify IWppInstance implementation about operation
+			serverOperationNotifier(WppOperation::DELETE, {resource->getID(), SINGLE_INSTANCE_ID});
 		}
 
 		size_t count = 1;
@@ -284,17 +284,17 @@ uint8_t IInstance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * da
 				}
 			}
 			// If execution get to this place then operation completed with
-			// success and we can notify IInstance implementation about it
-			serverOperationNotifier(Operation::WRITE, {resource->getID(), resInstId});
+			// success and we can notify IWppInstance implementation about it
+			serverOperationNotifier(WppOperation::WRITE, {resource->getID(), resInstId});
 		}
 	}
 
 	return COAP_204_CHANGED;
 }
 
-uint8_t IInstance::resourceExecute(ID_T instanceId, ID_T resId, uint8_t * buffer, int length) {
+uint8_t IWppInstance::resourceExecute(ID_T instanceId, ID_T resId, uint8_t * buffer, int length) {
 	EXECUTE_T execute;
-	Resource *resource = getResource(resId);
+	WppResource *resource = getResource(resId);
 	if (!resource || !resource->get(execute) || !execute) {
 		if (resource->isOptional()) {
 			WPP_LOGW_ARG(TAG_WPP_INST, "Optional resource does not exist: %d:%d:%d", _id.objId, _id.objInstId, resId);
@@ -313,16 +313,16 @@ uint8_t IInstance::resourceExecute(ID_T instanceId, ID_T resId, uint8_t * buffer
 	execute(resId, OPAQUE_T(buffer, buffer + length));
 
 	// If execution get to this place then operation completed with
-	// success and we can notify IInstance implementation about it
-	serverOperationNotifier(Operation::EXECUTE, {resource->getID(), SINGLE_INSTANCE_ID});
+	// success and we can notify IWppInstance implementation about it
+	serverOperationNotifier(WppOperation::EXECUTE, {resource->getID(), SINGLE_INSTANCE_ID});
 
 	return COAP_204_CHANGED;
 }
 
-uint8_t IInstance::resourceDiscover(ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP) {
+uint8_t IWppInstance::resourceDiscover(ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP) {
 	// Requested each resource
 	if (!*numDataP) {
-		std::vector<Resource *> resources = getResourcesList();
+		std::vector<WppResource *> resources = getResourcesList();
 
 		*dataArrayP = lwm2m_data_new(resources.size());
 		if (*dataArrayP == NULL) return COAP_500_INTERNAL_SERVER_ERROR;
@@ -336,7 +336,7 @@ uint8_t IInstance::resourceDiscover(ID_T instanceId, int * numDataP, lwm2m_data_
 
 	for (int i = 0; i < *numDataP; i++) {
 		lwm2m_data_t *data = (*dataArrayP) + i;
-		Resource *resource = getResource(data->id);
+		WppResource *resource = getResource(data->id);
 		if (resource == NULL || resource->isEmpty()) {
 			if (resource->isOptional()) {
 				WPP_LOGW_ARG(TAG_WPP_INST, "Optional resource does not exist: %d:%d:%d", _id.objId, _id.objInstId, data->id);
@@ -355,8 +355,8 @@ uint8_t IInstance::resourceDiscover(ID_T instanceId, int * numDataP, lwm2m_data_
 			for (const auto& pair : resource->getInstances()) {
 				(dataCnt++)->id = pair.first;
 				// If execution get to this place then operation completed with
-				// success and we can notifyIInstance implementation about it
-				serverOperationNotifier(Operation::DISCOVER, {resource->getID(), pair.first});
+				// success and we can notifyIWppInstance implementation about it
+				serverOperationNotifier(WppOperation::DISCOVER, {resource->getID(), pair.first});
 			}
 			lwm2m_data_encode_instances(subData, resource->instanceCnt(), data);
 		}

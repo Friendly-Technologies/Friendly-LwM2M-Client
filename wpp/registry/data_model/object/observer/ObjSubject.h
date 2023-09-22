@@ -1,5 +1,5 @@
-#ifndef OBJSUBJECT_H_
-#define OBJSUBJECT_H_
+#ifndef WPP_OBJ_SUBJECT_H_
+#define WPP_OBJ_SUBJECT_H_
 
 #include "Operation.h"
 #include "IObjObserver.h"
@@ -62,4 +62,4 @@ private:
 
 }
 
-#endif //OBJSUBJECT_H_
+#endif //WPP_OBJ_SUBJECT_H_

@@ -5,8 +5,8 @@
  *      Author: valentin
  */
 
-#ifndef DEVICE_H_
-#define DEVICE_H_
+#ifndef WPP_DEVICE_H_
+#define WPP_DEVICE_H_
 
 #include "DeviceConfig.h"
 #include "DeviceInfo.h"
@@ -70,4 +70,4 @@ private:
 
 } /* namespace wpp */
 
-#endif /* DEVICE_H_ */
+#endif /* WPP_DEVICE_H_ */

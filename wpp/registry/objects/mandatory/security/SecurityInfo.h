@@ -1,5 +1,5 @@
-#ifndef SECURITYINFO_H_
-#define SECURITYINFO_H_
+#ifndef WPP_SECURITY_INFO_H_
+#define WPP_SECURITY_INFO_H_
 
 #include "ObjectInfo.h"
 
@@ -31,4 +31,4 @@ static const ObjectInfo SECURITY_OBJ_INFO = {
 
 }
 
-#endif // SECURITYINFO_H_
+#endif // WPP_SECURITY_INFO_H_

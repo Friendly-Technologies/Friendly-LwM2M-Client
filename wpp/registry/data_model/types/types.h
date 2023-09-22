@@ -1,5 +1,5 @@
-#ifndef TYPES_T
-#define TYPES_T
+#ifndef WPP_TYPES_T
+#define WPP_TYPES_T
 
 #include <vector>
 #include <string>
@@ -138,4 +138,4 @@ struct DataID{
 
 } // namespace wpp
 
-#endif // TYPES_T
+#endif // WPP_TYPES_T

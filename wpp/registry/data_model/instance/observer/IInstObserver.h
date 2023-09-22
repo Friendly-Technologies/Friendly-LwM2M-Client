@@ -1,5 +1,5 @@
-#ifndef IINSTOBSERVER_H_
-#define IINSTOBSERVER_H_
+#ifndef I_WPP_INST_OBSERVER_H_
+#define I_WPP_INST_OBSERVER_H_
 
 namespace wpp {
 
@@ -26,4 +26,4 @@ public:
 
 } // namespace wpp
 
-#endif /* IINSTOBSERVER_H_ */
+#endif /* I_WPP_INST_OBSERVER_H_ */

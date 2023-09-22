@@ -1,5 +1,5 @@
-#ifndef IOBJOBSERVER_H_
-#define IOBJOBSERVER_H_
+#ifndef I_WPP_OBJ_OBSERVER_H_
+#define I_WPP_OBJ_OBSERVER_H_
 
 namespace wpp {
 
@@ -29,4 +29,4 @@ public:
 
 } // namespace wpp
 
-#endif /* IOBJOBSERVER_H_ */
+#endif /* I_WPP_OBJ_OBSERVER_H_ */

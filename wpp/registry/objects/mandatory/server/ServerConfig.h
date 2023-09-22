@@ -1,9 +1,9 @@
-#ifndef SERVERCONFIG_H_
-#define SERVERCONFIG_H_
+#ifndef WPP_SERVER_CONFIG_H_
+#define WPP_SERVER_CONFIG_H_
 
 #if MANDATORY_SERVER_OBJ
 /* ---------- Server optional resources start ---------- */
 /* ---------- Server optional resources end ---------- */
 #endif // MANDATORY_SERVER_OBJ
 
-#endif // SERVERCONFIG_H_
+#endif // WPP_SERVER_CONFIG_H_

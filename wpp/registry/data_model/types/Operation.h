@@ -1,5 +1,5 @@
-#ifndef OPERATION_H
-#define OPERATION_H
+#ifndef WPP_OPERATION_H
+#define WPP_OPERATION_H
 
 #include <vector>
 
@@ -55,4 +55,4 @@ private:
 
 } // namespace wpp
 
-#endif //OPERATION_H
+#endif //WPP_OPERATION_H

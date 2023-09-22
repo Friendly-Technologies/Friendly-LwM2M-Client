@@ -5,8 +5,8 @@
  *      Author: valentin
  */
 
-#ifndef SERVER_H_
-#define SERVER_H_
+#ifndef WPP_SERVER_H_
+#define WPP_SERVER_H_
 
 #include "ServerConfig.h"
 #include "ServerInfo.h"
@@ -80,4 +80,4 @@ private:
 
 } /* namespace wpp */
 
-#endif /* SERVER_H_ */
+#endif /* WPP_SERVER_H_ */

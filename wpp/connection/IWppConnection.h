@@ -5,8 +5,8 @@
  *      Author: valentin
  */
 
-#ifndef IWppConnection_H_
-#define IWppConnection_H_
+#ifndef I_WPP_CONNECTION_H_
+#define I_WPP_CONNECTION_H_
 
 #include <string>
 
@@ -94,4 +94,4 @@ private:
 
 } /* namespace wpp */
 
-#endif /* IWppConnection_H_ */
+#endif /* I_WPP_CONNECTION_H_ */

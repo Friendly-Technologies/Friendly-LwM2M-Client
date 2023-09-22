@@ -5,8 +5,8 @@
  *      Author: valentin
  */
 
-#ifndef LWM2MOBJECT_H_
-#define LWM2MOBJECT_H_
+#ifndef WPP_LWM2M_OBJECT_H_
+#define WPP_LWM2M_OBJECT_H_
 
 #include "types.h"
 #include "ObjectInfo.h"
@@ -44,4 +44,4 @@ protected:
 } // namespace wpp
 
 
-#endif /* LWM2MOBJECT_H_ */
+#endif /* WPP_LWM2M_OBJECT_H_ */

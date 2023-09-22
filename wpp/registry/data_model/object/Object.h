@@ -5,8 +5,8 @@
  *      Author: valentin
  */
 
-#ifndef OBJECT_H_
-#define OBJECT_H_
+#ifndef WPP_OBJECT_H_
+#define WPP_OBJECT_H_
 
 #include <unordered_map>
 #include <variant>
@@ -165,6 +165,7 @@ T* Object<T>::createInstance(ID_T instanceId) {
 	 _lwm2m_object.instanceList = LWM2M_LIST_ADD(_lwm2m_object.instanceList, element);
 
 	// TODO: Use lwm2m_object_t.instanceList and its elements lwm2m_list_t * for save instances instead std:: conatainer
+	// TODO: Add check to each new or malloc operation
 	// Creating new instance
 	_instances[instanceId] = new T(_client, {(ID_T)_objInfo.objID, instanceId});
 	return static_cast<T*>(_instances[instanceId]);
@@ -306,4 +307,4 @@ uint8_t Object<T>::delete_clb(lwm2m_context_t * contextP, ID_T instanceId, lwm2m
 }
 
 } // namespace wpp
-#endif /* OBJECT_H_ */
+#endif /* WPP_OBJECT_H_ */

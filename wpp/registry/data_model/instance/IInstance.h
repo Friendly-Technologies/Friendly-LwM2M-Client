@@ -5,8 +5,8 @@
  *      Author: valentin
  */
 
-#ifndef INSTANCE_H_
-#define INSTANCE_H_
+#ifndef WPP_INSTANCE_H_
+#define WPP_INSTANCE_H_
 
 #include <vector>
 
@@ -177,4 +177,4 @@ bool IInstance::userGet(const ResourceID &resId, T &value) {
 
 } /* namespace wpp */
 
-#endif /* INSTANCE_H_ */
+#endif /* WPP_INSTANCE_H_ */

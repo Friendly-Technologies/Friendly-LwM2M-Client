@@ -1,5 +1,5 @@
-#ifndef RESOURCE_H
-#define RESOURCE_H
+#ifndef WPP_RESOURCE_H
+#define WPP_RESOURCE_H
 
 #include <unordered_map>
 #include <mutex>
@@ -179,4 +179,4 @@ bool Resource::isDataValueValid(const T &data) const {
 
 } // namespace wpp
 
-#endif //RESOURCE_H
+#endif //WPP_RESOURCE_H

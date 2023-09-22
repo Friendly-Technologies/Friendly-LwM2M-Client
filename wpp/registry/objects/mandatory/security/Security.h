@@ -5,8 +5,8 @@
  *      Author: valentin
  */
 
-#ifndef SECURITY_H_
-#define SECURITY_H_
+#ifndef WPP_SECURITY_H_
+#define WPP_SECURITY_H_
 
 #include "SecurityConfig.h"
 #include "SecurityInfo.h"
@@ -76,4 +76,4 @@ private:
 
 } /* namespace wpp */
 
-#endif /* SECURITY_H_ */
+#endif /* WPP_SECURITY_H_ */

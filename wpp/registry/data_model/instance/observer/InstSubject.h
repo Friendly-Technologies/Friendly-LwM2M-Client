@@ -1,5 +1,5 @@
-#ifndef INSTSUBJECT_H_
-#define INSTSUBJECT_H_
+#ifndef WPP_INST_SUBJECT_H_
+#define WPP_INST_SUBJECT_H_
 
 #include "Operation.h"
 #include "IInstObserver.h"
@@ -44,4 +44,4 @@ private:
 
 }
 
-#endif //INSTSUBJECT_H_
+#endif //WPP_INST_SUBJECT_H_

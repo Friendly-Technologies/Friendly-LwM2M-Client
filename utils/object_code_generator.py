@@ -42,8 +42,8 @@ PUBLIC_CONSTRUCTOR_H = \
 
 I_INSTANCE_IMPLEMENTATIONS_H = \
     f"""\tprotected:\n\t\t/* --------------- IInstance implementation part --------------- */\n\t\t/* \n\t""" \
-    f"""\t * Returns Resource object if it is exist\n\t\t */\n\t\tResource * getResource(ID_T id) override;\n\t\t/*\n\t""" \
-    f"""\t * Returns list with available resources\n\t\t */\n\t""" \
+    f"""\t * Returns Resource object if it is exist\n\t\t */\n\t\tResource * getResource(ID_T id) override;\n\t\t""" \
+    f"""/*\n\t\t * Returns list with available resources\n\t\t */\n\t""" \
     f"""\tstd::vector<Resource *> getResourcesList() override;\n\t""" \
     f"""\tstd::vector<Resource *> getResourcesList(const Operation& filter) override;\n\t\t/*\n\t """ \
     f"""\t * Returns list with available instantiated resources\n\t\t */\n\t """ \
@@ -121,12 +121,21 @@ FUNC_GET_INSTANTIATED_LIST_P = \
 
 class CodeGenerator:
     """Add some comments here"""
-    class_name = None
-    folder_name = None
+    obj_name_class = None
+    obj_name_folder = None
+    obj_is_mandatory = None
+    obj_define = None
 
-    def __init__(self, class_name, folder_name):
-        self.class_name = class_name
-        self.folder_name = folder_name
+    def __init__(self, class_name, folder_name, is_mandatory):
+        self.obj_name_class = class_name                # LwM2MServer
+        self.obj_name_folder = folder_name              # lwm2m_server
+        self.obj_is_mandatory = is_mandatory            # bool
+        self.obj_define = self.create_object_define()   # MANDATORY_LWM2MSERVER_OBJ
+
+    def create_object_define(self):
+        define_name = self.obj_name_class.replace(' ', '_').upper()
+        define_prefix = "MANDATORY" if self.obj_is_mandatory else "OPTIONAL"
+        return f"{define_prefix}_{define_name}_OBJ"
 
     def parse_operation(self, xml_operation):
         operation = ""
@@ -221,12 +230,10 @@ class CodeGenerator:
         content = f"""\tvoid {PLACE_CLASS_NAME}::_resourcesInit() {{\n"""
         for resource in resources_list_xml:
             if resource["Mandatory"] == "MANDATORY":
-                # content += f"\t\t_resources[{resource['Name']}].set( /* TODO */ );"
-                # content += f"\n\t\t_resources[{resource['Name']}]" \
-                #            f".setDataVerifier((VERIFY_{self.parse_type(resource['Type'])})" \
-                #            f"([](const INT_T& value) {{ /* TODO */ }}));\n\n"
-                content += f"\t\t_resources[{resource['Name']}].set( /* TODO */ );"
-                content += f"\n\t\t_resources[{resource['Name']}].setDataVerifier( /* TODO */ );\n\n"
+                content += f"""\t\t#if {resource["Name"]}_{resource["Mandatory"]}\n\t"""
+                content += f"\t\t_resources[{resource['Name']}].set( /* TODO */ );\n\t"
+                content += f"\t\t_resources[{resource['Name']}].setDataVerifier( /* TODO */ );\n"
+                content += f"\t\t#endif\n\n"
         return content + "\t}\n\n"
 
     def create_log_string(self, text: str, arguments: list, is_std, pattern: str = "%d"):
@@ -248,54 +255,30 @@ class CodeGenerator:
             return f"""{LOG_FUNC_CUSTOM}(TAG, {text});"""
 
     def get_content_serverOperationNotifier(self):
-        # first implementation:
-        # cases = ["READ", "WRITE", "EXECUTE", "DISCOVER", "DELETE"]
-        # cases_dict = {key: self.create_log_string(f"Server {key} -> resId: %d, resInstId: %d",
-        #                                           ["resId.resId", "resId.resInstId"],
-        #                                           False) for key in cases}
-        # return \
-        #     f"""\tvoid {PLACE_CLASS_NAME}::serverOperationNotifier""" \
-        #     f"""(Operation::TYPE type, const ResourceID &resId) {{\n\t""" \
-        #     f"""observerNotify(*this, resId, type);\n\n""" \
-        #     f"""\tswitch (type) {{\n\t""" \
-        #     f"""\tcase Operation::READ:\n\t\t\t{cases_dict["READ"]}\n\t\t\tbreak;\n\t""" \
-        #     f"""\tcase Operation::WRITE:\n\t\t\t{cases_dict["WRITE"]}\n\t\t\tbreak;\n\t""" \
-        #     f"""\tcase Operation::EXECUTE:\n\t\t\t{cases_dict["EXECUTE"]}\n\t\t\tbreak;\n\t""" \
-        #     f"""\tcase Operation::DISCOVER:\n\t\t\t{cases_dict["DISCOVER"]}\n\t\t\tbreak;\n\t""" \
-        #     f"""\tcase Operation::DELETE:\n\t\t\t{cases_dict["DELETE"]}\n\t\t\tbreak;\n\t""" \
-        #     f"""\tdefault: break;\n\t}}\n}}\n\n"""
-
-        # second implementation:
         cases = ["READ", "WRITE", "EXECUTE", "DISCOVER", "DELETE"]
-
         base = \
             f"""\tvoid {PLACE_CLASS_NAME}::serverOperationNotifier(Operation::TYPE type, const ResourceID &resId) {{""" \
             f"""\n\t\tobserverNotify(*this, resId, type);\n\n""" \
             f"""\t\tswitch (type) {{\n\t"""
-
         for case in cases:
             base += f"""\t\tcase Operation::{case}:\n\t\t\t\t{self.create_log_string(
                 f"Server {case} -> resId: %d, resInstId: %d",
                 ["resId.resId", "resId.resInstId"],
                 False
             )}\n\t\t\t\tbreak;\n\t"""
-
         return f"""{base}\t\tdefault: break;\n\t\t}}\n\t}}\n\n"""
 
     def get_content_userOperationNotifier(self):
         cases = ["READ", "WRITE", "DELETE"]
-
         prefix = \
             f"""\tvoid {PLACE_CLASS_NAME}::userOperationNotifier(Operation::TYPE type, const ResourceID &resId) {{""" \
             f"""\n\t\tswitch (type) {{\n\t"""
-
         for case in cases:
             prefix += f"""\t\tcase Operation::{case}:\n\t\t\t\t{self.create_log_string(
                 f"User {case} -> resId: %d, resInstId: %d",
                 ["resId.resId", "resId.resInstId"],
                 False
             )}\n\t\t\t\tbreak;\n\t"""
-
         return f"""{prefix}\t\tdefault: break;\n\t\t}}\n\t}}\n\n"""
 
     def generate_content_header(self, resources_list):
@@ -307,8 +290,8 @@ class CodeGenerator:
                        I_INSTANCE_IMPLEMENTATIONS_H +
                        CLASS_PRIVATE_METHODS_H +
                        "")
-        code_header = code_header.replace(PLACE_CLASS_NAME_UPPER, self.class_name.upper())
-        code_header = code_header.replace(PLACE_CLASS_NAME, self.class_name)
+        code_header = code_header.replace(PLACE_CLASS_NAME_UPPER, self.obj_name_class.upper())
+        code_header = code_header.replace(PLACE_CLASS_NAME, self.obj_name_class)
         code_header = code_header.replace(PLACE_RESOURCES_ENUM, resources_enum)
         code_header = code_header.replace(PLACE_RESOURCES_MAP, resources_map)
         code_header = code_header.replace("TAB", "\t\t\t")
@@ -330,24 +313,20 @@ class CodeGenerator:
                     CLASS_PRIVATE_METHODS_CPP +
                     "} /* namespace wpp */\n")
         code_cpp = code_cpp.replace(PLACE_RESOURCES_INIT, self.get_content_resourcesInit_f(resources_list))
-        code_cpp = code_cpp.replace(PLACE_CLASS_NAME, self.class_name)
-        code_cpp = code_cpp.replace(PLACE_FOLDER, self.folder_name)
+        code_cpp = code_cpp.replace(PLACE_CLASS_NAME, self.obj_name_class)
+        code_cpp = code_cpp.replace(PLACE_FOLDER, self.obj_name_folder)
 
         return code_cpp
 
-    def generate_content_cmake_list(self, is_mandatory):
-        prefix = "MANDATORY_" if is_mandatory else "OPTIONAL_"
-        main_line = f"""set(SOURCES ${{SOURCES}} ${{CMAKE_CURRENT_SOURCE_DIR}}/{self.class_name}.cpp PARENT_SCOPE)"""
+    def generate_content_cmake_list(self):
+        main_line = f"""set(SOURCES ${{SOURCES}} ${{CMAKE_CURRENT_SOURCE_DIR}}/{self.obj_name_class}.cpp PARENT_SCOPE)"""
 
-        return f"""if({prefix}{self.class_name.upper()})\n\t# Update SOURCES variable from parent scope.\n\t""" \
+        return f"""if({self.obj_define})\n\t# Update SOURCES variable from parent scope.\n\t""" \
                f"""{main_line}\nendif()"""
 
     def generate_content_info_header(self, object_dict):
-        name = object_dict["object_name"]
-        object_name = name.replace(' ', '_').upper()
-        folder_name = name.replace(' ', '_').lower()
 
-        class_name = f"{name.replace(' ', '').upper()}INFO_H_"
+        class_name = f"{self.obj_name_class.replace(' ', '').upper()}INFO_H"
         is_multiple = "MULTIPLE" if object_dict["is_multiple"] else "SINGLE"
         is_mandatory = "MANDATORY" if object_dict["is_mandatory"] else "OPTIONAL"
 
@@ -355,15 +334,16 @@ class CodeGenerator:
             f"""#ifndef {class_name}\n""" \
             f"""#define {class_name}\n\n""" \
             f"""#include \"ObjectInfo.h"\n\n""" \
+            f"""#if {self.obj_define}\n\n""" \
             f"""namespace wpp {{\n\n""" \
             f"""static const ObjectInfo SERVER_OBJ_INFO = {{\n""" \
-            f"""\t/* Name */\n\t\t"{object_dict["object_name"]}",\n\n""" \
-            f"""\t/* Object ID */\n\t\tOBJ_ID::SERVER,\n\n""" \
-            f"""\t/* URN */\n\t\t"{object_dict["object_urn"]}",\n\n""" \
-            f"""\t/* Object version */\n\t\t{{{object_dict["object_lwm2m_version"]}}},\n\n""" \
-            f"""\t/* Lwm2m version */\n\t\t{{{object_dict["object_version"]}}},\n\n""" \
-            f"""\t/* Is single */\n\t\tIS_SINGLE::{is_multiple},\n\n""" \
-            f"""\t/* Is Mandatory */\n\t\tIS_MANDATORY::{is_mandatory},\n\n""" \
+            f"""\t/* Name */\n\t"{object_dict["object_name"]}",\n\n""" \
+            f"""\t/* Object ID */\n\tOBJ_ID::SERVER,\n\n""" \
+            f"""\t/* URN */\n\t"{object_dict["object_urn"]}",\n\n""" \
+            f"""\t/* Object version */\n\t{{{object_dict["object_lwm2m_version"]}}},\n\n""" \
+            f"""\t/* Lwm2m version */\n\t{{{object_dict["object_version"]}}},\n\n""" \
+            f"""\t/* Is single */\n\tIS_SINGLE::{is_multiple},\n\n""" \
+            f"""\t/* Is Mandatory */\n\tIS_MANDATORY::{is_mandatory},\n\n""" \
             f"""\t/* Object supported operations */\n\t""" \
             f"""\tOperation(\tOperation::READ|\n""" \
             f"""\t\t\t\t\tOperation::WRITE|\n""" \
@@ -371,14 +351,15 @@ class CodeGenerator:
             f"""\t\t\t\t\tOperation::EXECUTE|\n""" \
             f"""\t\t\t\t\tOperation::CREATE|\n""" \
             f"""\t\t\t\t\tOperation::DELETE),\n""" \
-            f"""\t}};\n""" \
-            f"""}}\n\n""" \
+            f"""\t}};\n\n""" \
+            f"""}} /* namespace wpp */\n\n""" \
+            f"""#endif /* {self.obj_define} */""" \
             f"""#endif // {class_name}\n"""
 
         return content
 
     def generate_content_config(self, object_dict):
-        ifdef = f"{self.class_name.replace(' ', '').upper()}_H"
+        ifdef = f"{self.obj_name_class.replace(' ', '').upper()}_H"
         defines = ""
         for i in object_dict:
             defines += f"""#define {i["Name"]}_{i["Mandatory"]}"""
@@ -393,6 +374,37 @@ class CodeGenerator:
             f"""#endif // {ifdef}\n""" \
             f"""#endif // {ifdef}\n"""
         return content
+
+    def update_file(self, stop_string, content, path_to_file):
+        new_content = ''
+        with open(path_to_file, 'r') as f:
+            for i in f:
+                if " ".join(i.split()) == stop_string:
+                    new_content += content
+                new_content += i
+        f.close()
+        with open(path_to_file, 'w') as f:
+            f.write(new_content)
+        f.close()
+
+    def update_files(self, object_dict):
+        stop_string_obj_id = STOP_STRING_OBJ_ID[0] if self.obj_is_mandatory else STOP_STRING_OBJ_ID[1]
+        stop_string_cfg_cmk = STOP_STRING_CNFG_CMK[0] if self.obj_is_mandatory else STOP_STRING_CNFG_CMK[1]
+
+        content_string_obj_id = \
+            f"#ifdef {self.obj_define}\n" \
+            f"\t{self.obj_name_class.upper()} = {object_dict['object_id']},\n" \
+            f"#endif /* {self.obj_define} */\n\n"
+
+        content_string_cnfg_cmk = \
+            f"""\noption({self.obj_define} """ \
+            f""""Include {"mandatory" if self.obj_is_mandatory else "optional"} """ \
+            f"""{self.obj_name_class} object in the build" {"ON" if self.obj_is_mandatory else "OFF"})\n""" \
+            f"""if ({self.obj_define})\n\tset(COMPILE_DEFINITIONS ${{COMPILE_DEFINITIONS}} {self.obj_define} = 1)""" \
+            f"""\nendif()\n\n"""
+
+        self.update_file(stop_string_obj_id, content_string_obj_id, "../wpp/registry/ObjectID.h")
+        self.update_file(stop_string_cfg_cmk, content_string_cnfg_cmk, "../wpp/config/config.cmake")
 
 
 class XmlToCppObjectGenerator:
@@ -440,67 +452,23 @@ class XmlToCppObjectGenerator:
         # return name, object_id, resources_list, is_mandatory
         return object_meta, resources_list
 
-    def update_file(self, stop_string, content, path_to_file):
-        new_content = ''
-        with open(path_to_file, 'r') as f:
-            for i in f:
-                if " ".join(i.split()) == stop_string:
-                    new_content += content
-                new_content += i
-        f.close()
-        with open(path_to_file, 'w') as f:
-            f.write(new_content)
-        f.close()
-
-    def update_files(self, object_dict):
-        is_mandatory = object_dict["is_mandatory"]
-
-        object_name = object_dict["object_name"]
-        define_name = object_name.replace(' ', '_').upper()
-
-        define_prefix = "MANDATORY" if is_mandatory else "OPTIONAL"
-        define_object = f"{define_prefix}_{define_name}_OBJ"
-
-        stop_string_obj_id = STOP_STRING_OBJ_ID[0] if is_mandatory else STOP_STRING_OBJ_ID[1]
-        stop_string_cfg_cmk = STOP_STRING_CNFG_CMK[0] if is_mandatory else STOP_STRING_CNFG_CMK[1]
-
-        content_string_obj_id = \
-            f"#ifdef {define_object}\n" \
-            f"\t{define_name} = {object_dict['object_id']},\n" \
-            f"#endif /* {define_object} */\n\n"
-
-        content_string_cnfg_cmk = \
-            f"""\noption({define_object} """ \
-            f""""Include {"mandatory" if is_mandatory else "optional"} """ \
-            f"""{object_name} object in the build" {"ON" if is_mandatory else "OFF"})\n""" \
-            f"""if ({define_object})\n\tset(COMPILE_DEFINITIONS ${{COMPILE_DEFINITIONS}} {define_object} = 1)""" \
-            f"""\nendif()\n\n"""
-
-        self.update_file(stop_string=stop_string_obj_id, content=content_string_obj_id,
-                         path_to_file="../wpp/registry/ObjectID.h")
-        self.update_file(stop_string=stop_string_cfg_cmk, content=content_string_cnfg_cmk,
-                         path_to_file="../wpp/config/config.cmake")
-
     def create_code(self, xml_file_path):
-        # class_name, object_id, resources_list, is_mandatory = self.parse_xml(xml_file_path)
         object_dict, resources_list = self.parse_xml(xml_file_path)
 
         class_name = object_dict["object_name"]
-        object_name = class_name.replace(' ', '_').upper()
         folder_name = class_name.replace(' ', '_').lower()
         class_name = class_name.replace(' ', '')
 
-        code_generator = CodeGenerator(class_name, folder_name)
+        code_generator = CodeGenerator(class_name, folder_name, object_dict["is_mandatory"])
+
         generated_header = code_generator.generate_content_header(resources_list)
         generated_cpp = code_generator.generate_content_cpp(resources_list)
-        generated_cmake_list = code_generator.generate_content_cmake_list(object_dict["is_mandatory"])
+        generated_cmake_list = code_generator.generate_content_cmake_list()
         generated_info_header = code_generator.generate_content_info_header(object_dict)
         generated_config = code_generator.generate_content_config(resources_list)
 
-        # print(generated_info_header)
-
-        path_to_files = f"../wpp/registry/objects/mandatory/{folder_name}" \
-            if object_dict["is_mandatory"] else f"../wpp/registry/objects/optional/{folder_name}"
+        path_to_files_prefix = "mandatory" if object_dict["is_mandatory"] else "optional"
+        path_to_files = f"""../wpp/registry/objects/{path_to_files_prefix}/{folder_name}"""
 
         self.create_folder(path_to_files)
 
@@ -510,7 +478,7 @@ class XmlToCppObjectGenerator:
         self.create_file(f"{path_to_files}/{class_name}Info", "h", generated_info_header)
         self.create_file(f"{path_to_files}/{class_name}Config", "h", generated_config)
 
-        self.update_files(object_dict)
+        code_generator.update_files(object_dict)
 
 
 parser = OptionParser()

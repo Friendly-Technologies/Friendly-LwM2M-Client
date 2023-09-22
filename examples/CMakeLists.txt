@@ -28,6 +28,9 @@ add_compile_options(
     -Wno-error=cast-align
 )
 
+# Generating .map file
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Map=output.map")
+
 # Variables that will be filled in subdirectories
 set(SOURCES main.cpp)
 set(INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/)
@@ -42,5 +45,13 @@ add_subdirectory(platform)
 add_executable(WakaamaPlusTest ${SOURCES})
 # List of directories that will be set for compiler with key -I
 target_include_directories(WakaamaPlusTest PUBLIC ${INCLUDES})
-
+# Link with Wpp library
 target_link_libraries(WakaamaPlusTest Wpp)
+# Generate a .bin file 
+add_custom_command(TARGET WakaamaPlusTest POST_BUILD
+                   COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:WakaamaPlusTest> $<TARGET_FILE_DIR:WakaamaPlusTest>/WakaamaPlusTest.bin
+                   COMMENT "Creating binary file")
+# Generate a .hex file 
+add_custom_command(TARGET WakaamaPlusTest POST_BUILD
+                   COMMAND ${CMAKE_OBJCOPY} -O ihex $<TARGET_FILE:WakaamaPlusTest> $<TARGET_FILE_DIR:WakaamaPlusTest>/WakaamaPlusTest.hex
+                   COMMENT "Creating hex file")

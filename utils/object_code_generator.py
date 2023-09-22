@@ -49,17 +49,17 @@ I_INSTANCE_IMPLEMENTATIONS_H = \
     f"""\t * Returns list with available instantiated resources\n\t\t */\n\t """ \
     f"""\tstd::vector<Resource *> getInstantiatedResourcesList() override;\n\t""" \
     f"""\tstd::vector<Resource *> getInstantiatedResourcesList(const Operation& filter) override;\n\t\t/*\n\t""" \
-    f"""\t * Handles information about resource operation that made server\n\t */\n\t""" \
-    f"""\tvoid serverOperationNotifier(Operation::TYPE type, const ResourceID &resId) override;\n\t/*\n\t""" \
-    f"""\t * Handles information about resource operation that made user\n\t */\n\t""" \
+    f"""\t * Handles information about resource operation that made server\n\t\t */\n\t""" \
+    f"""\tvoid serverOperationNotifier(Operation::TYPE type, const ResourceID &resId) override;\n\t\t/*\n\t""" \
+    f"""\t * Handles information about resource operation that made user\n\t\t */\n\t""" \
     f"""\tvoid userOperationNotifier(Operation::TYPE type, const ResourceID &resId) override;"""
 
 CLASS_PRIVATE_METHODS_H = \
-    f"""\n\n\tprivate:\n\t/* --------------- Class private methods --------------- */\n\t""" \
-    f"""\t/*\n\t * Initialize resources with default values\n\t""" \
-    f"""\t * Resource always must have at least one instance.\n\t */\t\n\t""" \
+    f"""\n\n\tprivate:\n\t\t/* --------------- Class private methods --------------- */\n\t""" \
+    f"""\t/*\n\t\t * Initialize resources with default values\n\t""" \
+    f"""\t * Resource always must have at least one instance.\n\t\t */\t\n\t""" \
     f"""\tvoid resourcesInit();\n\t\n\n""" \
-    f"""\tprivate:\n\t\tstd::unordered_map<ID_T, Resource> _resources = {{\n\t""" \
+    f"""\tprivate:\n\t\tstd::unordered_map<ID_T, Resource> _resources = {{\n\t\t""" \
     f"""\t// KEY   VALUE\n{PLACE_RESOURCES_MAP}\n\t}};\n}};\n\n""" \
     f"""}} /* namespace wpp */\n\n#endif /* {PLACE_CLASS_NAME_UPPER}_H */\n"""
 
@@ -214,11 +214,12 @@ class CodeGenerator:
         resources_map = []
         for resource_xml in resources_list_xml:
             resource_name = resource_xml['Name']
+            postfix = "M" if resource_xml['Mandatory'] == "MANDATORY" else "O"
             # fill the Resources' enum:
-            resources_enum += f"\t\t\t{resource_name} = {resource_xml['ID']},\n"
+            resources_enum += f"\t\t\t{resource_name}_{postfix} = {resource_xml['ID']},\n"
             # fill the unordered_map<ID_T, Resource> table:
-            resource = [f"TAB{{{resource_name},",
-                        f"{{{resource_name},",
+            resource = [f"TAB{{{resource_name}_{postfix},",
+                        f"{{{resource_name}_{postfix},",
                         self.parse_operation(resource_xml['Operations']),
                         f"IS_SINGLE::{resource_xml['MultipleInstances']},",
                         f"IS_MANDATORY::{resource_xml['Mandatory']},",
@@ -344,25 +345,25 @@ class CodeGenerator:
             f"""\t/* Lwm2m version */\n\t{{{object_dict["object_version"]}}},\n\n""" \
             f"""\t/* Is single */\n\tIS_SINGLE::{is_multiple},\n\n""" \
             f"""\t/* Is Mandatory */\n\tIS_MANDATORY::{is_mandatory},\n\n""" \
-            f"""\t/* Object supported operations */\n\t""" \
+            f"""\t/* Object supported operations */\n""" \
             f"""\tOperation(\tOperation::READ|\n""" \
-            f"""\t\t\t\t\tOperation::WRITE|\n""" \
-            f"""\t\t\t\t\tOperation::DISCOVER|\n""" \
-            f"""\t\t\t\t\tOperation::EXECUTE|\n""" \
-            f"""\t\t\t\t\tOperation::CREATE|\n""" \
-            f"""\t\t\t\t\tOperation::DELETE),\n""" \
+            f"""\t\t\t\tOperation::WRITE|\n""" \
+            f"""\t\t\t\tOperation::DISCOVER|\n""" \
+            f"""\t\t\t\tOperation::EXECUTE|\n""" \
+            f"""\t\t\t\tOperation::CREATE|\n""" \
+            f"""\t\t\t\tOperation::DELETE),\n""" \
             f"""\t}};\n\n""" \
             f"""}} /* namespace wpp */\n\n""" \
-            f"""#endif /* {self.obj_define} */""" \
+            f"""#endif /* {self.obj_define} */\n""" \
             f"""#endif // {class_name}\n"""
 
         return content
 
     def generate_content_config(self, object_dict):
-        ifdef = f"{self.obj_name_class.replace(' ', '').upper()}_H"
+        ifdef = f"{self.obj_name_class.replace(' ', '').upper()}CONFIG_H"
         defines = ""
         for i in object_dict:
-            defines += f"""#define {i["Name"]}_{i["Mandatory"]}"""
+            defines += f"""#define {i["Name"]}_{"M" if i["Mandatory"] == "MANDATORY" else "O"}"""
             defines += " 1\n" if i["Mandatory"] == "MANDATORY" else " 0\n"
         content = \
             f"""#ifndef {ifdef}\n""" \

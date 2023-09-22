@@ -1,13 +1,13 @@
-#ifndef RESOURCE_H
-#define RESOURCE_H
+#ifndef WPP_RESOURCE_H
+#define WPP_RESOURCE_H
 
 #include <unordered_map>
 #include <mutex>
 #include <type_traits>
 #include <variant>
 
-#include "ObjectInfo.h"
-#include "Operation.h"
+#include "WppObjectInfo.h"
+#include "WppOperation.h"
 #include "types.h"
 
 namespace wpp {
@@ -15,7 +15,7 @@ namespace wpp {
 /*
  * TODO: For now resource took to many memory, the main consumers are string and unordered_map
  */
-class Resource {
+class WppResource {
 public: /* ---------- Public subtypes ----------*/
 	/*
 	 * Universal type for data
@@ -29,15 +29,15 @@ public: /* ---------- Public subtypes ----------*/
 										  VERIFY_OBJ_LINK_T, VERIFY_STRING_T, VERIFY_EXECUTE_T/*, VERIFY_CORE_LINK_T*/>; // VERIFY_CORE_LINK_T the same as VERIFY_STRING_T therefore we use only VERIFY_STRING_T
 
 public: /* ---------- Public methods for common usage ----------*/
-    Resource();
-    Resource(ID_T id, const Operation &operation, IS_SINGLE isSingle, IS_MANDATORY isMandatory, TYPE_ID dataType);
-    Resource(const Resource& resource);
-    Resource(Resource&& resource);
+    WppResource();
+    WppResource(ID_T id, const WppOperation &operation, IS_SINGLE isSingle, IS_MANDATORY isMandatory, TYPE_ID dataType);
+    WppResource(const WppResource& resource);
+    WppResource(WppResource&& resource);
 
 	/* ---------- Methods for get resource metadata ----------*/
     ID_T getID() const;
     TYPE_ID getTypeId() const;
-    const Operation& getOperation() const;
+    const WppOperation& getOperation() const;
     bool isMandatory() const;
     bool isOptional() const;
     bool isSingle() const;
@@ -49,7 +49,7 @@ public: /* ---------- Public methods for common usage ----------*/
 	template<typename T>
 	bool isDataValueValid(const T &data) const;
 	bool isDataVerifierValid(const DATA_VERIFIER_T &verifier) const;
-	bool isOperationValid(Operation::TYPE type) const;
+	bool isOperationValid(WppOperation::TYPE type) const;
 	bool isInstanceIdPossible(ID_T resInstId) const;
 	bool isInstanceExist(ID_T resInstId) const;
 	bool isTypeIdCompatible(TYPE_ID type) const;
@@ -57,17 +57,7 @@ public: /* ---------- Public methods for common usage ----------*/
 	size_t instanceCnt() const;
 
 	/* ---------- Extended abilities for access directly to resource data for avoid coping ----------*/
-	/*
-	 * Before call of this method must be called takeOwnership()
-	 * that must return true for guaranty unique property rights
-	 * to the resource.
-	 * After using of resource must be called giveOwnership() for
-	 * get it available for other.
-	 */
-	std::unordered_map<ID_T, DATA_T>& getInstances();
-	bool takeOwnership();
-	void giveOwnership();
-	std::mutex& getGuard();
+	const std::unordered_map<ID_T, DATA_T>& getInstances();
 
 	/* ---------- Methods for manage resource data ----------*/
     bool set(const BOOL_T &value, ID_T resInstId = SINGLE_INSTANCE_ID);
@@ -120,7 +110,7 @@ private:
 
 private: /* ---------- Private properties ----------*/
     ID_T _id;
-    Operation _operation;
+    WppOperation _operation;
     IS_SINGLE _isSingle;
     IS_MANDATORY _isMandatory;
     TYPE_ID _typeID;
@@ -132,13 +122,13 @@ private: /* ---------- Private properties ----------*/
 
 /* ---------- Implementation of template methods ----------*/
 template<typename T>
-bool Resource::isDataTypeValid() const {
+bool WppResource::isDataTypeValid() const {
 	TYPE_ID typeID = dataTypeToID<T>();
 	return typeID != TYPE_ID::UNDEFINED && isTypeIdCompatible(typeID);
 }
 
 template<typename T>
-bool Resource::_set(const T &value, ID_T resInstId) {
+bool WppResource::_set(const T &value, ID_T resInstId) {
 	std::lock_guard<std::mutex> guard(_resourceGuard);
 
 	if (!isInstanceIdPossible(resInstId)) return false;
@@ -150,7 +140,7 @@ bool Resource::_set(const T &value, ID_T resInstId) {
 }
 
 template<typename T>
-bool Resource::_get(T &value, ID_T resInstId) const {
+bool WppResource::_get(T &value, ID_T resInstId) const {
 	std::lock_guard<std::mutex> guard(_resourceGuard);
 
 	if (!isDataTypeValid<T>()) return false;
@@ -162,7 +152,7 @@ bool Resource::_get(T &value, ID_T resInstId) const {
 }
 
 template<typename T>
-bool Resource::isDataValueValid(const T &data) const {
+bool WppResource::isDataValueValid(const T &data) const {
 	if (!isDataTypeValid<T>()) return false;
 	if (!isDataVerifierValid(_dataVerifier)) return true;
 
@@ -189,4 +179,4 @@ bool Resource::isDataValueValid(const T &data) const {
 
 } // namespace wpp
 
-#endif //RESOURCE_H
+#endif //WPP_RESOURCE_H

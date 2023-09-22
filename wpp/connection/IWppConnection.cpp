@@ -6,6 +6,7 @@
  */
 
 #include "IWppConnection.h"
+
 #include "WppClient.h"
 #include "WppRegistry.h"
 #include "WppLogs.h"
@@ -53,11 +54,11 @@ void IWppConnection::clearPacketQueue() {
 
 bool IWppConnection::setDataBlockSize(uint16_t size) {
 	WPP_LOGD_ARG(TAG_WPP_CONN, "New data block size -> %d", size);
-	return true;// TODO: lwm2m_set_coap_block_size(size);
+	return lwm2m_set_coap_block_size(size);
 }
 
 uint16_t IWppConnection::getDataBlockSize()  {
-	return 0; // TODO: lwm2m_get_coap_block_size();
+	return lwm2m_get_coap_block_size();
 }
 
 void IWppConnection::handlePacketsInQueue(lwm2m_context_t *context) {
@@ -65,7 +66,7 @@ void IWppConnection::handlePacketsInQueue(lwm2m_context_t *context) {
 	while (packets.size()) {
 		Packet *pkt = packets.front();
 		if (pkt && pkt->buffer) {
-			//lwm2m_handle_packet(context, pkt->buffer, pkt->length, pkt->session);
+			lwm2m_handle_packet(context, pkt->buffer, pkt->length, pkt->session);
 			delete [] pkt->buffer;
 		}
 		packets.pop();

@@ -1,5 +1,5 @@
-#ifndef OPERATION_H
-#define OPERATION_H
+#ifndef WPP_OPERATION_H
+#define WPP_OPERATION_H
 
 #include <vector>
 
@@ -9,7 +9,7 @@ namespace wpp {
 
 #define MSB_IN_FLAG_VALUE (0x8000)
 
-struct Operation {
+struct WppOperation {
 public:
 	enum TYPE: uint16_t {
         NONE = 0,
@@ -25,9 +25,9 @@ public:
 	};
 
 public:
-	Operation(uint16_t flags = TYPE::NONE): _flags(flags) {}
+	WppOperation(uint16_t flags = TYPE::NONE): _flags(flags) {}
     inline bool isSupported(TYPE type) const { return _flags & type; };
-    inline bool isCompatible(const Operation& operation) const { return (_flags & operation._flags) == _flags; };
+    inline bool isCompatible(const WppOperation& operation) const { return (_flags & operation._flags) == _flags; };
     inline bool isRead() const { return _flags & READ; }
     inline bool isWrite() const { return _flags & WRITE; }
     inline bool isCreate() const { return _flags & CREATE; }
@@ -55,4 +55,4 @@ private:
 
 } // namespace wpp
 
-#endif //OPERATION_H
+#endif //WPP_OPERATION_H

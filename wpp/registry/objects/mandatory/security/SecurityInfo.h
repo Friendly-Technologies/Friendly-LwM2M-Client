@@ -1,11 +1,11 @@
-#ifndef SECURITYINFO_H_
-#define SECURITYINFO_H_
+#ifndef WPP_SECURITY_INFO_H_
+#define WPP_SECURITY_INFO_H_
 
-#include "ObjectInfo.h"
+#include "WppObjectInfo.h"
 
 namespace wpp {
 
-static const ObjectInfo SECURITY_OBJ_INFO = {
+static const WppObjectInfo SECURITY_OBJ_INFO = {
         /* Name */
         "LWM2M Security",
         /* Object ID */
@@ -21,14 +21,14 @@ static const ObjectInfo SECURITY_OBJ_INFO = {
         /* Is Mandatory */
         IS_MANDATORY::MANDATORY,
         /* Object supported operations */
-        Operation(Operation::READ|
-                    Operation::WRITE|
-                    Operation::DISCOVER|
-                    Operation::EXECUTE|
-                    Operation::CREATE|
-                    Operation::DELETE),
+        WppOperation(WppOperation::READ|
+                    WppOperation::WRITE|
+                    WppOperation::DISCOVER|
+                    WppOperation::EXECUTE|
+                    WppOperation::CREATE|
+                    WppOperation::DELETE),
 };
 
 }
 
-#endif // SECURITYINFO_H_
+#endif // WPP_SECURITY_INFO_H_

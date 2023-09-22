@@ -1,5 +1,5 @@
-#ifndef OBJECT_ID_H_
-#define OBJECT_ID_H_
+#ifndef WPP_OBJECT_ID_H_
+#define WPP_OBJECT_ID_H_
 
 #include "types.h"
 
@@ -23,4 +23,4 @@ enum class OBJ_ID: ID_T {
 
 }; //wpp
 
-#endif // OBJECT_ID_H_
+#endif // WPP_OBJECT_ID_H_

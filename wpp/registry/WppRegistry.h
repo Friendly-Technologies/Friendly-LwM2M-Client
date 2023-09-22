@@ -5,12 +5,12 @@
  *      Author: valentin
  */
 
-#ifndef WPPREGISTRY_H_
-#define WPPREGISTRY_H_
+#ifndef WPP_REGISTRY_H_
+#define WPP_REGISTRY_H_
 
 #include <mutex>
 
-#include "Object.h"
+#include "WppObject.h"
 
 /* ------------- Mandatory objects include start ------------- */
 #if MANDATORY_SECURITY_OBJ
@@ -41,7 +41,7 @@ namespace wpp {
 class WppClient;
 
 template<typename T>
-class Object;
+class WppObject;
 
 // TODO: Split mandatory and optional registers
 // TODO: Add ability to check whether some object id is exist
@@ -59,25 +59,25 @@ public:
 
 	/* ------------- Mandatory objects prototype start ------------- */
 	#if MANDATORY_SECURITY_OBJ
-	Object<Security>& security();
+	WppObject<Security>& security();
 	#endif
 	#if MANDATORY_SERVER_OBJ
-	Object<Server>& server();
+	WppObject<Server>& server();
 	#endif
 	#if MANDATORY_DEVICE_OBJ
-	Object<Device>& device();
+	WppObject<Device>& device();
 	#endif
 	/* ------------- Mandatory objects prototype end ------------- */
 
 	/* ------------- Optional objects prototype start ------------- */
 	#if OPTIONAL_ACL_OBJ
-	Object<Acl>& acl();
+	WppObject<Acl>& acl();
 	#endif
 	#if OPTIONAL_CONN_MONITORING_OBJ
-	Object<ConnMonitoring>& connMonitoring();
+	WppObject<ConnMonitoring>& connMonitoring();
 	#endif
 	#if OPTIONAL_FIRMWARE_UPD_OBJ
-		Object<FirmwareUpd>& firmwareUpd();
+		WppObject<FirmwareUpd>& firmwareUpd();
 	#endif
 	/* ------------- Optional objects prototype end ------------- */
 
@@ -87,4 +87,4 @@ private:
 
 } // namespace wpp
 
-#endif // WPPREGISTRY_H_
+#endif // WPP_REGISTRY_H_

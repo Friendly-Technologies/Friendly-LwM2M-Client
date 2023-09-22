@@ -5,15 +5,14 @@
  *      Author: valentin
  */
 
-#ifndef WppClient_H_
-#define WppClient_H_
+#ifndef WPP_CLIENT_H_
+#define WPP_CLIENT_H_
 
 #include <string>
 #include <functional>
 #include <mutex>
 
-//TODO: #include "liblwm2m.h"
-#include "dep.h"
+#include "liblwm2m.h"
 #include "types.h"
 #include "Lwm2mObject.h"
 
@@ -105,4 +104,4 @@ private:
 
 } /* namespace wpp */
 
-#endif /* WppClient_H_ */
+#endif /* WPP_CLIENT_H_ */

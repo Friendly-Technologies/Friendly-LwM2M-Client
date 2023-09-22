@@ -76,7 +76,7 @@ lwm2m_client_state_t WppClient::getState() {
 
 void WppClient::loop(time_t &sleepTime) {
 	// Handle wakaama core state
-	int result = 0;// TODO: lwm2m_step(_lwm2m_context, availableTime);
+	int result = lwm2m_step(_lwm2m_context, &sleepTime);
 	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Processing internal state: result -> %d, state -> %d", result, getState());
 	if (!result && getState() == STATE_BOOTSTRAPPING) {
 		WPP_LOGW(TAG_WPP_CLIENT, "Trying to restore security and server objects");
@@ -91,33 +91,33 @@ void WppClient::loop(time_t &sleepTime) {
 
 bool WppClient::updateServerRegistration(INT_T serverId, bool withObjects) {
 	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Update registration to server: ID -> %d, withObjects -> %d", serverId, withObjects);
-	return true;// TODO: !lwm2m_update_registration(_lwm2m_context, serverId, withObjects);
+	return !lwm2m_update_registration(_lwm2m_context, serverId, withObjects);
 }
 
 bool WppClient::updateServerRegistration(bool withObjects) {
 	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Update registration to each server: withObjects -> %d", withObjects);
-	return true;// TODO: !lwm2m_update_registration(_lwm2m_context, 0, withObjects);
+	return !lwm2m_update_registration(_lwm2m_context, 0, withObjects);
 }
 
 void WppClient::deregister() {
 	WPP_LOGI(TAG_WPP_CLIENT, "Unregister with each server");
-	// TODO: lwm2m_deregister(_lwm2m_context);
+	lwm2m_deregister(_lwm2m_context);
 }
 
 
 /* ------------- Wakaama core object managing ------------- */
 bool WppClient::registerObject(Lwm2mObject &object) {
 	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Register object with id: %d", object.getObjectID());
-	return true;// TODO: !lwm2m_add_object(_lwm2m_context, &object.getLwm2mObject());
+	return !lwm2m_add_object(_lwm2m_context, &object.getLwm2mObject());
 }
 
 bool WppClient::deregisterObject(Lwm2mObject &object) {
 	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Deregister object with id: %d", object.getObjectID());
-	return true;// TODO: !lwm2m_remove_object(_lwm2m_context, &object.getLwm2mObject().objID);
+	return !lwm2m_remove_object(_lwm2m_context, object.getLwm2mObject().objID);
 }
 
 bool WppClient::isObjectRegistered(Lwm2mObject &object) {
-	lwm2m_object_t * lwm2m_object = NULL; // TODO: (lwm2m_object_t *)LWM2M_LIST_FIND(_lwm2m_context->objectList, object.getLwm2mObject().objID);
+	lwm2m_object_t * lwm2m_object = (lwm2m_object_t *)LWM2M_LIST_FIND(_lwm2m_context->objectList, object.getLwm2mObject().objID);
 	return lwm2m_object != NULL;
 }
 
@@ -126,18 +126,18 @@ bool WppClient::isObjectRegistered(Lwm2mObject &object) {
 void WppClient::notifyValueChanged(const DataID &data) {
 	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Notify value changed: objID=%d, instID=%d, resID=%d, resInstID=%d", data.instance.objId, data.instance.objInstId, data.resource.resId, data.resource.resInstId);	
 	lwm2m_uri_t uri = {data.instance.objId, data.instance.objInstId, data.resource.resId, data.resource.resInstId};
-	// TODO: lwm2m_resource_value_changed(_lwm2m_context, &uri);
+	lwm2m_resource_value_changed(_lwm2m_context, &uri);
 }
 
 
 /* ------------- Wakaama client initialisation ------------- */
 bool WppClient::lwm2mContextOpen() {
-	_lwm2m_context = new lwm2m_context_t; // TODO: lwm2m_init(this);
+	_lwm2m_context = lwm2m_init(this);
 	return _lwm2m_context != NULL;
 }
 
 void WppClient::lwm2mContextClose() {
-	// TODO: lwm2m_close(_lwm2m_context);
+	lwm2m_close(_lwm2m_context);
 	_lwm2m_context = NULL;
 }
 
@@ -146,13 +146,13 @@ lwm2m_context_t * WppClient::getContext() {
 }
 
 bool WppClient::lwm2mConfigure(const std::string &endpointName, const std::string &msisdn, const std::string &altPath) {
-//TODO:	lwm2m_object_t lwm2m_major_objects[] = {&registry().security().getLwm2mObject(),
-//										  	    &registry().server().getLwm2mObject(),
-//										        &registry().device().getLwm2mObject()};
-//	uint16_t objectsCnt = sizeof(lwm2m_major_objects)/sizeof(lwm2m_object_t);
-//	char *msisdn_c = msisdn.empty()? NULL : msisdn.c_str();
-//	char *altPath_c = altPath.empty()? NULL : altPath.c_str();
-//	return !lwm2m_configure(_lwm2m_context, endpointName.c_str(), msisdn_c, altPath_c, objectsCnt, lwm2m_major_objects);
+	lwm2m_object_t *lwm2m_major_objects[] = {&registry().security().getLwm2mObject(),
+											&registry().server().getLwm2mObject(),
+										    &registry().device().getLwm2mObject()};
+	uint16_t objectsCnt = sizeof(lwm2m_major_objects) / sizeof(lwm2m_object_t *);
+	const char *msisdn_c = msisdn.empty()? NULL : msisdn.c_str();
+	const char *altPath_c = altPath.empty()? NULL : altPath.c_str();
+	return !lwm2m_configure(_lwm2m_context, endpointName.c_str(), msisdn_c, altPath_c, objectsCnt, lwm2m_major_objects);
 	return true;
 }
 

@@ -1,18 +1,18 @@
-#ifndef OBJSUBJECT_H_
-#define OBJSUBJECT_H_
+#ifndef WPP_OBJ_SUBJECT_H_
+#define WPP_OBJ_SUBJECT_H_
 
-#include "Operation.h"
-#include "IObjObserver.h"
-#include "Object.h"
+#include "WppOperation.h"
+#include "IWppObjObserver.h"
+#include "WppObject.h"
 
 namespace wpp {
 
 
 template <typename T>
-class Object;
+class WppObject;
 
 template <typename T>
-class ObjSubject {
+class WppObjSubject {
 public:
     enum Action : uint8_t {
         RESTORE,
@@ -23,12 +23,12 @@ public:
 	 * Subscribers will be notified about the creation
 	 * and deletion of object instances initiated by server.
 	 */
-	void subscribe(IObjObserver<T> *observer) {
+	void subscribe(IWppObjObserver<T> *observer) {
     if (!observer) return;
     if (std::find(_observers.begin(), _observers.end(), observer) == _observers.end()) 
         _observers.push_back(observer);
     }
-	void unsubscribe(IObjObserver<T> *observer) {
+	void unsubscribe(IWppObjObserver<T> *observer) {
         _observers.erase(std::find(_observers.begin(), _observers.end(), observer));
     }
     
@@ -36,11 +36,11 @@ protected:
     /*
 	 * Notify observers about operation
 	 */
-	void observerNotify(Object<T> &obj, ID_T instanceId, Operation::TYPE type) {
-        for(IObjObserver<T>* observer : _observers) {
-            if (type == Operation::TYPE::CREATE) {
+	void observerNotify(WppObject<T> &obj, ID_T instanceId, WppOperation::TYPE type) {
+        for(IWppObjObserver<T>* observer : _observers) {
+            if (type == WppOperation::TYPE::CREATE) {
                 observer->instanceCreated(obj, instanceId);
-            } else if (type == Operation::TYPE::DELETE) {
+            } else if (type == WppOperation::TYPE::DELETE) {
                 observer->instanceDeleting(obj, instanceId);
             }
         }
@@ -48,8 +48,8 @@ protected:
     /*
      * Requests observer to do action
      */
-    void observerDoAction(Object<T> &obj, Action action) {
-        for(IObjObserver<T>* observer : _observers) {
+    void observerDoAction(WppObject<T> &obj, Action action) {
+        for(IWppObjObserver<T>* observer : _observers) {
             if (action == Action::RESTORE) {
                 observer->objectRestore(obj);
             }
@@ -57,9 +57,9 @@ protected:
     }
 
 private:
-    std::vector<IObjObserver<T> *> _observers;
+    std::vector<IWppObjObserver<T> *> _observers;
 };
 
 }
 
-#endif //OBJSUBJECT_H_
+#endif //WPP_OBJ_SUBJECT_H_

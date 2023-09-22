@@ -1,12 +1,12 @@
 // TODO: Add lable taht this code belongs SinaiR&D
-#ifndef INC_LITE_QUEUE_H_
-#define INC_LITE_QUEUE_H_
+#ifndef INC_SAFE_QUEUE_H_
+#define INC_SAFE_QUEUE_H_
 
 #include <string.h>
 #include <vector>
 #include <mutex>
 
-#define LITE_QUEUE_DEF_ELEM_CNT	0x01
+#define SAFE_QUEUE_DEF_ELEM_CNT	0x01
 
 /*
  * This class is a simple implementation of a queue that does not use dynamic memory
@@ -32,11 +32,11 @@ public:
 		__pop_guard.unlock();
 	}
 
-	bool push(const T * const data, size_t elements_cnt = LITE_QUEUE_DEF_ELEM_CNT);
-	bool pop(size_t elements_cnt = LITE_QUEUE_DEF_ELEM_CNT);
+	bool push(const T * const data, size_t elements_cnt = SAFE_QUEUE_DEF_ELEM_CNT);
+	bool pop(size_t elements_cnt = SAFE_QUEUE_DEF_ELEM_CNT);
 
 	// TODO Add ability converting vector to SafeQueue 'from_vector(std::vector<T>)'
-	std::vector<T> to_vector(size_t elements_cnt = LITE_QUEUE_DEF_ELEM_CNT);
+	std::vector<T> to_vector(size_t elements_cnt = SAFE_QUEUE_DEF_ELEM_CNT);
 
 	/*
 	 * front/back/at(index) They do not guarantee that the pointer
@@ -64,13 +64,13 @@ private:
 	/**
 	 * Before calling these method, validate items count in the queue
 	 */
-	inline size_t __get_next_front_index(size_t elements_cnt = LITE_QUEUE_DEF_ELEM_CNT);
-	inline size_t __get_next_back_index(size_t elements_cnt = LITE_QUEUE_DEF_ELEM_CNT);
-	inline size_t __get_next_index(size_t base_index, size_t elements_cnt = LITE_QUEUE_DEF_ELEM_CNT, uint8_t is_offset = false);
-	inline size_t __get_prev_index(size_t base_index, size_t elements_cnt = LITE_QUEUE_DEF_ELEM_CNT);
+	inline size_t __get_next_front_index(size_t elements_cnt = SAFE_QUEUE_DEF_ELEM_CNT);
+	inline size_t __get_next_back_index(size_t elements_cnt = SAFE_QUEUE_DEF_ELEM_CNT);
+	inline size_t __get_next_index(size_t base_index, size_t elements_cnt = SAFE_QUEUE_DEF_ELEM_CNT, uint8_t is_offset = false);
+	inline size_t __get_prev_index(size_t base_index, size_t elements_cnt = SAFE_QUEUE_DEF_ELEM_CNT);
 
-	inline bool __check_remove_ability(size_t elements_cnt = LITE_QUEUE_DEF_ELEM_CNT);
-	inline bool __check_add_ability(size_t elements_cnt = LITE_QUEUE_DEF_ELEM_CNT);
+	inline bool __check_remove_ability(size_t elements_cnt = SAFE_QUEUE_DEF_ELEM_CNT);
+	inline bool __check_add_ability(size_t elements_cnt = SAFE_QUEUE_DEF_ELEM_CNT);
 
 private:
 	std::mutex __push_guard;
@@ -265,4 +265,4 @@ bool SafeQueue<T, SIZE>::__check_add_ability(size_t elements_cnt) {
 	return (SIZE - size()) >= elements_cnt;
 }
 
-#endif /* INC_LITE_QUEUE_H_ */
+#endif /* INC_SAFE_QUEUE_H_ */

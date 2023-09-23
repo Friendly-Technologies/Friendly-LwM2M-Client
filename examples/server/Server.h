@@ -15,6 +15,8 @@ class ServerImpl: public IWppObjObserver<Server>, public IWppInstObserver<Server
         serverObj.subscribe(this);
         wpp::Server *server = serverObj.createInstance();
         server->subscribe(this);
+
+        // server->set()
     }
 
 	void objectRestore(WppObject<Server> &object) override {

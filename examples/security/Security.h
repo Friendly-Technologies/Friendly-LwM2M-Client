@@ -16,7 +16,7 @@ class SecurityImpl: public IWppObjObserver<Security>, public IWppInstObserver<Se
         Security *security = securityObj.createInstance();
         security->subscribe(this);
         
-        security->set(Security::SERVER_URI, (STRING_T)"coap://127.0.0.1:5683");
+        security->set(Security::SERVER_URI, (STRING_T)"coap://127.0.0.1:5684");
         security->set(Security::BOOTSTRAP_SERVER, false);
         security->set(Security::SERVER_ID, INT_T(123));
     }

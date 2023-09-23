@@ -12,6 +12,7 @@ Connection::Connection(string port, int addressFamily): _port(port), _addressFam
     _connFd = -1;
     _connections = NULL;
     openSocket();
+    cout << "Connection: _connFd " << _connFd << endl;
 }
 
 Connection::~Connection() {}
@@ -27,8 +28,9 @@ Connection::SESSION_T Connection::connect(Security& security) {
     security.get(Security::SERVER_URI, uri);
     string host = uriToHost(uri);
     string port = uriToPort(uri);
+    cout << "Connection: connect to host " << host << ", port " << port << endl;
+    cout << "Connection: connect to uri " << uri << endl;
     if (!host.length() || port.length()) return NULL;
-
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = _addressFamily;
     hints.ai_socktype = SOCK_DGRAM;
@@ -59,14 +61,40 @@ Connection::SESSION_T Connection::connect(Security& security) {
 }
 
 void Connection::disconnect(SESSION_T session) {
+    connection_t * conn = (connection_t *)session;
+
+    if (conn == _connections) {
+        _connections = conn->next;
+        delete conn;
+    } else {
+        connection_t * parent;
+
+        parent = _connections;
+        while (parent != NULL && parent->next != conn) parent = parent->next;
+        if (parent != NULL) {
+            parent->next = conn->next;
+            delete conn;
+        }
+    }
 }
 
 bool Connection::sessionCmp(SESSION_T session1, SESSION_T session2) {
-    return true; //TODO: Implemnt
+    return (session1 == session2);
 }
 
 bool Connection::sendPacket(Packet packet) {
-    return true; //TODO: Implemnt
+    int nbSent;
+    size_t offset;
+    connection_t * conn = (connection_t *)packet.session;
+
+    offset = 0;
+    while (offset != packet.length)
+    {
+        nbSent = sendto(_connFd, packet.buffer + offset, packet.length - offset, 0, (struct sockaddr *)&(conn->addr), conn->addrLen);
+        if (nbSent == -1) return false;
+        offset += nbSent;
+    }
+    return true;
 }
 
 bool Connection::openSocket() {
@@ -114,13 +142,13 @@ Connection::connection_t * Connection::createNewConn(struct sockaddr * addr, siz
 
 string Connection::uriToPort(string uri) {
     string portStart = ":";
-    
+
     std::size_t start = uri.find_last_of(portStart);
-    if (start != string::npos) return "";
-    
+    if (start == string::npos) return "";
+
     start++;
     if (start >= uri.length()) return "";
-    
+
     return uri.substr(start);
 }
     
@@ -129,11 +157,11 @@ string Connection::uriToHost(string uri) {
     string hostEnd = ":";
 
     std::size_t start = uri.find(hostStart);
-    if (start != string::npos) return "";
+    if (start == string::npos) return "";
     start += hostStart.length();
 
-    std::size_t end = uri.find(hostStart, start);
-    if (end != string::npos) return "";
+    std::size_t end = uri.find(hostEnd, start);
+    if (end == string::npos) return "";
 
     // Maybe host name is empty
     if (start == end) return "";
@@ -144,5 +172,5 @@ string Connection::uriToHost(string uri) {
         else return "";
     }
 
-    return uri.substr(start, end);
+    return uri.substr(start, end-start);
 }

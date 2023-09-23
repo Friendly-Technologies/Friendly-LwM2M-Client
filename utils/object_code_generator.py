@@ -18,18 +18,10 @@ TYPE_RESOURCE = "Resource"
 
 LOG_FUNC_CUSTOM = "WPP_LOGD_ARG"
 
-STOP_STRING_OBJ_ID = ["/* ------------- Mandatory objects ID end ------------- */",
-                      "/* ------------- Optional objects ID end ------------- */"]
 STOP_STRING_CNFG_CMK = ["# Mandatory objects end", "# Optional objects end"]
-
-STOP_STRING_RGSTRY_CPP = ["/* ------------- Mandatory objects prototype end ------------- */",
-                      "/* ------------- Optional objects prototype end ------------- */"]
-
-STOP_STRING_RGSTRY_H_INCLUDE = ["/* ------------- Mandatory objects include end ------------- */",
-                      "/* ------------- Optional objects include end ------------- */"]
-
-STOP_STRING_RGSTRY_H_PROTOTYPE = ["/* ------------- Mandatory objects prototype end ------------- */",
-                      "/* ------------- Optional objects prototype end ------------- */"]
+STOP_STRING_OBJ_ID = ["/* Mandatory objects ID end */", "/* Optional objects ID end */"]
+STOP_STRING_REG_PRT = ["/* Mandatory objects prototype end */", "/* Optional objects prototype end */"]
+STOP_STRING_REG_INCL = ["/* Mandatory objects include end */", "/* Optional objects include end */"]
 
 MAIN_COMMENT = \
     f"""/*\n""" \
@@ -134,22 +126,29 @@ FUNC_GET_INSTANTIATED_LIST_P = \
 
 class CodeGenerator:
     """Add some comments here"""
+    meta_object = None
+    meta_resources = None
     obj_name_class = None
     obj_name_folder = None
-    obj_is_mandatory = None
     obj_define = None
     obj_name = None
 
-    def __init__(self, class_name, folder_name, is_mandatory, name):
-        self.obj_name_class = f"Wpp{class_name}"                # LwM2MServer
-        self.obj_name_folder = folder_name              # lwm2m_server
-        self.obj_is_mandatory = is_mandatory            # bool
-        self.obj_define = self.create_object_define()   # MANDATORY_LWM2MSERVER_OBJ
-        self.obj_name = name
+    def __init__(self, object_dict, resources_list):
+        self.meta_object = object_dict
+        self.meta_resources = resources_list
+        plain_name = object_dict["object_name"]
+        self.obj_name = plain_name
+        folder_name = plain_name.replace(' ', '_').lower()
+        class_name = plain_name.replace(' ', '')
+
+        self.obj_name_class = f"Wpp{class_name}"        # LwM2MServer
+        self.obj_name_folder = folder_name                              # lwm2m_server
+        self.obj_define = self.create_object_define()                   # MANDATORY_LWM2MSERVER_OBJ
+
 
     def create_object_define(self):
         define_name = self.obj_name_class.replace(' ', '_').upper()
-        define_prefix = "MANDATORY" if self.obj_is_mandatory else "OPTIONAL"
+        define_prefix = "MANDATORY" if self.meta_object["is_mandatory"] else "OPTIONAL"
         return f"{define_prefix}_{define_name}_OBJ"
 
     def parse_operation(self, xml_operation):
@@ -302,8 +301,8 @@ class CodeGenerator:
             )}\n\t\t\t\tbreak;\n\t"""
         return f"""{prefix}\t\tdefault: break;\n\t\t}}\n\t}}\n\n"""
 
-    def generate_content_header(self, resources_list):
-        resources_enum, resources_map = self.get_map_of_resources(resources_list)
+    def generate_content_header(self):
+        resources_enum, resources_map = self.get_map_of_resources(self.meta_resources)
         code_header = (MAIN_COMMENT +
                        PREFIX_H +
                        PUBLIC_ENUM_H +
@@ -320,7 +319,7 @@ class CodeGenerator:
 
         return code_header
 
-    def generate_content_cpp(self, resources_list):
+    def generate_content_cpp(self):
         code_cpp = (MAIN_COMMENT +
                     PREFIX_CPP +
                     PUBLIC_CONSTRUCTOR_CPP +
@@ -334,7 +333,7 @@ class CodeGenerator:
                     self.get_content_userOperationNotifier() +
                     CLASS_PRIVATE_METHODS_CPP +
                     "} /* namespace wpp */\n")
-        code_cpp = code_cpp.replace(PLACE_RESOURCES_INIT, self.get_content_resourcesInit_f(resources_list))
+        code_cpp = code_cpp.replace(PLACE_RESOURCES_INIT, self.get_content_resourcesInit_f(self.meta_resources))
         code_cpp = code_cpp.replace(PLACE_CLASS_NAME, self.obj_name_class)
         code_cpp = code_cpp.replace(PLACE_FOLDER, self.obj_name_folder)
 
@@ -346,11 +345,10 @@ class CodeGenerator:
         return f"""if({self.obj_define})\n\t# Update SOURCES variable from parent scope.\n\t""" \
                f"""{main_line}\nendif()"""
 
-    def generate_content_info_header(self, object_dict):
-
+    def generate_content_info_header(self):
         class_name = f"{self.obj_name_class.replace(' ', '').upper()}INFO_H"
-        is_multiple = "MULTIPLE" if object_dict["is_multiple"] else "SINGLE"
-        is_mandatory = "MANDATORY" if object_dict["is_mandatory"] else "OPTIONAL"
+        is_multiple = "MULTIPLE" if self.meta_object["is_multiple"] else "SINGLE"
+        is_mandatory = "MANDATORY" if self.meta_object["is_mandatory"] else "OPTIONAL"
 
         content = \
             f"""#ifndef {class_name}\n""" \
@@ -359,11 +357,11 @@ class CodeGenerator:
             f"""#if {self.obj_define}\n\n""" \
             f"""namespace wpp {{\n\n""" \
             f"""static const {TYPE_OBJECT_INFO} {self.obj_name_class.replace(' ', '').upper()}_OBJ_INFO = {{\n""" \
-            f"""\t/* Name */\n\t"{object_dict["object_name"]}",\n\n""" \
+            f"""\t/* Name */\n\t"{self.meta_object["object_name"]}",\n\n""" \
             f"""\t/* Object ID */\n\tOBJ_ID::SERVER,\n\n""" \
-            f"""\t/* URN */\n\t"{object_dict["object_urn"]}",\n\n""" \
-            f"""\t/* Object version */\n\t{{{object_dict["object_lwm2m_version"]}}},\n\n""" \
-            f"""\t/* Lwm2m version */\n\t{{{object_dict["object_version"]}}},\n\n""" \
+            f"""\t/* URN */\n\t"{self.meta_object["object_urn"]}",\n\n""" \
+            f"""\t/* Object version */\n\t{{{self.meta_object["object_lwm2m_version"]}}},\n\n""" \
+            f"""\t/* Lwm2m version */\n\t{{{self.meta_object["object_version"]}}},\n\n""" \
             f"""\t/* Is single */\n\tIS_SINGLE::{is_multiple},\n\n""" \
             f"""\t/* Is Mandatory */\n\tIS_MANDATORY::{is_mandatory},\n\n""" \
             f"""\t/* Object supported operations */\n""" \
@@ -380,10 +378,10 @@ class CodeGenerator:
 
         return content
 
-    def generate_content_config(self, object_dict):
+    def generate_content_config(self):
         ifdef = f"WPP_{self.obj_name.replace(' ', '_').upper()}_CONFIG_H"
         defines = ""
-        for i in object_dict:
+        for i in self.meta_resources:
             defines += f"""#define {i["Name"]}_{"M" if i["Mandatory"] == "MANDATORY" else "O"}_"""
             defines += " 1\n" if i["Mandatory"] == "MANDATORY" else " 0\n"
         content = \
@@ -411,36 +409,37 @@ class CodeGenerator:
         f.close()
 
     def update_files(self, object_dict):
-        stop_string_obj_id = STOP_STRING_OBJ_ID[0] if self.obj_is_mandatory else STOP_STRING_OBJ_ID[1]
-        stop_string_cfg_cmk = STOP_STRING_CNFG_CMK[0] if self.obj_is_mandatory else STOP_STRING_CNFG_CMK[1]
+        is_obj_mandatory = object_dict["is_mandatory"]
+        stop_string_obj_id = STOP_STRING_OBJ_ID[0] if is_obj_mandatory else STOP_STRING_OBJ_ID[1]
+        stop_string_cfg_cmk = STOP_STRING_CNFG_CMK[0] if is_obj_mandatory else STOP_STRING_CNFG_CMK[1]
 
-        stop_string_registry_cpp = STOP_STRING_RGSTRY_CPP[0] if self.obj_is_mandatory else STOP_STRING_RGSTRY_CPP[1]
-        stop_string_registry_incl = STOP_STRING_RGSTRY_H_INCLUDE[0] if self.obj_is_mandatory else STOP_STRING_RGSTRY_H_INCLUDE[1]
-        stop_string_registry_prot = STOP_STRING_RGSTRY_H_PROTOTYPE[0] if self.obj_is_mandatory else STOP_STRING_RGSTRY_H_PROTOTYPE[1]
+        stop_string_reg_cpp = STOP_STRING_REG_PRT[0] if is_obj_mandatory else STOP_STRING_REG_PRT[1]
+        stop_string_reg_incl = STOP_STRING_REG_INCL[0] if is_obj_mandatory else STOP_STRING_REG_INCL[1]
+        stop_string_reg_prot = STOP_STRING_REG_PRT[0] if is_obj_mandatory else STOP_STRING_REG_PRT[1]
 
-        content_string_obj_id = \
+        content_obj_id = \
             f"#ifdef {self.obj_define}\n" \
             f"\t{self.obj_name_class.upper()} = {object_dict['object_id']},\n" \
             f"#endif /* {self.obj_define} */\n\n"
 
-        content_string_cnfg_cmk = \
+        content_cnfg_cmk = \
             f"""\noption({self.obj_define} """ \
-            f""""Include {"mandatory" if self.obj_is_mandatory else "optional"} """ \
-            f"""{self.obj_name_class} object in the build" {"ON" if self.obj_is_mandatory else "OFF"})\n""" \
+            f""""Include {"mandatory" if is_obj_mandatory else "optional"} """ \
+            f"""{self.obj_name_class} object in the build" {"ON" if is_obj_mandatory else "OFF"})\n""" \
             f"""if ({self.obj_define})\n\tset(COMPILE_DEFINITIONS ${{COMPILE_DEFINITIONS}} {self.obj_define} = 1)""" \
             f"""\nendif()\n\n"""
 
-        content_registry_h_include = \
+        content_reg_h_incl = \
             f"""# if {self.obj_define}\n""" \
             f"""# include "mandatory/{self.obj_name_folder}/{self.obj_name_class}.h"\n""" \
             f"""# endif\n\n"""
 
-        content_registry_h_prototype = \
+        content_reg_h_prt = \
             f"""\t# if {self.obj_define}\n\t""" \
             f"""WppObject <{self.obj_name_class}> & {self.obj_name.replace(" ", '').lower()}();\n\t""" \
             f"""# endif\n\n"""
 
-        content_registry_cpp = \
+        content_reg_cpp = \
             f"""# if {self.obj_define}\n""" \
             f"""WppObject <{self.obj_name_class}> & WppRegistry::{self.obj_name.replace(" ", '').lower()}() {{\n\t""" \
             f"""if (!WppObject <{self.obj_name_class}>::isCreated()) WppObject <{self.obj_name_class}>::create(_client, {self.obj_name_class.replace(' ', '').upper()}_OBJ_INFO);\n\t""" \
@@ -448,13 +447,13 @@ class CodeGenerator:
             f"""}}\n""" \
             f"""# endif\n"""
 
-        self.update_file(stop_string_obj_id, content_string_obj_id, "../wpp/registry/ObjectID.h")
-        self.update_file(stop_string_cfg_cmk, content_string_cnfg_cmk, "../wpp/config/config.cmake")
+        self.update_file(stop_string_obj_id, content_obj_id, "../wpp/registry/ObjectID.h")
+        self.update_file(stop_string_cfg_cmk, content_cnfg_cmk, "../wpp/config/config.cmake")
 
-        self.update_file(stop_string_registry_incl, content_registry_h_include, "../wpp/registry/WppRegistry.h")
-        self.update_file(stop_string_registry_prot, content_registry_h_prototype, "../wpp/registry/WppRegistry.h")
+        self.update_file(stop_string_reg_incl, content_reg_h_incl, "../wpp/registry/WppRegistry.h")
+        self.update_file(stop_string_reg_prot, content_reg_h_prt, "../wpp/registry/WppRegistry.h")
 
-        self.update_file(stop_string_registry_cpp, content_registry_cpp, "../wpp/registry/WppRegistry.cpp")
+        self.update_file(stop_string_reg_cpp, content_reg_cpp, "../wpp/registry/WppRegistry.cpp")
 
 
 class XmlToCppObjectGenerator:
@@ -466,8 +465,8 @@ class XmlToCppObjectGenerator:
         except FileExistsError:
             pass
 
-    def create_file(self, filename, filetype, content):
-        f = open(f"{filename}.{filetype}", "w+")
+    def create_file(self, path, filename, filetype, content):
+        f = open(f"{path}/{filename}.{filetype}", "w+")
         f.write(content)
         f.close()
 
@@ -506,27 +505,28 @@ class XmlToCppObjectGenerator:
         object_dict, resources_list = self.parse_xml(xml_file_path)
 
         class_name = object_dict["object_name"]
+        is_obj_mandatory = object_dict["is_mandatory"]
         folder_name = class_name.replace(' ', '_').lower()
         class_name = class_name.replace(' ', '')
 
-        code_generator = CodeGenerator(class_name, folder_name, object_dict["is_mandatory"], object_dict["object_name"])
+        code_generator = CodeGenerator(object_dict, resources_list)
 
-        generated_header = code_generator.generate_content_header(resources_list)
-        generated_cpp = code_generator.generate_content_cpp(resources_list)
+        generated_header = code_generator.generate_content_header()
+        generated_cpp = code_generator.generate_content_cpp()
         generated_cmake_list = code_generator.generate_content_cmake_list()
-        generated_info_header = code_generator.generate_content_info_header(object_dict)
-        generated_config = code_generator.generate_content_config(resources_list)
+        generated_info_header = code_generator.generate_content_info_header()
+        generated_config = code_generator.generate_content_config()
 
-        path_to_files_prefix = "mandatory" if object_dict["is_mandatory"] else "optional"
+        path_to_files_prefix = "mandatory" if is_obj_mandatory else "optional"
         path_to_files = f"""../wpp/registry/objects/{path_to_files_prefix}/{folder_name}"""
 
         self.create_folder(path_to_files)
 
-        self.create_file(f"{path_to_files}/Wpp{class_name}", "h", generated_header)
-        self.create_file(f"{path_to_files}/Wpp{class_name}", "cpp", generated_cpp)
-        self.create_file(f"{path_to_files}/CMakeLists", "txt", generated_cmake_list)
-        self.create_file(f"{path_to_files}/Wpp{class_name}Info", "h", generated_info_header)
-        self.create_file(f"{path_to_files}/Wpp{class_name}Config", "h", generated_config)
+        self.create_file(path_to_files, f"Wpp{class_name}",         "h",    generated_header)
+        self.create_file(path_to_files, f"Wpp{class_name}",         "cpp",  generated_cpp)
+        self.create_file(path_to_files, f"CMakeLists",              "txt",  generated_cmake_list)
+        self.create_file(path_to_files, f"Wpp{class_name}Info",     "h",    generated_info_header)
+        self.create_file(path_to_files, f"Wpp{class_name}Config",   "h",    generated_config)
 
         code_generator.update_files(object_dict)
 

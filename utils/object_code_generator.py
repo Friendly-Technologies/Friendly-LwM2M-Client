@@ -438,8 +438,8 @@ class CodeGenerator:
             f"""}}\n""" \
             f"""# endif\n"""
 
-            # self.update_file(stop_string_obj_id, content_string_obj_id, "../wpp/registry/ObjectID.h")
-        # self.update_file(stop_string_cfg_cmk, content_string_cnfg_cmk, "../wpp/config/config.cmake")
+        self.update_file(stop_string_obj_id, content_string_obj_id, "../wpp/registry/ObjectID.h")
+        self.update_file(stop_string_cfg_cmk, content_string_cnfg_cmk, "../wpp/config/config.cmake")
 
         self.update_file(stop_string_registry_incl, content_registry_h_include, "../wpp/registry/WppRegistry.h")
         self.update_file(stop_string_registry_prot, content_registry_h_prototype, "../wpp/registry/WppRegistry.h")

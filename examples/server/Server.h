@@ -16,7 +16,10 @@ class ServerImpl: public IWppObjObserver<Server>, public IWppInstObserver<Server
         wpp::Server *server = serverObj.createInstance();
         server->subscribe(this);
 
-        // server->set()
+        server->set(Server::SHORT_SERV_ID, (INT_T)123);
+        server->set(Server::BUINDING, (STRING_T)"U");
+        server->set(Server::LIFETIME, (INT_T)300);
+        server->set(Server::NOTIFICATION_STORING, false);
     }
 
 	void objectRestore(WppObject<Server> &object) override {

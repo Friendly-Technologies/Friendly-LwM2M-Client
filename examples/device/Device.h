@@ -15,6 +15,12 @@ class DeviceImpl: public IWppObjObserver<Device>, public IWppInstObserver<Device
         deviceObj.subscribe(this);
         wpp::Device *device = deviceObj.createInstance();
         device->subscribe(this);
+
+        device->set(Device::REBOOT, (EXECUTE_T)[](ID_T id, const OPAQUE_T& data) {
+            cout << "Device: execute REBOOT" << endl;
+        });
+        device->set(Device::ERROR_CODE, (INT_T)0);
+        device->set(Device::SUPPORTED_BINDINGS, (STRING_T)"U");
     }
 
 	void objectRestore(WppObject<Device> &object) override {

@@ -153,7 +153,6 @@ bool WppClient::lwm2mConfigure(const std::string &endpointName, const std::strin
 	const char *msisdn_c = msisdn.empty()? NULL : msisdn.c_str();
 	const char *altPath_c = altPath.empty()? NULL : altPath.c_str();
 	return !lwm2m_configure(_lwm2m_context, endpointName.c_str(), msisdn_c, altPath_c, objectsCnt, lwm2m_major_objects);
-	return true;
 }
 
 } /* namespace wpp */

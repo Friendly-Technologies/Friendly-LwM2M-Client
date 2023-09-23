@@ -40,7 +40,7 @@ int main()
 	cout << "Test memory consumption:" << endl;
 	memConsumptionCheck();
 
-	Connection connection;
+	Connection connection ("56830", AF_INET);
 	ServerImpl server;
 	SecurityImpl security;
 	DeviceImpl device;

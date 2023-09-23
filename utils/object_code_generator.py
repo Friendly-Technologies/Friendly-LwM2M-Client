@@ -18,6 +18,15 @@ STOP_STRING_OBJ_ID = ["/* ------------- Mandatory objects ID end ------------- *
                       "/* ------------- Optional objects ID end ------------- */"]
 STOP_STRING_CNFG_CMK = ["# Mandatory objects end", "# Optional objects end"]
 
+STOP_STRING_RGSTRY_CPP = ["/* ------------- Mandatory objects prototype end ------------- */",
+                      "/* ------------- Optional objects prototype end ------------- */"]
+
+STOP_STRING_RGSTRY_H_INCLUDE = ["/* ------------- Mandatory objects include end ------------- */",
+                      "/* ------------- Optional objects include end ------------- */"]
+
+STOP_STRING_RGSTRY_H_PROTOTYPE = ["/* ------------- Mandatory objects prototype end ------------- */",
+                      "/* ------------- Optional objects prototype end ------------- */"]
+
 MAIN_COMMENT = \
     f"""/*\n""" \
     f""" * {PLACE_CLASS_NAME}\n""" \
@@ -44,11 +53,11 @@ I_INSTANCE_IMPLEMENTATIONS_H = \
     f"""\tprotected:\n\t\t/* --------------- IInstance implementation part --------------- */\n\t\t/* \n\t""" \
     f"""\t * Returns Resource object if it is exist\n\t\t */\n\t\tResource * getResource(ID_T id) override;\n\t\t""" \
     f"""/*\n\t\t * Returns list with available resources\n\t\t */\n\t""" \
-    f"""\tstd::vector<Resource *> getResourcesList() override;\n\t""" \
-    f"""\tstd::vector<Resource *> getResourcesList(const Operation& filter) override;\n\t\t/*\n\t """ \
+    f"""\tstd::vector<WppResource *> getResourcesList() override;\n\t""" \
+    f"""\tstd::vector<WppResource *> getResourcesList(const Operation& filter) override;\n\t\t/*\n\t """ \
     f"""\t * Returns list with available instantiated resources\n\t\t */\n\t """ \
-    f"""\tstd::vector<Resource *> getInstantiatedResourcesList() override;\n\t""" \
-    f"""\tstd::vector<Resource *> getInstantiatedResourcesList(const Operation& filter) override;\n\t\t/*\n\t""" \
+    f"""\tstd::vector<WppResource *> getInstantiatedResourcesList() override;\n\t""" \
+    f"""\tstd::vector<WppResource *> getInstantiatedResourcesList(const Operation& filter) override;\n\t\t/*\n\t""" \
     f"""\t * Handles information about resource operation that made server\n\t\t */\n\t""" \
     f"""\tvoid serverOperationNotifier(Operation::TYPE type, const ResourceID &resId) override;\n\t\t/*\n\t""" \
     f"""\t * Handles information about resource operation that made user\n\t\t */\n\t""" \
@@ -75,7 +84,7 @@ PREFIX_CPP = \
     f"""namespace wpp {{\n\n"""
 
 PUBLIC_CONSTRUCTOR_CPP = \
-    f"""\t{PLACE_CLASS_NAME}::{PLACE_CLASS_NAME}(WppClient &client, const InstanceID &id): IInstance(client, id) {{""" \
+    f"""\t{PLACE_CLASS_NAME}::{PLACE_CLASS_NAME}(WppClient &client, const InstanceID &id): IWppInstance(client, id) {{""" \
     f"""\n\t\tresourcesInit();\n\t}}\n\n"""
 
 I_INSTANCE_IMPLEMENTATIONS_CPP = \
@@ -91,29 +100,29 @@ FUNC_GET_RESOURCE_T = \
     f"""\treturn &_resources[id];\n\t}}\n\n"""
 
 FUNC_GET_RESOURCE_LIST = \
-    f"""\tstd::vector<Resource *> {PLACE_CLASS_NAME}::getResourcesList() {{\n\t""" \
-    f"""\tstd::vector<Resource *> list;\n\t""" \
+    f"""\tstd::vector<WppResource *> {PLACE_CLASS_NAME}::getResourcesList() {{\n\t""" \
+    f"""\tstd::vector<WppResource *> list;\n\t""" \
     f"""\tfor (auto &pair : _resources) {{\n\t\t""" \
     f"""\tlist.push_back(&pair.second);\n\t\t}}\n\t""" \
     f"""\treturn list;\n\t}}\n\n"""
 
 FUNC_GET_RESOURCE_LIST_P = \
-    f"""\tstd::vector<Resource *> {PLACE_CLASS_NAME}::getResourcesList(const Operation& filter) {{\n\t""" \
-    f"""\tstd::vector<Resource *> list;\n\t""" \
+    f"""\tstd::vector<WppResource *> {PLACE_CLASS_NAME}::getResourcesList(const WppOperation& filter) {{\n\t""" \
+    f"""\tstd::vector<WppResource *> list;\n\t""" \
     f"""\tfor (auto &pair : _resources) {{\n\t\t""" \
     f"""\tif (filter.isCompatible(pair.second.getOperation())) list.push_back(&pair.second);\n\t\t}}\n\t""" \
     f"""\treturn list;\n\t}}\n\n"""
 
 FUNC_GET_INSTANTIATED_LIST = \
-    f"""\tstd::vector<Resource *> {PLACE_CLASS_NAME}::getInstantiatedResourcesList() {{\n\t""" \
-    f"""\tstd::vector<Resource *> list;\n\t""" \
+    f"""\tstd::vector<WppResource *> {PLACE_CLASS_NAME}::getInstantiatedResourcesList() {{\n\t""" \
+    f"""\tstd::vector<WppResource *> list;\n\t""" \
     f"""\tfor (auto &pair : _resources) {{\n\t\t""" \
     f"""\tif (!pair.second.isEmpty()) list.push_back(&pair.second);\n\t\t}}\n\t""" \
     f"""\treturn list;\n\t}}\n\n"""
 
 FUNC_GET_INSTANTIATED_LIST_P = \
-    f"""\tstd::vector<Resource *> {PLACE_CLASS_NAME}::getInstantiatedResourcesList(const Operation& filter) {{\n\t""" \
-    f"""\tstd::vector<Resource *> list;\n\t""" \
+    f"""\tstd::vector<WppResource *> {PLACE_CLASS_NAME}::getInstantiatedResourcesList(const WppOperation& filter) {{\n\t""" \
+    f"""\tstd::vector<WppResource *> list;\n\t""" \
     f"""\tfor (auto &pair : _resources) {{\n\t\t""" \
     f"""\tif (!pair.second.isEmpty() && filter.isCompatible(pair.second.getOperation())) """ \
     f"""list.push_back(&pair.second);\n\t\t}}\n\t\treturn list;\n\t}}\n\n"""
@@ -125,12 +134,14 @@ class CodeGenerator:
     obj_name_folder = None
     obj_is_mandatory = None
     obj_define = None
+    obj_name = None
 
-    def __init__(self, class_name, folder_name, is_mandatory):
-        self.obj_name_class = class_name                # LwM2MServer
+    def __init__(self, class_name, folder_name, is_mandatory, name):
+        self.obj_name_class = f"Wpp{class_name}"                # LwM2MServer
         self.obj_name_folder = folder_name              # lwm2m_server
         self.obj_is_mandatory = is_mandatory            # bool
         self.obj_define = self.create_object_define()   # MANDATORY_LWM2MSERVER_OBJ
+        self.obj_name = name
 
     def create_object_define(self):
         define_name = self.obj_name_class.replace(' ', '_').upper()
@@ -138,18 +149,18 @@ class CodeGenerator:
         return f"{define_prefix}_{define_name}_OBJ"
 
     def parse_operation(self, xml_operation):
-        operation = ""
+        operation = "WppOperation::"
         match xml_operation:
             case "E":
-                operation = "Operation::EXECUTE"
+                operation += "EXECUTE"
             case "R":
-                operation = "Operation::READ"
+                operation += "READ"
             case "W":
-                operation = "Operation::WRITE"
+                operation += "WRITE"
             case "RW":
-                operation = "Operation::READ|Operation::WRITE"
+                operation = "WppOperation::READ|WppOperation::WRITE"
             case default:
-                operation = "Operation::READ|Operation::WRITE"
+                operation = "WppOperation::READ|WppOperation::WRITE"
         operation += ","
         return operation
 
@@ -258,11 +269,11 @@ class CodeGenerator:
     def get_content_serverOperationNotifier(self):
         cases = ["READ", "WRITE", "EXECUTE", "DISCOVER", "DELETE"]
         base = \
-            f"""\tvoid {PLACE_CLASS_NAME}::serverOperationNotifier(Operation::TYPE type, const ResourceID &resId) {{""" \
+            f"""\tvoid {PLACE_CLASS_NAME}::serverOperationNotifier(WppOperation::TYPE type, const ResourceID &resId) {{""" \
             f"""\n\t\tobserverNotify(*this, resId, type);\n\n""" \
             f"""\t\tswitch (type) {{\n\t"""
         for case in cases:
-            base += f"""\t\tcase Operation::{case}:\n\t\t\t\t{self.create_log_string(
+            base += f"""\t\tcase WppOperation::{case}:\n\t\t\t\t{self.create_log_string(
                 f"Server {case} -> resId: %d, resInstId: %d",
                 ["resId.resId", "resId.resInstId"],
                 False
@@ -272,10 +283,10 @@ class CodeGenerator:
     def get_content_userOperationNotifier(self):
         cases = ["READ", "WRITE", "DELETE"]
         prefix = \
-            f"""\tvoid {PLACE_CLASS_NAME}::userOperationNotifier(Operation::TYPE type, const ResourceID &resId) {{""" \
+            f"""\tvoid {PLACE_CLASS_NAME}::userOperationNotifier(WppOperation::TYPE type, const ResourceID &resId) {{""" \
             f"""\n\t\tswitch (type) {{\n\t"""
         for case in cases:
-            prefix += f"""\t\tcase Operation::{case}:\n\t\t\t\t{self.create_log_string(
+            prefix += f"""\t\tcase WppOperation::{case}:\n\t\t\t\t{self.create_log_string(
                 f"User {case} -> resId: %d, resInstId: %d",
                 ["resId.resId", "resId.resInstId"],
                 False
@@ -334,10 +345,10 @@ class CodeGenerator:
         content = \
             f"""#ifndef {class_name}\n""" \
             f"""#define {class_name}\n\n""" \
-            f"""#include \"ObjectInfo.h"\n\n""" \
+            f"""#include \"WppObjectInfo.h"\n\n""" \
             f"""#if {self.obj_define}\n\n""" \
             f"""namespace wpp {{\n\n""" \
-            f"""static const ObjectInfo SERVER_OBJ_INFO = {{\n""" \
+            f"""static const WppObjectInfo {self.obj_name_class.replace(' ', '').upper()}_OBJ_INFO = {{\n""" \
             f"""\t/* Name */\n\t"{object_dict["object_name"]}",\n\n""" \
             f"""\t/* Object ID */\n\tOBJ_ID::SERVER,\n\n""" \
             f"""\t/* URN */\n\t"{object_dict["object_urn"]}",\n\n""" \
@@ -346,12 +357,12 @@ class CodeGenerator:
             f"""\t/* Is single */\n\tIS_SINGLE::{is_multiple},\n\n""" \
             f"""\t/* Is Mandatory */\n\tIS_MANDATORY::{is_mandatory},\n\n""" \
             f"""\t/* Object supported operations */\n""" \
-            f"""\tOperation(\tOperation::READ|\n""" \
-            f"""\t\t\t\tOperation::WRITE|\n""" \
-            f"""\t\t\t\tOperation::DISCOVER|\n""" \
-            f"""\t\t\t\tOperation::EXECUTE|\n""" \
-            f"""\t\t\t\tOperation::CREATE|\n""" \
-            f"""\t\t\t\tOperation::DELETE),\n""" \
+            f"""\tWppOperation(\tWppOperation::READ|\n""" \
+            f"""\t\t\t\tWppOperation::WRITE|\n""" \
+            f"""\t\t\t\tWppOperation::DISCOVER|\n""" \
+            f"""\t\t\t\tWppOperation::EXECUTE|\n""" \
+            f"""\t\t\t\tWppOperation::CREATE|\n""" \
+            f"""\t\t\t\tWppOperation::DELETE),\n""" \
             f"""\t}};\n\n""" \
             f"""}} /* namespace wpp */\n\n""" \
             f"""#endif /* {self.obj_define} */\n""" \
@@ -360,10 +371,10 @@ class CodeGenerator:
         return content
 
     def generate_content_config(self, object_dict):
-        ifdef = f"{self.obj_name_class.replace(' ', '').upper()}CONFIG_H"
+        ifdef = f"WPP_{self.obj_name.replace(' ', '_').upper()}_CONFIG_H"
         defines = ""
         for i in object_dict:
-            defines += f"""#define {i["Name"]}_{"M" if i["Mandatory"] == "MANDATORY" else "O"}"""
+            defines += f"""#define {i["Name"]}_{"M" if i["Mandatory"] == "MANDATORY" else "O"}_"""
             defines += " 1\n" if i["Mandatory"] == "MANDATORY" else " 0\n"
         content = \
             f"""#ifndef {ifdef}\n""" \
@@ -380,6 +391,7 @@ class CodeGenerator:
         new_content = ''
         with open(path_to_file, 'r') as f:
             for i in f:
+                # print(i)
                 if " ".join(i.split()) == stop_string:
                     new_content += content
                 new_content += i
@@ -391,6 +403,10 @@ class CodeGenerator:
     def update_files(self, object_dict):
         stop_string_obj_id = STOP_STRING_OBJ_ID[0] if self.obj_is_mandatory else STOP_STRING_OBJ_ID[1]
         stop_string_cfg_cmk = STOP_STRING_CNFG_CMK[0] if self.obj_is_mandatory else STOP_STRING_CNFG_CMK[1]
+
+        stop_string_registry_cpp = STOP_STRING_RGSTRY_CPP[0] if self.obj_is_mandatory else STOP_STRING_RGSTRY_CPP[1]
+        stop_string_registry_incl = STOP_STRING_RGSTRY_H_INCLUDE[0] if self.obj_is_mandatory else STOP_STRING_RGSTRY_H_INCLUDE[1]
+        stop_string_registry_prot = STOP_STRING_RGSTRY_H_PROTOTYPE[0] if self.obj_is_mandatory else STOP_STRING_RGSTRY_H_PROTOTYPE[1]
 
         content_string_obj_id = \
             f"#ifdef {self.obj_define}\n" \
@@ -404,8 +420,31 @@ class CodeGenerator:
             f"""if ({self.obj_define})\n\tset(COMPILE_DEFINITIONS ${{COMPILE_DEFINITIONS}} {self.obj_define} = 1)""" \
             f"""\nendif()\n\n"""
 
-        self.update_file(stop_string_obj_id, content_string_obj_id, "../wpp/registry/ObjectID.h")
-        self.update_file(stop_string_cfg_cmk, content_string_cnfg_cmk, "../wpp/config/config.cmake")
+        content_registry_h_include = \
+            f"""# if {self.obj_define}\n""" \
+            f"""# include "mandatory/{self.obj_name_folder}/{self.obj_name_class}.h"\n""" \
+            f"""# endif\n\n"""
+
+        content_registry_h_prototype = \
+            f"""\t# if {self.obj_define}\n\t""" \
+            f"""WppObject <{self.obj_name_class}> & {self.obj_name.replace(" ", '').lower()}();\n\t""" \
+            f"""# endif\n\n"""
+
+        content_registry_cpp = \
+            f"""# if {self.obj_define}\n""" \
+            f"""WppObject <{self.obj_name_class}> & WppRegistry::{self.obj_name.replace(" ", '').lower()}() {{\n\t""" \
+            f"""if (!WppObject <{self.obj_name_class}>::isCreated()) WppObject <{self.obj_name_class}>::create(_client, {self.obj_name_class.replace(' ', '').upper()}_OBJ_INFO);\n\t""" \
+            f"""return *WppObject <{self.obj_name_class}>::object();\n""" \
+            f"""}}\n""" \
+            f"""# endif\n"""
+
+            # self.update_file(stop_string_obj_id, content_string_obj_id, "../wpp/registry/ObjectID.h")
+        # self.update_file(stop_string_cfg_cmk, content_string_cnfg_cmk, "../wpp/config/config.cmake")
+
+        self.update_file(stop_string_registry_incl, content_registry_h_include, "../wpp/registry/WppRegistry.h")
+        self.update_file(stop_string_registry_prot, content_registry_h_prototype, "../wpp/registry/WppRegistry.h")
+
+        self.update_file(stop_string_registry_cpp, content_registry_cpp, "../wpp/registry/WppRegistry.cpp")
 
 
 class XmlToCppObjectGenerator:
@@ -460,7 +499,7 @@ class XmlToCppObjectGenerator:
         folder_name = class_name.replace(' ', '_').lower()
         class_name = class_name.replace(' ', '')
 
-        code_generator = CodeGenerator(class_name, folder_name, object_dict["is_mandatory"])
+        code_generator = CodeGenerator(class_name, folder_name, object_dict["is_mandatory"], object_dict["object_name"])
 
         generated_header = code_generator.generate_content_header(resources_list)
         generated_cpp = code_generator.generate_content_cpp(resources_list)
@@ -473,11 +512,11 @@ class XmlToCppObjectGenerator:
 
         self.create_folder(path_to_files)
 
-        self.create_file(f"{path_to_files}/{class_name}", "h", generated_header)
-        self.create_file(f"{path_to_files}/{class_name}", "cpp", generated_cpp)
-        self.create_file(f"{path_to_files}/CMakeList", "txt", generated_cmake_list)
-        self.create_file(f"{path_to_files}/{class_name}Info", "h", generated_info_header)
-        self.create_file(f"{path_to_files}/{class_name}Config", "h", generated_config)
+        self.create_file(f"{path_to_files}/Wpp{class_name}", "h", generated_header)
+        self.create_file(f"{path_to_files}/Wpp{class_name}", "cpp", generated_cpp)
+        self.create_file(f"{path_to_files}/WppCMakeList", "txt", generated_cmake_list)
+        self.create_file(f"{path_to_files}/Wpp{class_name}Info", "h", generated_info_header)
+        self.create_file(f"{path_to_files}/Wpp{class_name}Config", "h", generated_config)
 
         code_generator.update_files(object_dict)
 

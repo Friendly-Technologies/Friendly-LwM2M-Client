@@ -12,6 +12,10 @@ PLACE_RESOURCES_MAP = "<<<3>>>"
 PLACE_FOLDER = "<<<4>>>"
 PLACE_RESOURCES_INIT = "<<<5>>>"
 
+TYPE_OPERATION = "Operation"
+TYPE_OBJECT_INFO = "ObjectInfo"
+TYPE_RESOURCE = "Resource"
+
 LOG_FUNC_CUSTOM = "WPP_LOGD_ARG"
 
 STOP_STRING_OBJ_ID = ["/* ------------- Mandatory objects ID end ------------- */",
@@ -39,9 +43,9 @@ PREFIX_H = \
     f"""#ifndef {PLACE_CLASS_NAME_UPPER}_H\n""" \
     f"""#define {PLACE_CLASS_NAME_UPPER}_H\n\n""" \
     f"""#include "{PLACE_CLASS_NAME}Config.h"\n#include "{PLACE_CLASS_NAME}Info.h"\n""" \
-    f"""#include "IInstance.h"\n#include "InstSubject.h"\n\n""" \
+    f"""#include "IWppInstance.h"\n#include "WppInstSubject.h"\n\n""" \
     f"""namespace wpp {{\n\nclass {PLACE_CLASS_NAME} : """ \
-    f"""public IInstance, public InstSubject<{PLACE_CLASS_NAME}> {{\n\n"""
+    f"""public IWppInstance, public WppInstSubject<{PLACE_CLASS_NAME}> {{\n\n"""
 
 PUBLIC_ENUM_H = \
     f"""\tpublic:\n\t\tenum ID: ID_T {{\n{PLACE_RESOURCES_ENUM}\t\t}};\n\n"""
@@ -50,25 +54,25 @@ PUBLIC_CONSTRUCTOR_H = \
     f"""\tpublic:\n\t\t{PLACE_CLASS_NAME}(WppClient &client, const InstanceID &id);\n\n"""
 
 I_INSTANCE_IMPLEMENTATIONS_H = \
-    f"""\tprotected:\n\t\t/* --------------- IInstance implementation part --------------- */\n\t\t/* \n\t""" \
-    f"""\t * Returns Resource object if it is exist\n\t\t */\n\t\tResource * getResource(ID_T id) override;\n\t\t""" \
+    f"""\tprotected:\n\t\t/* --------------- IWppInstance implementation part --------------- */\n\t\t/* \n\t""" \
+    f"""\t * Returns Resource object if it is exist\n\t\t */\n\t\t{TYPE_RESOURCE} * getResource(ID_T id) override;\n\t\t""" \
     f"""/*\n\t\t * Returns list with available resources\n\t\t */\n\t""" \
-    f"""\tstd::vector<WppResource *> getResourcesList() override;\n\t""" \
-    f"""\tstd::vector<WppResource *> getResourcesList(const Operation& filter) override;\n\t\t/*\n\t """ \
+    f"""\tstd::vector<{TYPE_RESOURCE} *> getResourcesList() override;\n\t""" \
+    f"""\tstd::vector<{TYPE_RESOURCE} *> getResourcesList(const {TYPE_OPERATION}& filter) override;\n\t\t/*\n\t """ \
     f"""\t * Returns list with available instantiated resources\n\t\t */\n\t """ \
-    f"""\tstd::vector<WppResource *> getInstantiatedResourcesList() override;\n\t""" \
-    f"""\tstd::vector<WppResource *> getInstantiatedResourcesList(const Operation& filter) override;\n\t\t/*\n\t""" \
+    f"""\tstd::vector<{TYPE_RESOURCE} *> getInstantiatedResourcesList() override;\n\t""" \
+    f"""\tstd::vector<{TYPE_RESOURCE} *> getInstantiatedResourcesList(const {TYPE_OPERATION}& filter) override;\n\t\t/*\n\t""" \
     f"""\t * Handles information about resource operation that made server\n\t\t */\n\t""" \
-    f"""\tvoid serverOperationNotifier(Operation::TYPE type, const ResourceID &resId) override;\n\t\t/*\n\t""" \
+    f"""\tvoid serverOperationNotifier({TYPE_OPERATION}::TYPE type, const ResourceID &resId) override;\n\t\t/*\n\t""" \
     f"""\t * Handles information about resource operation that made user\n\t\t */\n\t""" \
-    f"""\tvoid userOperationNotifier(Operation::TYPE type, const ResourceID &resId) override;"""
+    f"""\tvoid userOperationNotifier({TYPE_OPERATION}::TYPE type, const ResourceID &resId) override;"""
 
 CLASS_PRIVATE_METHODS_H = \
     f"""\n\n\tprivate:\n\t\t/* --------------- Class private methods --------------- */\n\t""" \
     f"""\t/*\n\t\t * Initialize resources with default values\n\t""" \
     f"""\t * Resource always must have at least one instance.\n\t\t */\t\n\t""" \
     f"""\tvoid resourcesInit();\n\t\n\n""" \
-    f"""\tprivate:\n\t\tstd::unordered_map<ID_T, Resource> _resources = {{\n\t\t""" \
+    f"""\tprivate:\n\t\tstd::unordered_map<ID_T, {TYPE_RESOURCE}> _resources = {{\n\t\t""" \
     f"""\t// KEY   VALUE\n{PLACE_RESOURCES_MAP}\n\t}};\n}};\n\n""" \
     f"""}} /* namespace wpp */\n\n#endif /* {PLACE_CLASS_NAME_UPPER}_H */\n"""
 
@@ -76,10 +80,10 @@ PREFIX_CPP = \
     f"""#include "mandatory/{PLACE_FOLDER}/{PLACE_CLASS_NAME}.h"\n\n""" \
     f"""#include <unordered_map>\n""" \
     f"""#include <iostream>\n\n""" \
-    f"""#include \"Resource.h\"\n""" \
-    f"""#include \"Operation.h\"\n""" \
-    f"""#include \"types.h"\n""" \
-    f"""#include \"WppLogs.h"\n\n""" \
+    f"""#include "{TYPE_RESOURCE}.h"\n""" \
+    f"""#include "{TYPE_OPERATION}.h"\n""" \
+    f"""#include "types.h"\n""" \
+    f"""#include "WppLogs.h"\n\n""" \
     f"""#define TAG "{PLACE_CLASS_NAME}"\n\n""" \
     f"""namespace wpp {{\n\n"""
 
@@ -88,41 +92,41 @@ PUBLIC_CONSTRUCTOR_CPP = \
     f"""\n\t\tresourcesInit();\n\t}}\n\n"""
 
 I_INSTANCE_IMPLEMENTATIONS_CPP = \
-    f"""\t/* --------------- IInstance implementation part --------------- */\n"""
+    f"""\t/* --------------- IWppInstance implementation part --------------- */\n"""
 
 CLASS_PRIVATE_METHODS_CPP = \
     f"""\t/* --------------- Class private methods --------------- */\n{PLACE_RESOURCES_INIT}"""
 
 FUNC_GET_RESOURCE_T = \
-    f"""\tResource * {PLACE_CLASS_NAME}::getResource(ID_T id) {{\n\t""" \
+    f"""\t{TYPE_RESOURCE} * {PLACE_CLASS_NAME}::getResource(ID_T id) {{\n\t""" \
     f"""\t// Check if resource ID is valid\n\t""" \
     f"""\tif (_resources.find(id) == _resources.end()) return NULL;\n\t""" \
     f"""\treturn &_resources[id];\n\t}}\n\n"""
 
 FUNC_GET_RESOURCE_LIST = \
-    f"""\tstd::vector<WppResource *> {PLACE_CLASS_NAME}::getResourcesList() {{\n\t""" \
-    f"""\tstd::vector<WppResource *> list;\n\t""" \
+    f"""\tstd::vector<{TYPE_RESOURCE} *> {PLACE_CLASS_NAME}::getResourcesList() {{\n\t""" \
+    f"""\tstd::vector<{TYPE_RESOURCE} *> list;\n\t""" \
     f"""\tfor (auto &pair : _resources) {{\n\t\t""" \
     f"""\tlist.push_back(&pair.second);\n\t\t}}\n\t""" \
     f"""\treturn list;\n\t}}\n\n"""
 
 FUNC_GET_RESOURCE_LIST_P = \
-    f"""\tstd::vector<WppResource *> {PLACE_CLASS_NAME}::getResourcesList(const WppOperation& filter) {{\n\t""" \
-    f"""\tstd::vector<WppResource *> list;\n\t""" \
+    f"""\tstd::vector<{TYPE_RESOURCE} *> {PLACE_CLASS_NAME}::getResourcesList(const {TYPE_OPERATION}& filter) {{\n\t""" \
+    f"""\tstd::vector<{TYPE_RESOURCE} *> list;\n\t""" \
     f"""\tfor (auto &pair : _resources) {{\n\t\t""" \
     f"""\tif (filter.isCompatible(pair.second.getOperation())) list.push_back(&pair.second);\n\t\t}}\n\t""" \
     f"""\treturn list;\n\t}}\n\n"""
 
 FUNC_GET_INSTANTIATED_LIST = \
-    f"""\tstd::vector<WppResource *> {PLACE_CLASS_NAME}::getInstantiatedResourcesList() {{\n\t""" \
-    f"""\tstd::vector<WppResource *> list;\n\t""" \
+    f"""\tstd::vector<{TYPE_RESOURCE} *> {PLACE_CLASS_NAME}::getInstantiatedResourcesList() {{\n\t""" \
+    f"""\tstd::vector<{TYPE_RESOURCE} *> list;\n\t""" \
     f"""\tfor (auto &pair : _resources) {{\n\t\t""" \
     f"""\tif (!pair.second.isEmpty()) list.push_back(&pair.second);\n\t\t}}\n\t""" \
     f"""\treturn list;\n\t}}\n\n"""
 
 FUNC_GET_INSTANTIATED_LIST_P = \
-    f"""\tstd::vector<WppResource *> {PLACE_CLASS_NAME}::getInstantiatedResourcesList(const WppOperation& filter) {{\n\t""" \
-    f"""\tstd::vector<WppResource *> list;\n\t""" \
+    f"""\tstd::vector<{TYPE_RESOURCE} *> {PLACE_CLASS_NAME}::getInstantiatedResourcesList(const {TYPE_OPERATION}& filter) {{\n\t""" \
+    f"""\tstd::vector<{TYPE_RESOURCE} *> list;\n\t""" \
     f"""\tfor (auto &pair : _resources) {{\n\t\t""" \
     f"""\tif (!pair.second.isEmpty() && filter.isCompatible(pair.second.getOperation())) """ \
     f"""list.push_back(&pair.second);\n\t\t}}\n\t\treturn list;\n\t}}\n\n"""
@@ -149,7 +153,7 @@ class CodeGenerator:
         return f"{define_prefix}_{define_name}_OBJ"
 
     def parse_operation(self, xml_operation):
-        operation = "WppOperation::"
+        operation = f"{TYPE_OPERATION}::"
         match xml_operation:
             case "E":
                 operation += "EXECUTE"
@@ -158,14 +162,14 @@ class CodeGenerator:
             case "W":
                 operation += "WRITE"
             case "RW":
-                operation = "WppOperation::READ|WppOperation::WRITE"
+                operation = f"{TYPE_OPERATION}::READ|{TYPE_OPERATION}::WRITE"
             case default:
-                operation = "WppOperation::READ|WppOperation::WRITE"
+                operation = f"{TYPE_OPERATION}::READ|{TYPE_OPERATION}::WRITE"
         operation += ","
         return operation
 
     def parse_resource_data_type(self, xml_type):
-        resource_type = "Resource::DATA_TYPE::"
+        resource_type = "TYPE_ID::"
         match xml_type:
             case "INTEGER":
                 resource_type += "INT"
@@ -179,16 +183,16 @@ class CodeGenerator:
                 resource_type += "EXECUTE"
             case "OPAQUE":
                 resource_type += "OPAQUE"
-            case "?":  # TODO: check case
-                resource_type += "FLOAT"
+            case "?":
+                resource_type += "FLOAT"            # TODO: check case
             case "OBJLNK":
                 resource_type += "OBJ_LINK"
             case "TIME":
                 resource_type += "TIME"
-            case "?":  # TODO: check case
-                resource_type += "CORE_LINK"
-            case default:  # TODO: check case
-                resource_type += "NONE"
+            case "?":
+                resource_type += "CORE_LINK"        # TODO: check case
+            case default:
+                resource_type += "EXECUTE"          # TODO: check case
 
         return resource_type
 
@@ -239,7 +243,7 @@ class CodeGenerator:
         return resources_enum, tabulate(resources_map, tablefmt="plain")
 
     def get_content_resourcesInit_f(self, resources_list_xml):
-        content = f"""\tvoid {PLACE_CLASS_NAME}::_resourcesInit() {{\n"""
+        content = f"""\tvoid {PLACE_CLASS_NAME}::resourcesInit() {{\n"""
         for resource in resources_list_xml:
             if resource["Mandatory"] == "MANDATORY":
                 content += f"""\t\t#if {resource["Name"]}_{resource["Mandatory"]}\n\t"""
@@ -269,11 +273,11 @@ class CodeGenerator:
     def get_content_serverOperationNotifier(self):
         cases = ["READ", "WRITE", "EXECUTE", "DISCOVER", "DELETE"]
         base = \
-            f"""\tvoid {PLACE_CLASS_NAME}::serverOperationNotifier(WppOperation::TYPE type, const ResourceID &resId) {{""" \
+            f"""\tvoid {PLACE_CLASS_NAME}::serverOperationNotifier({TYPE_OPERATION}::TYPE type, const ResourceID &resId) {{""" \
             f"""\n\t\tobserverNotify(*this, resId, type);\n\n""" \
             f"""\t\tswitch (type) {{\n\t"""
         for case in cases:
-            base += f"""\t\tcase WppOperation::{case}:\n\t\t\t\t{self.create_log_string(
+            base += f"""\t\tcase {TYPE_OPERATION}::{case}:\n\t\t\t\t{self.create_log_string(
                 f"Server {case} -> resId: %d, resInstId: %d",
                 ["resId.resId", "resId.resInstId"],
                 False
@@ -283,10 +287,10 @@ class CodeGenerator:
     def get_content_userOperationNotifier(self):
         cases = ["READ", "WRITE", "DELETE"]
         prefix = \
-            f"""\tvoid {PLACE_CLASS_NAME}::userOperationNotifier(WppOperation::TYPE type, const ResourceID &resId) {{""" \
+            f"""\tvoid {PLACE_CLASS_NAME}::userOperationNotifier({TYPE_OPERATION}::TYPE type, const ResourceID &resId) {{""" \
             f"""\n\t\tswitch (type) {{\n\t"""
         for case in cases:
-            prefix += f"""\t\tcase WppOperation::{case}:\n\t\t\t\t{self.create_log_string(
+            prefix += f"""\t\tcase {TYPE_OPERATION}::{case}:\n\t\t\t\t{self.create_log_string(
                 f"User {case} -> resId: %d, resInstId: %d",
                 ["resId.resId", "resId.resInstId"],
                 False
@@ -345,10 +349,10 @@ class CodeGenerator:
         content = \
             f"""#ifndef {class_name}\n""" \
             f"""#define {class_name}\n\n""" \
-            f"""#include \"WppObjectInfo.h"\n\n""" \
+            f"""#include "{TYPE_OBJECT_INFO}.h"\n\n""" \
             f"""#if {self.obj_define}\n\n""" \
             f"""namespace wpp {{\n\n""" \
-            f"""static const WppObjectInfo {self.obj_name_class.replace(' ', '').upper()}_OBJ_INFO = {{\n""" \
+            f"""static const {TYPE_OBJECT_INFO} {self.obj_name_class.replace(' ', '').upper()}_OBJ_INFO = {{\n""" \
             f"""\t/* Name */\n\t"{object_dict["object_name"]}",\n\n""" \
             f"""\t/* Object ID */\n\tOBJ_ID::SERVER,\n\n""" \
             f"""\t/* URN */\n\t"{object_dict["object_urn"]}",\n\n""" \
@@ -357,12 +361,12 @@ class CodeGenerator:
             f"""\t/* Is single */\n\tIS_SINGLE::{is_multiple},\n\n""" \
             f"""\t/* Is Mandatory */\n\tIS_MANDATORY::{is_mandatory},\n\n""" \
             f"""\t/* Object supported operations */\n""" \
-            f"""\tWppOperation(\tWppOperation::READ|\n""" \
-            f"""\t\t\t\tWppOperation::WRITE|\n""" \
-            f"""\t\t\t\tWppOperation::DISCOVER|\n""" \
-            f"""\t\t\t\tWppOperation::EXECUTE|\n""" \
-            f"""\t\t\t\tWppOperation::CREATE|\n""" \
-            f"""\t\t\t\tWppOperation::DELETE),\n""" \
+            f"""\t{TYPE_OPERATION}(\t{TYPE_OPERATION}::READ|\n""" \
+            f"""\t\t\t\t{TYPE_OPERATION}::WRITE|\n""" \
+            f"""\t\t\t\t{TYPE_OPERATION}::DISCOVER|\n""" \
+            f"""\t\t\t\t{TYPE_OPERATION}::EXECUTE|\n""" \
+            f"""\t\t\t\t{TYPE_OPERATION}::CREATE|\n""" \
+            f"""\t\t\t\t{TYPE_OPERATION}::DELETE),\n""" \
             f"""\t}};\n\n""" \
             f"""}} /* namespace wpp */\n\n""" \
             f"""#endif /* {self.obj_define} */\n""" \
@@ -379,7 +383,7 @@ class CodeGenerator:
         content = \
             f"""#ifndef {ifdef}\n""" \
             f"""#define {ifdef}\n\n""" \
-            f"""#if {ifdef}\n\n""" \
+            f"""#if {self.obj_define}\n\n""" \
             f"""/* ---------- Server optional resources start ---------- */\n\n""" \
             f"""{defines}\n""" \
             f"""/* ---------- Server optional resources end ---------- */\n\n""" \
@@ -514,7 +518,7 @@ class XmlToCppObjectGenerator:
 
         self.create_file(f"{path_to_files}/Wpp{class_name}", "h", generated_header)
         self.create_file(f"{path_to_files}/Wpp{class_name}", "cpp", generated_cpp)
-        self.create_file(f"{path_to_files}/WppCMakeList", "txt", generated_cmake_list)
+        self.create_file(f"{path_to_files}/CMakeLists", "txt", generated_cmake_list)
         self.create_file(f"{path_to_files}/Wpp{class_name}Info", "h", generated_info_header)
         self.create_file(f"{path_to_files}/Wpp{class_name}Config", "h", generated_config)
 

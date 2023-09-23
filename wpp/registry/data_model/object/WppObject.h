@@ -31,7 +31,7 @@ class WppClient;
 template<typename T>
 class WppObject : public Lwm2mObject, public WppObjSubject<T> {
 private:
-	WppObject(WppClient &client, const WppObjectInfo &info);
+	WppObject(WppClient &client, const ObjectInfo &info);
 
 	WppObject(const WppObject&) = delete;
 	WppObject(WppObject&&) = delete;
@@ -42,7 +42,7 @@ public:
 	~WppObject();
 
 /* ------------- Object management ------------- */
-	static bool create(WppClient &client, const WppObjectInfo &info);
+	static bool create(WppClient &client, const ObjectInfo &info);
 	static bool isCreated();
 	static WppObject<T>* object();
 
@@ -86,7 +86,7 @@ template<typename T>
 WppObject<T> *WppObject<T>::_object = NULL;
 
 template<typename T>
-WppObject<T>::WppObject(WppClient &client, const WppObjectInfo &info): Lwm2mObject(info), _client(client) {
+WppObject<T>::WppObject(WppClient &client, const ObjectInfo &info): Lwm2mObject(info), _client(client) {
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "Creating object with ID -> %d", (ID_T)info.objID);
 
 	// Initialising core object representation
@@ -125,7 +125,7 @@ WppObject<T>::~WppObject() {
 
 /* ------------- Object management ------------- */
 template<typename T>
-bool WppObject<T>::create(WppClient &client, const WppObjectInfo &info) {
+bool WppObject<T>::create(WppClient &client, const ObjectInfo &info) {
 	_object = new WppObject<T>(client, info);
 	return true;
 }
@@ -285,7 +285,7 @@ uint8_t WppObject<T>::create_clb(lwm2m_context_t * contextP, ID_T instanceId, in
 	if (!object()->createInstance(instanceId)) return COAP_500_INTERNAL_SERVER_ERROR;
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama create %d:%d", object()->getObjectID(), instanceId);
 	// Notify user about creating instance
-	object()->observerNotify(*object(), instanceId, WppOperation::TYPE::CREATE);
+	object()->observerNotify(*object(), instanceId, Operation::TYPE::CREATE);
 
 	uint8_t result = write_clb(contextP, instanceId, numData, dataArray, objectP, LWM2M_WRITE_REPLACE_RESOURCES);
 	if (result != COAP_204_CHANGED) {
@@ -301,7 +301,7 @@ uint8_t WppObject<T>::delete_clb(lwm2m_context_t * contextP, ID_T instanceId, lw
 	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama delete %d:%d", object()->getObjectID(), instanceId);
 	// Notify user about deleting instance
-	object()->observerNotify(*object(), instanceId, WppOperation::TYPE::DELETE);
+	object()->observerNotify(*object(), instanceId, Operation::TYPE::DELETE);
 
 	return object()->removeInstance(instanceId)? COAP_202_DELETED : COAP_404_NOT_FOUND;
 }

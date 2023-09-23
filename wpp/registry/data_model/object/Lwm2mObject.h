@@ -9,7 +9,7 @@
 #define WPP_LWM2M_OBJECT_H_
 
 #include "types.h"
-#include "WppObjectInfo.h"
+#include "ObjectInfo.h"
 
 #include "liblwm2m.h"
 
@@ -18,7 +18,7 @@ namespace wpp {
 // TODO: Add ability to get IWppInstance class by ID
 class Lwm2mObject {
 public:
-	Lwm2mObject(const WppObjectInfo &info): _objInfo(info) {}
+	Lwm2mObject(const ObjectInfo &info): _objInfo(info) {}
 	virtual ~Lwm2mObject() {}
 
 	Lwm2mObject(const Lwm2mObject&) = delete;
@@ -28,7 +28,7 @@ public:
 
 	OBJ_ID getObjectID() { return _objInfo.objID; }
 	lwm2m_object_t& getLwm2mObject() { return _lwm2m_object; }
-	const WppObjectInfo& getObjectInfo() { return _objInfo; }
+	const ObjectInfo& getObjectInfo() { return _objInfo; }
 
 	virtual size_t instanceCnt() = 0;
 	virtual bool isInstanceExist(ID_T instanceID) = 0;
@@ -38,7 +38,7 @@ public:
 
 protected:
 	lwm2m_object_t _lwm2m_object;
-	WppObjectInfo _objInfo;
+	ObjectInfo _objInfo;
 };
 
 } // namespace wpp

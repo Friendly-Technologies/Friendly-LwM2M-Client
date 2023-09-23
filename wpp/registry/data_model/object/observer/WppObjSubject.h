@@ -1,7 +1,7 @@
 #ifndef WPP_OBJ_SUBJECT_H_
 #define WPP_OBJ_SUBJECT_H_
 
-#include "WppOperation.h"
+#include "Operation.h"
 #include "IWppObjObserver.h"
 #include "WppObject.h"
 
@@ -36,11 +36,11 @@ protected:
     /*
 	 * Notify observers about operation
 	 */
-	void observerNotify(WppObject<T> &obj, ID_T instanceId, WppOperation::TYPE type) {
+	void observerNotify(WppObject<T> &obj, ID_T instanceId, Operation::TYPE type) {
         for(IWppObjObserver<T>* observer : _observers) {
-            if (type == WppOperation::TYPE::CREATE) {
+            if (type == Operation::TYPE::CREATE) {
                 observer->instanceCreated(obj, instanceId);
-            } else if (type == WppOperation::TYPE::DELETE) {
+            } else if (type == Operation::TYPE::DELETE) {
                 observer->instanceDeleting(obj, instanceId);
             }
         }

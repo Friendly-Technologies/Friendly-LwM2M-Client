@@ -211,16 +211,16 @@ class CodeGenerator:
                 resource_type += "EXECUTE_T"
             case "OPAQUE":
                 resource_type += "OPAQUE_T"
-            case "FLOAT":  # TODO: check case
-                resource_type += "FLOAT_T"
+            case "FLOAT":
+                resource_type += "FLOAT_T"          # TODO: check case
             case "OBJLNK":
                 resource_type += "OBJ_LINK_T"
             case "TIME":
                 resource_type += "TIME_T"
-            case "CORE_LINK":  # TODO: check case
-                resource_type += "CORE_LINK_T"
-            case default:  # TODO: check case
-                resource_type += "NONE"
+            case "CORE_LINK":
+                resource_type += "CORE_LINK_T"      # TODO: check case
+            case default:
+                resource_type += "NONE"             # TODO: check case
 
         return resource_type
 
@@ -231,15 +231,20 @@ class CodeGenerator:
             resource_name = resource_xml['Name']
             postfix = "M" if resource_xml['Mandatory'] == "MANDATORY" else "O"
             # fill the Resources' enum:
-            resources_enum += f"\t\t\t{resource_name}_{postfix} = {resource_xml['ID']},\n"
+            resource_define = f"{resource_name}_{postfix}"
+            resource_enum = f"\t\t\t{resource_define} = {resource_xml['ID']},\n"
+            resources_enum += resource_enum
             # fill the unordered_map<ID_T, Resource> table:
-            resource = [f"TAB{{{resource_name}_{postfix},",
+            resource = [f"TAB#if {resource_define}_",
+                        f"CRLFTAB{{{resource_name}_{postfix},",
                         f"{{{resource_name}_{postfix},",
                         self.parse_operation(resource_xml['Operations']),
                         f"IS_SINGLE::{resource_xml['MultipleInstances']},",
                         f"IS_MANDATORY::{resource_xml['Mandatory']},",
-                        f"{self.parse_resource_data_type(resource_xml['Type'])} }}}},"]
+                        f"{self.parse_resource_data_type(resource_xml['Type'])} }}}},"
+                        f"CRLFTAB#endif"]
             resources_map.append(resource)
+
         return resources_enum, tabulate(resources_map, tablefmt="plain")
 
     def get_content_resourcesInit_f(self, resources_list_xml):
@@ -311,6 +316,7 @@ class CodeGenerator:
         code_header = code_header.replace(PLACE_RESOURCES_ENUM, resources_enum)
         code_header = code_header.replace(PLACE_RESOURCES_MAP, resources_map)
         code_header = code_header.replace("TAB", "\t\t\t")
+        code_header = code_header.replace("CRLF", "\n")
 
         return code_header
 

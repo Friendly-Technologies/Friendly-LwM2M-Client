@@ -27,12 +27,12 @@ void memConsumptionCheck() {
 //   cout << "Operation: " << sizeof(Operation{}) << endl;
 //   cout << "IS_MANDATORY: " << sizeof(IS_MANDATORY) << endl;
 //   cout << "IS_SINGLE: " << sizeof(IS_SINGLE) << endl;
-//   cout << "TYPE_ID: " << sizeof(WppResource::TYPE_ID) << endl;
-//   cout << "DATA_T: " << sizeof(WppResource::DATA_T) << endl;
+//   cout << "TYPE_ID: " << sizeof(Resource::TYPE_ID) << endl;
+//   cout << "DATA_T: " << sizeof(Resource::DATA_T) << endl;
 //   cout << "mutex: " << sizeof(mutex) << endl;
-//   cout << "std::unordered_map<ID_T, DATA_T>: " << sizeof(std::unordered_map<ID_T, WppResource::DATA_T>) << endl;
-//   cout << "std::vector<DATA_T>: " << sizeof(std::vector<WppResource::DATA_T>) << endl;
-//   cout << "DATA_VERIFIER_T: " << sizeof(WppResource::DATA_VERIFIER_T) << endl;
+//   cout << "std::unordered_map<ID_T, DATA_T>: " << sizeof(std::unordered_map<ID_T, Resource::DATA_T>) << endl;
+//   cout << "std::vector<DATA_T>: " << sizeof(std::vector<Resource::DATA_T>) << endl;
+//   cout << "DATA_VERIFIER_T: " << sizeof(Resource::DATA_VERIFIER_T) << endl;
 }
 
 int main()
@@ -40,7 +40,7 @@ int main()
 	cout << "Test memory consumption:" << endl;
 	memConsumptionCheck();
 
-	Connection connection;
+	Connection connection ("56830", AF_INET);
 	ServerImpl server;
 	SecurityImpl security;
 	DeviceImpl device;

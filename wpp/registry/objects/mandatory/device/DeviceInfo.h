@@ -1,11 +1,11 @@
 #ifndef WPP_DEVICE_INFO_H_
 #define WPP_DEVICE_INFO_H_
 
-#include "WppObjectInfo.h"
+#include "ObjectInfo.h"
 
 namespace wpp {
 
-static const WppObjectInfo DEVICE_OBJ_INFO = {
+static const ObjectInfo DEVICE_OBJ_INFO = {
             /* Name */
             "Device",
             /* Object ID */
@@ -21,11 +21,11 @@ static const WppObjectInfo DEVICE_OBJ_INFO = {
             /* Is Mandatory */
             IS_MANDATORY::MANDATORY,
             /* Object supported operations */
-            WppOperation(WppOperation::READ|
-                        WppOperation::WRITE|
-                        WppOperation::DISCOVER|
-                        WppOperation::EXECUTE|
-                        WppOperation::CREATE),
+            Operation(Operation::READ|
+                        Operation::WRITE|
+                        Operation::DISCOVER|
+                        Operation::EXECUTE|
+                        Operation::CREATE),
     };
 
 }

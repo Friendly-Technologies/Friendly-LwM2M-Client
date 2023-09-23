@@ -34,47 +34,47 @@ public:
 protected:
 	/* ---------------IWppInstance implementation part --------------- */
 	/*
-	 * Returns WppResource object if it is exist
+	 * Returns Resource object if it is exist
 	 */
-	WppResource * getResource(ID_T id) override;
+	Resource * getResource(ID_T id) override;
 	/*
 	 * Returns list with available resources
 	 */
-	std::vector<WppResource *> getResourcesList() override;
-	std::vector<WppResource *> getResourcesList(const WppOperation& filter) override;
+	std::vector<Resource *> getResourcesList() override;
+	std::vector<Resource *> getResourcesList(const Operation& filter) override;
 	/*
 	 * Returns list with available instantiated resources
 	 */
-	std::vector<WppResource *> getInstantiatedResourcesList() override;
-	std::vector<WppResource *> getInstantiatedResourcesList(const WppOperation& filter) override;
+	std::vector<Resource *> getInstantiatedResourcesList() override;
+	std::vector<Resource *> getInstantiatedResourcesList(const Operation& filter) override;
 	/*
 	 * Handles information about resource operation that made server
 	 */
-	void serverOperationNotifier(WppOperation::TYPE type, const ResourceID &resId) override;
+	void serverOperationNotifier(Operation::TYPE type, const ResourceID &resId) override;
 	/*
 	 * Handles information about resource operation that made user
 	 */
-	void userOperationNotifier(WppOperation::TYPE type, const ResourceID &resId) override;
+	void userOperationNotifier(Operation::TYPE type, const ResourceID &resId) override;
 
 private:
 	/* --------------- Class private methods --------------- */
 	/*
 	 * Initialize resources with default values.
-	 * WppResource always must have at least one instance.
+	 * Resource always must have at least one instance.
 	 */
 	void resourcesInit();
 
 private:
-    std::unordered_map<ID_T, WppResource> _resources = {
+    std::unordered_map<ID_T, Resource> _resources = {
     	//  KEY            				 VALUE
-    	{SHORT_SERV_ID, 			  {SHORT_SERV_ID, 				WppOperation(WppOperation::READ),                  IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::INT}},
-		{LIFETIME, 					  {LIFETIME, 					WppOperation(WppOperation::READ|WppOperation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::INT}},
-		{DISABLE,       			  {DISABLE,       				WppOperation(WppOperation::EXECUTE),               IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::EXECUTE}},
-		{NOTIFICATION_STORING, 		  {NOTIFICATION_STORING, 		WppOperation(WppOperation::READ|WppOperation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::BOOL}},
-		{BUINDING,      			  {BUINDING,      				WppOperation(WppOperation::READ|WppOperation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::STRING}},
-		{REGISTRATION_UPDATE_TRIGGER, {REGISTRATION_UPDATE_TRIGGER, WppOperation(WppOperation::EXECUTE), 				 IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::EXECUTE}},
-		{APN_LINK,      		      {APN_LINK,      				WppOperation(WppOperation::READ|WppOperation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::OBJ_LINK}},
-    	{TRIGGER,       			  {TRIGGER,      				WppOperation(WppOperation::READ|WppOperation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::BOOL}},
+    	{SHORT_SERV_ID, 			  {SHORT_SERV_ID, 				Operation(Operation::READ),                  IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::INT}},
+		{LIFETIME, 					  {LIFETIME, 					Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::INT}},
+		{DISABLE,       			  {DISABLE,       				Operation(Operation::EXECUTE),               IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::EXECUTE}},
+		{NOTIFICATION_STORING, 		  {NOTIFICATION_STORING, 		Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::BOOL}},
+		{BUINDING,      			  {BUINDING,      				Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::STRING}},
+		{REGISTRATION_UPDATE_TRIGGER, {REGISTRATION_UPDATE_TRIGGER, Operation(Operation::EXECUTE), 				 IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::EXECUTE}},
+		{APN_LINK,      		      {APN_LINK,      				Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::OBJ_LINK}},
+    	{TRIGGER,       			  {TRIGGER,      				Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::BOOL}},
     };
 };
 

@@ -12,7 +12,7 @@
 
 #include "WppClient.h"
 #include "Resource.h"
-#include "WppOperation.h"
+#include "Operation.h"
 #include "types.h"
 
 namespace wpp {
@@ -89,33 +89,33 @@ protected: /* Interface implemented by IWppInstance derived class */
 	 * and return resource if it is exists.
 	 * If resource does not exist then return NULL.
 	 */
-	virtual WppResource * getResource(ID_T resId) = 0;
+	virtual Resource * getResource(ID_T resId) = 0;
 	/*
 	 * This method must be implemented by derived class,
 	 * and return list with all resources.
 	 * If resources does not exist then return empty list.
 	 */
-	virtual std::vector<WppResource *> getResourcesList() = 0;
-	virtual std::vector<WppResource *> getResourcesList(const WppOperation& filter) = 0;
+	virtual std::vector<Resource *> getResourcesList() = 0;
+	virtual std::vector<Resource *> getResourcesList(const Operation& filter) = 0;
 	/*
 	 * This method must be implemented by derived class,
 	 * and return list with resources that has been instantiated.
 	 * If resources does not exist then return empty list.
 	 */
-	virtual std::vector<WppResource *> getInstantiatedResourcesList() = 0;
-	virtual std::vector<WppResource *> getInstantiatedResourcesList(const WppOperation& filter) = 0;
+	virtual std::vector<Resource *> getInstantiatedResourcesList() = 0;
+	virtual std::vector<Resource *> getInstantiatedResourcesList(const Operation& filter) = 0;
 	/*
 	 * This method must be implemented by derived class, and handle
      * information about resource operation (READ, WRITE, EXECUTE, DISCOVER, DELETE).
 	 * Called by IWppInstance after resource operation performed by SERVER.
 	 */
-	virtual void serverOperationNotifier(WppOperation::TYPE type, const ResourceID &resId) = 0;
+	virtual void serverOperationNotifier(Operation::TYPE type, const ResourceID &resId) = 0;
 	/*
 	 * This method must be implemented by derived class, and handle
      * information about resource operation (READ, WRITE, DELETE).
 	 * Called by IWppInstance after resource operation performed by USER.
 	 */
-	virtual void userOperationNotifier(WppOperation::TYPE type, const ResourceID &resId) = 0;
+	virtual void userOperationNotifier(Operation::TYPE type, const ResourceID &resId) = 0;
 
 private: /* Interface used by WppObject<T> or IWppInstance class */
 	/* ------------- Implementation of user set/get methods ------------- */
@@ -128,8 +128,8 @@ private: /* Interface used by WppObject<T> or IWppInstance class */
 	 * This methods can be used for convert resource to lwm2m_data_t
 	 * structure representation, or fill resource with lwm2m_data_t data.
 	 */
-	bool resourceToLwm2mData(WppResource &resource, ID_T instanceId, lwm2m_data_t &data);
-	bool lwm2mDataToResource(const lwm2m_data_t &data, WppResource &resource, ID_T instanceId);
+	bool resourceToLwm2mData(Resource &resource, ID_T instanceId, lwm2m_data_t &data);
+	bool lwm2mDataToResource(const lwm2m_data_t &data, Resource &resource, ID_T instanceId);
 	/* ------------- Server callback ------------- */
 	uint8_t resourceRead(ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP);
 	uint8_t resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_write_type_t writeType);
@@ -147,13 +147,13 @@ protected:
  */
 template<typename T>
 bool IWppInstance::userSet(const ResourceID &resId, const T &value) {
-	WppResource *const resource = getResource(resId.resId);
+	Resource *const resource = getResource(resId.resId);
 	if (!resource) return false;
 
 	bool result = resource->set(value, resId.resInstId);
 	if (result) {
 		client().notifyValueChanged({_id, {resId.resId, resId.resInstId}});
-		userOperationNotifier(WppOperation::WRITE, resId);
+		userOperationNotifier(Operation::WRITE, resId);
 	}
 
 	return result;
@@ -164,12 +164,12 @@ bool IWppInstance::userSet(const ResourceID &resId, const T &value) {
  */
 template<typename T>
 bool IWppInstance::userGet(const ResourceID &resId, T &value) {
-	WppResource *const resource = getResource(resId.resId);
+	Resource *const resource = getResource(resId.resId);
 	if (!resource) return false;
 
 	bool result = resource->get(value, resId.resInstId);
 	if (result) {
-		userOperationNotifier(WppOperation::READ, resId);
+		userOperationNotifier(Operation::READ, resId);
 	}
 
 	return result;

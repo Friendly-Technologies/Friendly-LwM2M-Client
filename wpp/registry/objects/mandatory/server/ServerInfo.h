@@ -1,11 +1,11 @@
 #ifndef WPP_SERVER_INFO_H_
 #define WPP_SERVER_INFO_H_
 
-#include "WppObjectInfo.h"
+#include "ObjectInfo.h"
 
 namespace wpp {
 
-static const WppObjectInfo SERVER_OBJ_INFO = {
+static const ObjectInfo SERVER_OBJ_INFO = {
         /* Name */
 		"LwM2M Server",
         /* Object ID */
@@ -21,12 +21,12 @@ static const WppObjectInfo SERVER_OBJ_INFO = {
         /* Is Mandatory */
 		IS_MANDATORY::MANDATORY,
         /* Object supported operations */
-		WppOperation(WppOperation::READ|
-					WppOperation::WRITE|
-					WppOperation::DISCOVER|
-					WppOperation::EXECUTE|
-					WppOperation::CREATE|
-					WppOperation::DELETE),
+		Operation(Operation::READ|
+					Operation::WRITE|
+					Operation::DISCOVER|
+					Operation::EXECUTE|
+					Operation::CREATE|
+					Operation::DELETE),
 };
 
 }

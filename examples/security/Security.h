@@ -13,8 +13,12 @@ class SecurityImpl: public IWppObjObserver<Security>, public IWppInstObserver<Se
 	public:
     void init(WppObject<Security> &securityObj) {
         securityObj.subscribe(this);
-        wpp::Security *security = securityObj.createInstance();
+        Security *security = securityObj.createInstance();
         security->subscribe(this);
+        
+        security->set(Security::SERVER_URI, (STRING_T)"coap://127.0.0.1:5683");
+        security->set(Security::BOOTSTRAP_SERVER, false);
+        security->set(Security::SERVER_ID, INT_T(123));
     }
 
 	void objectRestore(WppObject<Security> &object) override {

@@ -11,17 +11,17 @@ namespace wpp {
 
 /* ---------- Public methods for common usage ----------*/
 
-WppResource::WppResource():
+Resource::Resource():
 	_id(ID_T_MAX_VAL), _operation(), _isSingle(IS_SINGLE::MULTIPLE), _isMandatory(IS_MANDATORY::OPTIONAL), _typeID(TYPE_ID::UNDEFINED) {
 	_resourceGuard.unlock();
 }
 
-WppResource::WppResource(ID_T id, const WppOperation &operation, IS_SINGLE isSingle, IS_MANDATORY isMandatory, TYPE_ID dataType):
+Resource::Resource(ID_T id, const Operation &operation, IS_SINGLE isSingle, IS_MANDATORY isMandatory, TYPE_ID dataType):
 	_id(id), _operation(operation), _isSingle(isSingle), _isMandatory(isMandatory), _typeID(dataType) {
 	_resourceGuard.unlock();
 }
 
-WppResource::WppResource(const WppResource& resource) {
+Resource::Resource(const Resource& resource) {
 	_id = resource._id;
 	_operation = resource._operation;
 	_isSingle = resource._isSingle;
@@ -33,7 +33,7 @@ WppResource::WppResource(const WppResource& resource) {
 	_resourceGuard.unlock();
 }
 
-WppResource::WppResource(WppResource&& resource) {
+Resource::Resource(Resource&& resource) {
 	_id = resource._id;
 	_operation = resource._operation;
 	_isSingle = resource._isSingle;
@@ -45,47 +45,47 @@ WppResource::WppResource(WppResource&& resource) {
 	_resourceGuard.unlock();
 }
 
-ID_T WppResource::getID() const {
+ID_T Resource::getID() const {
 	return _id;
 }
 
-TYPE_ID WppResource::getTypeId() const {
+TYPE_ID Resource::getTypeId() const {
 	return _typeID;
 }
 
-const WppOperation& WppResource::getOperation() const {
+const Operation& Resource::getOperation() const {
 	return _operation;
 }
 
-bool WppResource::isMandatory() const {
+bool Resource::isMandatory() const {
 	return _isMandatory == IS_MANDATORY::MANDATORY;
 }
 
-bool WppResource::isOptional() const {
+bool Resource::isOptional() const {
 	return _isMandatory == IS_MANDATORY::OPTIONAL;
 }
 
-bool WppResource::isSingle() const {
+bool Resource::isSingle() const {
 	return _isSingle == IS_SINGLE::SINGLE;
 }
 
-bool WppResource::isMultiple() const {
+bool Resource::isMultiple() const {
 	return _isSingle == IS_SINGLE::MULTIPLE;
 }
 
-bool WppResource::isOperationValid(WppOperation::TYPE type) const {
+bool Resource::isOperationValid(Operation::TYPE type) const {
 	return _operation.isSupported(type);
 }
 
-bool WppResource::isInstanceIdPossible(ID_T resInstId) const {
+bool Resource::isInstanceIdPossible(ID_T resInstId) const {
 	return isMultiple() || resInstId == SINGLE_INSTANCE_ID;
 }
 
-bool WppResource::isInstanceExist(ID_T resInstId) const {
+bool Resource::isInstanceExist(ID_T resInstId) const {
 	return _instances.find(resInstId) != _instances.end();
 }
 
-bool WppResource::isTypeIdCompatible(TYPE_ID type) const {
+bool Resource::isTypeIdCompatible(TYPE_ID type) const {
 	switch (type) {
 	case TYPE_ID::INT:
 	case TYPE_ID::TIME:
@@ -100,86 +100,86 @@ bool WppResource::isTypeIdCompatible(TYPE_ID type) const {
 	return _typeID == type;
 }
 
-bool WppResource::isEmpty() const {
+bool Resource::isEmpty() const {
 	return _instances.size() == 0;
 }
 
-size_t WppResource::instanceCnt() const {
+size_t Resource::instanceCnt() const {
 	return _instances.size();
 }
 
 
 /* ---------- Extended abilities for access directly to resource data for avoid coping ----------*/
-const std::unordered_map<ID_T, WppResource::DATA_T>& WppResource::getInstances() {
+const std::unordered_map<ID_T, Resource::DATA_T>& Resource::getInstances() {
 	return _instances;
 }
 
 /* ---------- Methods for get and set resource value ----------*/
-bool WppResource::set(const BOOL_T &value, ID_T resInstId) {
+bool Resource::set(const BOOL_T &value, ID_T resInstId) {
 	return _set(value, resInstId);
 }
 
-bool WppResource::set(const INT_T &value, ID_T resInstId) {
+bool Resource::set(const INT_T &value, ID_T resInstId) {
 	return _set(value, resInstId);
 }
 
-bool WppResource::set(const UINT_T &value, ID_T resInstId) {
+bool Resource::set(const UINT_T &value, ID_T resInstId) {
 	return _set(value, resInstId);
 }
 
-bool WppResource::set(const FLOAT_T &value, ID_T resInstId) {
+bool Resource::set(const FLOAT_T &value, ID_T resInstId) {
 	return _set(value, resInstId);
 }
 
-bool WppResource::set(const OPAQUE_T &value, ID_T resInstId) {
+bool Resource::set(const OPAQUE_T &value, ID_T resInstId) {
 	return _set(value, resInstId);
 }
 
-bool WppResource::set(const OBJ_LINK_T &value, ID_T resInstId) {
+bool Resource::set(const OBJ_LINK_T &value, ID_T resInstId) {
 	return _set(value, resInstId);
 }
 
-bool WppResource::set(const STRING_T &value, ID_T resInstId) {
+bool Resource::set(const STRING_T &value, ID_T resInstId) {
 	return _set(value, resInstId);
 }
 
-bool WppResource::set(const EXECUTE_T &value, ID_T resInstId) {
+bool Resource::set(const EXECUTE_T &value, ID_T resInstId) {
 	return _set(value, resInstId);
 }
 
-bool WppResource::get(BOOL_T &value, ID_T resInstId) const {
+bool Resource::get(BOOL_T &value, ID_T resInstId) const {
 	return _get(value, resInstId);
 }
 
-bool WppResource::get(INT_T &value, ID_T resInstId) const {
+bool Resource::get(INT_T &value, ID_T resInstId) const {
 	return _get(value, resInstId);
 }
 
-bool WppResource::get(UINT_T &value, ID_T resInstId) const {
+bool Resource::get(UINT_T &value, ID_T resInstId) const {
 	return _get(value, resInstId);
 }
 
-bool WppResource::get(FLOAT_T &value, ID_T resInstId) const {
+bool Resource::get(FLOAT_T &value, ID_T resInstId) const {
 	return _get(value, resInstId);
 }
 
-bool WppResource::get(OPAQUE_T &value, ID_T resInstId) const {
+bool Resource::get(OPAQUE_T &value, ID_T resInstId) const {
 	return _get(value, resInstId);
 }
 
-bool WppResource::get(OBJ_LINK_T &value, ID_T resInstId) const {
+bool Resource::get(OBJ_LINK_T &value, ID_T resInstId) const {
 	return _get(value, resInstId);
 }
 
-bool WppResource::get(STRING_T &value, ID_T resInstId) const {
+bool Resource::get(STRING_T &value, ID_T resInstId) const {
 	return _get(value, resInstId);
 }
 
-bool WppResource::get(EXECUTE_T &value, ID_T resInstId) const {
+bool Resource::get(EXECUTE_T &value, ID_T resInstId) const {
 	return _get(value, resInstId);
 }
 
-bool WppResource::remove(ID_T resInstId) {
+bool Resource::remove(ID_T resInstId) {
 	std::lock_guard<std::mutex> guard(_resourceGuard);
 
 	if (!isInstanceExist(resInstId) || isSingle()) return false;
@@ -188,7 +188,7 @@ bool WppResource::remove(ID_T resInstId) {
 	return true;
 }
 
-bool WppResource::clear() {
+bool Resource::clear() {
 	std::lock_guard<std::mutex> guard(_resourceGuard);
 
 	_instances.clear();
@@ -196,13 +196,13 @@ bool WppResource::clear() {
 	return true;
 }
 
-bool WppResource::setDataVerifier(const DATA_VERIFIER_T &verifier) {
+bool Resource::setDataVerifier(const DATA_VERIFIER_T &verifier) {
 	if (!isDataVerifierValid(verifier)) return false;
 	_dataVerifier = verifier;
 	return true;
 }
 
-bool WppResource::isDataVerifierValid(const DATA_VERIFIER_T &verifier) const {
+bool Resource::isDataVerifierValid(const DATA_VERIFIER_T &verifier) const {
 	if (std::holds_alternative<VERIFY_BOOL_T>(verifier) && std::get<VERIFY_BOOL_T>(verifier)) return _typeID == TYPE_ID::BOOL;
 	else if (std::holds_alternative<VERIFY_INT_T>(verifier) && std::get<VERIFY_INT_T>(verifier)) return _typeID == TYPE_ID::INT;
 	else if (std::holds_alternative<VERIFY_UINT_T>(verifier) && std::get<VERIFY_UINT_T>(verifier)) return _typeID == TYPE_ID::UINT;

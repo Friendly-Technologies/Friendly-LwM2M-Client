@@ -1,12 +1,12 @@
 #ifndef WPP_OBJECT_INFO_H
 #define WPP_OBJECT_INFO_H
 
-#include "WppOperation.h"
+#include "Operation.h"
 #include "ObjectID.h"
 
 namespace wpp {
 
-struct WppObjectInfo {
+struct ObjectInfo {
 	std::string name;
 	OBJ_ID objID;
 	std::string urn;
@@ -14,7 +14,7 @@ struct WppObjectInfo {
 	Version lwm2mVersion;
 	IS_SINGLE isSingle;
 	IS_MANDATORY isMandatory;
-	WppOperation operation;
+	Operation operation;
 };
 
 }; // wpp

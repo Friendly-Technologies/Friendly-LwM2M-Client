@@ -37,10 +37,6 @@ int main() {
 	cout << endl << "------------------- Creating WppClient -------------------" << endl;
 	WppClient::create({"Test name", "", ""}, connection);
 	WppClient *client = WppClient::takeOwnership();
-	if (!client) {
-		cout << endl << "ERR: WppClient can not be taken" << endl;
-		return -1;
-	}
 	WppRegistry &registry = client->registry();
 
 	// Initialize wpp objects
@@ -50,7 +46,7 @@ int main() {
 	security.init(registry.security());
 	cout << endl << "------------------- Initialization wpp Device -------------------" << endl;
 	device.init(registry.device());
-
+	
 	// Giving ownership to registry
 	client->giveOwnership();
 

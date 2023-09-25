@@ -45,7 +45,6 @@ include(../wakaama_core/WakaamaCore.cmake)
 add_subdirectory(client)
 add_subdirectory(registry)
 add_subdirectory(platform)
-add_subdirectory(connection)
 add_subdirectory(utils)
 
 # message(STATUS "Wpp:INCLUDES: ${INCLUDES}")

@@ -34,7 +34,11 @@ set(SOURCES main.cpp)
 set(INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/)
 set(COMPILE_DEFINITIONS "")
 
-set(SOURCES main.cpp)
+# General options
+option(WITH_UDP_DTLS "Enable UDP DTLS" ON)
+if (WITH_UDP_DTLS)
+    set(COMPILE_DEFINITIONS ${COMPILE_DEFINITIONS} WITH_UDP_DTLS)
+endif()
 
 # Add subdiretories with sources
 add_subdirectory(platform)
@@ -45,8 +49,11 @@ add_subdirectory(device)
 add_executable(WakaamaPlusTest ${SOURCES})
 # List of directories that will be set for compiler with key -I
 target_include_directories(WakaamaPlusTest PUBLIC ${INCLUDES})
+# List of preprocessor defines that will be set for compiler with key -D
+target_compile_definitions(WakaamaPlusTest PUBLIC ${COMPILE_DEFINITIONS})
 # Link with Wpp library
 target_link_libraries(WakaamaPlusTest Wpp)
+
 # Generate a .bin file 
 add_custom_command(TARGET WakaamaPlusTest POST_BUILD
                    COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:WakaamaPlusTest> $<TARGET_FILE_DIR:WakaamaPlusTest>/WakaamaPlusTest.bin

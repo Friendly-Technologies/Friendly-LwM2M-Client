@@ -8,7 +8,7 @@ WppRegistry::WppRegistry(WppClient &client): _client(client) {
     WPP_LOGD(TAG_WPP_REG, "Creating registry instance");
 }
 
-/* ------------- Mandatory objects prototype start ------------- */
+/* The start of the prototypes of the mandatory objects. */
 #if MANDATORY_SECURITY_OBJ
 WppObject<Security>& WppRegistry::security() {
     if (!WppObject<Security>::isCreated()) WppObject<Security>::create(_client, SECURITY_OBJ_INFO);
@@ -27,9 +27,10 @@ WppObject<Device>& WppRegistry::device() {
     return *WppObject<Device>::object();
 }
 #endif
-/* ------------- Mandatory objects prototype end ------------- */
+/* The end of the prototypes of the mandatory objects. */
+/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE! */
 
-/* ------------- Optional objects prototype start ------------- */
+/* The start of the prototypes of the optional objects. */
 #if OPTIONAL_ACL_OBJ
 #endif
 
@@ -38,7 +39,8 @@ WppObject<Device>& WppRegistry::device() {
 
 #if OPTIONAL_FIRMWARE_UPD_OBJ
 #endif
-/* ------------- Optional objects prototype end ------------- */
+/* The end of the prototypes of the optional objects. */
+/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE! */
 
 
 } //wpp

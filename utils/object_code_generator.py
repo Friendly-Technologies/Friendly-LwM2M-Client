@@ -18,10 +18,14 @@ TYPE_RESOURCE = "Resource"
 
 LOG_FUNC_CUSTOM = "WPP_LOGD_ARG"
 
-STOP_STRING_CNFG_CMK = ["# Mandatory objects end", "# Optional objects end"]
-STOP_STRING_OBJ_ID = ["/* Mandatory objects ID end */", "/* Optional objects ID end */"]
-STOP_STRING_REG_PRT = ["/* Mandatory objects prototype end */", "/* Optional objects prototype end */"]
-STOP_STRING_REG_INCL = ["/* Mandatory objects include end */", "/* Optional objects include end */"]
+STOP_STRING_CNFG_CMK = ["# The end of the options of the mandatory objects.",
+                        "# The end of the options of the optional objects."]
+STOP_STRING_OBJ_ID = ["/* The end of the IDs of the mandatory objects. */",
+                      "/* The end of the IDs of the optional objects. */"]
+STOP_STRING_REG_PRT = ["/* The end of the prototypes of the mandatory objects. */",
+                       "/* The end of the prototypes of the optional objects. */"]
+STOP_STRING_REG_INCL = ["/* The end of the includes of the mandatory objects. */",
+                        "/* The end of the includes of the optional objects. */"]
 
 MAIN_COMMENT = \
     f"""/*\n""" \
@@ -396,14 +400,21 @@ class CodeGenerator:
         return content
 
     def update_file(self, stop_string, content, path_to_file):
+        is_stop_string_present = False
         new_content = ''
         with open(path_to_file, 'r') as f:
             for i in f:
                 # print(i)
                 if " ".join(i.split()) == stop_string:
+                    is_stop_string_present = True
                     new_content += content
+
                 new_content += i
         f.close()
+
+        if not is_stop_string_present:
+            print(f"The {path_to_file} was not updated!")
+
         with open(path_to_file, 'w') as f:
             f.write(new_content)
         f.close()

@@ -12,7 +12,7 @@
 
 #include "WppObject.h"
 
-/* ------------- Mandatory objects include start ------------- */
+/* The start of the includes of the mandatory objects. */
 #if MANDATORY_SECURITY_OBJ
 #include "mandatory/security/Security.h"
 #endif
@@ -22,9 +22,10 @@
 #if MANDATORY_DEVICE_OBJ
 #include "mandatory/device/Device.h"
 #endif
-/* ------------- Mandatory objects include end ------------- */
+/* The end of the includes of the mandatory objects. */
+/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 
-/* ------------- Optional objects include start ------------- */
+/* The start of the includes of the optional objects. */
 #if OPTIONAL_ACL_OBJ
 #include "optional/acl/Acl.h"
 #endif
@@ -34,7 +35,8 @@
 #if OPTIONAL_FIRMWARE_UPD_OBJ
 #include "optional/firmware_upd/FirmwareUpd.h"
 #endif
-/* ------------- Optional objects include end ------------- */
+/* The end of the includes of the optional objects. */
+/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 
 namespace wpp {
 
@@ -57,7 +59,7 @@ public:
 	WppRegistry& operator=(const WppRegistry&) = delete;
 	WppRegistry& operator=(WppRegistry&&) = delete;
 
-	/* ------------- Mandatory objects prototype start ------------- */
+	/* The start of the prototypes of the mandatory objects. */
 	#if MANDATORY_SECURITY_OBJ
 	WppObject<Security>& security();
 	#endif
@@ -67,9 +69,10 @@ public:
 	#if MANDATORY_DEVICE_OBJ
 	WppObject<Device>& device();
 	#endif
-	/* ------------- Mandatory objects prototype end ------------- */
+	/* The end of the prototypes of the mandatory objects. */
+	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 
-	/* ------------- Optional objects prototype start ------------- */
+	/* The start of the prototypes of the optional objects. */
 	#if OPTIONAL_ACL_OBJ
 	WppObject<Acl>& acl();
 	#endif
@@ -79,7 +82,8 @@ public:
 	#if OPTIONAL_FIRMWARE_UPD_OBJ
 		WppObject<FirmwareUpd>& firmwareUpd();
 	#endif
-	/* ------------- Optional objects prototype end ------------- */
+	/* The end of the prototypes of the optional objects. */
+	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 
 private:
 	WppClient &_client;

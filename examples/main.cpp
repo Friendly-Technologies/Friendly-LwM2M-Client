@@ -37,15 +37,17 @@ void memConsumptionCheck() {
 
 int main()
 {
-	cout << "Test memory consumption:" << endl;
-	memConsumptionCheck();
+	// cout << "Test memory consumption:" << endl;
+	// memConsumptionCheck();
 
+	cout << endl << "------------------- Creating requiered components -------------------" << endl;
 	Connection connection ("56830", AF_INET);
 	ServerImpl server;
 	SecurityImpl security;
 	DeviceImpl device;
 
 	// Client initialization
+	cout << endl << "------------------- Creating WppClient -------------------" << endl;
 	wpp::WppClient::create({"Test name", "", ""}, connection);
 	wpp::WppClient *client = wpp::WppClient::takeOwnership();
 	if (!client) {
@@ -55,22 +57,29 @@ int main()
 	wpp::WppRegistry &registry = client->registry();
 
 	// Initialize wpp objects
+	cout << endl << "------------------- Initialization wpp Server -------------------" << endl;
 	server.init(registry.server());
+	cout << endl << "------------------- Initialization wpp Security -------------------" << endl;
 	security.init(registry.security());
+	cout << endl << "------------------- Initialization wpp Device -------------------" << endl;
 	device.init(registry.device());
 
 	// Giving ownership to registry
 	client->giveOwnership();
 
-	int iterationCnt = 10;
-	while (iterationCnt--) {
-		time_t sleepTime = 1;
+	for (int iterationCnt = 0; iterationCnt < 20; iterationCnt++) {
+		time_t sleepTime = 0;
 
+		cout << endl << "------------------- iteration:" << iterationCnt << " -------------------" << endl;
+
+		// Receive packets from server
+		connection.loop();
+		// Handle client state and process packets from the server
 		client = wpp::WppClient::takeOwnership();
-		if (client) client->loop(sleepTime);
+		if (client) sleepTime = client->loop();
 		client->giveOwnership();
 
-		cout << "Iteration: " << iterationCnt << ", sleep: " << sleepTime << endl;
+		cout << "Sleep: " << sleepTime << endl;
 		std::this_thread::sleep_for(std::chrono::seconds(sleepTime));
 	}
 }

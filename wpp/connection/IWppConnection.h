@@ -52,7 +52,7 @@ public:
 	/*
 	 * Deleting the memory occupied by the package will be done in wpp core.
 	 */
-	virtual bool sendPacket(Packet packet) = 0;
+	virtual bool sendPacket(const Packet &packet) = 0;
 
 	/*
 	 * Interface for add packets to queue and get information about queue size.
@@ -65,7 +65,7 @@ public:
 	 * The memory occupied by the package must be deleted by the user, because the method
 	 * does not save a pointer to the package data, but copies it.
 	 */
-	bool addPacketToQueue(Packet packet);
+	bool addPacketToQueue(const Packet &packet);
 	uint8_t getPacketQueueSize();
 
 	/*

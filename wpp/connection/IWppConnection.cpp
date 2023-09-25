@@ -21,10 +21,10 @@ IWppConnection::~IWppConnection() {
 
 /* ------------- Connection abilities ------------- */
 
-bool IWppConnection::addPacketToQueue(Packet packet) {
+bool IWppConnection::addPacketToQueue(const Packet &packet) {
 	Packet tmpPkt = packet;
 
-	WPP_LOGD_ARG(TAG_WPP_CONN, "Retrieved new packet from server: session->%d, length->%d", packet.session, packet.length);
+	WPP_LOGD_ARG(TAG_WPP_CONN, "Retrieved new packet from server: session->0x%x, length->%d", packet.session, packet.length);
 	tmpPkt.buffer = new uint8_t[packet.length];
 	memcpy(tmpPkt.buffer, packet.buffer, packet.length);
 
@@ -86,19 +86,19 @@ extern "C" {
 		}
 
 		wpp::IWppConnection::SESSION_T session = client->connection().connect(*security);
-		WPP_LOGI_ARG(TAG_WPP_CONN, "Connected to server: security obj ID-> %d, session -> %d", secObjInstID, session);
+		WPP_LOGI_ARG(TAG_WPP_CONN, "Connected to server: security obj ID-> %d, session -> 0x%x", secObjInstID, session);
 		return session;
 	}
 
 	void lwm2m_close_connection(void * sessionH, void * userData) {
 		wpp::WppClient *client = (wpp::WppClient *)userData;
-		WPP_LOGI_ARG(TAG_WPP_CONN, "Close connection: session ID -> %d", sessionH);
+		WPP_LOGI_ARG(TAG_WPP_CONN, "Close connection: session ID -> 0x%x", sessionH);
 		return client->connection().disconnect(sessionH);
 	}
 
 	uint8_t lwm2m_buffer_send(void * sessionH, uint8_t * buffer, size_t length, void * userData) {
 		wpp::WppClient *client = (wpp::WppClient *)userData;
-		WPP_LOGD_ARG(TAG_WPP_CONN, "Sending buffer to server: session -> %d, size -> %d", sessionH, length);
+		WPP_LOGD_ARG(TAG_WPP_CONN, "Sending buffer to server: session -> 0x%x, size -> %d", sessionH, length);
 		return client->connection().sendPacket({sessionH, length, buffer})? COAP_NO_ERROR : COAP_500_INTERNAL_SERVER_ERROR;
 	}
 

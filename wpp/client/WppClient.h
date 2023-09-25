@@ -67,9 +67,12 @@ public:
 	lwm2m_client_state_t getState();
 
 	/*
-	 * Try to take registry internaly.
+	 * This function does two things:
+	 *  - First it does the work needed by wakaama core (eg. (re)sending some packets).
+	 *  - Secondly handle received packets from servers.
+	 * Return time interval after which it should be called.
 	 */
-	void loop(time_t &sleepTime);
+	time_t loop();
 
 	bool updateServerRegistration(INT_T serverId, bool withObjects);
 	bool updateServerRegistration(bool withObjects);

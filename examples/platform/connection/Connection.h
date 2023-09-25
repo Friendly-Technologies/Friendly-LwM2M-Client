@@ -24,7 +24,9 @@ public:
     SESSION_T connect(Security& security) override;
 	void disconnect(SESSION_T session) override;
 	bool sessionCmp(SESSION_T session1, SESSION_T session2) override;
-	bool sendPacket(Packet packet) override;
+	bool sendPacket(const Packet &packet) override;
+
+    void loop();
 
 private: 
     bool openSocket();

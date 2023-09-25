@@ -7,12 +7,13 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#include <fcntl.h>
 
 Connection::Connection(string port, int addressFamily): _port(port), _addressFamily(addressFamily) {
     _connFd = -1;
     _connections = NULL;
     openSocket();
-    cout << "Connection: _connFd " << _connFd << endl;
+    cout << "Connection: socket id " << _connFd << endl;
 }
 
 Connection::~Connection() {}
@@ -30,7 +31,7 @@ Connection::SESSION_T Connection::connect(Security& security) {
     string port = uriToPort(uri);
     cout << "Connection: connect to host " << host << ", port " << port << endl;
     cout << "Connection: connect to uri " << uri << endl;
-    if (!host.length() || port.length()) return NULL;
+    if (!host.length() || !port.length()) return NULL;
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = _addressFamily;
     hints.ai_socktype = SOCK_DGRAM;
@@ -82,7 +83,7 @@ bool Connection::sessionCmp(SESSION_T session1, SESSION_T session2) {
     return (session1 == session2);
 }
 
-bool Connection::sendPacket(Packet packet) {
+bool Connection::sendPacket(const Packet &packet) {
     int nbSent;
     size_t offset;
     connection_t * conn = (connection_t *)packet.session;
@@ -90,11 +91,31 @@ bool Connection::sendPacket(Packet packet) {
     offset = 0;
     while (offset != packet.length)
     {
-        nbSent = sendto(_connFd, packet.buffer + offset, packet.length - offset, 0, (struct sockaddr *)&(conn->addr), conn->addrLen);
+        nbSent = sendto(_connFd, packet.buffer + offset, packet.length - offset, 0, (sockaddr *)&(conn->addr), conn->addrLen);
         if (nbSent == -1) return false;
         offset += nbSent;
     }
     return true;
+}
+
+void Connection::loop() {
+    uint8_t buffer[1024];
+    int16_t readDataSize = 0;
+    sockaddr_storage addr;
+    socklen_t addrLen = sizeof(sockaddr_storage);
+
+    readDataSize = recvfrom(_connFd, buffer, sizeof(buffer) - 1, 0, (sockaddr*)&addr, &addrLen);
+    if (readDataSize == -1) return;
+    cout << "Connection readDataSize: " << readDataSize << endl;
+
+    connection_t * session = _connections;
+    while (session != NULL) {
+        if ((session->addrLen == addrLen) && (memcmp(&(session->addr), &addr, addrLen) == 0)) break;
+        session = session->next;
+    }
+
+    cout << "Connection session: " << session << endl;
+    if (session) addPacketToQueue({session, (size_t)readDataSize, buffer});
 }
 
 bool Connection::openSocket() {
@@ -114,7 +135,10 @@ bool Connection::openSocket() {
     for(p = res ; p != NULL && _connFd == -1 ; p = p->ai_next) {
         _connFd = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
         if (_connFd >= 0) {
-            if (-1 == bind(_connFd, p->ai_addr, p->ai_addrlen)) {
+            // Set to non-blocking mode
+            int flags = fcntl(_connFd, F_GETFL, 0);
+            if (fcntl(_connFd, F_SETFL, flags | O_NONBLOCK) == -1 ||
+                bind(_connFd, p->ai_addr, p->ai_addrlen) == -1) {
                 close(_connFd);
                 _connFd = -1;
             }
@@ -126,18 +150,20 @@ bool Connection::openSocket() {
 }
 
 Connection::connection_t * Connection::createNewConn(struct sockaddr * addr, size_t addrLen) {
-    connection_t * connP;
+    connection_t * connection;
 
-    connP = new connection_t;
-    if (connP != NULL)
+    connection = new connection_t;
+    if (connection != NULL)
     {
-        connP->sock = _connFd;
-        memcpy(&(connP->addr), addr, addrLen);
-        connP->addrLen = addrLen;
-        connP->next = _connections;
+        connection->sock = _connFd;
+        memcpy(&(connection->addr), addr, addrLen);
+        connection->addrLen = addrLen;
+        connection->next = _connections;
+        // Update connection list head
+        _connections = connection;
     }
 
-    return connP;
+    return connection;
 }
 
 string Connection::uriToPort(string uri) {

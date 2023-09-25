@@ -75,7 +75,7 @@ lwm2m_client_state_t WppClient::getState() {
 }
 
 time_t WppClient::loop() {
-	static time_t sleepTime = WppPlatform::getTime();
+	time_t sleepTime = WppPlatform::getTime();
 
 	WPP_LOGD(TAG_WPP_CLIENT, "Handling server packets if they exists");
 	// Handle packets retreived from server

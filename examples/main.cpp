@@ -67,7 +67,7 @@ int main()
 	// Giving ownership to registry
 	client->giveOwnership();
 
-	for (int iterationCnt = 0; iterationCnt < 20; iterationCnt++) {
+	for (int iterationCnt = 0; true; iterationCnt++) {
 		time_t sleepTime = 0;
 
 		cout << endl << "------------------- iteration:" << iterationCnt << " -------------------" << endl;

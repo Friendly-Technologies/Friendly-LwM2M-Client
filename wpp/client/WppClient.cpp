@@ -15,7 +15,7 @@ namespace wpp {
 WppClient *WppClient::_client = NULL;
 std::mutex WppClient::_clientGuard;
 
-WppClient::WppClient(IWppConnection &connection): _connection(connection) {
+WppClient::WppClient(IWppConnection &connection, time_t maxSleepTime): _connection(connection), _maxSleepTime(maxSleepTime) {
 	 _registry = new WppRegistry(*this);
 	lwm2mContextOpen();
 }
@@ -26,7 +26,7 @@ WppClient::~WppClient() {
 }
 
 /* ------------- WppClient management ------------- */
-bool WppClient::create(const ClientInfo &info, IWppConnection &connection) {
+bool WppClient::create(const ClientInfo &info, IWppConnection &connection, time_t maxSleepTime) {
 	if (isCreated()) return true;
 	
 	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Creating WppClient instance with info: endpoint->%s, msisdn->%s, altPath->%s", info.endpointName.c_str(), info.msisdn.c_str(), info.altPath.c_str());
@@ -75,7 +75,8 @@ lwm2m_client_state_t WppClient::getState() {
 }
 
 time_t WppClient::loop() {
-	time_t sleepTime = WppPlatform::getTime();
+	// Max sleep time
+	time_t sleepTime = _maxSleepTime;
 
 	WPP_LOGD(TAG_WPP_CLIENT, "Handling server packets if they exists");
 	// Handle packets retreived from server

@@ -168,7 +168,7 @@ uint8_t IWppInstance::resourceRead(ID_T instanceId, int * numDataP, lwm2m_data_t
 
 		if (resource == NULL || resource->isEmpty()) {
 			WPP_LOGW_ARG(TAG_WPP_INST, "Resource does not exist: %d:%d:%d", _id.objId, _id.objInstId, data->id);
-			continue;
+			return COAP_404_NOT_FOUND;
 		}
 
 		// Check the server operation permission for resource
@@ -230,7 +230,7 @@ uint8_t IWppInstance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t *
 		Resource *resource = getResource(dataArray[i].id);
 		if (resource == NULL) {
 			WPP_LOGW_ARG(TAG_WPP_INST, "Resource does not exist: %d:%d:%d", _id.objId, _id.objInstId, dataArray[i].id);
-			continue;
+			return COAP_404_NOT_FOUND;
 		}
 	
 		// Check the server operation permission for resource

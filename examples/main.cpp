@@ -35,6 +35,13 @@ void memConsumptionCheck() {
 //   cout << "DATA_VERIFIER_T: " << sizeof(Resource::DATA_VERIFIER_T) << endl;
 }
 
+void socketPolling(Connection *connection) {
+	while (true) {
+		connection->loop();
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+	}
+}
+
 int main()
 {
 	// cout << "Test memory consumption:" << endl;
@@ -67,20 +74,24 @@ int main()
 	// Giving ownership to registry
 	client->giveOwnership();
 
+	cout << endl << "------------------- Starting Connection thread -------------------" << endl;
+	std::thread my_thread(socketPolling, &connection);
+
+	time_t callTime = 0;
 	for (int iterationCnt = 0; true; iterationCnt++) {
-		time_t sleepTime = 0;
+		time_t currTime = std::time(NULL);
 
 		cout << endl << "------------------- iteration:" << iterationCnt << " -------------------" << endl;
-
-		// Receive packets from server
-		connection.loop();
-		// Handle client state and process packets from the server
-		client = wpp::WppClient::takeOwnership();
-		if (client) sleepTime = client->loop();
-		client->giveOwnership();
-
-		cout << "Sleep: " << sleepTime << endl;
-		std::this_thread::sleep_for(std::chrono::seconds(sleepTime));
+		if (currTime >= callTime || connection.getPacketQueueSize()) {
+			// Handle client state and process packets from the server
+			client = wpp::WppClient::takeOwnership();
+			if (client) { 
+				callTime = currTime + client->loop();
+				client->giveOwnership();
+				cout << "Sleep time: " << callTime - std::time(NULL) << endl;
+			}
+		}
+		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
 }
 

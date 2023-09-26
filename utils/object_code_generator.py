@@ -12,9 +12,13 @@ PLACE_RESOURCES_MAP = "<<<3>>>"
 PLACE_FOLDER = "<<<4>>>"
 PLACE_RESOURCES_INIT = "<<<5>>>"
 
+TYPE_REGISTRY = "WppRegistry"
 TYPE_OPERATION = "Operation"
+TYPE_OBJECT = "Object"
 TYPE_OBJECT_INFO = "ObjectInfo"
 TYPE_RESOURCE = "Resource"
+TYPE_INSTANCE = "Instance"
+TYPE_I_SUBJECT = "InstSubject"
 
 LOG_FUNC_CUSTOM = "WPP_LOGD_ARG"
 
@@ -39,9 +43,9 @@ PREFIX_H = \
     f"""#ifndef {PLACE_CLASS_NAME_UPPER}_H\n""" \
     f"""#define {PLACE_CLASS_NAME_UPPER}_H\n\n""" \
     f"""#include "{PLACE_CLASS_NAME}Config.h"\n#include "{PLACE_CLASS_NAME}Info.h"\n""" \
-    f"""#include "IWppInstance.h"\n#include "WppInstSubject.h"\n\n""" \
+    f"""#include "{TYPE_INSTANCE}.h"\n#include "{TYPE_I_SUBJECT}.h"\n\n""" \
     f"""namespace wpp {{\n\nclass {PLACE_CLASS_NAME} : """ \
-    f"""public IWppInstance, public WppInstSubject<{PLACE_CLASS_NAME}> {{\n\n"""
+    f"""public {TYPE_INSTANCE}, public {TYPE_I_SUBJECT}<{PLACE_CLASS_NAME}> {{\n\n"""
 
 PUBLIC_ENUM_H = \
     f"""\tpublic:\n\t\tenum ID: ID_T {{\n{PLACE_RESOURCES_ENUM}\t\t}};\n\n"""
@@ -49,8 +53,11 @@ PUBLIC_ENUM_H = \
 PUBLIC_CONSTRUCTOR_H = \
     f"""\tpublic:\n\t\t{PLACE_CLASS_NAME}(WppClient &client, const InstanceID &id);\n\n"""
 
+I_INSTANCE_IMPLEMENTATIONS = \
+    f"""\t/* --------------- {TYPE_INSTANCE} implementation part --------------- */\n"""
+
 I_INSTANCE_IMPLEMENTATIONS_H = \
-    f"""\tprotected:\n\t\t/* --------------- IWppInstance implementation part --------------- */\n\t\t/* \n\t""" \
+    f"""\tprotected:\n\t{I_INSTANCE_IMPLEMENTATIONS}\t\t/* \n\t""" \
     f"""\t * Returns Resource object if it is exist\n\t\t */\n\t\t{TYPE_RESOURCE} * getResource(ID_T id) override;\n\t\t""" \
     f"""/*\n\t\t * Returns list with available resources\n\t\t */\n\t""" \
     f"""\tstd::vector<{TYPE_RESOURCE} *> getResourcesList() override;\n\t""" \
@@ -84,11 +91,8 @@ PREFIX_CPP = \
     f"""namespace wpp {{\n\n"""
 
 PUBLIC_CONSTRUCTOR_CPP = \
-    f"""\t{PLACE_CLASS_NAME}::{PLACE_CLASS_NAME}(WppClient &client, const InstanceID &id): IWppInstance(client, id) {{""" \
+    f"""\t{PLACE_CLASS_NAME}::{PLACE_CLASS_NAME}(WppClient &client, const InstanceID &id): {TYPE_INSTANCE}(client, id) {{""" \
     f"""\n\t\tresourcesInit();\n\t}}\n\n"""
-
-I_INSTANCE_IMPLEMENTATIONS_CPP = \
-    f"""\t/* --------------- IWppInstance implementation part --------------- */\n"""
 
 CLASS_PRIVATE_METHODS_CPP = \
     f"""\t/* --------------- Class private methods --------------- */\n{PLACE_RESOURCES_INIT}"""
@@ -327,7 +331,7 @@ class CodeGenerator:
         code_cpp = (MAIN_COMMENT +
                     PREFIX_CPP +
                     PUBLIC_CONSTRUCTOR_CPP +
-                    I_INSTANCE_IMPLEMENTATIONS_CPP +
+                    I_INSTANCE_IMPLEMENTATIONS +
                     FUNC_GET_RESOURCE_T +
                     FUNC_GET_RESOURCE_LIST +
                     FUNC_GET_RESOURCE_LIST_P +
@@ -437,24 +441,24 @@ class CodeGenerator:
             f"""\noption({self.obj_define} """ \
             f""""Include {"mandatory" if is_obj_mandatory else "optional"} """ \
             f"""{self.obj_name_class} object in the build" {"ON" if is_obj_mandatory else "OFF"})\n""" \
-            f"""if ({self.obj_define})\n\tset(COMPILE_DEFINITIONS ${{COMPILE_DEFINITIONS}} {self.obj_define} = 1)""" \
+            f"""if ({self.obj_define})\n\tset(WPP_DEFINITIONS ${{WPP_DEFINITIONS}} {self.obj_define}=1)""" \
             f"""\nendif()\n\n"""
 
         content_reg_h_incl = \
-            f"""# if {self.obj_define}\n""" \
-            f"""# include "mandatory/{self.obj_name_folder}/{self.obj_name_class}.h"\n""" \
-            f"""# endif\n\n"""
+            f"""#if {self.obj_define}\n""" \
+            f"""#include "mandatory/{self.obj_name_folder}/{self.obj_name_class}.h"\n""" \
+            f"""#endif\n\n"""
 
         content_reg_h_prt = \
-            f"""\t# if {self.obj_define}\n\t""" \
-            f"""WppObject <{self.obj_name_class}> & {self.obj_name.replace(" ", '').lower()}();\n\t""" \
-            f"""# endif\n\n"""
+            f"""\t#if {self.obj_define}\n\t""" \
+            f"""{TYPE_OBJECT} <{self.obj_name_class}> & {self.obj_name.replace(" ", '').lower()}();\n\t""" \
+            f"""#endif\n\n"""
 
         content_reg_cpp = \
             f"""# if {self.obj_define}\n""" \
-            f"""WppObject <{self.obj_name_class}> & WppRegistry::{self.obj_name.replace(" ", '').lower()}() {{\n\t""" \
-            f"""if (!WppObject <{self.obj_name_class}>::isCreated()) WppObject <{self.obj_name_class}>::create(_client, {self.obj_name_class.replace(' ', '').upper()}_OBJ_INFO);\n\t""" \
-            f"""return *WppObject <{self.obj_name_class}>::object();\n""" \
+            f"""{TYPE_OBJECT} <{self.obj_name_class}> & {TYPE_REGISTRY}::{self.obj_name.replace(" ", '').lower()}() {{\n\t""" \
+            f"""if (!{TYPE_OBJECT} <{self.obj_name_class}>::isCreated()) {TYPE_OBJECT} <{self.obj_name_class}>::create(_client, {self.obj_name_class.replace(' ', '').upper()}_OBJ_INFO);\n\t""" \
+            f"""return *{TYPE_OBJECT} <{self.obj_name_class}>::object();\n""" \
             f"""}}\n""" \
             f"""# endif\n"""
 

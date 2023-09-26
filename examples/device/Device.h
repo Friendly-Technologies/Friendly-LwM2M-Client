@@ -3,15 +3,15 @@
 
 #include <iostream>
 #include "WppRegistry.h"
-#include "IWppObjObserver.h"
-#include "IWppInstObserver.h"
+#include "ObjObserver.h"
+#include "InstObserver.h"
 
 using namespace wpp;
 using namespace std;
 
-class DeviceImpl: public IWppObjObserver<Device>, public IWppInstObserver<Device> {
+class DeviceImpl: public ObjObserver<Device>, public InstObserver<Device> {
 	public:
-    void init(WppObject<Device> &deviceObj) {
+    void init(Object<Device> &deviceObj) {
         deviceObj.subscribe(this);
         wpp::Device *device = deviceObj.createInstance();
         device->subscribe(this);
@@ -23,17 +23,17 @@ class DeviceImpl: public IWppObjObserver<Device>, public IWppInstObserver<Device
         device->set(Device::SUPPORTED_BINDINGS, (STRING_T)"U");
     }
 
-	void objectRestore(WppObject<Device> &object) override {
+	void objectRestore(Object<Device> &object) override {
 		cout << "Device: objectRestore: " << (ID_T)object.getObjectID() << endl;
 		object.clear();
         init(object);
 	}
 
-    void instanceCreated(WppObject<Device> &object, ID_T instanceId) override {
+    void instanceCreated(Object<Device> &object, ID_T instanceId) override {
         cout << "Device: instanceCreated: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
     }
 
-    void instanceDeleting(WppObject<Device> &object, ID_T instanceId) override {
+    void instanceDeleting(Object<Device> &object, ID_T instanceId) override {
 		cout << "Device: instanceDeleting: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
 	}
 

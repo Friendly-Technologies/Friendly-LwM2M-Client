@@ -3,36 +3,36 @@
 
 #include <iostream>
 #include "WppRegistry.h"
-#include "IWppObjObserver.h"
-#include "IWppInstObserver.h"
+#include "ObjObserver.h"
+#include "InstObserver.h"
 
 using namespace wpp;
 using namespace std;
 
-class ServerImpl: public IWppObjObserver<Server>, public IWppInstObserver<Server> {
+class ServerImpl: public ObjObserver<Server>, public InstObserver<Server> {
 	public:
-    void init(WppObject<Server> &serverObj) {
+    void init(Object<Server> &serverObj) {
         serverObj.subscribe(this);
         wpp::Server *server = serverObj.createInstance();
         server->subscribe(this);
 
         server->set(Server::SHORT_SERV_ID, (INT_T)123);
         server->set(Server::BUINDING, (STRING_T)"U");
-        server->set(Server::LIFETIME, (INT_T)300);
+        server->set(Server::LIFETIME, (INT_T)15);
         server->set(Server::NOTIFICATION_STORING, false);
     }
 
-	void objectRestore(WppObject<Server> &object) override {
+	void objectRestore(Object<Server> &object) override {
 		cout << "Server: objectRestore: " << (ID_T)object.getObjectID() << endl;
 		object.clear();
         init(object);
 	}
 
-    void instanceCreated(WppObject<Server> &object, ID_T instanceId) override {
+    void instanceCreated(Object<Server> &object, ID_T instanceId) override {
         cout << "Server: instanceCreated: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
     }
 
-    void instanceDeleting(WppObject<Server> &object, ID_T instanceId) override {
+    void instanceDeleting(Object<Server> &object, ID_T instanceId) override {
 		cout << "Server: instanceDeleting: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
 	}
 

@@ -10,12 +10,12 @@
 
 #include "ServerConfig.h"
 #include "ServerInfo.h"
-#include "IWppInstance.h"
-#include "WppInstSubject.h"
+#include "Instance.h"
+#include "InstSubject.h"
 
 namespace wpp {
 
-class Server : public IWppInstance, public WppInstSubject<Server> {
+class Server : public Instance, public InstSubject<Server> {
 public:
 	enum ID: ID_T {
 		SHORT_SERV_ID = 0,
@@ -32,7 +32,7 @@ public:
 	Server(WppClient &client, const InstanceID &id);
 
 protected:
-	/* ---------------IWppInstance implementation part --------------- */
+	/* ---------------Instance implementation part --------------- */
 	/*
 	 * Returns Resource object if it is exist
 	 */

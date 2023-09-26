@@ -10,7 +10,7 @@
 
 #include <mutex>
 
-#include "WppObject.h"
+#include "Object.h"
 
 /* The start of the includes of the mandatory objects. */
 #if MANDATORY_SECURITY_OBJ
@@ -43,7 +43,7 @@ namespace wpp {
 class WppClient;
 
 template<typename T>
-class WppObject;
+class Object;
 
 // TODO: Split mandatory and optional registers
 // TODO: Add ability to check whether some object id is exist
@@ -61,26 +61,26 @@ public:
 
 	/* The start of the prototypes of the mandatory objects. */
 	#if MANDATORY_SECURITY_OBJ
-	WppObject<Security>& security();
+	Object<Security>& security();
 	#endif
 	#if MANDATORY_SERVER_OBJ
-	WppObject<Server>& server();
+	Object<Server>& server();
 	#endif
 	#if MANDATORY_DEVICE_OBJ
-	WppObject<Device>& device();
+	Object<Device>& device();
 	#endif
 	/* The end of the prototypes of the mandatory objects. */
 	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 
 	/* The start of the prototypes of the optional objects. */
 	#if OPTIONAL_ACL_OBJ
-	WppObject<Acl>& acl();
+	Object<Acl>& acl();
 	#endif
 	#if OPTIONAL_CONN_MONITORING_OBJ
-	WppObject<ConnMonitoring>& connMonitoring();
+	Object<ConnMonitoring>& connMonitoring();
 	#endif
 	#if OPTIONAL_FIRMWARE_UPD_OBJ
-		WppObject<FirmwareUpd>& firmwareUpd();
+		Object<FirmwareUpd>& firmwareUpd();
 	#endif
 	/* The end of the prototypes of the optional objects. */
 	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */

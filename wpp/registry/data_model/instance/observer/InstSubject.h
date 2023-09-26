@@ -2,23 +2,23 @@
 #define WPP_INST_SUBJECT_H_
 
 #include "Operation.h"
-#include "IWppInstObserver.h"
+#include "InstObserver.h"
 
 namespace wpp {
 
 template <typename T>
-class WppInstSubject {
+class InstSubject {
 public:
     /*
 	 * Subscribers will be notified about the write, delete
 	 * and execute of instance resources initiated by server.
 	 */
-	void subscribe(IWppInstObserver<T> *observer) {
+	void subscribe(InstObserver<T> *observer) {
     if (!observer) return;
     if (std::find(_observers.begin(), _observers.end(), observer) == _observers.end()) 
         _observers.push_back(observer);
     }
-	void unsubscribe(IWppInstObserver<T> *observer) {
+	void unsubscribe(InstObserver<T> *observer) {
         _observers.erase(std::find(_observers.begin(), _observers.end(), observer));
     }
 
@@ -27,7 +27,7 @@ protected:
 	 * Notify observers about operation
 	 */
 	void observerNotify(T &inst, const ResourceID &resId, Operation::TYPE type) {
-        for(IWppInstObserver<T>* observer : _observers) {
+        for(InstObserver<T>* observer : _observers) {
             if (type == Operation::TYPE::READ) {
                 observer->resourceRead(inst, resId);
             } else if (type == Operation::TYPE::WRITE) {
@@ -39,7 +39,7 @@ protected:
     }
 
 private:
-    std::vector<IWppInstObserver<T> *> _observers;
+    std::vector<InstObserver<T> *> _observers;
 };
 
 }

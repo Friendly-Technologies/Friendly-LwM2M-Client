@@ -1,5 +1,5 @@
 /*
- * IWppConnection.h
+ * WppConnection.h
  *
  *  Created on: 22 Jul 2023
  *      Author: valentin
@@ -20,7 +20,7 @@ namespace wpp {
 class WppClient;
 class Security;
 
-class IWppConnection {
+class WppConnection {
 	friend class WppClient;
 
 public:
@@ -33,13 +33,13 @@ public:
 	};
 
 public:
-	IWppConnection();
-	virtual ~IWppConnection();
+	WppConnection();
+	virtual ~WppConnection();
 
-	IWppConnection(const IWppConnection&) = delete;
-	IWppConnection(IWppConnection&&) = delete;
-	IWppConnection& operator=(const IWppConnection&) = delete;
-	IWppConnection& operator=(IWppConnection&&) = delete;
+	WppConnection(const WppConnection&) = delete;
+	WppConnection(WppConnection&&) = delete;
+	WppConnection& operator=(const WppConnection&) = delete;
+	WppConnection& operator=(WppConnection&&) = delete;
 
 	/* ------------- Connection abilities ------------- */
 	/*
@@ -52,7 +52,7 @@ public:
 	/*
 	 * Deleting the memory occupied by the package will be done in wpp core.
 	 */
-	virtual bool sendPacket(Packet packet) = 0;
+	virtual bool sendPacket(const Packet &packet) = 0;
 
 	/*
 	 * Interface for add packets to queue and get information about queue size.
@@ -65,7 +65,7 @@ public:
 	 * The memory occupied by the package must be deleted by the user, because the method
 	 * does not save a pointer to the package data, but copies it.
 	 */
-	bool addPacketToQueue(Packet packet);
+	bool addPacketToQueue(const Packet &packet);
 	uint8_t getPacketQueueSize();
 
 	/*

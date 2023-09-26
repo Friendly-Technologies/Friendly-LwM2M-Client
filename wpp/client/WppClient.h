@@ -16,10 +16,12 @@
 #include "types.h"
 #include "Lwm2mObject.h"
 
+#define WPP_CLIENT_MAX_SLEEP_TIME_S	60
+
 namespace wpp {
 
-// TODO: Review relationship between WppClient and IWppConnection
-class IWppConnection;
+// TODO: Review relationship between WppClient and WppConnection
+class WppConnection;
 class WppRegistry;
  
 /*
@@ -37,13 +39,13 @@ public:
 	};
 
 private:
-	WppClient(IWppConnection &connection);
+	WppClient(WppConnection &connection, time_t maxSleepTime=WPP_CLIENT_MAX_SLEEP_TIME_S);
 
 public:
 	~WppClient();
 
 	/* ------------- WppClient management ------------- */
-	static bool create(const ClientInfo &info, IWppConnection &connection);
+	static bool create(const ClientInfo &info, WppConnection &connection, time_t maxSleepTime=WPP_CLIENT_MAX_SLEEP_TIME_S);
 	static bool isCreated();
 	
 	/*
@@ -60,16 +62,19 @@ public:
 	void giveOwnership();
 
 	/* ------------- WppClient components ------------- */
-	IWppConnection & connection();
+	WppConnection & connection();
 	WppRegistry & registry();
 
 	/* ------------- Wakaama core state processing ------------- */
 	lwm2m_client_state_t getState();
 
 	/*
-	 * Try to take registry internaly.
+	 * This function does two things:
+	 *  - First it does the work needed by wakaama core (eg. (re)sending some packets).
+	 *  - Secondly handle received packets from servers.
+	 * Return time interval after which it should be called.
 	 */
-	void loop(time_t &sleepTime);
+	time_t loop();
 
 	bool updateServerRegistration(INT_T serverId, bool withObjects);
 	bool updateServerRegistration(bool withObjects);
@@ -96,8 +101,10 @@ private:
 	static WppClient *_client;
 	static std::mutex _clientGuard;
 
-	IWppConnection &_connection;
+	WppConnection &_connection;
 	WppRegistry *_registry;
+
+	time_t _maxSleepTime;
 
 	lwm2m_context_t *_lwm2m_context;
 };

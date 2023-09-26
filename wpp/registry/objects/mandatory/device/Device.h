@@ -10,12 +10,12 @@
 
 #include "DeviceConfig.h"
 #include "DeviceInfo.h"
-#include "IWppInstance.h"
-#include "WppInstSubject.h"
+#include "Instance.h"
+#include "InstSubject.h"
 
 namespace wpp {
 
-class Device: public IWppInstance, public WppInstSubject<Device> {
+class Device: public Instance, public InstSubject<Device> {
 public:
 	enum ID: ID_T {
 		REBOOT = 4,
@@ -27,7 +27,7 @@ public:
 	Device(WppClient &client, const InstanceID &id);
 
 protected:
-	/* ---------------IWppInstance implementation part --------------- */
+	/* ---------------Instance implementation part --------------- */
 	/*
 	 * Returns Resource object if it is exist
 	 */

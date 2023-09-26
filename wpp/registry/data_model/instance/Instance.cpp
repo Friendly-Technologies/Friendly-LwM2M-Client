@@ -5,12 +5,12 @@
  *      Author: valentin
  */
 
-#include "IWppInstance.h"
+#include "Instance.h"
 #include "WppLogs.h"
 
 namespace wpp {
 
-bool IWppInstance::clear(ID_T resId) {
+bool Instance::clear(ID_T resId) {
 	Resource *const resource = getResource(resId);
 	if (!resource) return false;
 
@@ -23,7 +23,7 @@ bool IWppInstance::clear(ID_T resId) {
 	return resource->clear();
 }
 
-bool IWppInstance::remove(const ResourceID &resId) {
+bool Instance::remove(const ResourceID &resId) {
 	Resource *const resource = getResource(resId.resInstId);
 	if (!resource) return false;
 
@@ -36,11 +36,11 @@ bool IWppInstance::remove(const ResourceID &resId) {
 	return result;
 }
 
-WppClient& IWppInstance::client() {
+WppClient& Instance::client() {
 	return _client;
 }
 
-bool IWppInstance::resourceToLwm2mData(Resource &resource, ID_T instanceId, lwm2m_data_t &data) {
+bool Instance::resourceToLwm2mData(Resource &resource, ID_T instanceId, lwm2m_data_t &data) {
 	switch(resource.getTypeId()) {
 	case TYPE_ID::BOOL: {
 		BOOL_T value;
@@ -89,7 +89,7 @@ bool IWppInstance::resourceToLwm2mData(Resource &resource, ID_T instanceId, lwm2
 	return true;
 }
 
-bool IWppInstance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &resource, ID_T instanceId) {
+bool Instance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &resource, ID_T instanceId) {
 	switch (resource.getTypeId()) {
 	case TYPE_ID::BOOL: {
 		BOOL_T value;
@@ -148,7 +148,7 @@ bool IWppInstance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &resou
 	return true;
 }
 
-uint8_t IWppInstance::resourceRead(ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP) {
+uint8_t Instance::resourceRead(ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP) {
 	// TODO: Read-Composite Operation for now not supported
 	// Requested each resource
 	if (!*numDataP) {
@@ -208,7 +208,7 @@ uint8_t IWppInstance::resourceRead(ID_T instanceId, int * numDataP, lwm2m_data_t
 				}
 			}
 			// If execution get to this place then operation completed with
-			// success and we can notifyIWppInstance implementation about it
+			// success and we can notifyInstance implementation about it
 			serverOperationNotifier(Operation::READ, {resource->getID(), resInstId});
 		}
 	}
@@ -216,7 +216,7 @@ uint8_t IWppInstance::resourceRead(ID_T instanceId, int * numDataP, lwm2m_data_t
 	return COAP_205_CONTENT;
 }
 
-uint8_t IWppInstance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_write_type_t writeType) {
+uint8_t Instance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_write_type_t writeType) {
 	// Protect access to instance list
 
 	// TODO: In some cases, according to the implementation of the wakaama,
@@ -248,7 +248,7 @@ uint8_t IWppInstance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t *
 		if (writeType == LWM2M_WRITE_REPLACE_RESOURCES) {
 			WPP_LOGD_ARG(TAG_WPP_INST, "Clear resource before write: %d:%d:%d", _id.objId, _id.objInstId, dataArray[i].id);
 			resource->clear();
-			// Notify IWppInstance implementation about operation
+			// Notify Instance implementation about operation
 			serverOperationNotifier(Operation::DELETE, {resource->getID(), SINGLE_INSTANCE_ID});
 		}
 
@@ -274,7 +274,7 @@ uint8_t IWppInstance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t *
 				}
 			}
 			// If execution get to this place then operation completed with
-			// success and we can notify IWppInstance implementation about it
+			// success and we can notify Instance implementation about it
 			serverOperationNotifier(Operation::WRITE, {resource->getID(), resInstId});
 		}
 	}
@@ -282,7 +282,7 @@ uint8_t IWppInstance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t *
 	return COAP_204_CHANGED;
 }
 
-uint8_t IWppInstance::resourceExecute(ID_T instanceId, ID_T resId, uint8_t * buffer, int length) {
+uint8_t Instance::resourceExecute(ID_T instanceId, ID_T resId, uint8_t * buffer, int length) {
 	EXECUTE_T execute;
 	Resource *resource = getResource(resId);
 	if (!resource || !resource->get(execute)) {
@@ -303,13 +303,13 @@ uint8_t IWppInstance::resourceExecute(ID_T instanceId, ID_T resId, uint8_t * buf
 	execute(resId, OPAQUE_T(buffer, buffer + length));
 
 	// If execution get to this place then operation completed with
-	// success and we can notify IWppInstance implementation about it
+	// success and we can notify Instance implementation about it
 	serverOperationNotifier(Operation::EXECUTE, {resource->getID(), SINGLE_INSTANCE_ID});
 
 	return COAP_204_CHANGED;
 }
 
-uint8_t IWppInstance::resourceDiscover(ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP) {
+uint8_t Instance::resourceDiscover(ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP) {
 	// Requested each resource
 	if (!*numDataP) {
 		std::vector<Resource *> resources = getResourcesList();
@@ -341,7 +341,7 @@ uint8_t IWppInstance::resourceDiscover(ID_T instanceId, int * numDataP, lwm2m_da
 				(dataCnt++)->id = pair.first;
 				WPP_LOGE_ARG(TAG_WPP_INST, "Resource discover: %d:%d:%d:%d", _id.objId, _id.objInstId, data->id, pair.first);
 				// If execution get to this place then operation completed with
-				// success and we can notifyIWppInstance implementation about it
+				// success and we can notifyInstance implementation about it
 				serverOperationNotifier(Operation::DISCOVER, {resource->getID(), pair.first});
 			}
 			lwm2m_data_encode_instances(subData, resource->instanceCnt(), data);

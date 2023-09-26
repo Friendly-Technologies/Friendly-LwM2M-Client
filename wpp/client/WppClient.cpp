@@ -7,7 +7,7 @@
 
 #include "WppClient.h"
 #include "WppRegistry.h"
-#include "IWppConnection.h"
+#include "WppConnection.h"
 #include "WppLogs.h"
 
 namespace wpp {
@@ -15,7 +15,7 @@ namespace wpp {
 WppClient *WppClient::_client = NULL;
 std::mutex WppClient::_clientGuard;
 
-WppClient::WppClient(IWppConnection &connection, time_t maxSleepTime): _connection(connection), _maxSleepTime(maxSleepTime) {
+WppClient::WppClient(WppConnection &connection, time_t maxSleepTime): _connection(connection), _maxSleepTime(maxSleepTime) {
 	 _registry = new WppRegistry(*this);
 	lwm2mContextOpen();
 }
@@ -26,7 +26,7 @@ WppClient::~WppClient() {
 }
 
 /* ------------- WppClient management ------------- */
-bool WppClient::create(const ClientInfo &info, IWppConnection &connection, time_t maxSleepTime) {
+bool WppClient::create(const ClientInfo &info, WppConnection &connection, time_t maxSleepTime) {
 	if (isCreated()) return true;
 	
 	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Creating WppClient instance with info: endpoint->%s, msisdn->%s, altPath->%s", info.endpointName.c_str(), info.msisdn.c_str(), info.altPath.c_str());
@@ -61,7 +61,7 @@ void WppClient::giveOwnership() {
 
 
 /* ------------- WppClient components ------------- */
-IWppConnection & WppClient::connection() {
+WppConnection & WppClient::connection() {
 	return _connection;
 }
 

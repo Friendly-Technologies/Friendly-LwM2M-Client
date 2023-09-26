@@ -1,5 +1,5 @@
 /*
- * WppObject.h
+ * Object.h
  *
  *  Created on: 10 Jul 2023
  *      Author: valentin
@@ -12,9 +12,9 @@
 #include <variant>
 
 #include "Lwm2mObject.h"
-#include "IWppObjObserver.h"
-#include "WppObjSubject.h"
-#include "IWppInstance.h"
+#include "ObjObserver.h"
+#include "ObjSubject.h"
+#include "Instance.h"
 #include "types.h"
 #include "WppLogs.h"
 
@@ -23,28 +23,28 @@ namespace wpp {
 class WppClient;
 
 /*
- * WppObject<T> is class that implements manipulation with IWppInstance interface class and his inheritors.
+ * Object<T> is class that implements manipulation with Instance interface class and his inheritors.
  * The main target of this class is to encapsulate operations like instance create and delete, binding
  * instance callbacks to core interface, for avoid multiple definition of this mechanism in instance
  * implementation classes.
  */
 template<typename T>
-class WppObject : public Lwm2mObject, public WppObjSubject<T> {
+class Object : public Lwm2mObject, public ObjSubject<T> {
 private:
-	WppObject(WppClient &client, const ObjectInfo &info);
+	Object(WppClient &client, const ObjectInfo &info);
 
-	WppObject(const WppObject&) = delete;
-	WppObject(WppObject&&) = delete;
-	WppObject& operator=(const WppObject&) = delete;
-	WppObject& operator=(WppObject&&) = delete;
+	Object(const Object&) = delete;
+	Object(Object&&) = delete;
+	Object& operator=(const Object&) = delete;
+	Object& operator=(Object&&) = delete;
 
 public:
-	~WppObject();
+	~Object();
 
 /* ------------- Object management ------------- */
 	static bool create(WppClient &client, const ObjectInfo &info);
 	static bool isCreated();
-	static WppObject<T>* object();
+	static Object<T>* object();
 
 /* ------------- Object instance management ------------- */
 	T* createInstance(ID_T instanceID = ID_T_MAX_VAL);
@@ -74,19 +74,19 @@ private:
 	static uint8_t block1Execute_clb(lwm2m_context_t * contextP, lwm2m_uri_t * uriP, uint8_t * buffer, int length, lwm2m_object_t * objectP, uint32_t block_num, uint8_t block_more);
 #endif
 private:
-	static WppObject<T> *_object;
+	static Object<T> *_object;
 	
 	WppClient &_client;
-	std::unordered_map<ID_T, IWppInstance*> _instances; // TODO: maybe here is better to use share_ptr instead simple IWppInstance*
+	std::unordered_map<ID_T, Instance*> _instances; // TODO: maybe here is better to use share_ptr instead simple Instance*
 };
 
 
 /* ---------- Implementation of methods ----------*/
 template<typename T>
-WppObject<T> *WppObject<T>::_object = NULL;
+Object<T> *Object<T>::_object = NULL;
 
 template<typename T>
-WppObject<T>::WppObject(WppClient &client, const ObjectInfo &info): Lwm2mObject(info), _client(client) {
+Object<T>::Object(WppClient &client, const ObjectInfo &info): Lwm2mObject(info), _client(client) {
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "Creating object with ID -> %d", (ID_T)info.objID);
 
 	// Initialising core object representation
@@ -119,30 +119,30 @@ WppObject<T>::WppObject(WppClient &client, const ObjectInfo &info): Lwm2mObject(
 }
 
 template<typename T>
-WppObject<T>::~WppObject() {
+Object<T>::~Object() {
 	clear();
 }
 
 /* ------------- Object management ------------- */
 template<typename T>
-bool WppObject<T>::create(WppClient &client, const ObjectInfo &info) {
-	_object = new WppObject<T>(client, info);
+bool Object<T>::create(WppClient &client, const ObjectInfo &info) {
+	_object = new Object<T>(client, info);
 	return true;
 }
 
 template<typename T>
-bool WppObject<T>::isCreated() {
+bool Object<T>::isCreated() {
 	return _object != NULL;
 }
 
 template<typename T>
-WppObject<T>* WppObject<T>::object() {
+Object<T>* Object<T>::object() {
 	return _object;
 }
 
 /* ------------- Object instance management ------------- */
 template<typename T>
-T* WppObject<T>::createInstance(ID_T instanceId) {
+T* Object<T>::createInstance(ID_T instanceId) {
 	// If object is single and instance has already exist, then we can not create new one and return NULL
 	if (_objInfo.isSingle == IS_SINGLE::SINGLE && _instances.size() != 0) {
 		WPP_LOGW_ARG(TAG_WPP_OBJ, "Not possible to create instance %d:%d, object is single", getObjectID(), instanceId);
@@ -172,7 +172,7 @@ T* WppObject<T>::createInstance(ID_T instanceId) {
 }
 
 template<typename T>
-bool WppObject<T>::removeInstance(ID_T instanceId) {
+bool Object<T>::removeInstance(ID_T instanceId) {
 	// If user want to delete instance with ID that does not exist, then we can not do it
 	if (!isInstanceExist(instanceId)) return false;
 
@@ -188,7 +188,7 @@ bool WppObject<T>::removeInstance(ID_T instanceId) {
 }
 
 template<typename T>
-void WppObject<T>::clear() {
+void Object<T>::clear() {
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "Clearing object with ID -> %d", getObjectID());
 	// Deleting registered instances from core object
 	while (_lwm2m_object.instanceList != NULL) {
@@ -202,35 +202,35 @@ void WppObject<T>::clear() {
 }
 
 template<typename T>
-void WppObject<T>::restore() {
+void Object<T>::restore() {
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "Restoring object with ID -> %d", getObjectID());
-    this->observerDoAction(*this, WppObjSubject<T>::Action::RESTORE);
+    this->observerDoAction(*this, ObjSubject<T>::Action::RESTORE);
 }
 
 template<typename T>
-T* WppObject<T>::instance(ID_T instanceID) {
+T* Object<T>::instance(ID_T instanceID) {
 	// If user want to access instance with ID that does not exist, then we can not do it
 	if (!isInstanceExist(instanceID)) return NULL;
 	return static_cast<T*>(_instances[instanceID]);
 }
 
 template<typename T>
-const std::unordered_map<ID_T, T*> & WppObject<T>::getInstances() {
+const std::unordered_map<ID_T, T*> & Object<T>::getInstances() {
 	return _instances;
 }
 
 template<typename T>
-size_t WppObject<T>::instanceCnt() {
+size_t Object<T>::instanceCnt() {
 	return _instances.size();
 }
 
 template<typename T>
-bool  WppObject<T>::isInstanceExist(ID_T instanceID) {
+bool  Object<T>::isInstanceExist(ID_T instanceID) {
 	return _instances.find(instanceID) != _instances.end();
 }
 
 template<typename T>
-ID_T WppObject<T>::getFirstAvailableInstanceID() {
+ID_T Object<T>::getFirstAvailableInstanceID() {
 	// Usually, each subsequent free index will be equal to the number of created objects
 	ID_T id = _instances.size();
 	if (id == ID_T_MAX_VAL) return id;
@@ -248,14 +248,14 @@ ID_T WppObject<T>::getFirstAvailableInstanceID() {
 
 /* ------------- Lwm2m core callback ------------- */
 template<typename T>
-uint8_t WppObject<T>::read_clb(lwm2m_context_t * contextP, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP) {
+uint8_t Object<T>::read_clb(lwm2m_context_t * contextP, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP) {
 	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama read %d:%d", object()->getObjectID(), instanceId);
 	return object()->_instances[instanceId]->resourceRead(instanceId, numDataP, dataArrayP);
 }
 
 template<typename T>
-uint8_t WppObject<T>::write_clb(lwm2m_context_t * contextP, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP, lwm2m_write_type_t writeType) {
+uint8_t Object<T>::write_clb(lwm2m_context_t * contextP, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP, lwm2m_write_type_t writeType) {
 	if (writeType == LWM2M_WRITE_REPLACE_INSTANCE) {
 		delete_clb(contextP, instanceId, objectP);
 		return create_clb(contextP, instanceId, numData, dataArray, objectP);
@@ -267,21 +267,21 @@ uint8_t WppObject<T>::write_clb(lwm2m_context_t * contextP, ID_T instanceId, int
 }
 
 template<typename T>
-uint8_t WppObject<T>::execute_clb(lwm2m_context_t * contextP, ID_T instanceId, ID_T resId, uint8_t * buffer, int length, lwm2m_object_t * objectP) {
+uint8_t Object<T>::execute_clb(lwm2m_context_t * contextP, ID_T instanceId, ID_T resId, uint8_t * buffer, int length, lwm2m_object_t * objectP) {
 	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama execute %d:%d", object()->getObjectID(), instanceId);
 	return object()->_instances[instanceId]->resourceExecute(instanceId, resId, buffer, length);
 }
 
 template<typename T>
-uint8_t WppObject<T>::discover_clb(lwm2m_context_t * contextP, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP) {
+uint8_t Object<T>::discover_clb(lwm2m_context_t * contextP, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP) {
 	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama discover %d:%d", object()->getObjectID(), instanceId);
 	return object()->_instances[instanceId]->resourceDiscover(instanceId, numDataP, dataArrayP);
 }
 
 template<typename T>
-uint8_t WppObject<T>::create_clb(lwm2m_context_t * contextP, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP) {
+uint8_t Object<T>::create_clb(lwm2m_context_t * contextP, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP) {
 	if (!object()->createInstance(instanceId)) return COAP_500_INTERNAL_SERVER_ERROR;
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama create %d:%d", object()->getObjectID(), instanceId);
 	// Notify user about creating instance
@@ -297,7 +297,7 @@ uint8_t WppObject<T>::create_clb(lwm2m_context_t * contextP, ID_T instanceId, in
 }
 
 template<typename T>
-uint8_t WppObject<T>::delete_clb(lwm2m_context_t * contextP, ID_T instanceId, lwm2m_object_t * objectP) {
+uint8_t Object<T>::delete_clb(lwm2m_context_t * contextP, ID_T instanceId, lwm2m_object_t * objectP) {
 	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama delete %d:%d", object()->getObjectID(), instanceId);
 	// Notify user about deleting instance

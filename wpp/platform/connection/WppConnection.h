@@ -1,5 +1,5 @@
 /*
- * IWppConnection.h
+ * WppConnection.h
  *
  *  Created on: 22 Jul 2023
  *      Author: valentin
@@ -20,7 +20,7 @@ namespace wpp {
 class WppClient;
 class Security;
 
-class IWppConnection {
+class WppConnection {
 	friend class WppClient;
 
 public:
@@ -33,13 +33,13 @@ public:
 	};
 
 public:
-	IWppConnection();
-	virtual ~IWppConnection();
+	WppConnection();
+	virtual ~WppConnection();
 
-	IWppConnection(const IWppConnection&) = delete;
-	IWppConnection(IWppConnection&&) = delete;
-	IWppConnection& operator=(const IWppConnection&) = delete;
-	IWppConnection& operator=(IWppConnection&&) = delete;
+	WppConnection(const WppConnection&) = delete;
+	WppConnection(WppConnection&&) = delete;
+	WppConnection& operator=(const WppConnection&) = delete;
+	WppConnection& operator=(WppConnection&&) = delete;
 
 	/* ------------- Connection abilities ------------- */
 	/*

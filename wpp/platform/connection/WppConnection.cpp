@@ -1,11 +1,11 @@
 /*
- * IWppConnection.cpp
+ * WppConnection.cpp
  *
  *  Created on: 22 Jul 2023
  *      Author: valentin
  */
 
-#include "IWppConnection.h"
+#include "WppConnection.h"
 
 #include "WppClient.h"
 #include "WppRegistry.h"
@@ -13,15 +13,15 @@
 
 namespace wpp {
 
-IWppConnection::IWppConnection() {}
+WppConnection::WppConnection() {}
 
-IWppConnection::~IWppConnection() {
+WppConnection::~WppConnection() {
 	clearPacketQueue();
 }
 
 /* ------------- Connection abilities ------------- */
 
-bool IWppConnection::addPacketToQueue(const Packet &packet) {
+bool WppConnection::addPacketToQueue(const Packet &packet) {
 	Packet tmpPkt = packet;
 
 	WPP_LOGD_ARG(TAG_WPP_CONN, "Retrieved new packet from server: session->0x%x, length->%d", packet.session, packet.length);
@@ -37,11 +37,11 @@ bool IWppConnection::addPacketToQueue(const Packet &packet) {
 	return true;
 }
 
-uint8_t IWppConnection::getPacketQueueSize() {
+uint8_t WppConnection::getPacketQueueSize() {
 	return packets.size();
 }
 
-void IWppConnection::clearPacketQueue() {
+void WppConnection::clearPacketQueue() {
 	WPP_LOGD_ARG(TAG_WPP_CONN, "Clearing queue: queue size -> %d", getPacketQueueSize());
 	while (packets.size()) {
 		Packet *pkt = packets.front();
@@ -52,16 +52,16 @@ void IWppConnection::clearPacketQueue() {
 	}
 }
 
-bool IWppConnection::setDataBlockSize(uint16_t size) {
+bool WppConnection::setDataBlockSize(uint16_t size) {
 	WPP_LOGD_ARG(TAG_WPP_CONN, "New data block size -> %d", size);
 	return lwm2m_set_coap_block_size(size);
 }
 
-uint16_t IWppConnection::getDataBlockSize()  {
+uint16_t WppConnection::getDataBlockSize()  {
 	return lwm2m_get_coap_block_size();
 }
 
-void IWppConnection::handlePacketsInQueue(lwm2m_context_t *context) {
+void WppConnection::handlePacketsInQueue(lwm2m_context_t *context) {
 	WPP_LOGD_ARG(TAG_WPP_CONN, "Handling packets in queue: packets count -> %d", getPacketQueueSize());
 	while (packets.size()) {
 		Packet *pkt = packets.front();
@@ -85,7 +85,7 @@ extern "C" {
 			return NULL;
 		}
 
-		wpp::IWppConnection::SESSION_T session = client->connection().connect(*security);
+		wpp::WppConnection::SESSION_T session = client->connection().connect(*security);
 		WPP_LOGI_ARG(TAG_WPP_CONN, "Connected to server: security obj ID-> %d, session -> 0x%x", secObjInstID, session);
 		return session;
 	}

@@ -19,11 +19,11 @@
 
 namespace wpp {
 
-Security::Security(WppClient &client, const InstanceID &id): IWppInstance(client, id) {
+Security::Security(WppClient &client, const InstanceID &id): Instance(client, id) {
 	resourcesInit();
 }
 
-/* ---------------IWppInstance implementation part --------------- */
+/* ---------------Instance implementation part --------------- */
 Resource * Security::getResource(ID_T id) {
 	// Check if resource ID is valid
 	if (_resources.find(id) == _resources.end()) return NULL;

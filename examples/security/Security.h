@@ -3,15 +3,15 @@
 
 #include <iostream>
 #include "WppRegistry.h"
-#include "IWppObjObserver.h"
-#include "IWppInstObserver.h"
+#include "ObjObserver.h"
+#include "InstObserver.h"
 
 using namespace wpp;
 using namespace std;
 
-class SecurityImpl: public IWppObjObserver<Security>, public IWppInstObserver<Security> {
+class SecurityImpl: public ObjObserver<Security>, public InstObserver<Security> {
 	public:
-    void init(WppObject<Security> &securityObj) {
+    void init(Object<Security> &securityObj) {
         securityObj.subscribe(this);
         Security *security = securityObj.createInstance();
         security->subscribe(this);
@@ -21,17 +21,17 @@ class SecurityImpl: public IWppObjObserver<Security>, public IWppInstObserver<Se
         security->set(Security::SERVER_ID, INT_T(123));
     }
 
-	void objectRestore(WppObject<Security> &object) override {
+	void objectRestore(Object<Security> &object) override {
 		cout << "Security: objectRestore: " << (ID_T)object.getObjectID() << endl;
 		object.clear();
         init(object);
 	}
 
-    void instanceCreated(WppObject<Security> &object, ID_T instanceId) override {
+    void instanceCreated(Object<Security> &object, ID_T instanceId) override {
         cout << "Security: instanceCreated: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
     }
 
-    void instanceDeleting(WppObject<Security> &object, ID_T instanceId) override {
+    void instanceDeleting(Object<Security> &object, ID_T instanceId) override {
 		cout << "Security: instanceDeleting: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
 	}
 

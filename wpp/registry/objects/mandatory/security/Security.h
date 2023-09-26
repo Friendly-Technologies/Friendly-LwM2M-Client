@@ -10,12 +10,12 @@
 
 #include "SecurityConfig.h"
 #include "SecurityInfo.h"
-#include "IWppInstance.h"
-#include "WppInstSubject.h"
+#include "Instance.h"
+#include "InstSubject.h"
 
 namespace wpp {
 
-class Security: public IWppInstance, public WppInstSubject<Security> {
+class Security: public Instance, public InstSubject<Security> {
 public:
 	enum ID: ID_T {
 		SERVER_URI = 0,
@@ -31,7 +31,7 @@ public:
 	Security(WppClient &client, const InstanceID &id);
 	
 protected:
-	/* ---------------IWppInstance implementation part --------------- */
+	/* ---------------Instance implementation part --------------- */
 	/*
 	 * Returns Resource object if it is exist
 	 */

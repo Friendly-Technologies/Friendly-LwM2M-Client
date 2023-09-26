@@ -6,10 +6,10 @@
 
 /* ---------- WPP components log TAGs start ---------- */
 #define TAG_WPP_CLIENT      "WppClient"
-#define TAG_WPP_CONN        "IWppConnection"
+#define TAG_WPP_CONN        "WppConnection"
 #define TAG_WPP_REG         "WppRegistry"
-#define TAG_WPP_OBJ         "WppObject<T>"
-#define TAG_WPP_INST        "IWppInstance"
+#define TAG_WPP_OBJ         "Object<T>"
+#define TAG_WPP_INST        "Instance"
 /* ---------- WPP components log TAGs end ---------- */
 
 /* ---------- Logs config start ---------- */

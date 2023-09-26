@@ -20,8 +20,8 @@
 
 namespace wpp {
 
-// TODO: Review relationship between WppClient and IWppConnection
-class IWppConnection;
+// TODO: Review relationship between WppClient and WppConnection
+class WppConnection;
 class WppRegistry;
  
 /*
@@ -39,13 +39,13 @@ public:
 	};
 
 private:
-	WppClient(IWppConnection &connection, time_t maxSleepTime=WPP_CLIENT_MAX_SLEEP_TIME_S);
+	WppClient(WppConnection &connection, time_t maxSleepTime=WPP_CLIENT_MAX_SLEEP_TIME_S);
 
 public:
 	~WppClient();
 
 	/* ------------- WppClient management ------------- */
-	static bool create(const ClientInfo &info, IWppConnection &connection, time_t maxSleepTime=WPP_CLIENT_MAX_SLEEP_TIME_S);
+	static bool create(const ClientInfo &info, WppConnection &connection, time_t maxSleepTime=WPP_CLIENT_MAX_SLEEP_TIME_S);
 	static bool isCreated();
 	
 	/*
@@ -62,7 +62,7 @@ public:
 	void giveOwnership();
 
 	/* ------------- WppClient components ------------- */
-	IWppConnection & connection();
+	WppConnection & connection();
 	WppRegistry & registry();
 
 	/* ------------- Wakaama core state processing ------------- */
@@ -101,7 +101,7 @@ private:
 	static WppClient *_client;
 	static std::mutex _clientGuard;
 
-	IWppConnection &_connection;
+	WppConnection &_connection;
 	WppRegistry *_registry;
 
 	time_t _maxSleepTime;

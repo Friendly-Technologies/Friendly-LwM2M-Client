@@ -1,12 +1,12 @@
-#ifndef I_WPP_INST_OBSERVER_H_
-#define I_WPP_INST_OBSERVER_H_
+#ifndef WPP_INST_OBSERVER_H_
+#define WPP_INST_OBSERVER_H_
 
 namespace wpp {
 
 template <typename T>
-class IWppInstObserver {
+class InstObserver {
 public:
-    virtual ~IWppInstObserver() {};
+    virtual ~InstObserver() {};
     /*
      * Notifies observer immediately after read resource by server. 
      * Resource is already readed during this call.
@@ -26,4 +26,4 @@ public:
 
 } // namespace wpp
 
-#endif /* I_WPP_INST_OBSERVER_H_ */
+#endif /* WPP_INST_OBSERVER_H_ */

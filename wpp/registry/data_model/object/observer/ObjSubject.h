@@ -2,17 +2,17 @@
 #define WPP_OBJ_SUBJECT_H_
 
 #include "Operation.h"
-#include "IWppObjObserver.h"
-#include "WppObject.h"
+#include "ObjObserver.h"
+#include "Object.h"
 
 namespace wpp {
 
 
 template <typename T>
-class WppObject;
+class Object;
 
 template <typename T>
-class WppObjSubject {
+class ObjSubject {
 public:
     enum Action : uint8_t {
         RESTORE,
@@ -23,12 +23,12 @@ public:
 	 * Subscribers will be notified about the creation
 	 * and deletion of object instances initiated by server.
 	 */
-	void subscribe(IWppObjObserver<T> *observer) {
+	void subscribe(ObjObserver<T> *observer) {
     if (!observer) return;
     if (std::find(_observers.begin(), _observers.end(), observer) == _observers.end()) 
         _observers.push_back(observer);
     }
-	void unsubscribe(IWppObjObserver<T> *observer) {
+	void unsubscribe(ObjObserver<T> *observer) {
         _observers.erase(std::find(_observers.begin(), _observers.end(), observer));
     }
     
@@ -36,8 +36,8 @@ protected:
     /*
 	 * Notify observers about operation
 	 */
-	void observerNotify(WppObject<T> &obj, ID_T instanceId, Operation::TYPE type) {
-        for(IWppObjObserver<T>* observer : _observers) {
+	void observerNotify(Object<T> &obj, ID_T instanceId, Operation::TYPE type) {
+        for(ObjObserver<T>* observer : _observers) {
             if (type == Operation::TYPE::CREATE) {
                 observer->instanceCreated(obj, instanceId);
             } else if (type == Operation::TYPE::DELETE) {
@@ -48,8 +48,8 @@ protected:
     /*
      * Requests observer to do action
      */
-    void observerDoAction(WppObject<T> &obj, Action action) {
-        for(IWppObjObserver<T>* observer : _observers) {
+    void observerDoAction(Object<T> &obj, Action action) {
+        for(ObjObserver<T>* observer : _observers) {
             if (action == Action::RESTORE) {
                 observer->objectRestore(obj);
             }
@@ -57,7 +57,7 @@ protected:
     }
 
 private:
-    std::vector<IWppObjObserver<T> *> _observers;
+    std::vector<ObjObserver<T> *> _observers;
 };
 
 }

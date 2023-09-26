@@ -2,13 +2,13 @@
 #define CONNECTION_H
 
 #include <netinet/in.h>
-#include "IWppConnection.h"
+#include "WppConnection.h"
 #include "mandatory/security/Security.h"
 
 using namespace std;
 using namespace wpp;
 
-class Connection : public IWppConnection {
+class Connection : public WppConnection {
 private:
     struct connection_t {
         struct connection_t *  next;

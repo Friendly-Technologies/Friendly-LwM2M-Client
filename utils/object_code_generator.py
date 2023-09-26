@@ -368,8 +368,8 @@ class CodeGenerator:
             f"""\t/* Name */\n\t"{self.meta_object["object_name"]}",\n\n""" \
             f"""\t/* Object ID */\n\tOBJ_ID::SERVER,\n\n""" \
             f"""\t/* URN */\n\t"{self.meta_object["object_urn"]}",\n\n""" \
-            f"""\t/* Object version */\n\t{{{self.meta_object["object_lwm2m_version"]}}},\n\n""" \
-            f"""\t/* Lwm2m version */\n\t{{{self.meta_object["object_version"]}}},\n\n""" \
+            f"""\t/* Object version */\n\t{{{self.meta_object["object_lwm2m_version"].replace('.', ',')}}},\n\n""" \
+            f"""\t/* Lwm2m version */\n\t{{{self.meta_object["object_version"].replace('.', ',')}}},\n\n""" \
             f"""\t/* Is single */\n\tIS_SINGLE::{is_multiple},\n\n""" \
             f"""\t/* Is Mandatory */\n\tIS_MANDATORY::{is_mandatory},\n\n""" \
             f"""\t/* Object supported operations */\n""" \

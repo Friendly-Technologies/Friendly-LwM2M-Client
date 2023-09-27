@@ -51,8 +51,14 @@ add_executable(WakaamaPlusTest ${SOURCES})
 target_include_directories(WakaamaPlusTest PUBLIC ${INCLUDES})
 # List of preprocessor defines that will be set for compiler with key -D
 target_compile_definitions(WakaamaPlusTest PUBLIC ${COMPILE_DEFINITIONS})
+
 # Link with Wpp library
 target_link_libraries(WakaamaPlusTest Wpp)
+# Add tiny dtls src
+if (WITH_UDP_DTLS)
+    include(../2305-Wakaama/examples/shared/tinydtls.cmake)
+    target_sources_tinydtls(WakaamaPlusTest)
+endif()
 
 # Generate a .bin file 
 add_custom_command(TARGET WakaamaPlusTest POST_BUILD

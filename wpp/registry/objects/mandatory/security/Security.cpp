@@ -19,7 +19,7 @@
 
 namespace wpp {
 
-Security::Security(WppClient &client, const InstanceID &id): Instance(client, id) {
+Security::Security(WppClient &client, const OBJ_LINK_T &id): Instance(client, id) {
 	resourcesInit();
 }
 
@@ -58,7 +58,7 @@ std::vector<Resource *> Security::getInstantiatedResourcesList(const Operation& 
 	return list;
 }
 
-void Security::serverOperationNotifier(Operation::TYPE type, const ResourceID &resId) {
+void Security::serverOperationNotifier(Operation::TYPE type, const ResLink &resId) {
 	observerNotify(*this, resId, type);
 	switch (type) {
 	case Operation::READ:
@@ -80,7 +80,7 @@ void Security::serverOperationNotifier(Operation::TYPE type, const ResourceID &r
 	}
 }
 
-void Security::userOperationNotifier(Operation::TYPE type, const ResourceID &resId) {
+void Security::userOperationNotifier(Operation::TYPE type, const ResLink &resId) {
 	switch (type) {
 	case Operation::READ:
 		WPP_LOGD_ARG(TAG, "User READ -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);

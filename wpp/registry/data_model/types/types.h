@@ -121,19 +121,14 @@ struct Version {
     uint8_t minor;
 };
 
-struct InstanceID {
-	ID_T objId = ID_T_MAX_VAL;
-    ID_T objInstId = ID_T_MAX_VAL;
-};
-
-struct ResourceID{
+struct ResLink {
     ID_T resId = ID_T_MAX_VAL;
     ID_T resInstId = ID_T_MAX_VAL;
 };
 
-struct DataID{
-    InstanceID instance;
-    ResourceID resource;
+struct DataLink {
+    OBJ_LINK_T instance;
+    ResLink resource;
 };
 
 } // namespace wpp

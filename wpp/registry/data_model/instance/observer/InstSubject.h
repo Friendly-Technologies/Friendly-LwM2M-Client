@@ -26,7 +26,7 @@ protected:
     /*
 	 * Notify observers about operation
 	 */
-	void observerNotify(T &inst, const ResourceID &resId, Operation::TYPE type) {
+	void observerNotify(T &inst, const ResLink &resId, Operation::TYPE type) {
         for(InstObserver<T>* observer : _observers) {
             if (type == Operation::TYPE::READ) {
                 observer->resourceRead(inst, resId);

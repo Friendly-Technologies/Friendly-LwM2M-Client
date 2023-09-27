@@ -24,7 +24,7 @@ public:
 	};
 
 public:
-	Device(WppClient &client, const InstanceID &id);
+	Device(WppClient &client, const OBJ_LINK_T &id);
 
 protected:
 	/* ---------------Instance implementation part --------------- */
@@ -45,11 +45,11 @@ protected:
 	/*
 	 * Handles information about resource operation that made server
 	 */
-	void serverOperationNotifier(Operation::TYPE type, const ResourceID &resId) override;
+	void serverOperationNotifier(Operation::TYPE type, const ResLink &resId) override;
 	/*
 	 * Handles information about resource operation that made user
 	 */
-	void userOperationNotifier(Operation::TYPE type, const ResourceID &resId) override;
+	void userOperationNotifier(Operation::TYPE type, const ResLink &resId) override;
 
 private:
 	/* --------------- Class private methods --------------- */

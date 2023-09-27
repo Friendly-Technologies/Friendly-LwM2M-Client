@@ -23,7 +23,7 @@ bool Instance::clear(ID_T resId) {
 	return resource->clear();
 }
 
-bool Instance::remove(const ResourceID &resId) {
+bool Instance::remove(const ResLink &resId) {
 	Resource *const resource = getResource(resId.resInstId);
 	if (!resource) return false;
 

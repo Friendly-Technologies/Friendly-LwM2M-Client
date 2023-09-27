@@ -20,6 +20,8 @@ add_compile_options(
     -Wno-unused-parameter
     # Reduce noise: Too many false positives
     -Wno-uninitialized
+    # Allows to compile tinydtls without errors
+    -Wno-c99-extensions
      # Turn (most) warnings into errors
     -Werror
     # Disabled because of existing, non-trivially fixable code

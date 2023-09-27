@@ -46,6 +46,10 @@ add_subdirectory(server)
 add_subdirectory(security)
 add_subdirectory(device)
 
+# message(STATUS "WakaamaPlusTest:INCLUDES: ${INCLUDES}")
+# message(STATUS "WakaamaPlusTest:SOURCES: ${SOURCES}")
+# message(STATUS "WakaamaPlusTest:COMPILE_DEFINITIONS: ${COMPILE_DEFINITIONS}")
+
 add_executable(WakaamaPlusTest ${SOURCES})
 # List of directories that will be set for compiler with key -I
 target_include_directories(WakaamaPlusTest PUBLIC ${INCLUDES})

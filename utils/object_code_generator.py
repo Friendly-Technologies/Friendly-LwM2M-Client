@@ -136,28 +136,53 @@ class CodeGenerator:
     """Add some comments here"""
     meta_object = None
     meta_resources = None
-    obj_name_class = None
-    obj_name_folder = None
-    obj_define = None
-    obj_name = None
+
+    name_obj = None
+    name_obj_class = None
+    name_obj_define = None
+    name_obj_folder = None
+    name_obj_path_to_folder = None
+
+    name_object_info = None
+    name_camelcase = None
 
     def __init__(self, object_dict, resources_list):
+        # meta data:
         self.meta_object = object_dict
         self.meta_resources = resources_list
-        plain_name = object_dict["object_name"]
-        self.obj_name = plain_name
-        folder_name = plain_name.replace(' ', '_').lower()
-        class_name = plain_name.replace(' ', '')
+        # names:
+        plain_name = object_dict["object_name"]                                         # LwM2M Server
+        self.name_obj = plain_name
+        plain_name_no_space = plain_name.replace(' ', '')                               # LwM2MServer
+        plain_name_underline = plain_name.replace(' ', '_')                             # LwM2M_Server
 
-        self.obj_name_class = f"Wpp{class_name}"        # LwM2MServer
-        self.obj_name_folder = folder_name                              # lwm2m_server
-        self.obj_define = self.create_object_define()                   # MANDATORY_LWM2MSERVER_OBJ
+        # create camelcase:
+        plain_name_list = plain_name.split(" ")
+        plain_name_list[0] = plain_name_list[0][0].lower() + plain_name_list[0][1:]
+        self.name_camelcase = ''.join(plain_name_list)                                 # lwM2MServer
 
+        self.name_obj_class = f"Wpp{plain_name_no_space}"                               # WppLwM2MServer
 
-    def create_object_define(self):
-        define_name = self.obj_name_class.replace(' ', '_').upper()
-        define_prefix = "MANDATORY" if self.meta_object["is_mandatory"] else "OPTIONAL"
-        return f"{define_prefix}_{define_name}_OBJ"
+        mandatory_or_optional = "mandatory" if object_dict["is_mandatory"] else "optional"
+
+        self.name_obj_folder = plain_name_underline.lower()                             # lwm2m_server
+        self.name_obj_path_to_folder = \
+            f"../wpp/registry/objects/{mandatory_or_optional}/{self.name_obj_folder}"   # ../wpp/registry/objects/mandatory/lwm2m_server
+
+        self.name_obj_define = f"{mandatory_or_optional}_{plain_name_no_space}_OBJ".upper()     # MANDATORY_LWM2MSERVER_OBJ
+        self.name_object_info = f"{self.name_obj_class}_OBJ_INFO".upper()                       # WPPLWM2MSERVER_OBJ_INFO
+
+        # print("plain_name = " + plain_name)
+        # print("plain_name_no_space = " + plain_name_no_space)
+        # print("plain_name_camelcase = " + plain_name_camelcase)
+        # print("self.name_obj_class = " + self.name_obj_class)
+        # print("self.name_obj_folder = " + self.name_obj_folder)
+        # print("self.name_obj_path_to_folder = " + self.name_obj_path_to_folder)
+        # print("self.name_obj_define = " + self.name_obj_define)
+        # print("self.name_object_info = " + self.name_object_info)
+
+    def get_names(self):
+        return self.name_obj_path_to_folder, self.name_obj_class
 
     def parse_operation(self, xml_operation):
         operation = f"{TYPE_OPERATION}::"
@@ -277,7 +302,7 @@ class CodeGenerator:
             return f"""std::cout << "{text}" << std::endl;"""
 
         else:
-            text = '"' + text + '\\n"'
+            text = '"' + text + '"'
             for argument in arguments:
                 text += ', ' + argument
             return f"""{LOG_FUNC_CUSTOM}(TAG, {text});"""
@@ -318,8 +343,8 @@ class CodeGenerator:
                        I_INSTANCE_IMPLEMENTATIONS_H +
                        CLASS_PRIVATE_METHODS_H +
                        "")
-        code_header = code_header.replace(PLACE_CLASS_NAME_UPPER, self.obj_name_class.upper())
-        code_header = code_header.replace(PLACE_CLASS_NAME, self.obj_name_class)
+        code_header = code_header.replace(PLACE_CLASS_NAME_UPPER, self.name_obj_class.upper())
+        code_header = code_header.replace(PLACE_CLASS_NAME, self.name_obj_class)
         code_header = code_header.replace(PLACE_RESOURCES_ENUM, resources_enum)
         code_header = code_header.replace(PLACE_RESOURCES_MAP, resources_map)
         code_header = code_header.replace("TAB", "\t\t\t")
@@ -342,19 +367,20 @@ class CodeGenerator:
                     CLASS_PRIVATE_METHODS_CPP +
                     "} /* namespace wpp */\n")
         code_cpp = code_cpp.replace(PLACE_RESOURCES_INIT, self.get_content_resourcesInit_f(self.meta_resources))
-        code_cpp = code_cpp.replace(PLACE_CLASS_NAME, self.obj_name_class)
-        code_cpp = code_cpp.replace(PLACE_FOLDER, self.obj_name_folder)
+        code_cpp = code_cpp.replace(PLACE_CLASS_NAME, self.name_obj_class)
+        code_cpp = code_cpp.replace(PLACE_FOLDER, self.name_obj_folder)
 
         return code_cpp
 
     def generate_content_cmake_list(self):
-        main_line = f"""set(SOURCES ${{SOURCES}} ${{CMAKE_CURRENT_SOURCE_DIR}}/{self.obj_name_class}.cpp PARENT_SCOPE)"""
+        main_line = f"set(SOURCES ${{SOURCES}} ${{CMAKE_CURRENT_SOURCE_DIR}}/{self.name_obj_class}.cpp PARENT_SCOPE)"
 
-        return f"""if({self.obj_define})\n\t# Update SOURCES variable from parent scope.\n\t""" \
+        return f"""if({self.name_obj_define})\n\t""" \
+               f"""# Update SOURCES variable from parent scope.\n\t""" \
                f"""{main_line}\nendif()"""
 
     def generate_content_info_header(self):
-        class_name = f"{self.obj_name_class.replace(' ', '').upper()}INFO_H"
+        class_name = f"{self.name_obj_class}INFO_H"
         is_multiple = "MULTIPLE" if self.meta_object["is_multiple"] else "SINGLE"
         is_mandatory = "MANDATORY" if self.meta_object["is_mandatory"] else "OPTIONAL"
 
@@ -362,9 +388,9 @@ class CodeGenerator:
             f"""#ifndef {class_name}\n""" \
             f"""#define {class_name}\n\n""" \
             f"""#include "{TYPE_OBJECT_INFO}.h"\n\n""" \
-            f"""#if {self.obj_define}\n\n""" \
+            f"""#if {self.name_obj_define}\n\n""" \
             f"""namespace wpp {{\n\n""" \
-            f"""static const {TYPE_OBJECT_INFO} {self.obj_name_class.replace(' ', '').upper()}_OBJ_INFO = {{\n""" \
+            f"""static const {TYPE_OBJECT_INFO} {self.name_object_info} = {{\n""" \
             f"""\t/* Name */\n\t"{self.meta_object["object_name"]}",\n\n""" \
             f"""\t/* Object ID */\n\tOBJ_ID::SERVER,\n\n""" \
             f"""\t/* URN */\n\t"{self.meta_object["object_urn"]}",\n\n""" \
@@ -381,13 +407,13 @@ class CodeGenerator:
             f"""\t\t\t\t{TYPE_OPERATION}::DELETE),\n""" \
             f"""\t}};\n\n""" \
             f"""}} /* namespace wpp */\n\n""" \
-            f"""#endif /* {self.obj_define} */\n""" \
+            f"""#endif /* {self.name_obj_define} */\n""" \
             f"""#endif // {class_name}\n"""
 
         return content
 
     def generate_content_config(self):
-        ifdef = f"WPP_{self.obj_name.replace(' ', '_').upper()}_CONFIG_H"
+        ifdef = f"WPP_{self.name_obj.replace(' ', '_').upper()}_CONFIG_H"
         defines = ""
         for i in self.meta_resources:
             defines += f"""#define {i["Name"]}_{"M" if i["Mandatory"] == "MANDATORY" else "O"}_"""
@@ -395,7 +421,7 @@ class CodeGenerator:
         content = \
             f"""#ifndef {ifdef}\n""" \
             f"""#define {ifdef}\n\n""" \
-            f"""#if {self.obj_define}\n\n""" \
+            f"""#if {self.name_obj_define}\n\n""" \
             f"""/* ---------- Server optional resources start ---------- */\n\n""" \
             f"""{defines}\n""" \
             f"""/* ---------- Server optional resources end ---------- */\n\n""" \
@@ -418,6 +444,7 @@ class CodeGenerator:
 
         if not is_stop_string_present:
             print(f"The {path_to_file} was not updated!")
+            return
 
         with open(path_to_file, 'w') as f:
             f.write(new_content)
@@ -433,32 +460,32 @@ class CodeGenerator:
         stop_string_reg_prot = STOP_STRING_REG_PRT[0] if is_obj_mandatory else STOP_STRING_REG_PRT[1]
 
         content_obj_id = \
-            f"#ifdef {self.obj_define}\n" \
-            f"\t{self.obj_name_class.upper()} = {object_dict['object_id']},\n" \
-            f"#endif /* {self.obj_define} */\n\n"
+            f"#ifdef {self.name_obj_define}\n" \
+            f"\t{self.name_obj_class.upper()} = {object_dict['object_id']},\n" \
+            f"#endif /* {self.name_obj_define} */\n\n"
 
         content_cnfg_cmk = \
-            f"""\noption({self.obj_define} """ \
+            f"""\noption({self.name_obj_define} """ \
             f""""Include {"mandatory" if is_obj_mandatory else "optional"} """ \
-            f"""{self.obj_name_class} object in the build" {"ON" if is_obj_mandatory else "OFF"})\n""" \
-            f"""if ({self.obj_define})\n\tset(WPP_DEFINITIONS ${{WPP_DEFINITIONS}} {self.obj_define}=1)""" \
+            f"""{self.name_obj_class} object in the build" {"ON" if is_obj_mandatory else "OFF"})\n""" \
+            f"""if ({self.name_obj_define})\n\tset(WPP_DEFINITIONS ${{WPP_DEFINITIONS}} {self.name_obj_define}=1)""" \
             f"""\nendif()\n\n"""
 
         content_reg_h_incl = \
-            f"""#if {self.obj_define}\n""" \
-            f"""#include "mandatory/{self.obj_name_folder}/{self.obj_name_class}.h"\n""" \
+            f"""#if {self.name_obj_define}\n""" \
+            f"""#include "mandatory/{self.name_obj_folder}/{self.name_obj_class}.h"\n""" \
             f"""#endif\n\n"""
 
         content_reg_h_prt = \
-            f"""\t#if {self.obj_define}\n\t""" \
-            f"""{TYPE_OBJECT} <{self.obj_name_class}> & {self.obj_name.replace(" ", '').lower()}();\n\t""" \
+            f"""\t#if {self.name_obj_define}\n\t""" \
+            f"""{TYPE_OBJECT} <{self.name_obj_class}> & {self.name_camelcase}();\n\t""" \
             f"""#endif\n\n"""
 
         content_reg_cpp = \
-            f"""# if {self.obj_define}\n""" \
-            f"""{TYPE_OBJECT} <{self.obj_name_class}> & {TYPE_REGISTRY}::{self.obj_name.replace(" ", '').lower()}() {{\n\t""" \
-            f"""if (!{TYPE_OBJECT} <{self.obj_name_class}>::isCreated()) {TYPE_OBJECT} <{self.obj_name_class}>::create(_client, {self.obj_name_class.replace(' ', '').upper()}_OBJ_INFO);\n\t""" \
-            f"""return *{TYPE_OBJECT} <{self.obj_name_class}>::object();\n""" \
+            f"""# if {self.name_obj_define}\n""" \
+            f"""{TYPE_OBJECT} <{self.name_obj_class}> & {TYPE_REGISTRY}::{self.name_camelcase}() {{\n\t""" \
+            f"""if (!{TYPE_OBJECT} <{self.name_obj_class}>::isCreated()) {TYPE_OBJECT} <{self.name_obj_class}>::create(_client, {self.name_obj_class.replace(' ', '').upper()}_OBJ_INFO);\n\t""" \
+            f"""return *{TYPE_OBJECT} <{self.name_obj_class}>::object();\n""" \
             f"""}}\n""" \
             f"""# endif\n"""
 
@@ -519,29 +546,24 @@ class XmlToCppObjectGenerator:
     def create_code(self, xml_file_path):
         object_dict, resources_list = self.parse_xml(xml_file_path)
 
-        class_name = object_dict["object_name"]
-        is_obj_mandatory = object_dict["is_mandatory"]
-        folder_name = class_name.replace(' ', '_').lower()
-        class_name = class_name.replace(' ', '')
-
         code_generator = CodeGenerator(object_dict, resources_list)
 
         generated_header = code_generator.generate_content_header()
-        generated_cpp = code_generator.generate_content_cpp()
+        generated_cpp_file = code_generator.generate_content_cpp()
         generated_cmake_list = code_generator.generate_content_cmake_list()
         generated_info_header = code_generator.generate_content_info_header()
         generated_config = code_generator.generate_content_config()
 
-        path_to_files_prefix = "mandatory" if is_obj_mandatory else "optional"
-        path_to_files = f"""../wpp/registry/objects/{path_to_files_prefix}/{folder_name}"""
+        name_path, name_class = code_generator.get_names()
+        # print(f"name_path = {name_path}, name_class = {name_class}")
 
-        self.create_folder(path_to_files)
+        self.create_folder(name_path)
 
-        self.create_file(path_to_files, f"Wpp{class_name}",         "h",    generated_header)
-        self.create_file(path_to_files, f"Wpp{class_name}",         "cpp",  generated_cpp)
-        self.create_file(path_to_files, f"CMakeLists",              "txt",  generated_cmake_list)
-        self.create_file(path_to_files, f"Wpp{class_name}Info",     "h",    generated_info_header)
-        self.create_file(path_to_files, f"Wpp{class_name}Config",   "h",    generated_config)
+        self.create_file(name_path, f"{name_class}",        "h",    generated_header)
+        self.create_file(name_path, f"{name_class}",        "cpp",  generated_cpp_file)
+        self.create_file(name_path, f"CMakeLists",          "txt",  generated_cmake_list)
+        self.create_file(name_path, f"{name_class}Info",    "h",    generated_info_header)
+        self.create_file(name_path, f"{name_class}Config",  "h",    generated_config)
 
         code_generator.update_files(object_dict)
 

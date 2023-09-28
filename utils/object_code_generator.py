@@ -20,6 +20,9 @@ TYPE_RESOURCE = "Resource"
 TYPE_INSTANCE = "Instance"
 TYPE_I_SUBJECT = "InstSubject"
 
+TYPE_1 = "Operation::TYPE"
+TYPE_2 = "const ResLink"
+
 LOG_FUNC_CUSTOM = "WPP_LOGD_ARG"
 
 STOP_STRING_CNFG_CMK = ["# The end of the options of the mandatory objects.",
@@ -51,7 +54,7 @@ PUBLIC_ENUM_H = \
     f"""\tpublic:\n\t\tenum ID: ID_T {{\n{PLACE_RESOURCES_ENUM}\t\t}};\n\n"""
 
 PUBLIC_CONSTRUCTOR_H = \
-    f"""\tpublic:\n\t\t{PLACE_CLASS_NAME}(WppClient &client, const InstanceID &id);\n\n"""
+    f"""\tpublic:\n\t\t{PLACE_CLASS_NAME}(WppClient &client, const OBJ_LINK_T &id);\n\n"""
 
 I_INSTANCE_IMPLEMENTATIONS = \
     f"""\t/* --------------- {TYPE_INSTANCE} implementation part --------------- */\n"""
@@ -66,9 +69,9 @@ I_INSTANCE_IMPLEMENTATIONS_H = \
     f"""\tstd::vector<{TYPE_RESOURCE} *> getInstantiatedResourcesList() override;\n\t""" \
     f"""\tstd::vector<{TYPE_RESOURCE} *> getInstantiatedResourcesList(const {TYPE_OPERATION}& filter) override;\n\t\t/*\n\t""" \
     f"""\t * Handles information about resource operation that made server\n\t\t */\n\t""" \
-    f"""\tvoid serverOperationNotifier({TYPE_OPERATION}::TYPE type, const ResourceID &resId) override;\n\t\t/*\n\t""" \
+    f"""\tvoid serverOperationNotifier({TYPE_1} type, {TYPE_2} &resId) override;\n\t\t/*\n\t""" \
     f"""\t * Handles information about resource operation that made user\n\t\t */\n\t""" \
-    f"""\tvoid userOperationNotifier({TYPE_OPERATION}::TYPE type, const ResourceID &resId) override;"""
+    f"""\tvoid userOperationNotifier({TYPE_1} type, {TYPE_2} &resId) override;"""
 
 CLASS_PRIVATE_METHODS_H = \
     f"""\n\n\tprivate:\n\t\t/* --------------- Class private methods --------------- */\n\t""" \
@@ -91,7 +94,7 @@ PREFIX_CPP = \
     f"""namespace wpp {{\n\n"""
 
 PUBLIC_CONSTRUCTOR_CPP = \
-    f"""\t{PLACE_CLASS_NAME}::{PLACE_CLASS_NAME}(WppClient &client, const InstanceID &id): {TYPE_INSTANCE}(client, id) {{""" \
+    f"""\t{PLACE_CLASS_NAME}::{PLACE_CLASS_NAME}(WppClient &client, const OBJ_LINK_T &id): {TYPE_INSTANCE}(client, id) {{""" \
     f"""\n\t\tresourcesInit();\n\t}}\n\n"""
 
 CLASS_PRIVATE_METHODS_CPP = \
@@ -307,10 +310,10 @@ class CodeGenerator:
                 text += ', ' + argument
             return f"""{LOG_FUNC_CUSTOM}(TAG, {text});"""
 
-    def get_content_serverOperationNotifier(self):
+    def get_content_serverOperationNotifier(self, param_1, param_2):
         cases = ["READ", "WRITE", "EXECUTE", "DISCOVER", "DELETE"]
         base = \
-            f"""\tvoid {PLACE_CLASS_NAME}::serverOperationNotifier({TYPE_OPERATION}::TYPE type, const ResourceID &resId) {{""" \
+            f"""\tvoid {PLACE_CLASS_NAME}::serverOperationNotifier({param_1} type, {param_2} &resId) {{""" \
             f"""\n\t\tobserverNotify(*this, resId, type);\n\n""" \
             f"""\t\tswitch (type) {{\n\t"""
         for case in cases:
@@ -321,10 +324,10 @@ class CodeGenerator:
             )}\n\t\t\t\tbreak;\n\t"""
         return f"""{base}\t\tdefault: break;\n\t\t}}\n\t}}\n\n"""
 
-    def get_content_userOperationNotifier(self):
+    def get_content_userOperationNotifier(self, param_1, param_2):
         cases = ["READ", "WRITE", "DELETE"]
         prefix = \
-            f"""\tvoid {PLACE_CLASS_NAME}::userOperationNotifier({TYPE_OPERATION}::TYPE type, const ResourceID &resId) {{""" \
+            f"""\tvoid {PLACE_CLASS_NAME}::userOperationNotifier({param_1} type, {param_2} &resId) {{""" \
             f"""\n\t\tswitch (type) {{\n\t"""
         for case in cases:
             prefix += f"""\t\tcase {TYPE_OPERATION}::{case}:\n\t\t\t\t{self.create_log_string(
@@ -362,8 +365,8 @@ class CodeGenerator:
                     FUNC_GET_RESOURCE_LIST_P +
                     FUNC_GET_INSTANTIATED_LIST +
                     FUNC_GET_INSTANTIATED_LIST_P +
-                    self.get_content_serverOperationNotifier() +
-                    self.get_content_userOperationNotifier() +
+                    self.get_content_serverOperationNotifier(TYPE_1, TYPE_2) +
+                    self.get_content_userOperationNotifier(TYPE_1, TYPE_2) +
                     CLASS_PRIVATE_METHODS_CPP +
                     "} /* namespace wpp */\n")
         code_cpp = code_cpp.replace(PLACE_RESOURCES_INIT, self.get_content_resourcesInit_f(self.meta_resources))
@@ -373,7 +376,7 @@ class CodeGenerator:
         return code_cpp
 
     def generate_content_cmake_list(self):
-        main_line = f"set(SOURCES ${{SOURCES}} ${{CMAKE_CURRENT_SOURCE_DIR}}/{self.name_obj_class}.cpp PARENT_SCOPE)"
+        main_line = f"set(WPP_SOURCES ${{WPP_SOURCES}} ${{CMAKE_CURRENT_SOURCE_DIR}}/{self.name_obj_class}.cpp PARENT_SCOPE)"
 
         return f"""if({self.name_obj_define})\n\t""" \
                f"""# Update SOURCES variable from parent scope.\n\t""" \
@@ -453,7 +456,7 @@ class CodeGenerator:
             return
 
         with open(path_to_file, 'w') as f:
-            f.write(new_content)
+            f.write(new_content[:-1])
         f.close()
 
     def update_files(self, object_dict):

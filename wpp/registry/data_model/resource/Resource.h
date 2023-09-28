@@ -115,7 +115,6 @@ private: /* ---------- Private properties ----------*/
     IS_MANDATORY _isMandatory;
     TYPE_ID _typeID;
     mutable std::unordered_map<ID_T, DATA_T> _instances;
-    mutable std::mutex _resourceGuard;
     DATA_VERIFIER_T _dataVerifier;
 };
 
@@ -129,8 +128,6 @@ bool Resource::isDataTypeValid() const {
 
 template<typename T>
 bool Resource::_set(const T &value, ID_T resInstId) {
-	std::lock_guard<std::mutex> guard(_resourceGuard);
-
 	if (!isInstanceIdPossible(resInstId)) return false;
 	if (!isDataValueValid(value)) return false;
 
@@ -141,8 +138,6 @@ bool Resource::_set(const T &value, ID_T resInstId) {
 
 template<typename T>
 bool Resource::_get(T &value, ID_T resInstId) const {
-	std::lock_guard<std::mutex> guard(_resourceGuard);
-
 	if (!isDataTypeValid<T>()) return false;
 	if (!isInstanceExist(resInstId)) return false;
 

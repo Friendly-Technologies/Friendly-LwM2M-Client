@@ -1,2 +1,2 @@
-# Update INCLUDES variable from parent scope.
-set(INCLUDES ${INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/ PARENT_SCOPE)
+# Update WPP_INCLUDES variable from parent scope.
+set(WPP_INCLUDES ${WPP_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/ PARENT_SCOPE)

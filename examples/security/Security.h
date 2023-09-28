@@ -35,15 +35,15 @@ class SecurityImpl: public ObjObserver<Security>, public InstObserver<Security> 
 		cout << "Security: instanceDeleting: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
 	}
 
-	virtual void resourceRead(Security &inst, const ResourceID &resId) override {
+	virtual void resourceRead(Security &inst, const ResLink &resId) override {
         cout << "Security: resourceRead: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
     }
 
-    virtual void resourceWrite(Security &inst, const ResourceID &resId) override {
+    virtual void resourceWrite(Security &inst, const ResLink &resId) override {
         cout << "Security: resourceWrite: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
     }
 
-    virtual void resourceExecute(Security &inst, const ResourceID &resId) override {
+    virtual void resourceExecute(Security &inst, const ResLink &resId) override {
         cout << "Security: resourceExecute: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
     }
 };

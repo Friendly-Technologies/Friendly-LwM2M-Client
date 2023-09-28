@@ -19,7 +19,7 @@
 
 namespace wpp {
 
-Server::Server(WppClient &client, const InstanceID &id): Instance(client, id) {
+Server::Server(WppClient &client, const OBJ_LINK_T &id): Instance(client, id) {
 	resourcesInit();
 }
 
@@ -58,7 +58,7 @@ std::vector<Resource *> Server::getInstantiatedResourcesList(const Operation& fi
 	return list;
 }
 
-void Server::serverOperationNotifier(Operation::TYPE type, const ResourceID &resId) {
+void Server::serverOperationNotifier(Operation::TYPE type, const ResLink &resId) {
 	observerNotify(*this, resId, type);
 	switch (type) {
 	case Operation::READ:
@@ -80,7 +80,7 @@ void Server::serverOperationNotifier(Operation::TYPE type, const ResourceID &res
 	}
 }
 
-void Server::userOperationNotifier(Operation::TYPE type, const ResourceID &resId) {
+void Server::userOperationNotifier(Operation::TYPE type, const ResLink &resId) {
 	switch (type) {
 	case Operation::READ:
 		WPP_LOGD_ARG(TAG, "User READ -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);

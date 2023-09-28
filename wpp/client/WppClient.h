@@ -87,7 +87,7 @@ public:
 	bool isObjectRegistered(Lwm2mObject &object);
 
 	/* ------------- Wakaama core observer notify ------------- */
-	void notifyValueChanged(const DataID &data);
+	void notifyValueChanged(const DataLink &data);
 
 private:
 	/* ------------- Wakaama client initialisation ------------- */

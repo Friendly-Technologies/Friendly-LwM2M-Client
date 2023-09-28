@@ -8,6 +8,6 @@ foreach(child ${children})
     endif()
 endforeach()
 
-# Save SOURCES variable value from subdirectories into
-# the SOURCES variable of parent scope.
-set(SOURCES ${SOURCES} PARENT_SCOPE)
+# Save WPP_SOURCES variable value from subdirectories into
+# the WPP_SOURCES variable of parent scope.
+set(WPP_SOURCES ${WPP_SOURCES} PARENT_SCOPE)

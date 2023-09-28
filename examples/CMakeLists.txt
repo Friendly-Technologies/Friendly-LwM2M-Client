@@ -20,6 +20,8 @@ add_compile_options(
     -Wno-unused-parameter
     # Reduce noise: Too many false positives
     -Wno-uninitialized
+    # Allows to compile tinydtls without errors
+    -Wno-c99-extensions
      # Turn (most) warnings into errors
     -Werror
     # Disabled because of existing, non-trivially fixable code
@@ -46,13 +48,23 @@ add_subdirectory(server)
 add_subdirectory(security)
 add_subdirectory(device)
 
+# message(STATUS "WakaamaPlusTest:INCLUDES: ${INCLUDES}")
+# message(STATUS "WakaamaPlusTest:SOURCES: ${SOURCES}")
+# message(STATUS "WakaamaPlusTest:COMPILE_DEFINITIONS: ${COMPILE_DEFINITIONS}")
+
 add_executable(WakaamaPlusTest ${SOURCES})
 # List of directories that will be set for compiler with key -I
 target_include_directories(WakaamaPlusTest PUBLIC ${INCLUDES})
 # List of preprocessor defines that will be set for compiler with key -D
 target_compile_definitions(WakaamaPlusTest PUBLIC ${COMPILE_DEFINITIONS})
+
 # Link with Wpp library
 target_link_libraries(WakaamaPlusTest Wpp)
+# Add tiny dtls src
+if (WITH_UDP_DTLS)
+    include(../2305-Wakaama/examples/shared/tinydtls.cmake)
+    target_sources_tinydtls(WakaamaPlusTest)
+endif()
 
 # Generate a .bin file 
 add_custom_command(TARGET WakaamaPlusTest POST_BUILD

@@ -35,7 +35,7 @@ int main() {
 
 	// Client initialization
 	cout << endl << "---- Creating WppClient ----" << endl;
-	WppClient::create({"Test name", "", ""}, connection);
+	WppClient::create({"SinaiTestLwm2m", "", ""}, connection);
 	WppClient *client = WppClient::takeOwnership();
 	WppRegistry &registry = client->registry();
 

@@ -16,9 +16,17 @@ class SecurityImpl: public ObjObserver<Security>, public InstObserver<Security> 
         Security *security = securityObj.createInstance();
         security->subscribe(this);
         
+        #if WITH_UDP_DTLS
+        security->set(Security::SERVER_URI, (STRING_T)"coaps://leshan.eclipseprojects.io:5684");
+        security->set(Security::SECURITY_MODE, (INT_T)LWM2M_SECURITY_MODE_PRE_SHARED_KEY);
+        string pskId = "SINAI_TEST_DEV_ID";
+        security->set(Security::PUBLIC_KEY, OPAQUE_T(pskId.begin(), pskId.end()));
+        security->set(Security::SECRET_KEY, OPAQUE_T {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0x99, 0x88, 0x77, 0x66, 0x55, 0x44});
+        #else
         security->set(Security::SERVER_URI, (STRING_T)"coap://leshan.eclipseprojects.io:5683");
+        #endif
         security->set(Security::BOOTSTRAP_SERVER, false);
-        security->set(Security::SERVER_ID, INT_T(123));
+        security->set(Security::SERVER_ID, (INT_T)123);
     }
 
 	void objectRestore(Object<Security> &object) override {

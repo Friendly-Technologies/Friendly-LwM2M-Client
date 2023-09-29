@@ -27,7 +27,7 @@ int get_psk_info(dtls_context_t *ctx, const session_t *session, dtls_credentials
         case DTLS_PSK_IDENTITY: {
             const OPAQUE_T &key = appContext->getPublicKey(conn);
             if (result_length < key.size()) {
-                cout << "Connection: cannot set psk_identity -- buffer too small" << endl;
+                cout << "Connection: cannot set psk_identity -- buffer too small result_length:" << result_length << ", key size: " << key.size() << endl;
                 return dtls_alert_fatal_create(DTLS_ALERT_INTERNAL_ERROR);
             }
 
@@ -38,7 +38,7 @@ int get_psk_info(dtls_context_t *ctx, const session_t *session, dtls_credentials
             const OPAQUE_T &key = appContext->getSecretKey(conn);
 
             if (result_length < key.size()) {
-                cout << "Connection: cannot set psk -- buffer too small result_length:" << result_length << ", key size" << key.size() << endl;
+                cout << "Connection: cannot set psk -- buffer too small result_length:" << result_length << ", key size: " << key.size() << endl;
                 return dtls_alert_fatal_create(DTLS_ALERT_INTERNAL_ERROR);
             }
 

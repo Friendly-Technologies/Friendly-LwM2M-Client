@@ -91,8 +91,8 @@ time_t WppClient::loop() {
 			WPP_LOGW(TAG_WPP_CLIENT, "Trying to restore security and server objects");
 			registry().security().restore();
 			registry().server().restore();
-			_lwm2m_context->state = STATE_INITIAL;
 		}
+		_lwm2m_context->state = STATE_INITIAL;
 	}
 
 	return sleepTime;

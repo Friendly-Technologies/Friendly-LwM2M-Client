@@ -1,3 +1,5 @@
+import object_xml_parser
+
 import os
 import sys
 from datetime import datetime
@@ -135,7 +137,7 @@ FUNC_GET_INSTANTIATED_LIST_P = \
     f"""list.push_back(&pair.second);\n\t\t}}\n\t\treturn list;\n\t}}\n\n"""
 
 
-class CodeGenerator:
+class ObjectGenerator:
     """Add some comments here"""
     meta_object = None
     meta_resources = None
@@ -506,10 +508,6 @@ class CodeGenerator:
 
         self.update_file(stop_string_reg_cpp, content_reg_cpp, "../wpp/registry/WppRegistry.cpp")
 
-
-class XmlToCppObjectGenerator:
-    """Add some comments here"""
-
     def create_folder(self, folder_name):
         try:
             os.mkdir(folder_name)
@@ -521,49 +519,14 @@ class XmlToCppObjectGenerator:
         f.write(content)
         f.close()
 
-    def parse_xml(self, file_path):
-        tree = ET.parse(file_path)
-        root = tree.getroot()
+    def object_code_generate(self):
+        generated_header = self.generate_content_header()
+        generated_cpp_file = self.generate_content_cpp()
+        generated_cmake_list = self.generate_content_cmake_list()
+        generated_info_header = self.generate_content_info_header()
+        generated_config = self.generate_content_config()
 
-        # pack the dictionary of the object:
-        object_meta = {"object_name": root[0][0].text,
-                       "object_description": root[0][1].text,
-                       "object_id": root[0][2].text,
-                       "object_urn": root[0][3].text,
-                       "object_lwm2m_version": root[0][4].text,
-                       "object_version": root[0][5].text,
-                       "is_multiple": root[0][6].text == "Multiple",
-                       "is_mandatory": root[0][7].text == "Mandatory",
-                       }
-
-        # pack the list of the dictionary of the resources:
-        resources_list = []
-        for resources in root.findall('./Object/Resources/Item'):
-            # get already existing dictionary (with ID) and fill it by another data in loop:
-            resource_dict = resources.attrib
-            repl_characters = [' ', '-', '\\', '/', '(', ')', '.', ',']  # TODO: the "(s)" postfix changes to "_S_"
-            for resource in resources:
-                resource_name = ' '.join(resource.text.split()) if resource.text else "none"
-                for character in repl_characters:
-                    resource_name = resource_name.replace(character, '_')
-                resource_dict[resource.tag] = resource_name.upper()
-            resources_list.append(resource_dict)
-
-        # return name, object_id, resources_list, is_mandatory
-        return object_meta, resources_list
-
-    def create_code(self, xml_file_path):
-        object_dict, resources_list = self.parse_xml(xml_file_path)
-
-        code_generator = CodeGenerator(object_dict, resources_list)
-
-        generated_header = code_generator.generate_content_header()
-        generated_cpp_file = code_generator.generate_content_cpp()
-        generated_cmake_list = code_generator.generate_content_cmake_list()
-        generated_info_header = code_generator.generate_content_info_header()
-        generated_config = code_generator.generate_content_config()
-
-        name_path, name_class = code_generator.get_names()
+        name_path, name_class = self.get_names()
         # print(f"name_path = {name_path}, name_class = {name_class}")
 
         self.create_folder(name_path)
@@ -574,15 +537,8 @@ class XmlToCppObjectGenerator:
         self.create_file(name_path, f"{name_class}Info",    "h",    generated_info_header)
         self.create_file(name_path, f"{name_class}Config",  "h",    generated_config)
 
-        code_generator.update_files(object_dict)
 
-
-parser = OptionParser()
-parser.add_option("-f", "--file", dest="filename", help="path to xml file")
-(options, args) = parser.parse_args()
-
-if len(args) != 1:
-    parser.error("The path to xml file is not provided")
-else:
-    generator = XmlToCppObjectGenerator()
-    generator.create_code(sys.argv[1])
+xp = object_xml_parser.ObjectXmlParser()
+obj_dict, res_list = xp.parse_xml("./1-1_1.xml")
+og = ObjectGenerator(obj_dict, res_list)
+og.object_code_generate()

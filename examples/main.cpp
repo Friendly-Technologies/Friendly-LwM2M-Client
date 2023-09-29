@@ -41,6 +41,7 @@ int main() {
 	#elif DTLS_WITH_RPK
 	clientName += "RPK";
 	#endif
+
 	WppClient::create({clientName, "", ""}, connection);
 	WppClient *client = WppClient::takeOwnership();
 	WppRegistry &registry = client->registry();

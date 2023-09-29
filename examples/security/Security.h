@@ -31,8 +31,15 @@ class SecurityImpl: public ObjObserver<Security>, public InstObserver<Security> 
         #else
         url += "5683";
         #endif
-        security->set(Security::SERVER_URI, (STRING_T)url);
+
+        #if LWM2M_BOOTSTRAP
+        security->set(Security::BOOTSTRAP_SERVER, true);
+        security->set(Security::HOLD_OFF_TIME, (INT_T)10);
+        #else
         security->set(Security::BOOTSTRAP_SERVER, false);
+        #endif
+
+        security->set(Security::SERVER_URI, (STRING_T)url);
         security->set(Security::SERVER_ID, (INT_T)123);
     }
 

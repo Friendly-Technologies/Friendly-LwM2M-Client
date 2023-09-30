@@ -57,24 +57,24 @@ class ObjectIntegrator:
         content_obj_id = \
             f"#ifdef {obj_names['obj_name_define']}\n" \
             f"\t{obj_names['obj_name_class'].upper()} = {obj_meta['object_id']},\n" \
-            f"#endif /* {obj_names['obj_name_define']} */\n\n"
+            f"#endif /* {obj_names['obj_name_define']} */\n"
 
         content_cnfg_cmk = \
-            f"""\noption({obj_names['obj_name_define']} """ \
+            f"""option({obj_names['obj_name_define']} """ \
             f""""Include {"mandatory" if is_obj_mandatory else "optional"} """ \
             f"""{obj_names['obj_name_class']} object in the build" {"ON" if is_obj_mandatory else "OFF"})\n""" \
             f"""if ({obj_names['obj_name_define']})\n\tset(WPP_DEFINITIONS ${{WPP_DEFINITIONS}} {obj_names['obj_name_define']}=1)""" \
-            f"""\nendif()\n\n"""
+            f"""\nendif()\n"""
 
         content_reg_h_incl = \
             f"""#if {obj_names['obj_name_define']}\n""" \
             f"""#include "mandatory/{obj_names["obj_name_folder"]}/{obj_names['obj_name_class']}.h"\n""" \
-            f"""#endif\n\n"""
+            f"""#endif\n"""
 
         content_reg_h_prt = \
             f"""\t#if {obj_names['obj_name_define']}\n\t""" \
             f"""{TYPE_OBJECT} <{obj_names['obj_name_class']}> & {obj_names["obj_name_camelcase"]}();\n\t""" \
-            f"""#endif\n\n"""
+            f"""#endif\n"""
 
         content_reg_cpp = \
             f"""# if {obj_names['obj_name_define']}\n""" \

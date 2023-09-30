@@ -73,3 +73,5 @@ class ObjectXmlParser:
         object_metadata["obj_name_path_to_folder"] = obj_name_path_to_folder
         object_metadata["obj_name_define"] = obj_name_define
         object_metadata["obj_name_object_info"] = obj_name_object_info
+
+        return object_metadata

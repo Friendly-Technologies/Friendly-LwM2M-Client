@@ -158,7 +158,7 @@ T* Object<T>::createInstance(ID_T instanceId) {
 
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "Creating instance %d:%d", getObjectID(), instanceId);
 	// Creation and registration new instance in core object
-	 lwm2m_list_t *element = (lwm2m_list_t *)lwm2m_malloc(sizeof(lwm2m_list_t));
+	 lwm2m_list_t *element = new lwm2m_list_t;
 	 if (NULL == element) return NULL;
 	 element->next = NULL;
 	 element->id = instanceId;
@@ -180,7 +180,7 @@ bool Object<T>::removeInstance(ID_T instanceId) {
 	// Deleting registered instance from core object
 	 lwm2m_list_t *element = NULL;
 	 _lwm2m_object.instanceList = LWM2M_LIST_RM(_lwm2m_object.instanceList, instanceId, (lwm2m_list_t **)&element);
-	 if (NULL != element) lwm2m_free(element);
+	 if (NULL != element) delete element;
 
 	delete _instances[instanceId];
 	_instances.erase(instanceId);
@@ -193,11 +193,13 @@ void Object<T>::clear() {
 	// Deleting registered instances from core object
 	while (_lwm2m_object.instanceList != NULL) {
 		lwm2m_list_t * instance = (lwm2m_list_t *)_lwm2m_object.instanceList;
-		_lwm2m_object.instanceList = _lwm2m_object.instanceList->next;
-		lwm2m_free(instance);
+		ID_T id = instance->id;
 
-		delete _instances[instance->id];
-		_instances.erase(instance->id);
+		_lwm2m_object.instanceList = _lwm2m_object.instanceList->next;
+		delete instance;
+
+		delete _instances[id];
+		_instances.erase(id);
 	}
 }
 

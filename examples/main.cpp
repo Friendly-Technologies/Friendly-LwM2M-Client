@@ -22,7 +22,7 @@ using namespace wpp;
 void socketPolling(Connection *connection) {
 	while (true) {
 		connection->loop();
-		std::this_thread::sleep_for(std::chrono::seconds(1));
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 }
 
@@ -35,7 +35,14 @@ int main() {
 
 	// Client initialization
 	cout << endl << "---- Creating WppClient ----" << endl;
-	WppClient::create({"Test name", "", ""}, connection);
+	string clientName = "SinaiTestLwm2m";
+	#if DTLS_WITH_PSK
+	clientName += "PSK";
+	#elif DTLS_WITH_RPK
+	clientName += "RPK";
+	#endif
+
+	WppClient::create({clientName, "", ""}, connection);
 	WppClient *client = WppClient::takeOwnership();
 	WppRegistry &registry = client->registry();
 

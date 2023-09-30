@@ -85,10 +85,14 @@ time_t WppClient::loop() {
 	// Handle wakaama core state
 	int result = lwm2m_step(_lwm2m_context, &sleepTime);
 	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Processing internal state: result -> %d, state -> %d", result, getState());
-	if (!result && getState() == STATE_BOOTSTRAPPING) {
-		WPP_LOGW(TAG_WPP_CLIENT, "Trying to restore security and server objects");
-		registry().security().restore();
-		registry().server().restore();
+	if (result) {
+		WPP_LOGW_ARG(TAG_WPP_CLIENT, "LWM2M core step failed, error code: %d", result);
+		if (getState() == STATE_BOOTSTRAPPING) {
+			WPP_LOGW(TAG_WPP_CLIENT, "Trying to restore security and server objects");
+			registry().security().restore();
+			registry().server().restore();
+		}
+		_lwm2m_context->state = STATE_INITIAL;
 	}
 
 	return sleepTime;

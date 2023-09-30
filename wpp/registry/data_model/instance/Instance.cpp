@@ -115,23 +115,21 @@ bool Instance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &resource,
 	case TYPE_ID::OBJ_LINK: {
 		// TODO: It is necessary to check in practice, it is not completely clear how to convert data
 		if (data.type != LWM2M_TYPE_OBJECT_LINK) return false;
-		if (resource.set(OBJ_LINK_T{ID_T_MAX_VAL, ID_T_MAX_VAL}, instanceId)) return false;
+		if (!resource.set(OBJ_LINK_T{ID_T_MAX_VAL, ID_T_MAX_VAL}, instanceId)) return false;
 		break;
 	}
 	case TYPE_ID::OPAQUE: {
-		// TODO: It is necessary to check in practice, it is not completely clear how to convert data
 		if (data.type != LWM2M_TYPE_OPAQUE) return false;
 		size_t len = data.value.asBuffer.length;
 		uint8_t *buffer =  data.value.asBuffer.buffer;
-		if (resource.set(OPAQUE_T(buffer, buffer + len), instanceId)) return false;
+		if (!resource.set(OPAQUE_T(buffer, buffer + len), instanceId)) return false;
 		break;
 	}
 	case TYPE_ID::STRING: {
-		// TODO: It is necessary to check in practice, it is not completely clear how to convert data
 		if (data.type != LWM2M_TYPE_OPAQUE && data.type != LWM2M_TYPE_STRING) return false;
 		size_t len = data.value.asBuffer.length;
 		uint8_t *buffer =  data.value.asBuffer.buffer;
-		if (resource.set(STRING_T(buffer, buffer + len), instanceId)) return false;
+		if (!resource.set(STRING_T(buffer, buffer + len), instanceId)) return false;
 		break;
 	}
 	case TYPE_ID::CORE_LINK: {
@@ -139,7 +137,7 @@ bool Instance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &resource,
 		if (data.type != LWM2M_TYPE_OPAQUE && data.type != LWM2M_TYPE_STRING && data.type != LWM2M_TYPE_CORE_LINK) return false;
 		size_t len = data.value.asBuffer.length;
 		uint8_t *buffer =  data.value.asBuffer.buffer;
-		if (resource.set(CORE_LINK_T(buffer, buffer + len), instanceId)) return false;
+		if (!resource.set(CORE_LINK_T(buffer, buffer + len), instanceId)) return false;
 		break;
 	}
 	default: return false;
@@ -234,7 +232,8 @@ uint8_t Instance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * dat
 		}
 	
 		// Check the server operation permission for resource
-		if (!resource->getOperation().isWrite()) {
+		// Bootstrap server can write evan if resource is not writeable
+		if (!resource->getOperation().isWrite() && client().getState() != STATE_BOOTSTRAPPING) {
 			WPP_LOGE_ARG(TAG_WPP_INST, "Server does not have permission for write resource: %d:%d:%d", _id.objId, _id.objInstId, dataArray[i].id);
 			return COAP_405_METHOD_NOT_ALLOWED;
 		}

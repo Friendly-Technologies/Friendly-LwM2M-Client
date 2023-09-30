@@ -16,7 +16,7 @@
 #include "types.h"
 #include "Lwm2mObject.h"
 
-#define WPP_CLIENT_MAX_SLEEP_TIME_S	60
+#define WPP_CLIENT_MAX_SLEEP_TIME_S	30
 
 namespace wpp {
 

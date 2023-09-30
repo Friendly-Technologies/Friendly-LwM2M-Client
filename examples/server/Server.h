@@ -18,7 +18,7 @@ class ServerImpl: public ObjObserver<Server>, public InstObserver<Server> {
 
         server->set(Server::SHORT_SERV_ID, (INT_T)123);
         server->set(Server::BUINDING, (STRING_T)"U");
-        server->set(Server::LIFETIME, (INT_T)15);
+        server->set(Server::LIFETIME, (INT_T)25);
         server->set(Server::NOTIFICATION_STORING, false);
     }
 

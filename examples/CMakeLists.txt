@@ -22,6 +22,8 @@ add_compile_options(
     -Wno-uninitialized
     # Allows to compile tinydtls without errors
     -Wno-c99-extensions
+    # Disabled because Connection for dtls cast from 'sockaddr *' to 'sockaddr_in *' increases required alignment from 2 to 4
+    -Wno-cast-align
      # Turn (most) warnings into errors
     -Werror
     # Disabled because of existing, non-trivially fixable code
@@ -40,6 +42,8 @@ set(COMPILE_DEFINITIONS "")
 option(WITH_UDP_DTLS "Enable UDP DTLS" ON)
 if (WITH_UDP_DTLS)
     set(COMPILE_DEFINITIONS ${COMPILE_DEFINITIONS} WITH_UDP_DTLS)
+    set(COMPILE_DEFINITIONS ${COMPILE_DEFINITIONS} DTLS_WITH_PSK)
+    # set(COMPILE_DEFINITIONS ${COMPILE_DEFINITIONS} DTLS_WITH_RPK)
 endif()
 
 # Add subdiretories with sources

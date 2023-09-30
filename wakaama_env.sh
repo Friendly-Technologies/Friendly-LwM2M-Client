@@ -8,10 +8,12 @@
 
 #!/bin/bash
 
-CLANG="clang-14"
+CLANG_VERSION=14
+
+CLANG="clang-$CLANG_VERSION"
 CLANG_KIT_PATH="/usr/bin/clang"
 
-CLANGPP="clang++-14"
+CLANGPP="clang++-$CLANG_VERSION"
 CLANGPP_KIT_PATH="/usr/bin/clang++"
 
 tools="\
@@ -25,8 +27,9 @@ gcovr \
 git \
 build-essential \
 clang-format \
-clang-format-14 \
-clang-tools-14 \
+clang-format-$CLANG_VERSION \
+clang-tools-$CLANG_VERSION \
+lldb-$CLANG_VERSION \
 $CLANG"
 
 ptools="\

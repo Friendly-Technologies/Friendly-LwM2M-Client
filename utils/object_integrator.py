@@ -18,23 +18,6 @@ STOP_STRING_REG_INCL = ["/* The end of the includes of the mandatory objects. */
 class ObjectIntegrator:
     """Add some comments here"""
 
-    def __init__(self, object_dict):
-        # meta data:
-        self.meta_object = object_dict
-        # names:
-        plain_name = object_dict["object_name"]                                         # LwM2M Server
-        plain_name_no_space = plain_name.replace(' ', '')                               # LwM2MServer
-        plain_name_underline = plain_name.replace(' ', '_')                             # LwM2M_Server
-        # create camelcase:
-        plain_name_list = plain_name.split(" ")
-        plain_name_list[0] = plain_name_list[0][0].lower() + plain_name_list[0][1:]
-        self.name_camelcase = ''.join(plain_name_list)                                 # lwM2MServer
-        # names of class, folder, define:
-        self.name_obj_class = f"Wpp{plain_name_no_space}"                               # WppLwM2MServer
-        mandatory_or_optional = "mandatory" if object_dict["is_mandatory"] else "optional"
-        self.name_obj_folder = plain_name_underline.lower()                             # lwm2m_server
-        self.name_obj_define = f"{mandatory_or_optional}_{plain_name_no_space}_OBJ".upper()     # MANDATORY_LWM2MSERVER_OBJ
-
     def update_file(self, stop_string, content, path_to_file):
         is_stop_string_present = False
         new_content = ''
@@ -62,8 +45,8 @@ class ObjectIntegrator:
             f.write(new_content[:-1])
         f.close()
 
-    def update_files(self):
-        is_obj_mandatory = self.meta_object["is_mandatory"]
+    def update_files(self, obj_meta, obj_names):
+        is_obj_mandatory = obj_meta["is_mandatory"]
         stop_string_obj_id = STOP_STRING_OBJ_ID[0] if is_obj_mandatory else STOP_STRING_OBJ_ID[1]
         stop_string_cfg_cmk = STOP_STRING_CNFG_CMK[0] if is_obj_mandatory else STOP_STRING_CNFG_CMK[1]
 
@@ -72,32 +55,32 @@ class ObjectIntegrator:
         stop_string_reg_prot = STOP_STRING_REG_PRT[0] if is_obj_mandatory else STOP_STRING_REG_PRT[1]
 
         content_obj_id = \
-            f"#ifdef {self.name_obj_define}\n" \
-            f"\t{self.name_obj_class.upper()} = {self.meta_object['object_id']},\n" \
-            f"#endif /* {self.name_obj_define} */\n\n"
+            f"#ifdef {obj_names['obj_name_define']}\n" \
+            f"\t{obj_names['obj_name_class'].upper()} = {obj_meta['object_id']},\n" \
+            f"#endif /* {obj_names['obj_name_define']} */\n\n"
 
         content_cnfg_cmk = \
-            f"""\noption({self.name_obj_define} """ \
+            f"""\noption({obj_names['obj_name_define']} """ \
             f""""Include {"mandatory" if is_obj_mandatory else "optional"} """ \
-            f"""{self.name_obj_class} object in the build" {"ON" if is_obj_mandatory else "OFF"})\n""" \
-            f"""if ({self.name_obj_define})\n\tset(WPP_DEFINITIONS ${{WPP_DEFINITIONS}} {self.name_obj_define}=1)""" \
+            f"""{obj_names['obj_name_class']} object in the build" {"ON" if is_obj_mandatory else "OFF"})\n""" \
+            f"""if ({obj_names['obj_name_define']})\n\tset(WPP_DEFINITIONS ${{WPP_DEFINITIONS}} {obj_names['obj_name_define']}=1)""" \
             f"""\nendif()\n\n"""
 
         content_reg_h_incl = \
-            f"""#if {self.name_obj_define}\n""" \
-            f"""#include "mandatory/{self.name_obj_folder}/{self.name_obj_class}.h"\n""" \
+            f"""#if {obj_names['obj_name_define']}\n""" \
+            f"""#include "mandatory/{obj_names["obj_name_folder"]}/{obj_names['obj_name_class']}.h"\n""" \
             f"""#endif\n\n"""
 
         content_reg_h_prt = \
-            f"""\t#if {self.name_obj_define}\n\t""" \
-            f"""{TYPE_OBJECT} <{self.name_obj_class}> & {self.name_camelcase}();\n\t""" \
+            f"""\t#if {obj_names['obj_name_define']}\n\t""" \
+            f"""{TYPE_OBJECT} <{obj_names['obj_name_class']}> & {obj_names["obj_name_camelcase"]}();\n\t""" \
             f"""#endif\n\n"""
 
         content_reg_cpp = \
-            f"""# if {self.name_obj_define}\n""" \
-            f"""{TYPE_OBJECT} <{self.name_obj_class}> & {TYPE_REGISTRY}::{self.name_camelcase}() {{\n\t""" \
-            f"""if (!{TYPE_OBJECT} <{self.name_obj_class}>::isCreated()) {TYPE_OBJECT} <{self.name_obj_class}>::create(_client, {self.name_obj_class.replace(' ', '').upper()}_OBJ_INFO);\n\t""" \
-            f"""return *{TYPE_OBJECT} <{self.name_obj_class}>::object();\n""" \
+            f"""# if {obj_names['obj_name_define']}\n""" \
+            f"""{TYPE_OBJECT} <{obj_names['obj_name_class']}> & {TYPE_REGISTRY}::{obj_names["obj_name_camelcase"]}() {{\n\t""" \
+            f"""if (!{TYPE_OBJECT} <{obj_names['obj_name_class']}>::isCreated()) {TYPE_OBJECT} <{obj_names['obj_name_class']}>::create(_client, {obj_names["obj_name_object_info"]});\n\t""" \
+            f"""return *{TYPE_OBJECT} <{obj_names['obj_name_class']}>::object();\n""" \
             f"""}}\n""" \
             f"""# endif\n"""
 
@@ -110,7 +93,8 @@ class ObjectIntegrator:
         self.update_file(stop_string_reg_cpp, content_reg_cpp, "../wpp/registry/WppRegistry.cpp")
 
 
-xp = object_xml_parser.ObjectXmlParser()
-obj_dict, res_list = xp.parse_xml("./1-1_1.xml")
-oi = ObjectIntegrator(obj_dict)
-oi.update_files()
+xp = object_xml_parser.ObjectXmlParser("./1-1_1.xml")
+obj_dict, res_list = xp.parse_xml()
+obj_names = xp.create_metadata()
+oi = ObjectIntegrator()
+oi.update_files(obj_dict, obj_names)

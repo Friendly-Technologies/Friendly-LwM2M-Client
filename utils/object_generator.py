@@ -140,43 +140,11 @@ FUNC_GET_INSTANTIATED_LIST_P = \
 class ObjectGenerator:
     """Add some comments here"""
 
-    def __init__(self, object_dict, resources_list):
-        # meta data:
+    def __init__(self, object_dict, resources_list, object_names):
+
         self.meta_object = object_dict
         self.meta_resources = resources_list
-        # names:
-        plain_name = object_dict["object_name"]                                         # LwM2M Server
-        self.name_obj = plain_name
-        plain_name_no_space = plain_name.replace(' ', '')                               # LwM2MServer
-        plain_name_underline = plain_name.replace(' ', '_')                             # LwM2M_Server
-
-        # create camelcase:
-        plain_name_list = plain_name.split(" ")
-        plain_name_list[0] = plain_name_list[0][0].lower() + plain_name_list[0][1:]
-        self.name_camelcase = ''.join(plain_name_list)                                 # lwM2MServer
-
-        self.name_obj_class = f"Wpp{plain_name_no_space}"                               # WppLwM2MServer
-
-        mandatory_or_optional = "mandatory" if object_dict["is_mandatory"] else "optional"
-
-        self.name_obj_folder = plain_name_underline.lower()                             # lwm2m_server
-        self.name_obj_path_to_folder = \
-            f"../wpp/registry/objects/{mandatory_or_optional}/{self.name_obj_folder}"   # ../wpp/registry/objects/mandatory/lwm2m_server
-
-        self.name_obj_define = f"{mandatory_or_optional}_{plain_name_no_space}_OBJ".upper()     # MANDATORY_LWM2MSERVER_OBJ
-        self.name_object_info = f"{self.name_obj_class}_OBJ_INFO".upper()                       # WPPLWM2MSERVER_OBJ_INFO
-
-        # print("plain_name = " + plain_name)
-        # print("plain_name_no_space = " + plain_name_no_space)
-        # print("plain_name_camelcase = " + plain_name_camelcase)
-        # print("self.name_obj_class = " + self.name_obj_class)
-        # print("self.name_obj_folder = " + self.name_obj_folder)
-        # print("self.name_obj_path_to_folder = " + self.name_obj_path_to_folder)
-        # print("self.name_obj_define = " + self.name_obj_define)
-        # print("self.name_object_info = " + self.name_object_info)
-
-    def get_names(self):
-        return self.name_obj_path_to_folder, self.name_obj_class
+        self.object_names = object_names
 
     def parse_operation(self, xml_operation):
         operation = f"{TYPE_OPERATION}::"
@@ -337,8 +305,8 @@ class ObjectGenerator:
                        I_INSTANCE_IMPLEMENTATIONS_H +
                        CLASS_PRIVATE_METHODS_H +
                        "")
-        code_header = code_header.replace(PLACE_CLASS_NAME_UPPER, self.name_obj_class.upper())
-        code_header = code_header.replace(PLACE_CLASS_NAME, self.name_obj_class)
+        code_header = code_header.replace(PLACE_CLASS_NAME_UPPER, self.object_names["obj_name_class"].upper())
+        code_header = code_header.replace(PLACE_CLASS_NAME, self.object_names["obj_name_class"])
         code_header = code_header.replace(PLACE_RESOURCES_ENUM, resources_enum)
         code_header = code_header.replace(PLACE_RESOURCES_MAP, resources_map)
         code_header = code_header.replace("TAB", "\t\t\t")
@@ -361,30 +329,30 @@ class ObjectGenerator:
                     CLASS_PRIVATE_METHODS_CPP +
                     "} /* namespace wpp */\n")
         code_cpp = code_cpp.replace(PLACE_RESOURCES_INIT, self.get_content_resourcesInit_f(self.meta_resources))
-        code_cpp = code_cpp.replace(PLACE_CLASS_NAME, self.name_obj_class)
-        code_cpp = code_cpp.replace(PLACE_FOLDER, self.name_obj_folder)
+        code_cpp = code_cpp.replace(PLACE_CLASS_NAME, self.object_names["obj_name_class"])
+        code_cpp = code_cpp.replace(PLACE_FOLDER, self.object_names["obj_name_folder"])
 
         return code_cpp
 
     def generate_content_cmake_list(self):
-        main_line = f"set(WPP_SOURCES ${{WPP_SOURCES}} ${{CMAKE_CURRENT_SOURCE_DIR}}/{self.name_obj_class}.cpp PARENT_SCOPE)"
+        main_line = f"""set(WPP_SOURCES ${{WPP_SOURCES}} ${{CMAKE_CURRENT_SOURCE_DIR}}/{self.object_names["obj_name_class"]}.cpp PARENT_SCOPE)"""
 
-        return f"""if({self.name_obj_define})\n\t""" \
+        return f"""if({self.object_names["obj_name_define"]})\n\t""" \
                f"""# Update SOURCES variable from parent scope.\n\t""" \
                f"""{main_line}\nendif()"""
 
     def generate_content_info_header(self):
-        class_name = f"{self.name_obj_class}INFO_H"
+        ifnotdef = f"""{ self.object_names["obj_name_define"].upper()}INFO_H"""
         is_multiple = "MULTIPLE" if self.meta_object["is_multiple"] else "SINGLE"
         is_mandatory = "MANDATORY" if self.meta_object["is_mandatory"] else "OPTIONAL"
 
         content = \
-            f"""#ifndef {class_name}\n""" \
-            f"""#define {class_name}\n\n""" \
+            f"""#ifndef {ifnotdef}\n""" \
+            f"""#define {ifnotdef}\n\n""" \
             f"""#include "{TYPE_OBJECT_INFO}.h"\n\n""" \
-            f"""#if {self.name_obj_define}\n\n""" \
+            f"""#if {self.object_names["obj_name_define"]}\n\n""" \
             f"""namespace wpp {{\n\n""" \
-            f"""static const {TYPE_OBJECT_INFO} {self.name_object_info} = {{\n""" \
+            f"""static const {TYPE_OBJECT_INFO} {self.object_names["obj_name_object_info"]} = {{\n""" \
             f"""\t/* Name */\n\t"{self.meta_object["object_name"]}",\n\n""" \
             f"""\t/* Object ID */\n\tOBJ_ID::SERVER,\n\n""" \
             f"""\t/* URN */\n\t"{self.meta_object["object_urn"]}",\n\n""" \
@@ -401,31 +369,27 @@ class ObjectGenerator:
             f"""\t\t\t\t{TYPE_OPERATION}::DELETE),\n""" \
             f"""\t}};\n\n""" \
             f"""}} /* namespace wpp */\n\n""" \
-            f"""#endif /* {self.name_obj_define} */\n""" \
-            f"""#endif // {class_name}\n"""
+            f"""#endif /* {self.object_names["obj_name_define"]} */\n""" \
+            f"""#endif // {ifnotdef}\n"""
 
         return content
 
     def generate_content_config(self):
-        ifdef = f"WPP_{self.name_obj.replace(' ', '_').upper()}_CONFIG_H"
+        ifnotdef = f"""{self.object_names["obj_name_class"].upper()}CONFIG_H"""
         defines = ""
         for i in self.meta_resources:
             defines += f"""#define {i["Name"]}_{"M" if i["Mandatory"] == "MANDATORY" else "O"}_"""
             defines += " 1\n" if i["Mandatory"] == "MANDATORY" else " 0\n"
         content = \
-            f"""#ifndef {ifdef}\n""" \
-            f"""#define {ifdef}\n\n""" \
-            f"""#if {self.name_obj_define}\n\n""" \
+            f"""#ifndef {ifnotdef}\n""" \
+            f"""#define {ifnotdef}\n\n""" \
+            f"""#if {self.object_names["obj_name_define"]}\n\n""" \
             f"""/* ---------- Server optional resources start ---------- */\n\n""" \
             f"""{defines}\n""" \
             f"""/* ---------- Server optional resources end ---------- */\n\n""" \
-            f"""#endif // {ifdef}\n""" \
-            f"""#endif // {ifdef}\n"""
+            f"""#endif // {ifnotdef}\n""" \
+            f"""#endif // {self.object_names["obj_name_define"]}\n"""
         return content
-
-
-
-
 
     def create_folder(self, folder_name):
         try:
@@ -445,8 +409,8 @@ class ObjectGenerator:
         generated_info_header = self.generate_content_info_header()
         generated_config = self.generate_content_config()
 
-        name_path, name_class = self.get_names()
-        # print(f"name_path = {name_path}, name_class = {name_class}")
+        name_path = self.object_names["obj_name_path_to_folder"]
+        name_class = self.object_names["obj_name_class"]
 
         self.create_folder(name_path)
 
@@ -457,7 +421,8 @@ class ObjectGenerator:
         self.create_file(name_path, f"{name_class}Config",  "h",    generated_config)
 
 
-xp = object_xml_parser.ObjectXmlParser()
-obj_dict, res_list = xp.parse_xml("./1-1_1.xml")
-og = ObjectGenerator(obj_dict, res_list)
+xp = object_xml_parser.ObjectXmlParser("./1-1_1.xml")
+obj_dict, res_list = xp.parse_xml()
+obj_names = xp.create_metadata()
+og = ObjectGenerator(obj_dict, res_list, obj_names)
 og.object_code_generate()

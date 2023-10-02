@@ -112,13 +112,14 @@ protected: /* Interface implemented by Instance derived class */
 	virtual void setDefaultState() = 0;
 	/*
 	 * This method must be implemented by derived class, and handle
-     * information about resource operation (READ, WRITE, EXECUTE, DISCOVER, DELETE).
+     * information about resource operation (READ, WRITE_UPD, 
+	 * WRITE_REPLACE_INST, WRITE_REPLACE_RES, EXECUTE, DISCOVER).
 	 * Called by Instance after resource operation performed by SERVER.
 	 */
 	virtual void serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) = 0;
 	/*
 	 * This method must be implemented by derived class, and handle
-     * information about resource operation (READ, WRITE, DELETE).
+     * information about resource operation (READ, WRITE_UPD, DELETE).
 	 * Called by Instance after resource operation performed by USER.
 	 */
 	virtual void userOperationNotifier(ResOp::TYPE type, const ResLink &resId) = 0;
@@ -159,7 +160,7 @@ bool Instance::userSet(const ResLink &resId, const T &value) {
 	bool result = resource->set(value, resId.resInstId);
 	if (result) {
 		client().notifyValueChanged({_id, {resId.resId, resId.resInstId}});
-		userOperationNotifier(ResOp::WRITE, resId);
+		userOperationNotifier(ResOp::WRITE_UPD, resId);
 	}
 
 	return result;

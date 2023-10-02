@@ -69,17 +69,20 @@ void Security::serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
 	case ResOp::READ:
 		WPP_LOGD_ARG(TAG, "Server READ -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
 		break;
-	case ResOp::WRITE:
-		WPP_LOGD_ARG(TAG, "Server WRITE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
+	case ResOp::WRITE_REPLACE_INST:
+		WPP_LOGD_ARG(TAG, "Server WRITE_REPLACE_INST -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
+		break;
+	case ResOp::WRITE_REPLACE_RES:
+		WPP_LOGD_ARG(TAG, "Server WRITE_REPLACE_RES -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
+		break;
+	case ResOp::WRITE_UPD:
+		WPP_LOGD_ARG(TAG, "Server WRITE_UPD -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
 		break;
 	case ResOp::EXECUTE:
 		WPP_LOGD_ARG(TAG, "Server EXECUTE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
 		break;
 	case ResOp::DISCOVER:
 		WPP_LOGD_ARG(TAG, "Server DISCOVER -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case ResOp::DELETE:
-		WPP_LOGD_ARG(TAG, "Server DELETE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
 		break;
 	default: break;
 	}

@@ -253,8 +253,6 @@ uint8_t Instance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * dat
 		if (isReplace) {
 			WPP_LOGD_ARG(TAG_WPP_INST, "Clear resource before write: %d:%d:%d", _id.objId, _id.objInstId, dataArray[i].id);
 			resource->clear();
-			// Notify Instance implementation about operation
-			if (writeType != LWM2M_WRITE_REPLACE_INSTANCE) serverOperationNotifier(ResOp::DELETE, {resource->getID(), ID_T_MAX_VAL});
 		}
 
 		size_t count = 1;
@@ -278,14 +276,14 @@ uint8_t Instance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * dat
 					return COAP_404_NOT_FOUND;
 				}
 			}
-			// If execution get to this place then operation completed with
-			// success and we can notify Instance implementation about it
-			if (writeType != LWM2M_WRITE_REPLACE_INSTANCE) serverOperationNotifier(ResOp::WRITE, {resource->getID(), resInstId});
+			// Notify implementation about update operation
+			if (!isReplace) serverOperationNotifier(ResOp::WRITE_UPD, {resource->getID(), resInstId});
 		}
+		// Notify implementation about replace resource operation
+		if (writeType == LWM2M_WRITE_REPLACE_RESOURCES) serverOperationNotifier(ResOp::WRITE_REPLACE_RES, {resource->getID(), ID_T_MAX_VAL});
 	}
-
 	// Notify implementation about replace instance operation
-	if (writeType == LWM2M_WRITE_REPLACE_INSTANCE) serverOperationNotifier(ResOp::WRITE, {ID_T_MAX_VAL, ID_T_MAX_VAL});
+	if (writeType == LWM2M_WRITE_REPLACE_INSTANCE) serverOperationNotifier(ResOp::WRITE_REPLACE_INST, {ID_T_MAX_VAL, ID_T_MAX_VAL});
 
 	return COAP_204_CHANGED;
 }

@@ -47,16 +47,25 @@ MAIN_COMMENT = \
 PREFIX_H = \
     f"""#ifndef {PLACE_CLASS_NAME_UPPER}_H\n""" \
     f"""#define {PLACE_CLASS_NAME_UPPER}_H\n\n""" \
-    f"""#include "{PLACE_CLASS_NAME}Config.h"\n#include "{PLACE_CLASS_NAME}Info.h"\n""" \
-    f"""#include "{TYPE_INSTANCE}.h"\n#include "{TYPE_I_SUBJECT}.h"\n\n""" \
+    f"""#include "{PLACE_CLASS_NAME}Config.h"\n""" \
+    f"""#include "{PLACE_CLASS_NAME}Info.h"\n""" \
+    f"""#include "{TYPE_INSTANCE}.h"\n""" \
+    f"""#include "{TYPE_I_SUBJECT}.h"\n\n""" \
+    f"""/* --------------- {PLACE_CLASS_NAME}_h block 0 start --------------- */\n""" \
+    f"""/* --------------- {PLACE_CLASS_NAME}_h block 0 end --------------- */\n\n""" \
     f"""namespace wpp {{\n\nclass {PLACE_CLASS_NAME} : """ \
     f"""public {TYPE_INSTANCE}, public {TYPE_I_SUBJECT}<{PLACE_CLASS_NAME}> {{\n\n"""
 
 PUBLIC_ENUM_H = \
-    f"""\tpublic:\n\t\tenum ID: ID_T {{\n{PLACE_RESOURCES_ENUM}\t\t}};\n\n"""
+    f"""\tpublic:\n\t\tenum ID: ID_T {{\n{PLACE_RESOURCES_ENUM}\t\t}};\n\n""" \
+    f"""\t\t/* --------------- {PLACE_CLASS_NAME}_h block 1 start --------------- */\n""" \
+    f"""\t\t/* --------------- {PLACE_CLASS_NAME}_h block 1 end --------------- */\n\n""" \
 
 PUBLIC_CONSTRUCTOR_H = \
-    f"""\tpublic:\n\t\t{PLACE_CLASS_NAME}(WppClient &client, const OBJ_LINK_T &id);\n\n"""
+    f"""\tpublic:\n\t\t{PLACE_CLASS_NAME}(WppClient &client, const OBJ_LINK_T &id);\n\t""" \
+    f"""\t~{PLACE_CLASS_NAME}();\n\n""" \
+    f"""\t\t/* --------------- {PLACE_CLASS_NAME}_h block 2 start --------------- */\n""" \
+    f"""\t\t/* --------------- {PLACE_CLASS_NAME}_h block 2 end --------------- */\n\n"""
 
 I_INSTANCE_IMPLEMENTATIONS = \
     f"""\t/* --------------- {TYPE_INSTANCE} implementation part --------------- */\n"""
@@ -69,7 +78,9 @@ I_INSTANCE_IMPLEMENTATIONS_H = \
     f"""\tstd::vector<{TYPE_RESOURCE} *> getResourcesList(const {TYPE_OPERATION}& filter) override;\n\t\t/*\n\t """ \
     f"""\t * Returns list with available instantiated resources\n\t\t */\n\t """ \
     f"""\tstd::vector<{TYPE_RESOURCE} *> getInstantiatedResourcesList() override;\n\t""" \
-    f"""\tstd::vector<{TYPE_RESOURCE} *> getInstantiatedResourcesList(const {TYPE_OPERATION}& filter) override;\n\t\t/*\n\t""" \
+    f"""\tstd::vector<{TYPE_RESOURCE} *> getInstantiatedResourcesList(const {TYPE_OPERATION}& filter) override;\n\t""" \
+    f"""\t/*\n\t\t * Reset all resources values and internal state to default.\n\t\t */\n\t""" \
+    f"""\tvoid clear() override;\n\t\t/*\n\t""" \
     f"""\t * Handles information about resource operation that made server\n\t\t */\n\t""" \
     f"""\tvoid serverOperationNotifier({TYPE_1} type, {TYPE_2} &resId) override;\n\t\t/*\n\t""" \
     f"""\t * Handles information about resource operation that made user\n\t\t */\n\t""" \
@@ -79,9 +90,14 @@ CLASS_PRIVATE_METHODS_H = \
     f"""\n\n\tprivate:\n\t\t/* --------------- Class private methods --------------- */\n\t""" \
     f"""\t/*\n\t\t * Initialize resources with default values\n\t""" \
     f"""\t * Resource always must have at least one instance.\n\t\t */\t\n\t""" \
-    f"""\tvoid resourcesInit();\n\t\n\n""" \
+    f"""\tvoid resourcesInit();\n\t\n""" \
+    f"""\t\t/* --------------- {PLACE_CLASS_NAME}_h block 3 start --------------- */\n""" \
+    f"""\t\t/* --------------- {PLACE_CLASS_NAME}_h block 3 end --------------- */\n\n""" \
     f"""\tprivate:\n\t\tstd::unordered_map<ID_T, {TYPE_RESOURCE}> _resources = {{\n\t\t""" \
-    f"""\t// KEY   VALUE\n{PLACE_RESOURCES_MAP}\n\t}};\n}};\n\n""" \
+    f"""\t// KEY   VALUE\n{PLACE_RESOURCES_MAP}\n\t\t}};\n\n""" \
+    f"""\t\t/* --------------- {PLACE_CLASS_NAME}_h block 4 start --------------- */\n""" \
+    f"""\t\t/* --------------- {PLACE_CLASS_NAME}_h block 4 end --------------- */\n""" \
+    f"""}};\n\n""" \
     f"""}} /* namespace wpp */\n\n#endif /* {PLACE_CLASS_NAME_UPPER}_H */\n"""
 
 PREFIX_CPP = \
@@ -92,15 +108,30 @@ PREFIX_CPP = \
     f"""#include "{TYPE_OPERATION}.h"\n""" \
     f"""#include "types.h"\n""" \
     f"""#include "WppLogs.h"\n\n""" \
+    f"""/* --------------- {PLACE_CLASS_NAME}_cpp block 0 start --------------- */\n""" \
+    f"""/* --------------- {PLACE_CLASS_NAME}_cpp block 0 end --------------- */\n\n""" \
     f"""#define TAG "{PLACE_CLASS_NAME}"\n\n""" \
     f"""namespace wpp {{\n\n"""
 
 PUBLIC_CONSTRUCTOR_CPP = \
-    f"""\t{PLACE_CLASS_NAME}::{PLACE_CLASS_NAME}(WppClient &client, const OBJ_LINK_T &id): {TYPE_INSTANCE}(client, id) {{""" \
-    f"""\n\t\tresourcesInit();\n\t}}\n\n"""
+    f"""\t{PLACE_CLASS_NAME}::{PLACE_CLASS_NAME}(WppClient &client, const OBJ_LINK_T &id): {TYPE_INSTANCE}(client, id) {{\n\n""" \
+    f"""\t\t/* --------------- {PLACE_CLASS_NAME}_cpp block 1 start --------------- */\n""" \
+    f"""\t\t/* --------------- {PLACE_CLASS_NAME}_cpp block 1 end --------------- */\n""" \
+    f"""\n\t\tresourcesInit();\n\n""" \
+    f"""\t\t/* --------------- {PLACE_CLASS_NAME}_cpp block 2 start --------------- */\n""" \
+    f"""\t\t/* --------------- {PLACE_CLASS_NAME}_cpp block 2 end --------------- */\n""" \
+    f"""\t}}\n\n"""
+
+PUBLIC_DESTRUCTOR_CPP = \
+    f"""\t{PLACE_CLASS_NAME}::~{PLACE_CLASS_NAME}() {{\n""" \
+    f"""\t\t/* --------------- {PLACE_CLASS_NAME}_cpp block 3 start --------------- */\n""" \
+    f"""\t\t/* --------------- {PLACE_CLASS_NAME}_cpp block 3 end --------------- */\n""" \
+    f"""\t}}\n\n"""
 
 CLASS_PRIVATE_METHODS_CPP = \
-    f"""\t/* --------------- Class private methods --------------- */\n{PLACE_RESOURCES_INIT}"""
+    f"""\t/* --------------- Class private methods --------------- */\n{PLACE_RESOURCES_INIT}""" \
+    f"""/* --------------- {PLACE_CLASS_NAME}_cpp block 10 start --------------- */\n""" \
+    f"""/* --------------- {PLACE_CLASS_NAME}_cpp block 10 end --------------- */\n\n"""
 
 FUNC_GET_RESOURCE_T = \
     f"""\t{TYPE_RESOURCE} * {PLACE_CLASS_NAME}::getResource(ID_T id) {{\n\t""" \
@@ -135,6 +166,16 @@ FUNC_GET_INSTANTIATED_LIST_P = \
     f"""\tfor (auto &pair : _resources) {{\n\t\t""" \
     f"""\tif (!pair.second.isEmpty() && filter.isCompatible(pair.second.getOperation())) """ \
     f"""list.push_back(&pair.second);\n\t\t}}\n\t\treturn list;\n\t}}\n\n"""
+
+FUNC_CLEAR = \
+    f"""\tvoid {PLACE_CLASS_NAME}::clear() {{\n\t""" \
+    f"""\t/* --------------- Code_cpp block 4 start --------------- */\n\t""" \
+    f"""\t/* --------------- Code_cpp block 4 end --------------- */\n\n\t""" \
+    f"""\tfor (auto &pair : _resources) pair.second.clear();\n\t""" \
+    f"""\tresourcesInit();\n\n\t""" \
+    f"""\t/* --------------- Code_cpp block 5 start --------------- */\n\t""" \
+    f"""\t/* --------------- Code_cpp block 5 end --------------- */\n\t""" \
+    f"""}}\n\n"""
 
 
 class ObjectGenerator:
@@ -242,14 +283,15 @@ class ObjectGenerator:
         return resources_enum, tabulate(resources_map, tablefmt="plain")
 
     def get_content_resourcesInit_f(self, resources_list_xml):
-        content = f"""\tvoid {PLACE_CLASS_NAME}::resourcesInit() {{\n"""
+        content = f"""\tvoid {PLACE_CLASS_NAME}::resourcesInit() {{\n""" \
+                  f"""\t\t/* --------------- {PLACE_CLASS_NAME}_cpp block 9 start --------------- */\n\n"""
         for resource in resources_list_xml:
             if resource["Mandatory"] == "MANDATORY":
                 content += f"""\t\t#if {resource["Name"]}_{resource["Mandatory"]}\n\t"""
                 content += f"\t\t_resources[{resource['Name']}].set( /* TODO */ );\n\t"
                 content += f"\t\t_resources[{resource['Name']}].setDataVerifier( /* TODO */ );\n"
                 content += f"\t\t#endif\n\n"
-        return content + "\t}\n\n"
+        return content + f"""\t\t/* --------------- {PLACE_CLASS_NAME}_cpp block 9 end --------------- */\n\t}}\n\n"""
 
     def create_log_string(self, text: str, arguments: list, is_std, pattern: str = "%d"):
         if not isinstance(text, str) or not isinstance(arguments, list):
@@ -272,8 +314,11 @@ class ObjectGenerator:
     def get_content_serverOperationNotifier(self, param_1, param_2):
         cases = ["READ", "WRITE", "EXECUTE", "DISCOVER", "DELETE"]
         base = \
-            f"""\tvoid {PLACE_CLASS_NAME}::serverOperationNotifier({param_1} type, {param_2} &resId) {{""" \
+            f"""\tvoid {PLACE_CLASS_NAME}::serverOperationNotifier({param_1} type, {param_2} &resId) {{\n""" \
+            f"""\t\t/* --------------- {PLACE_CLASS_NAME}_cpp block 6 start --------------- */\n""" \
+            f"""\t\t/* --------------- {PLACE_CLASS_NAME}_cpp block 6 end --------------- */\n""" \
             f"""\n\t\tobserverNotify(*this, resId, type);\n\n""" \
+            f"""\t\t/* --------------- {PLACE_CLASS_NAME}_cpp block 7 start --------------- */\n""" \
             f"""\t\tswitch (type) {{\n\t"""
         for case in cases:
             base += f"""\t\tcase {TYPE_OPERATION}::{case}:\n\t\t\t\t{self.create_log_string(
@@ -281,20 +326,24 @@ class ObjectGenerator:
                 ["resId.resId", "resId.resInstId"],
                 False
             )}\n\t\t\t\tbreak;\n\t"""
-        return f"""{base}\t\tdefault: break;\n\t\t}}\n\t}}\n\n"""
+        return f"""{base}\t\tdefault: break;\n\t\t}}\n\t""" \
+               f"""\t/* --------------- {PLACE_CLASS_NAME}_cpp block 7 end --------------- */\n}}\n\n"""
 
     def get_content_userOperationNotifier(self, param_1, param_2):
         cases = ["READ", "WRITE", "DELETE"]
         prefix = \
-            f"""\tvoid {PLACE_CLASS_NAME}::userOperationNotifier({param_1} type, {param_2} &resId) {{""" \
-            f"""\n\t\tswitch (type) {{\n\t"""
+            f"""\tvoid {PLACE_CLASS_NAME}::userOperationNotifier({param_1} type, {param_2} &resId) {{\n""" \
+            f"""\t\t/* --------------- {PLACE_CLASS_NAME}_cpp block 8 start --------------- */\n""" \
+            f"""\t\tswitch (type) {{\n\t"""
         for case in cases:
             prefix += f"""\t\tcase {TYPE_OPERATION}::{case}:\n\t\t\t\t{self.create_log_string(
                 f"User {case} -> resId: %d, resInstId: %d",
                 ["resId.resId", "resId.resInstId"],
                 False
             )}\n\t\t\t\tbreak;\n\t"""
-        return f"""{prefix}\t\tdefault: break;\n\t\t}}\n\t}}\n\n"""
+        postfix = f"""\t\tdefault: break;\n\t\t}}\n""" \
+                  f"""\t\t/* --------------- {PLACE_CLASS_NAME}_cpp block 8 end --------------- */\n\t}}\n\n"""
+        return prefix + postfix
 
     def generate_content_header(self):
         resources_enum, resources_map = self.get_map_of_resources(self.meta_resources)
@@ -318,12 +367,14 @@ class ObjectGenerator:
         code_cpp = (MAIN_COMMENT +
                     PREFIX_CPP +
                     PUBLIC_CONSTRUCTOR_CPP +
+                    PUBLIC_DESTRUCTOR_CPP +
                     I_INSTANCE_IMPLEMENTATIONS +
                     FUNC_GET_RESOURCE_T +
                     FUNC_GET_RESOURCE_LIST +
                     FUNC_GET_RESOURCE_LIST_P +
                     FUNC_GET_INSTANTIATED_LIST +
                     FUNC_GET_INSTANTIATED_LIST_P +
+                    FUNC_CLEAR +
                     self.get_content_serverOperationNotifier(TYPE_1, TYPE_2) +
                     self.get_content_userOperationNotifier(TYPE_1, TYPE_2) +
                     CLASS_PRIVATE_METHODS_CPP +
@@ -335,7 +386,9 @@ class ObjectGenerator:
         return code_cpp
 
     def generate_content_cmake_list(self):
-        main_line = f"""set(WPP_SOURCES ${{WPP_SOURCES}} ${{CMAKE_CURRENT_SOURCE_DIR}}/{self.object_names["obj_name_class"]}.cpp PARENT_SCOPE)"""
+        main_line = f"""set(WPP_SOURCES ${{WPP_SOURCES}} ${{CMAKE_CURRENT_SOURCE_DIR}}/{self.object_names["obj_name_class"]}.cpp PARENT_SCOPE)\n""" \
+                    f"""\t# --------------- CMake block 0 start ---------------\n""" \
+                    f"""\t# --------------- CMake block 0 end ---------------\n"""
 
         return f"""if({self.object_names["obj_name_define"]})\n\t""" \
                f"""# Update SOURCES variable from parent scope.\n\t""" \
@@ -361,13 +414,15 @@ class ObjectGenerator:
             f"""\t/* Is single */\n\tIS_SINGLE::{is_multiple},\n\n""" \
             f"""\t/* Is Mandatory */\n\tIS_MANDATORY::{is_mandatory},\n\n""" \
             f"""\t/* Object supported operations */\n""" \
+            f"""\t/* --------------- Info block 0 start --------------- */\n""" \
             f"""\t{TYPE_OPERATION}(\t{TYPE_OPERATION}::READ|\n""" \
             f"""\t\t\t\t{TYPE_OPERATION}::WRITE|\n""" \
             f"""\t\t\t\t{TYPE_OPERATION}::DISCOVER|\n""" \
             f"""\t\t\t\t{TYPE_OPERATION}::EXECUTE|\n""" \
             f"""\t\t\t\t{TYPE_OPERATION}::CREATE|\n""" \
             f"""\t\t\t\t{TYPE_OPERATION}::DELETE),\n""" \
-            f"""\t}};\n\n""" \
+            f"""\t/* --------------- Info block 0 end --------------- */\n""" \
+            f"""}};\n\n""" \
             f"""}} /* namespace wpp */\n\n""" \
             f"""#endif /* {self.object_names["obj_name_define"]} */\n""" \
             f"""#endif // {ifnotdef}\n"""
@@ -387,6 +442,8 @@ class ObjectGenerator:
             f"""/* ---------- Server optional resources start ---------- */\n\n""" \
             f"""{defines}\n""" \
             f"""/* ---------- Server optional resources end ---------- */\n\n""" \
+            f"""/* --------------- Config block 0 start --------------- */\n""" \
+            f"""/* --------------- Config block 0 end --------------- */\n\n""" \
             f"""#endif // {ifnotdef}\n""" \
             f"""#endif // {self.object_names["obj_name_define"]}\n"""
         return content

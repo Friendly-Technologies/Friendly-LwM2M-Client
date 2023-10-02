@@ -251,41 +251,36 @@ ID_T Object<T>::getFirstAvailableInstanceID() {
 /* ------------- Lwm2m core callback ------------- */
 template<typename T>
 uint8_t Object<T>::read_clb(lwm2m_context_t * contextP, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP) {
-	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama read %d:%d", object()->getObjectID(), instanceId);
+	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
 	return object()->_instances[instanceId]->resourceRead(instanceId, numDataP, dataArrayP);
 }
 
 template<typename T>
 uint8_t Object<T>::write_clb(lwm2m_context_t * contextP, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP, lwm2m_write_type_t writeType) {
-	if (writeType == LWM2M_WRITE_REPLACE_INSTANCE) {
-		delete_clb(contextP, instanceId, objectP);
-		return create_clb(contextP, instanceId, numData, dataArray, objectP);
-	} else {
-		if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
-		WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama write %d:%d", object()->getObjectID(), instanceId);
-		return object()->_instances[instanceId]->resourceWrite(instanceId, numData, dataArray, writeType);
-	}
+	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama write %d:%d, type %d", object()->getObjectID(), instanceId, writeType);
+	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
+	return object()->_instances[instanceId]->resourceWrite(instanceId, numData, dataArray, writeType);
 }
 
 template<typename T>
 uint8_t Object<T>::execute_clb(lwm2m_context_t * contextP, ID_T instanceId, ID_T resId, uint8_t * buffer, int length, lwm2m_object_t * objectP) {
-	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama execute %d:%d", object()->getObjectID(), instanceId);
+	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
 	return object()->_instances[instanceId]->resourceExecute(instanceId, resId, buffer, length);
 }
 
 template<typename T>
 uint8_t Object<T>::discover_clb(lwm2m_context_t * contextP, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP) {
-	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama discover %d:%d", object()->getObjectID(), instanceId);
+	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
 	return object()->_instances[instanceId]->resourceDiscover(instanceId, numDataP, dataArrayP);
 }
 
 template<typename T>
 uint8_t Object<T>::create_clb(lwm2m_context_t * contextP, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP) {
-	if (!object()->createInstance(instanceId)) return COAP_500_INTERNAL_SERVER_ERROR;
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama create %d:%d", object()->getObjectID(), instanceId);
+	if (!object()->createInstance(instanceId)) return COAP_500_INTERNAL_SERVER_ERROR;
 	// Notify user about creating instance
 	object()->observerNotify(*object(), instanceId, Operation::TYPE::CREATE);
 
@@ -300,8 +295,8 @@ uint8_t Object<T>::create_clb(lwm2m_context_t * contextP, ID_T instanceId, int n
 
 template<typename T>
 uint8_t Object<T>::delete_clb(lwm2m_context_t * contextP, ID_T instanceId, lwm2m_object_t * objectP) {
-	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama delete %d:%d", object()->getObjectID(), instanceId);
+	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
 	// Notify user about deleting instance
 	object()->observerNotify(*object(), instanceId, Operation::TYPE::DELETE);
 

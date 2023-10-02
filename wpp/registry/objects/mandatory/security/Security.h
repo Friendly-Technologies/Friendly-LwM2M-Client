@@ -48,6 +48,10 @@ protected:
 	std::vector<Resource *> getInstantiatedResourcesList() override;
 	std::vector<Resource *> getInstantiatedResourcesList(const Operation& filter) override;
 	/*
+	 * Reset all resources values and internal state to default.
+	 */
+	void clear() override;
+	/*
 	 * Handles information about resource operation that made server
 	 */
 	void serverOperationNotifier(Operation::TYPE type, const ResLink &resId) override;
@@ -60,7 +64,7 @@ private:
 	/* --------------- Class private methods --------------- */
 	/*
 	 * Initialize resources with default values.
-	 * Resource always must have at least one instance.
+	 * Resources always must have at least one instance.
 	 */
 	void resourcesInit();
 

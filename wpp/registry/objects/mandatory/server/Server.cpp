@@ -58,6 +58,11 @@ std::vector<Resource *> Server::getInstantiatedResourcesList(const Operation& fi
 	return list;
 }
 
+void Server::clear() {
+	for (auto &pair : _resources) pair.second.clear();
+	resourcesInit();
+}
+
 void Server::serverOperationNotifier(Operation::TYPE type, const ResLink &resId) {
 	observerNotify(*this, resId, type);
 	switch (type) {

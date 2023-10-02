@@ -20,7 +20,7 @@ bool Instance::clear(ID_T resId) {
 		userOperationNotifier(Operation::DELETE, {resId,});
 	}
 
-	return resource->clear();
+	return result;
 }
 
 bool Instance::remove(const ResLink &resId) {
@@ -223,6 +223,11 @@ uint8_t Instance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * dat
 	// find the necessary description in the documentation, so this question
 	// needs to be investigated in detail.
 	// TODO: Write-Composite Operation for now not supported
+
+	if (writeType == LWM2M_WRITE_REPLACE_INSTANCE) {
+		clear();
+		writeType = LWM2M_WRITE_REPLACE_RESOURCES;
+	}
 	
 	for (int i = 0; i < numData; i++) {
 		Resource *resource = getResource(dataArray[i].id);
@@ -248,7 +253,7 @@ uint8_t Instance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * dat
 			WPP_LOGD_ARG(TAG_WPP_INST, "Clear resource before write: %d:%d:%d", _id.objId, _id.objInstId, dataArray[i].id);
 			resource->clear();
 			// Notify Instance implementation about operation
-			serverOperationNotifier(Operation::DELETE, {resource->getID(), SINGLE_INSTANCE_ID});
+			serverOperationNotifier(Operation::DELETE, {resource->getID(),});
 		}
 
 		size_t count = 1;

@@ -58,6 +58,11 @@ std::vector<Resource *> Security::getInstantiatedResourcesList(const Operation& 
 	return list;
 }
 
+void Security::clear() {
+	for (auto &pair : _resources) pair.second.clear();
+	resourcesInit();
+}
+
 void Security::serverOperationNotifier(Operation::TYPE type, const ResLink &resId) {
 	observerNotify(*this, resId, type);
 	switch (type) {

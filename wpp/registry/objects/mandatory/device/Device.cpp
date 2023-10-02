@@ -58,6 +58,11 @@ std::vector<Resource *> Device::getInstantiatedResourcesList(const Operation& fi
 	return list;
 }
 
+void Device::clear() {
+	for (auto &pair : _resources) pair.second.clear();
+	resourcesInit();
+}
+
 void Device::serverOperationNotifier(Operation::TYPE type, const ResLink &resId) {
 	observerNotify(*this, resId, type);
 	switch (type) {

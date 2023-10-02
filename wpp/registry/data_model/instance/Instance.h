@@ -106,6 +106,11 @@ protected: /* Interface implemented by Instance derived class */
 	virtual std::vector<Resource *> getInstantiatedResourcesList() = 0;
 	virtual std::vector<Resource *> getInstantiatedResourcesList(const Operation& filter) = 0;
 	/*
+	 * This method must be implemented by derived class.
+	 * Reset all resources values and internal state to default.
+	 */
+	virtual void clear() = 0;
+	/*
 	 * This method must be implemented by derived class, and handle
      * information about resource operation (READ, WRITE, EXECUTE, DISCOVER, DELETE).
 	 * Called by Instance after resource operation performed by SERVER.

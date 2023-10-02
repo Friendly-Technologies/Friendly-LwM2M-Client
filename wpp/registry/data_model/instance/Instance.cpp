@@ -17,7 +17,7 @@ bool Instance::clear(ID_T resId) {
 	bool result = resource->clear();
 	if (result) {
 		client().notifyValueChanged({_id, {resId,}});
-		userOperationNotifier(Operation::DELETE, {resId,});
+		userOperationNotifier(ResOperation::DELETE, {resId,});
 	}
 
 	return result;
@@ -30,7 +30,7 @@ bool Instance::remove(const ResLink &resId) {
 	bool result = resource->remove(resId.resInstId);
 	if (result) {
 		client().notifyValueChanged({_id, {resId.resId, resId.resInstId}});
-		userOperationNotifier(Operation::DELETE, {resId.resId, resId.resInstId});
+		userOperationNotifier(ResOperation::DELETE, {resId.resId, resId.resInstId});
 	}
 
 	return result;
@@ -150,7 +150,7 @@ uint8_t Instance::resourceRead(ID_T instanceId, int * numDataP, lwm2m_data_t ** 
 	// TODO: Read-Composite Operation for now not supported
 	// Requested each resource
 	if (!*numDataP) {
-		std::vector<Resource *> readResources = getInstantiatedResourcesList(Operation(Operation::READ));
+		std::vector<Resource *> readResources = getInstantiatedResourcesList(ResOperation(ResOperation::READ));
 
 		*dataArrayP = lwm2m_data_new(readResources.size());
 		if (*dataArrayP == NULL) return COAP_500_INTERNAL_SERVER_ERROR;
@@ -207,7 +207,7 @@ uint8_t Instance::resourceRead(ID_T instanceId, int * numDataP, lwm2m_data_t ** 
 			}
 			// If execution get to this place then operation completed with
 			// success and we can notifyInstance implementation about it
-			serverOperationNotifier(Operation::READ, {resource->getID(), resInstId});
+			serverOperationNotifier(ResOperation::READ, {resource->getID(), resInstId});
 		}
 	}
 
@@ -215,8 +215,6 @@ uint8_t Instance::resourceRead(ID_T instanceId, int * numDataP, lwm2m_data_t ** 
 }
 
 uint8_t Instance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_write_type_t writeType) {
-	// Protect access to instance list
-
 	// TODO: In some cases, according to the implementation of the wakaama,
 	// the resources marked as R can be written by the server during the
 	// instance creation operation (Ex: ACL object resource 0). I did not
@@ -224,10 +222,13 @@ uint8_t Instance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * dat
 	// needs to be investigated in detail.
 	// TODO: Write-Composite Operation for now not supported
 
-	if (writeType == LWM2M_WRITE_REPLACE_INSTANCE) {
-		clear();
-		writeType = LWM2M_WRITE_REPLACE_RESOURCES;
-	}
+	bool isReplace = (writeType == LWM2M_WRITE_REPLACE_INSTANCE || writeType == LWM2M_WRITE_REPLACE_RESOURCES);
+
+	// During the replace instance we should reset instance to default
+	// state and then write with replace all resources in array. During
+	// this operation, we notify the instance only one time after the 
+	// writing is completed.
+	if (writeType == LWM2M_WRITE_REPLACE_INSTANCE) setDefaultState();
 	
 	for (int i = 0; i < numData; i++) {
 		Resource *resource = getResource(dataArray[i].id);
@@ -249,11 +250,11 @@ uint8_t Instance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * dat
 		}
 
 		// Clear resource data if we need to replace it
-		if (writeType == LWM2M_WRITE_REPLACE_RESOURCES) {
+		if (isReplace) {
 			WPP_LOGD_ARG(TAG_WPP_INST, "Clear resource before write: %d:%d:%d", _id.objId, _id.objInstId, dataArray[i].id);
 			resource->clear();
 			// Notify Instance implementation about operation
-			serverOperationNotifier(Operation::DELETE, {resource->getID(),});
+			if (writeType != LWM2M_WRITE_REPLACE_INSTANCE) serverOperationNotifier(ResOperation::DELETE, {resource->getID(), ID_T_MAX_VAL});
 		}
 
 		size_t count = 1;
@@ -279,9 +280,12 @@ uint8_t Instance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * dat
 			}
 			// If execution get to this place then operation completed with
 			// success and we can notify Instance implementation about it
-			serverOperationNotifier(Operation::WRITE, {resource->getID(), resInstId});
+			if (writeType != LWM2M_WRITE_REPLACE_INSTANCE) serverOperationNotifier(ResOperation::WRITE, {resource->getID(), resInstId});
 		}
 	}
+
+	// Notify implementation about replace instance operation
+	if (writeType == LWM2M_WRITE_REPLACE_INSTANCE) serverOperationNotifier(ResOperation::WRITE, {ID_T_MAX_VAL, ID_T_MAX_VAL});
 
 	return COAP_204_CHANGED;
 }
@@ -308,7 +312,7 @@ uint8_t Instance::resourceExecute(ID_T instanceId, ID_T resId, uint8_t * buffer,
 
 	// If execution get to this place then operation completed with
 	// success and we can notify Instance implementation about it
-	serverOperationNotifier(Operation::EXECUTE, {resource->getID(), SINGLE_INSTANCE_ID});
+	serverOperationNotifier(ResOperation::EXECUTE, {resource->getID(), SINGLE_INSTANCE_ID});
 
 	return COAP_204_CHANGED;
 }
@@ -346,7 +350,7 @@ uint8_t Instance::resourceDiscover(ID_T instanceId, int * numDataP, lwm2m_data_t
 				WPP_LOGE_ARG(TAG_WPP_INST, "Resource discover: %d:%d:%d:%d", _id.objId, _id.objInstId, data->id, pair.first);
 				// If execution get to this place then operation completed with
 				// success and we can notifyInstance implementation about it
-				serverOperationNotifier(Operation::DISCOVER, {resource->getID(), pair.first});
+				serverOperationNotifier(ResOperation::DISCOVER, {resource->getID(), pair.first});
 			}
 			lwm2m_data_encode_instances(subData, resource->instanceCnt(), data);
 		}

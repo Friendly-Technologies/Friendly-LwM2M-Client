@@ -1,7 +1,7 @@
 #ifndef WPP_INST_SUBJECT_H_
 #define WPP_INST_SUBJECT_H_
 
-#include "Operation.h"
+#include "ResOperation.h"
 #include "InstObserver.h"
 
 namespace wpp {
@@ -26,13 +26,13 @@ protected:
     /*
 	 * Notify observers about operation
 	 */
-	void observerNotify(T &inst, const ResLink &resId, Operation::TYPE type) {
+	void observerNotify(T &inst, const ResLink &resId, ResOperation::TYPE type) {
         for(InstObserver<T>* observer : _observers) {
-            if (type == Operation::TYPE::READ) {
+            if (type == ResOperation::TYPE::READ) {
                 observer->resourceRead(inst, resId);
-            } else if (type == Operation::TYPE::WRITE) {
+            } else if (type == ResOperation::TYPE::WRITE) {
                 observer->resourceWrite(inst, resId);
-            } else if (type == Operation::TYPE::EXECUTE) {
+            } else if (type == ResOperation::TYPE::EXECUTE) {
                 observer->resourceExecute(inst, resId);
             }
         }

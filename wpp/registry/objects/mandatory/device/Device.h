@@ -36,24 +36,24 @@ protected:
 	 * Returns list with available resources
 	 */
 	std::vector<Resource *> getResourcesList() override;
-	std::vector<Resource *> getResourcesList(const Operation& filter) override;
+	std::vector<Resource *> getResourcesList(const ResOperation& filter) override;
 	/*
 	 * Returns list with available instantiated resources
 	 */
 	std::vector<Resource *> getInstantiatedResourcesList() override;
-	std::vector<Resource *> getInstantiatedResourcesList(const Operation& filter) override;
+	std::vector<Resource *> getInstantiatedResourcesList(const ResOperation& filter) override;
 	/*
 	 * Reset all resources values and internal state to default.
 	 */
-	void clear() override;
+	void setDefaultState() override;
 	/*
 	 * Handles information about resource operation that made server
 	 */
-	void serverOperationNotifier(Operation::TYPE type, const ResLink &resId) override;
+	void serverOperationNotifier(ResOperation::TYPE type, const ResLink &resId) override;
 	/*
 	 * Handles information about resource operation that made user
 	 */
-	void userOperationNotifier(Operation::TYPE type, const ResLink &resId) override;
+	void userOperationNotifier(ResOperation::TYPE type, const ResLink &resId) override;
 
 private:
 	/* --------------- Class private methods --------------- */
@@ -66,9 +66,9 @@ private:
 private:
     std::unordered_map<ID_T, Resource> _resources = {
     	//  KEY            				 VALUE
-    	{REBOOT, 			  {REBOOT, 				Operation(Operation::EXECUTE),  IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::EXECUTE}},
-		{ERROR_CODE, 		  {ERROR_CODE, 			Operation(Operation::READ), 	IS_SINGLE::MULTIPLE, IS_MANDATORY::MANDATORY, TYPE_ID::INT}},
-		{SUPPORTED_BINDINGS,  {SUPPORTED_BINDINGS,  Operation(Operation::READ),     IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::STRING}},
+    	{REBOOT, 			  {REBOOT, 				ResOperation(ResOperation::EXECUTE),  IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::EXECUTE}},
+		{ERROR_CODE, 		  {ERROR_CODE, 			ResOperation(ResOperation::READ), 	IS_SINGLE::MULTIPLE, IS_MANDATORY::MANDATORY, TYPE_ID::INT}},
+		{SUPPORTED_BINDINGS,  {SUPPORTED_BINDINGS,  ResOperation(ResOperation::READ),     IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::STRING}},
 	};
 };
 

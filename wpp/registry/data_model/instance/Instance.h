@@ -12,7 +12,7 @@
 
 #include "WppClient.h"
 #include "Resource.h"
-#include "Operation.h"
+#include "ResOperation.h"
 #include "types.h"
 
 namespace wpp {
@@ -97,31 +97,31 @@ protected: /* Interface implemented by Instance derived class */
 	 * If resources does not exist then return empty list.
 	 */
 	virtual std::vector<Resource *> getResourcesList() = 0;
-	virtual std::vector<Resource *> getResourcesList(const Operation& filter) = 0;
+	virtual std::vector<Resource *> getResourcesList(const ResOperation& filter) = 0;
 	/*
 	 * This method must be implemented by derived class,
 	 * and return list with resources that has been instantiated.
 	 * If resources does not exist then return empty list.
 	 */
 	virtual std::vector<Resource *> getInstantiatedResourcesList() = 0;
-	virtual std::vector<Resource *> getInstantiatedResourcesList(const Operation& filter) = 0;
+	virtual std::vector<Resource *> getInstantiatedResourcesList(const ResOperation& filter) = 0;
 	/*
 	 * This method must be implemented by derived class.
 	 * Reset all resources values and internal state to default.
 	 */
-	virtual void clear() = 0;
+	virtual void setDefaultState() = 0;
 	/*
 	 * This method must be implemented by derived class, and handle
      * information about resource operation (READ, WRITE, EXECUTE, DISCOVER, DELETE).
 	 * Called by Instance after resource operation performed by SERVER.
 	 */
-	virtual void serverOperationNotifier(Operation::TYPE type, const ResLink &resId) = 0;
+	virtual void serverOperationNotifier(ResOperation::TYPE type, const ResLink &resId) = 0;
 	/*
 	 * This method must be implemented by derived class, and handle
      * information about resource operation (READ, WRITE, DELETE).
 	 * Called by Instance after resource operation performed by USER.
 	 */
-	virtual void userOperationNotifier(Operation::TYPE type, const ResLink &resId) = 0;
+	virtual void userOperationNotifier(ResOperation::TYPE type, const ResLink &resId) = 0;
 
 private: /* Interface used by Object<T> or Instance class */
 	/* ------------- Implementation of user set/get methods ------------- */
@@ -159,7 +159,7 @@ bool Instance::userSet(const ResLink &resId, const T &value) {
 	bool result = resource->set(value, resId.resInstId);
 	if (result) {
 		client().notifyValueChanged({_id, {resId.resId, resId.resInstId}});
-		userOperationNotifier(Operation::WRITE, resId);
+		userOperationNotifier(ResOperation::WRITE, resId);
 	}
 
 	return result;
@@ -175,7 +175,7 @@ bool Instance::userGet(const ResLink &resId, T &value) {
 
 	bool result = resource->get(value, resId.resInstId);
 	if (result) {
-		userOperationNotifier(Operation::READ, resId);
+		userOperationNotifier(ResOperation::READ, resId);
 	}
 
 	return result;

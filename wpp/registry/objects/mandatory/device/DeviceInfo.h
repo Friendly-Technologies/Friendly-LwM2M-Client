@@ -21,11 +21,11 @@ static const ObjectInfo DEVICE_OBJ_INFO = {
             /* Is Mandatory */
             IS_MANDATORY::MANDATORY,
             /* Object supported operations */
-            Operation(Operation::READ|
-                        Operation::WRITE|
-                        Operation::DISCOVER|
-                        Operation::EXECUTE|
-                        Operation::CREATE),
+            InstOperation(InstOperation::CREATE),
+            ResOperation(ResOperation::READ|
+                         ResOperation::WRITE|
+                         ResOperation::EXECUTE|
+                         ResOperation::DISCOVER),
     };
 
 }

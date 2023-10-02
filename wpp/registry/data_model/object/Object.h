@@ -96,24 +96,24 @@ Object<T>::Object(WppClient &client, const ObjectInfo &info): Lwm2mObject(info),
 	_lwm2m_object.versionMinor = _objInfo.objVersion.minor;
 	_lwm2m_object.userData = NULL;
 
-	if (_objInfo.operation.isRead()) _lwm2m_object.readFunc = read_clb;
+	if (_objInfo.resOperation.isRead()) _lwm2m_object.readFunc = read_clb;
 	else  _lwm2m_object.readFunc = NULL;
-	if (_objInfo.operation.isDiscover()) _lwm2m_object.discoverFunc = discover_clb;
+	if (_objInfo.resOperation.isDiscover()) _lwm2m_object.discoverFunc = discover_clb;
 	else  _lwm2m_object.discoverFunc = NULL;
-	if (_objInfo.operation.isWrite()) _lwm2m_object.writeFunc = write_clb;
+	if (_objInfo.resOperation.isWrite()) _lwm2m_object.writeFunc = write_clb;
 	else  _lwm2m_object.writeFunc = NULL;
-	if (_objInfo.operation.isExecute()) _lwm2m_object.executeFunc = execute_clb;
+	if (_objInfo.resOperation.isExecute()) _lwm2m_object.executeFunc = execute_clb;
 	else  _lwm2m_object.executeFunc = NULL;
-	if (_objInfo.operation.isCreate()) _lwm2m_object.createFunc = create_clb;
+	if (_objInfo.instOperation.isCreate()) _lwm2m_object.createFunc = create_clb;
 	else  _lwm2m_object.createFunc = NULL;
-	if (_objInfo.operation.isDelete()) _lwm2m_object.deleteFunc = delete_clb;
+	if (_objInfo.instOperation.isDelete()) _lwm2m_object.deleteFunc = delete_clb;
 	else  _lwm2m_object.deleteFunc = NULL;
 #ifdef LWM2M_RAW_BLOCK1_REQUESTS
-	if (_objInfo.operation.isBlock1Create()) _lwm2m_object.rawBlock1CreateFunc = block1Ccreate_clb;
+	if (_objInfo.instOperation.isBlock1Create()) _lwm2m_object.rawBlock1CreateFunc = block1Ccreate_clb;
 	else  _lwm2m_object.rawBlock1CreateFunc = NULL;
-	if (_objInfo.operation.isBlock1Write()) _lwm2m_object.rawBlock1WriteFunc = block1Write_clb;
+	if (_objInfo.resOperation.isBlock1Write()) _lwm2m_object.rawBlock1WriteFunc = block1Write_clb;
 	else  _lwm2m_object.rawBlock1WriteFunc = NULL;
-	if (_objInfo.operation.isBlock1Execute()) _lwm2m_object.rawBlock1ExecuteFunc = block1Execute_clb;
+	if (_objInfo.resOperation.isBlock1Execute()) _lwm2m_object.rawBlock1ExecuteFunc = block1Execute_clb;
 	else  _lwm2m_object.rawBlock1ExecuteFunc = NULL;
 #endif
 }
@@ -282,7 +282,7 @@ uint8_t Object<T>::create_clb(lwm2m_context_t * contextP, ID_T instanceId, int n
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama create %d:%d", object()->getObjectID(), instanceId);
 	if (!object()->createInstance(instanceId)) return COAP_500_INTERNAL_SERVER_ERROR;
 	// Notify user about creating instance
-	object()->observerNotify(*object(), instanceId, Operation::TYPE::CREATE);
+	object()->observerNotify(*object(), instanceId, InstOperation::TYPE::CREATE);
 
 	uint8_t result = write_clb(contextP, instanceId, numData, dataArray, objectP, LWM2M_WRITE_REPLACE_RESOURCES);
 	if (result != COAP_204_CHANGED) {
@@ -298,7 +298,7 @@ uint8_t Object<T>::delete_clb(lwm2m_context_t * contextP, ID_T instanceId, lwm2m
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama delete %d:%d", object()->getObjectID(), instanceId);
 	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
 	// Notify user about deleting instance
-	object()->observerNotify(*object(), instanceId, Operation::TYPE::DELETE);
+	object()->observerNotify(*object(), instanceId, InstOperation::TYPE::DELETE);
 
 	return object()->removeInstance(instanceId)? COAP_202_DELETED : COAP_404_NOT_FOUND;
 }

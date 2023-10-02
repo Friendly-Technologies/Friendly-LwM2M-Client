@@ -21,12 +21,12 @@ static const ObjectInfo SECURITY_OBJ_INFO = {
         /* Is Mandatory */
         IS_MANDATORY::MANDATORY,
         /* Object supported operations */
-        Operation(Operation::READ|
-                    Operation::WRITE|
-                    Operation::DISCOVER|
-                    Operation::EXECUTE|
-                    Operation::CREATE|
-                    Operation::DELETE),
+        InstOperation(InstOperation::CREATE|
+                      InstOperation::DELETE),
+        ResOperation(ResOperation::READ|
+                     ResOperation::WRITE|
+                     ResOperation::EXECUTE|
+                     ResOperation::DISCOVER),
 };
 
 }

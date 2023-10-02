@@ -15,7 +15,7 @@ Resource::Resource():
 	_id(ID_T_MAX_VAL), _operation(), _isSingle(IS_SINGLE::MULTIPLE), _isMandatory(IS_MANDATORY::OPTIONAL), _typeID(TYPE_ID::UNDEFINED) {
 }
 
-Resource::Resource(ID_T id, const ResOperation &operation, IS_SINGLE isSingle, IS_MANDATORY isMandatory, TYPE_ID dataType):
+Resource::Resource(ID_T id, const ResOp &operation, IS_SINGLE isSingle, IS_MANDATORY isMandatory, TYPE_ID dataType):
 	_id(id), _operation(operation), _isSingle(isSingle), _isMandatory(isMandatory), _typeID(dataType) {
 }
 
@@ -47,7 +47,7 @@ TYPE_ID Resource::getTypeId() const {
 	return _typeID;
 }
 
-const ResOperation& Resource::getOperation() const {
+const ResOp& Resource::getOperation() const {
 	return _operation;
 }
 
@@ -67,7 +67,7 @@ bool Resource::isMultiple() const {
 	return _isSingle == IS_SINGLE::MULTIPLE;
 }
 
-bool Resource::isOperationValid(ResOperation::TYPE type) const {
+bool Resource::isOperationValid(ResOp::TYPE type) const {
 	return _operation.isSupported(type);
 }
 

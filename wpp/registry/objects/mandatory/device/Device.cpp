@@ -11,7 +11,7 @@
 #include <iostream>
 
 #include "Resource.h"
-#include "ResOperation.h"
+#include "ResOp.h"
 #include "types.h"
 #include "WppLogs.h"
 
@@ -36,7 +36,7 @@ std::vector<Resource *> Device::getResourcesList() {
 	return list;
 }
 
-std::vector<Resource *> Device::getResourcesList(const ResOperation& filter) {
+std::vector<Resource *> Device::getResourcesList(const ResOp& filter) {
 	std::vector<Resource *> list;
 	for (auto &pair : _resources) {
 		if (filter.isCompatible(pair.second.getOperation())) list.push_back(&pair.second);
@@ -50,7 +50,7 @@ std::vector<Resource *> Device::getInstantiatedResourcesList() {
 	return list;
 }
 
-std::vector<Resource *> Device::getInstantiatedResourcesList(const ResOperation& filter) {
+std::vector<Resource *> Device::getInstantiatedResourcesList(const ResOp& filter) {
 	std::vector<Resource *> list;
 	for (auto &pair : _resources) {
 		if (!pair.second.isEmpty() && filter.isCompatible(pair.second.getOperation())) list.push_back(&pair.second);
@@ -63,37 +63,37 @@ void Device::setDefaultState() {
 	resourcesInit();
 }
 
-void Device::serverOperationNotifier(ResOperation::TYPE type, const ResLink &resId) {
+void Device::serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
 	observerNotify(*this, resId, type);
 	switch (type) {
-	case ResOperation::READ:
+	case ResOp::READ:
 		WPP_LOGD_ARG(TAG, "Server READ -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
 		break;
-	case ResOperation::WRITE:
+	case ResOp::WRITE:
 		WPP_LOGD_ARG(TAG, "Server WRITE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
 		break;
-	case ResOperation::EXECUTE:
+	case ResOp::EXECUTE:
 		WPP_LOGD_ARG(TAG, "Server EXECUTE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
 		break;
-	case ResOperation::DISCOVER:
+	case ResOp::DISCOVER:
 		WPP_LOGD_ARG(TAG, "Server DISCOVER -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
 		break;
-	case ResOperation::DELETE:
+	case ResOp::DELETE:
 		WPP_LOGD_ARG(TAG, "Server DELETE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
 		break;
 	default: break;
 	}
 }
 
-void Device::userOperationNotifier(ResOperation::TYPE type, const ResLink &resId) {
+void Device::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
 	switch (type) {
-	case ResOperation::READ:
+	case ResOp::READ:
 		WPP_LOGD_ARG(TAG, "User READ -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
 		break;
-	case ResOperation::WRITE:
+	case ResOp::WRITE:
 		WPP_LOGD_ARG(TAG, "User WRITE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
 		break;
-	case ResOperation::DELETE:
+	case ResOp::DELETE:
 		WPP_LOGD_ARG(TAG, "User DELETE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
 		break;
 	default: break;

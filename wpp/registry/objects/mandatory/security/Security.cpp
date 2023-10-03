@@ -112,6 +112,7 @@ void Security::resourcesInit() {
 	_resources[SERVER_PUBLIC_KEY].set(OPAQUE_T());
 	_resources[SECRET_KEY].set(OPAQUE_T());
 	_resources[SERVER_ID].set(INT_T(0));
+	_resources[HOLD_OFF_TIME].set(INT_T(10));
 }
 
 } /* namespace wpp */

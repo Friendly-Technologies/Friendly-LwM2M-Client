@@ -132,7 +132,6 @@ void Device::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
 
 void Device::resourcesInit() {
 	/* --------------- Code_cpp block 9 start --------------- */
-	_resources[REBOOT].set((STRING_T)"");
 	_resources[ERROR_CODE].set((INT_T)0);
 	_resources[SUPPORTED_BINDINGS].set((STRING_T)"U");
 	/* --------------- Code_cpp block 9 end --------------- */

@@ -21,6 +21,9 @@ class DeviceImpl: public ObjObserver<Device>, public InstObserver<Device> {
         });
         device->set(Device::ERROR_CODE, (INT_T)0);
         device->set(Device::SUPPORTED_BINDINGS, (STRING_T)"U");
+        device->set(Device::MANUFACTURE, (STRING_T)"Open Mobile Alliance");
+        device->set(Device::MODEL_NUM, (STRING_T)"Lightweight M2M Client");
+        device->set(Device::SERIAL_NUM, (STRING_T)"345000123");
     }
 
 	void objectRestore(Object<Device> &object) override {

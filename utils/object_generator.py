@@ -1,10 +1,8 @@
 import object_xml_parser
 
 import os
-import sys
 from datetime import datetime
 from tabulate import tabulate
-import xml.etree.ElementTree as ET
 from optparse import OptionParser
 
 PLACE_CLASS_NAME_UPPER = "<<<0>>>"

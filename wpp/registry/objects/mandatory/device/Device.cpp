@@ -15,15 +15,28 @@
 #include "types.h"
 #include "WppLogs.h"
 
+/* --------------- Code_cpp block 0 start --------------- */
+/* --------------- Code_cpp block 0 end --------------- */
+
 #define TAG "Device"
 
 namespace wpp {
 
 Device::Device(WppClient &client, const OBJ_LINK_T &id): Instance(client, id) {
+	/* --------------- Code_cpp block 1 start --------------- */
+	/* --------------- Code_cpp block 1 end --------------- */
+	
 	resourcesInit();
+
+	/* --------------- Code_cpp block 2 start --------------- */
+	/* --------------- Code_cpp block 2 end --------------- */
 }
 
-/* ---------------Instance implementation part --------------- */
+Device::~Device() {
+	/* --------------- Code_cpp block 3 start --------------- */
+	/* --------------- Code_cpp block 3 end --------------- */
+}
+
 Resource * Device::getResource(ID_T id) {
 	// Check if resource ID is valid
 	if (_resources.find(id) == _resources.end()) return NULL;
@@ -59,12 +72,23 @@ std::vector<Resource *> Device::getInstantiatedResourcesList(const ResOp& filter
 }
 
 void Device::setDefaultState() {
+	/* --------------- Code_cpp block 4 start --------------- */
+	/* --------------- Code_cpp block 4 end --------------- */
+	
 	for (auto &pair : _resources) pair.second.clear();
 	resourcesInit();
+	
+	/* --------------- Code_cpp block 5 start --------------- */
+	/* --------------- Code_cpp block 5 end --------------- */
 }
 
 void Device::serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
+	/* --------------- Code_cpp block 6 start --------------- */
+	/* --------------- Code_cpp block 6 end --------------- */
+	
 	observerNotify(*this, resId, type);
+
+	/* --------------- Code_cpp block 7 start --------------- */
 	switch (type) {
 	case ResOp::READ:
 		WPP_LOGD_ARG(TAG, "Server READ -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
@@ -86,9 +110,11 @@ void Device::serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
 		break;
 	default: break;
 	}
+	/* --------------- Code_cpp block 7 end --------------- */
 }
 
 void Device::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
+	/* --------------- Code_cpp block 8 start --------------- */
 	switch (type) {
 	case ResOp::READ:
 		WPP_LOGD_ARG(TAG, "User READ -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
@@ -101,13 +127,18 @@ void Device::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
 		break;
 	default: break;
 	}
+	/* --------------- Code_cpp block 8 end --------------- */
 }
 
-/* --------------- Class private methods --------------- */
 void Device::resourcesInit() {
+	/* --------------- Code_cpp block 9 start --------------- */
 	_resources[REBOOT].set((STRING_T)"");
 	_resources[ERROR_CODE].set((INT_T)0);
 	_resources[SUPPORTED_BINDINGS].set((STRING_T)"U");
+	/* --------------- Code_cpp block 9 end --------------- */
 }
+
+/* --------------- Code_cpp block 10 start --------------- */
+/* --------------- Code_cpp block 10 end --------------- */
 
 } /* namespace wpp */

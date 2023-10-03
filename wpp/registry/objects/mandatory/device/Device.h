@@ -13,6 +13,9 @@
 #include "Instance.h"
 #include "InstSubject.h"
 
+/* --------------- Сode_h block 0 start --------------- */
+/* --------------- Сode_h block 0 end --------------- */
+
 namespace wpp {
 
 class Device: public Instance, public InstSubject<Device> {
@@ -23,8 +26,15 @@ public:
 		SUPPORTED_BINDINGS = 16,
 	};
 
+	/* --------------- Сode_h block 1 start --------------- */
+	/* --------------- Сode_h block 1 end --------------- */
+
 public:
 	Device(WppClient &client, const OBJ_LINK_T &id);
+	~Device();
+
+	/* --------------- Сode_h block 2 start --------------- */
+	/* --------------- Сode_h block 2 end --------------- */
 
 protected:
 	/* ---------------Instance implementation part --------------- */
@@ -62,6 +72,9 @@ private:
 	 * Resource always must have at least one instance.
 	 */
 	void resourcesInit();
+
+	/* --------------- Сode_h block 3 start --------------- */
+	/* --------------- Сode_h block 3 end --------------- */
 	
 private:
     std::unordered_map<ID_T, Resource> _resources = {
@@ -70,6 +83,9 @@ private:
 		{ERROR_CODE, 		  {ERROR_CODE, 			ResOp(ResOp::READ), 	IS_SINGLE::MULTIPLE, IS_MANDATORY::MANDATORY, TYPE_ID::INT}},
 		{SUPPORTED_BINDINGS,  {SUPPORTED_BINDINGS,  ResOp(ResOp::READ),     IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::STRING}},
 	};
+
+	/* --------------- Сode_h block 4 start --------------- */
+	/* --------------- Сode_h block 4 end --------------- */
 };
 
 } /* namespace wpp */

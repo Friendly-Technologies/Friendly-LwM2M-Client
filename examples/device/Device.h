@@ -37,16 +37,20 @@ class DeviceImpl: public ObjObserver<Device>, public InstObserver<Device> {
 		cout << "Device: instanceDeleting: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
 	}
 
-	virtual void resourceRead(Device &inst, const ResLink &resId) override {
+	void resourceRead(Device &inst, const ResLink &resId) override {
         cout << "Device: resourceRead: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
     }
 
-    virtual void resourceWrite(Device &inst, const ResLink &resId) override {
+    void resourceWrite(Device &inst, const ResLink &resId) override {
         cout << "Device: resourceWrite: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
     }
 
-    virtual void resourceExecute(Device &inst, const ResLink &resId) override {
+    void resourceExecute(Device &inst, const ResLink &resId) override {
         cout << "Device: resourceExecute: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
+    }
+
+    void resourcesReplaced(Device &inst) override {
+        cout << "Device: resourcesReplaced: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << endl;
     }
 };
 

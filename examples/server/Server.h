@@ -36,16 +36,20 @@ class ServerImpl: public ObjObserver<Server>, public InstObserver<Server> {
 		cout << "Server: instanceDeleting: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
 	}
 
-	virtual void resourceRead(Server &inst, const ResLink &resId) override {
+	void resourceRead(Server &inst, const ResLink &resId) override {
         cout << "Server: resourceRead: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
     }
 
-    virtual void resourceWrite(Server &inst, const ResLink &resId) override {
+    void resourceWrite(Server &inst, const ResLink &resId) override {
         cout << "Server: resourceWrite: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
     }
 
-    virtual void resourceExecute(Server &inst, const ResLink &resId) override {
+    void resourceExecute(Server &inst, const ResLink &resId) override {
         cout << "Server: resourceExecute: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
+    }
+
+    void resourcesReplaced(Server &inst) override {
+        cout << "Server: resourcesReplaced: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << endl;
     }
 };
 

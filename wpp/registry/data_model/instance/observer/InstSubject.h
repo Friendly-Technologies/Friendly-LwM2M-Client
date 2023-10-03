@@ -28,12 +28,21 @@ protected:
 	 */
 	void observerNotify(T &inst, const ResLink &resId, ResOp::TYPE type) {
         for(InstObserver<T>* observer : _observers) {
-            if (type == ResOp::READ) {
+            switch (type) {
+            case ResOp::READ: 
                 observer->resourceRead(inst, resId);
-            } else if (type == ResOp::WRITE) {
+                break;
+            case ResOp::WRITE_UPD:
+            case ResOp::WRITE_REPLACE_RES:
                 observer->resourceWrite(inst, resId);
-            } else if (type == ResOp::EXECUTE) {
-                observer->resourceExecute(inst, resId);
+                break;
+            case ResOp::WRITE_REPLACE_INST:
+                observer->resourcesReplaced(inst);
+                break;
+            case ResOp::EXECUTE:
+                 observer->resourceExecute(inst, resId);
+                break;
+            default: break;
             }
         }
     }

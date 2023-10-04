@@ -476,8 +476,16 @@ class ObjectGenerator:
         self.create_file(name_path, f"{name_class}Config",  "h",    generated_config)
 
 
-xp = object_xml_parser.ObjectXmlParser("./1-1_1.xml")
-obj_dict, res_list = xp.parse_xml()
-obj_names = xp.create_metadata()
-og = ObjectGenerator(obj_dict, res_list, obj_names)
-og.object_code_generate()
+if __name__ == "__main__":
+    parser = OptionParser()
+    parser.add_option("-f", "--file", dest="filename", help="path to xml file")
+    options, args = parser.parse_args()
+
+    if options.filename is not None:
+        xp = object_xml_parser.ObjectXmlParser(options.filename)
+        obj_dict, res_list = xp.parse_xml()
+        obj_names = xp.create_metadata()
+        og = ObjectGenerator(obj_dict, res_list, obj_names)
+        og.object_code_generate()
+    else:
+        parser.error("The path to xml file is not provided")

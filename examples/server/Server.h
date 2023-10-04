@@ -30,6 +30,7 @@ class ServerImpl: public ObjObserver<Server>, public InstObserver<Server> {
 
     void instanceCreated(Object<Server> &object, ID_T instanceId) override {
         cout << "Server: instanceCreated: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
+        object.instance(instanceId)->subscribe(this);
     }
 
     void instanceDeleting(Object<Server> &object, ID_T instanceId) override {

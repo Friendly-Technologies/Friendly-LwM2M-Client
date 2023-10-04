@@ -119,7 +119,7 @@ bool Instance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &resource,
 		break;
 	}
 	case TYPE_ID::OPAQUE: {
-		if (data.type != LWM2M_TYPE_OPAQUE) return false;
+		if (data.type != LWM2M_TYPE_OPAQUE && data.type != LWM2M_TYPE_STRING) return false;
 		size_t len = data.value.asBuffer.length;
 		uint8_t *buffer =  data.value.asBuffer.buffer;
 		if (!resource.set(OPAQUE_T(buffer, buffer + len), instanceId)) return false;
@@ -146,27 +146,41 @@ bool Instance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &resource,
 	return true;
 }
 
-uint8_t Instance::resourceRead(ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP) {
+uint8_t Instance::resourceRead(ID_T instanceId, int * numData, lwm2m_data_t ** dataArrayP) {
 	// TODO: Read-Composite Operation for now not supported
-	// Requested each resource
-	if (!*numDataP) {
+	if (!*numData) {
 		std::vector<Resource *> readResources = getInstantiatedResourcesList(ResOp(ResOp::READ));
 
 		*dataArrayP = lwm2m_data_new(readResources.size());
 		if (*dataArrayP == NULL) return COAP_500_INTERNAL_SERVER_ERROR;
-		*numDataP = readResources.size();
+		*numData = readResources.size();
 
 		lwm2m_data_t *tmp_data_p = *dataArrayP;
 		for (auto &resource : readResources) (tmp_data_p++)->id = resource->getID();
 	}
 
-	for (int i = 0; i < *numDataP; i++) {
+	// According to the documentation, optional resources can be missing when a write
+	// or read attempt is made, allowing us to ignore a request to read/write these 
+	// resources, but wakaama is implemented in such a way that the behavior of ignoring
+	// optional resources results in an incorrect internal registration system state. 
+	// One of the workarounds is to determine the number of resources that are read or 
+	// written, wakaama reads resources only one at a time, this allows to determine that
+	// the reading or writing is done by wakaama core and set the correct behavior in the
+	// absence of a resource.
+	bool isMultipleRead = *numData > 1;
+	
+	for (int i = 0; i < *numData; i++) {
 		lwm2m_data_t *data = (*dataArrayP) + i;
 		Resource *resource = getResource(data->id);
 
 		if (resource == NULL || resource->isEmpty()) {
-			WPP_LOGW_ARG(TAG_WPP_INST, "Resource does not exist: %d:%d:%d", _id.objId, _id.objInstId, data->id);
-			return COAP_404_NOT_FOUND;
+			if (isMultipleRead) {
+				WPP_LOGI_ARG(TAG_WPP_INST, "Resource does not exist: %d:%d:%d, but read is multiple", _id.objId, _id.objInstId,  data->id);
+				continue;
+			} else {
+				WPP_LOGW_ARG(TAG_WPP_INST, "Resource does not exist: %d:%d:%d, and read is single", _id.objId, _id.objInstId,  data->id);
+				return COAP_404_NOT_FOUND;
+			}
 		}
 
 		// Check the server operation permission for resource
@@ -222,6 +236,15 @@ uint8_t Instance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * dat
 	// needs to be investigated in detail.
 	// TODO: Write-Composite Operation for now not supported
 
+	// According to the documentation, optional resources can be missing when a write
+	// or read attempt is made, allowing us to ignore a request to read/write these 
+	// resources, but wakaama is implemented in such a way that the behavior of ignoring
+	// optional resources results in an incorrect internal registration system state. 
+	// One of the workarounds is to determine the number of resources that are read or 
+	// written, wakaama reads resources only one at a time, this allows to determine that
+	// the reading or writing is done by wakaama core and set the correct behavior in the
+	// absence of a resource.
+	bool isMultipleWrite = numData > 1;
 	bool isReplace = (writeType == LWM2M_WRITE_REPLACE_INSTANCE || writeType == LWM2M_WRITE_REPLACE_RESOURCES);
 
 	// During the replace instance we should reset instance to default
@@ -233,8 +256,13 @@ uint8_t Instance::resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * dat
 	for (int i = 0; i < numData; i++) {
 		Resource *resource = getResource(dataArray[i].id);
 		if (resource == NULL) {
-			WPP_LOGW_ARG(TAG_WPP_INST, "Resource does not exist: %d:%d:%d", _id.objId, _id.objInstId, dataArray[i].id);
-			return COAP_404_NOT_FOUND;
+			if (isMultipleWrite) {
+				WPP_LOGI_ARG(TAG_WPP_INST, "Resource does not exist: %d:%d:%d, but write is multiple", _id.objId, _id.objInstId, dataArray[i].id);
+				continue;
+			} else {
+				WPP_LOGW_ARG(TAG_WPP_INST, "Resource does not exist: %d:%d:%d, and write is single", _id.objId, _id.objInstId, dataArray[i].id);
+				return COAP_404_NOT_FOUND;
+			}
 		}
 	
 		// Check the server operation permission for resource
@@ -315,14 +343,14 @@ uint8_t Instance::resourceExecute(ID_T instanceId, ID_T resId, uint8_t * buffer,
 	return COAP_204_CHANGED;
 }
 
-uint8_t Instance::resourceDiscover(ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP) {
+uint8_t Instance::resourceDiscover(ID_T instanceId, int * numData, lwm2m_data_t ** dataArrayP) {
 	// Requested each resource
-	if (!*numDataP) {
+	if (!*numData) {
 		std::vector<Resource *> resources = getResourcesList();
 
 		*dataArrayP = lwm2m_data_new(resources.size());
 		if (*dataArrayP == NULL) return COAP_500_INTERNAL_SERVER_ERROR;
-		*numDataP = resources.size();
+		*numData = resources.size();
 
 		lwm2m_data_t *tmp_data_p = *dataArrayP;
 		for (auto &resource : resources) {
@@ -330,7 +358,7 @@ uint8_t Instance::resourceDiscover(ID_T instanceId, int * numDataP, lwm2m_data_t
 		}
 	}
 
-	for (int i = 0; i < *numDataP; i++) {
+	for (int i = 0; i < *numData; i++) {
 		lwm2m_data_t *data = (*dataArrayP) + i;
 		Resource *resource = getResource(data->id);
 		if (resource == NULL || resource->isEmpty()) {

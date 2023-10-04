@@ -52,6 +52,7 @@ class SecurityImpl: public ObjObserver<Security>, public InstObserver<Security> 
 
     void instanceCreated(Object<Security> &object, ID_T instanceId) override {
         cout << "Security: instanceCreated: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
+        object.instance(instanceId)->subscribe(this);
     }
 
     void instanceDeleting(Object<Security> &object, ID_T instanceId) override {

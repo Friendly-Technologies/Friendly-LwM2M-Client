@@ -179,11 +179,15 @@ FUNC_CLEAR = \
 class ObjectGenerator:
     """Add some comments here"""
 
-    def __init__(self, object_dict, resources_list, object_names):
+    def __init__(self, filename):
 
-        self.meta_object = object_dict
-        self.meta_resources = resources_list
-        self.object_names = object_names
+        xp = object_xml_parser.ObjectXmlParser(filename)
+        obj_dict, res_list = xp.parse_xml()
+        obj_names = xp.create_metadata()
+
+        self.meta_object = obj_dict
+        self.meta_resources = res_list
+        self.object_names = obj_names
 
     def parse_operation(self, xml_operation):
         operation = f"{TYPE_OPERATION}::"
@@ -478,14 +482,11 @@ class ObjectGenerator:
 
 if __name__ == "__main__":
     parser = OptionParser()
-    parser.add_option("-f", "--file", dest="filename", help="path to xml file")
+    parser.add_option("-f", "--file", dest="filename", help="The path to the xml file of the Object")
     options, args = parser.parse_args()
 
     if options.filename is not None:
-        xp = object_xml_parser.ObjectXmlParser(options.filename)
-        obj_dict, res_list = xp.parse_xml()
-        obj_names = xp.create_metadata()
-        og = ObjectGenerator(obj_dict, res_list, obj_names)
+        og = ObjectGenerator(options.filename)
         og.object_code_generate()
     else:
         parser.error("The path to xml file is not provided")

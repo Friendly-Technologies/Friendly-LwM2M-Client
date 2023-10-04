@@ -18,6 +18,12 @@ STOP_STRING_REG_INCL = ["/* The end of the includes of the mandatory objects. */
 class ObjectIntegrator:
     """Add some comments here"""
 
+    def __init__(self, xml_file_path):
+        xp = object_xml_parser.ObjectXmlParser(xml_file_path)
+        obj_dict, res_list = xp.parse_xml()
+        self.obj_meta = obj_dict
+        self.obj_names = xp.create_metadata()
+
     def update_file(self, stop_string, content, path_to_file):
         is_stop_string_present = False
         new_content = ''
@@ -45,42 +51,47 @@ class ObjectIntegrator:
             f.write(new_content[:-1])
         f.close()
 
-    def update_files(self, obj_meta, obj_names):
-        is_obj_mandatory = obj_meta["is_mandatory"]
+    def update_files(self):
+        is_obj_mandatory = self.obj_meta["is_mandatory"]
+
+        obj_name_class = self.obj_names['obj_name_class']
+        obj_name_define = self.obj_names['obj_name_define']
+        obj_name_camelcase = self.obj_names["obj_name_camelcase"]
+
         stop_string_obj_id = STOP_STRING_OBJ_ID[0] if is_obj_mandatory else STOP_STRING_OBJ_ID[1]
         stop_string_cfg_cmk = STOP_STRING_CNFG_CMK[0] if is_obj_mandatory else STOP_STRING_CNFG_CMK[1]
-
         stop_string_reg_cpp = STOP_STRING_REG_PRT[0] if is_obj_mandatory else STOP_STRING_REG_PRT[1]
         stop_string_reg_incl = STOP_STRING_REG_INCL[0] if is_obj_mandatory else STOP_STRING_REG_INCL[1]
         stop_string_reg_prot = STOP_STRING_REG_PRT[0] if is_obj_mandatory else STOP_STRING_REG_PRT[1]
 
         content_obj_id = \
-            f"#ifdef {obj_names['obj_name_define']}\n" \
-            f"\t{obj_names['obj_name_class'].upper()} = {obj_meta['object_id']},\n" \
-            f"#endif /* {obj_names['obj_name_define']} */\n"
+            f"#ifdef {obj_name_define}\n" \
+            f"\t{obj_name_class.upper()} = {self.obj_meta['object_id']},\n" \
+            f"#endif /* {obj_name_define} */\n"
 
         content_cnfg_cmk = \
-            f"""option({obj_names['obj_name_define']} """ \
+            f"""option({obj_name_define} """ \
             f""""Include {"mandatory" if is_obj_mandatory else "optional"} """ \
-            f"""{obj_names['obj_name_class']} object in the build" {"ON" if is_obj_mandatory else "OFF"})\n""" \
-            f"""if ({obj_names['obj_name_define']})\n\tset(WPP_DEFINITIONS ${{WPP_DEFINITIONS}} {obj_names['obj_name_define']}=1)""" \
+            f"""{obj_name_class} object in the build" {"ON" if is_obj_mandatory else "OFF"})\n""" \
+            f"""if ({obj_name_define})\n\tset(WPP_DEFINITIONS ${{WPP_DEFINITIONS}} {obj_name_define}=1)""" \
             f"""\nendif()\n"""
 
         content_reg_h_incl = \
-            f"""#if {obj_names['obj_name_define']}\n""" \
-            f"""#include "mandatory/{obj_names["obj_name_folder"]}/{obj_names['obj_name_class']}.h"\n""" \
+            f"""#if {obj_name_define}\n""" \
+            f"""#include "mandatory/{self.obj_names["obj_name_folder"]}/{obj_name_class}.h"\n""" \
             f"""#endif\n"""
 
         content_reg_h_prt = \
-            f"""\t#if {obj_names['obj_name_define']}\n\t""" \
-            f"""{TYPE_OBJECT} <{obj_names['obj_name_class']}> & {obj_names["obj_name_camelcase"]}();\n\t""" \
+            f"""\t#if {obj_name_define}\n\t""" \
+            f"""{TYPE_OBJECT} <{obj_name_class}> & {obj_name_camelcase}();\n\t""" \
             f"""#endif\n"""
 
         content_reg_cpp = \
-            f"""# if {obj_names['obj_name_define']}\n""" \
-            f"""{TYPE_OBJECT} <{obj_names['obj_name_class']}> & {TYPE_REGISTRY}::{obj_names["obj_name_camelcase"]}() {{\n\t""" \
-            f"""if (!{TYPE_OBJECT} <{obj_names['obj_name_class']}>::isCreated()) {TYPE_OBJECT} <{obj_names['obj_name_class']}>::create(_client, {obj_names["obj_name_object_info"]});\n\t""" \
-            f"""return *{TYPE_OBJECT} <{obj_names['obj_name_class']}>::object();\n""" \
+            f"""# if {obj_name_define}\n""" \
+            f"""{TYPE_OBJECT} <{obj_name_class}> & {TYPE_REGISTRY}::{obj_name_camelcase}() {{\n\t""" \
+            f"""if (!{TYPE_OBJECT} <{obj_name_class}>::isCreated()) {TYPE_OBJECT} <{obj_name_class}>::""" \
+            f"""create(_client, {self.obj_names["obj_name_object_info"]});\n\t""" \
+            f"""return *{TYPE_OBJECT} <{obj_name_class}>::object();\n""" \
             f"""}}\n""" \
             f"""# endif\n"""
 
@@ -93,8 +104,13 @@ class ObjectIntegrator:
         self.update_file(stop_string_reg_cpp, content_reg_cpp, "../wpp/registry/WppRegistry.cpp")
 
 
-xp = object_xml_parser.ObjectXmlParser("./1-1_1.xml")
-obj_dict, res_list = xp.parse_xml()
-obj_names = xp.create_metadata()
-oi = ObjectIntegrator()
-oi.update_files(obj_dict, obj_names)
+if __name__ == "__main__":
+    parser = OptionParser()
+    parser.add_option("-f", "--file", dest="filename", help="The path to the xml file of the Object")
+    options, args = parser.parse_args()
+
+    if options.filename is not None:
+        oi = ObjectIntegrator(options.filename)
+        oi.update_files()
+    else:
+        parser.error("The path to xml file is not provided")

@@ -1,4 +1,5 @@
 import shutil
+from optparse import OptionParser
 
 files = ["../wpp/registry/ObjectID.h",
          "../wpp/config/config.cmake",
@@ -74,6 +75,13 @@ class ObjectRemover:
         self.remove_object_folder()
 
 
-path_to_object = f"../wpp/registry/objects/mandatory/lwm2m_server_1_1"      # TODO: must be unhardcoded!
-object_remover = ObjectRemover(path_to_object)
-object_remover.remove_object()
+if __name__ == "__main__":
+    parser = OptionParser()
+    parser.add_option("-f", "--folder", dest="folder_path", help="The path to the folder of the Object")
+    options, args = parser.parse_args()
+
+    if options.folder_path is not None:
+        object_remover = ObjectRemover(options.folder_path)
+        object_remover.remove_object()
+    else:
+        parser.error("The path to the folder of the Object is not provided")

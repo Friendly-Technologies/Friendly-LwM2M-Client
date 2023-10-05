@@ -60,11 +60,11 @@ LEGAL DISCLAIMER
 
 <LWM2M xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.openmobilealliance.org/tech/profiles/LWM2M-v1_1.xsd">
   <Object ObjectType="MODefinition">
-		<Name>LwM2M Ababagalamaga</Name>
+		<Name>LwM2M Server</Name>
 		<Description1><![CDATA[This LwM2M Objects provides the data related to a LwM2M Server. A Bootstrap-Server has no such an Object Instance associated to it.]]></Description1>
 		<ObjectID>1</ObjectID>
-		<ObjectURN>urn:oma:lwm2m:oma:1:1.1</ObjectURN><LWM2MVersion>1.1</LWM2MVersion>
-		<ObjectVersion>1.1</ObjectVersion><MultipleInstances>Multiple</MultipleInstances>
+		<ObjectURN>urn:oma:lwm2m:oma:1:1.1</ObjectURN><LWM2MVersion>1.2</LWM2MVersion>
+		<ObjectVersion>1.2</ObjectVersion><MultipleInstances>Multiple</MultipleInstances>
 		<Mandatory>Mandatory</Mandatory>
 		<Resources>
 			<Item ID="0">

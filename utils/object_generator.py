@@ -189,6 +189,9 @@ class ObjectGenerator:
         self.meta_resources = res_list
         self.object_names = obj_names
 
+    def get_folder_path(self):
+        return self.object_names["obj_name_path_to_folder"]
+
     def parse_operation(self, xml_operation):
         operation = f"{TYPE_OPERATION}::"
         match xml_operation:
@@ -450,14 +453,14 @@ class ObjectGenerator:
             f"""#endif // {self.object_names["obj_name_define"]}\n"""
         return content
 
-    def create_folder(self, folder_name):
+    def create_folder(self):
         try:
-            os.mkdir(folder_name)
+            os.mkdir(self.object_names['obj_name_path_to_folder'])
         except FileExistsError:
             pass
 
-    def create_file(self, path, filename, filetype, content):
-        f = open(f"{path}/{filename}.{filetype}", "w+")
+    def create_file(self, filename, filetype, content):
+        f = open(f"{self.object_names['obj_name_path_to_folder']}/{filename}.{filetype}", "w+")
         f.write(content)
         f.close()
 
@@ -468,16 +471,15 @@ class ObjectGenerator:
         generated_info_header = self.generate_content_info_header()
         generated_config = self.generate_content_config()
 
-        name_path = self.object_names["obj_name_path_to_folder"]
         name_class = self.object_names["obj_name_class"]
 
-        self.create_folder(name_path)
+        self.create_folder()
 
-        self.create_file(name_path, f"{name_class}",        "h",    generated_header)
-        self.create_file(name_path, f"{name_class}",        "cpp",  generated_cpp_file)
-        self.create_file(name_path, f"CMakeLists",          "txt",  generated_cmake_list)
-        self.create_file(name_path, f"{name_class}Info",    "h",    generated_info_header)
-        self.create_file(name_path, f"{name_class}Config",  "h",    generated_config)
+        self.create_file(f"{name_class}",        "h",    generated_header)
+        self.create_file(f"{name_class}",        "cpp",  generated_cpp_file)
+        self.create_file(f"CMakeLists",          "txt",  generated_cmake_list)
+        self.create_file(f"{name_class}Info",    "h",    generated_info_header)
+        self.create_file(f"{name_class}Config",  "h",    generated_config)
 
 
 if __name__ == "__main__":

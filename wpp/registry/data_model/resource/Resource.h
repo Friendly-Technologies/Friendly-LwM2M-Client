@@ -33,6 +33,8 @@ public: /* ---------- Public methods for common usage ----------*/
     Resource(ID_T id, const ResOp &operation, IS_SINGLE isSingle, IS_MANDATORY isMandatory, TYPE_ID dataType);
     Resource(const Resource& resource);
     Resource(Resource&& resource);
+	Resource& operator=(const Resource& other);
+	Resource& operator=(Resource&& other);
 
 	/* ---------- Methods for get resource metadata ----------*/
     ID_T getID() const;

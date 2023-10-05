@@ -37,6 +37,37 @@ Resource::Resource(Resource&& resource) {
 	_typeID = resource._typeID;
 	_instances.insert(std::make_move_iterator(resource._instances.begin()), std::make_move_iterator(resource._instances.end()));
 	_dataVerifier = resource._dataVerifier;
+	resource.clear();
+}
+
+Resource& Resource::operator=(const Resource& resource) {
+    if (this == &resource) return *this; 
+
+    _id = resource._id;
+    _operation = resource._operation;
+    _isSingle = resource._isSingle;
+    _isMandatory = resource._isMandatory;
+    _typeID = resource._typeID;
+    _instances = resource._instances;
+    _dataVerifier = resource._dataVerifier;
+
+    return *this;
+}
+
+Resource& Resource::operator=(Resource&& resource) {
+    if (this == &resource) return *this;
+
+    _id = resource._id;
+    _operation = resource._operation;
+    _isSingle = resource._isSingle;
+    _isMandatory = resource._isMandatory;
+    _typeID = resource._typeID;
+    _instances.clear();
+    _instances.insert(std::make_move_iterator(resource._instances.begin()), std::make_move_iterator(resource._instances.end()));
+    _dataVerifier = resource._dataVerifier;
+	resource.clear();
+
+    return *this;
 }
 
 ID_T Resource::getID() const {
@@ -176,13 +207,11 @@ bool Resource::get(EXECUTE_T &value, ID_T resInstId) const {
 bool Resource::remove(ID_T resInstId) {
 	if (!isInstanceExist(resInstId) || isSingle()) return false;
 	_instances.erase(resInstId);
-
 	return true;
 }
 
 bool Resource::clear() {
 	_instances.clear();
-
 	return true;
 }
 

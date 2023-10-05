@@ -86,7 +86,12 @@ extern "C" {
 		}
 
 		wpp::WppConnection::SESSION_T session = client->connection().connect(*security);
-		WPP_LOGI_ARG(TAG_WPP_CONN, "Connected to server: security obj ID-> %d, session -> 0x%x", secObjInstID, session);
+		if (!session) {
+			WPP_LOGE_ARG(TAG_WPP_CONN, "Not posible connect to server: security obj ID-> %d, session -> 0x%x", secObjInstID, session);
+		} else {
+			WPP_LOGI_ARG(TAG_WPP_CONN, "Connected to server: security obj ID-> %d, session -> 0x%x", secObjInstID, session);
+		}
+
 		return session;
 	}
 

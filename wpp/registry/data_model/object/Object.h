@@ -253,28 +253,28 @@ template<typename T>
 uint8_t Object<T>::read_clb(lwm2m_context_t * contextP, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP) {
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama read %d:%d", object()->getObjectID(), instanceId);
 	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
-	return object()->_instances[instanceId]->resourceRead(instanceId, numDataP, dataArrayP);
+	return object()->_instances[instanceId]->read(instanceId, numDataP, dataArrayP);
 }
 
 template<typename T>
 uint8_t Object<T>::write_clb(lwm2m_context_t * contextP, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP, lwm2m_write_type_t writeType) {
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama write %d:%d, type %d", object()->getObjectID(), instanceId, writeType);
 	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
-	return object()->_instances[instanceId]->resourceWrite(instanceId, numData, dataArray, writeType);
+	return object()->_instances[instanceId]->write(instanceId, numData, dataArray, writeType);
 }
 
 template<typename T>
 uint8_t Object<T>::execute_clb(lwm2m_context_t * contextP, ID_T instanceId, ID_T resId, uint8_t * buffer, int length, lwm2m_object_t * objectP) {
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama execute %d:%d", object()->getObjectID(), instanceId);
 	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
-	return object()->_instances[instanceId]->resourceExecute(instanceId, resId, buffer, length);
+	return object()->_instances[instanceId]->execute(instanceId, resId, buffer, length);
 }
 
 template<typename T>
 uint8_t Object<T>::discover_clb(lwm2m_context_t * contextP, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP) {
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama discover %d:%d", object()->getObjectID(), instanceId);
 	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
-	return object()->_instances[instanceId]->resourceDiscover(instanceId, numDataP, dataArrayP);
+	return object()->_instances[instanceId]->discover(instanceId, numDataP, dataArrayP);
 }
 
 template<typename T>

@@ -33,6 +33,8 @@ class WppClient;
  * of any of the resources changes bypassing the Instance::get()/set() methods, then the developer
  * must immediately call the method WppClient::notifyValueChanged() or the one that encapsulates
  * this call. It is necessary to notify about the change for all resources except those marked as EXECUTE.
+ * 
+ * Note: Empty resource == undefined resource.
  */
 class Instance {
 	template<typename T>
@@ -137,11 +139,14 @@ private: /* Interface used by Object<T> or Instance class */
 	 */
 	bool resourceToLwm2mData(Resource &resource, ID_T instanceId, lwm2m_data_t &data);
 	bool lwm2mDataToResource(const lwm2m_data_t &data, Resource &resource, ID_T instanceId);
-	/* ------------- Server callback ------------- */
-	uint8_t resourceRead(ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP);
-	uint8_t resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_write_type_t writeType);
-	uint8_t resourceExecute(ID_T instanceId, ID_T resId, uint8_t * buffer, int length);
-	uint8_t resourceDiscover(ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP);
+	/* ------------- Helpful methods for server callbacks ------------- */
+	Resource* getValidatedResForWrite(lwm2m_data_t &data, lwm2m_write_type_t writeType, uint8_t &errCode);
+	uint8_t resourceWrite(Resource &res, lwm2m_data_t &data, lwm2m_write_type_t writeType, bool notify);
+	/* ------------- Server callbacks ------------- */
+	uint8_t read(ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP);
+	uint8_t write(ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_write_type_t writeType);
+	uint8_t execute(ID_T instanceId, ID_T resId, uint8_t * buffer, int length);
+	uint8_t discover(ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP);
 
 protected:
 	WppClient &_client;

@@ -1,7 +1,9 @@
+import object_generator
 import object_remover
 
 from optparse import OptionParser
 import re
+import os
 
 
 def get_info(path_to_file):
@@ -21,11 +23,62 @@ def get_info(path_to_file):
                 counter += 1
 
             if add_line:
-                user_code_block += line + "\n"
+                user_code_block += line
     f.close()
 
     return user_code_blocks
 
 
-# path_to_object = f"../wpp/registry/objects/mandatory/lwm2m_server_1_1"
-# obj_rem = object_remover.ObjectRemover(path_to_object)
+def put_info(path_to_file, file_user_code_dict):
+    counter = 0
+    new_content = ''
+    old_content = ''
+    with open(path_to_file, 'r') as f:
+        for i in f:
+            old_content += i
+    f.close()
+
+    for line in old_content.split("\n"):
+        new_content += line + "\n"
+        if re.search("block \d start", line):
+            new_content += file_user_code_dict[counter]
+
+    with open(path_to_file, 'w') as f:
+        f.write(new_content[:-1])
+    f.close()
+
+
+def read_files(path):
+    datas = {}
+    dir_list = os.listdir(path)
+    for filee in dir_list:
+        datas[filee] = get_info(f"{path}/{filee}")
+
+    return datas
+
+
+def write_files(folder_path, datas):
+    dir_list = os.listdir(folder_path)
+    for filee in dir_list:
+        put_info(f"{folder_path}/{filee}", datas[filee])
+
+
+if __name__ == "__main__":
+    parser = OptionParser()
+    parser.add_option("--file", dest="file_path", help="The path to the xml file of the Object")
+    parser.add_option("--folder", dest="folder_path", help="The path to the folder of the Object")
+    options, args = parser.parse_args()
+
+    if options.file_path is not None and options.folder_path is not None:
+        obj_r = object_remover.ObjectRemover(options.folder_path)
+        obj_g = object_generator.ObjectGenerator(options.file_path)
+
+        path_to_object_old = options.folder_path
+        path_to_object_new = obj_g.get_folder_path()
+
+        user_code_blocks = read_files(options.folder_path)
+        obj_r.remove_object()
+        obj_g.object_code_generate()
+        write_files(path_to_object_new, user_code_blocks)
+    else:
+        parser.error("The path to the folder of the Object is not provided")

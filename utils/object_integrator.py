@@ -18,8 +18,8 @@ STOP_STRING_REG_INCL = ["/* The end of the includes of the mandatory objects. */
 class ObjectIntegrator:
     """Add some comments here"""
 
-    def __init__(self, xml_file_path):
-        xp = object_xml_parser.ObjectXmlParser(xml_file_path)
+    def __init__(self, xml_file, xml_url):
+        xp = object_xml_parser.ObjectXmlParser(xml_file=xml_file, xml_url=xml_url)
         obj_dict, res_list = xp.parse_xml()
         self.obj_meta = obj_dict
         self.obj_names = xp.create_metadata()
@@ -78,7 +78,7 @@ class ObjectIntegrator:
 
         content_reg_h_incl = \
             f"""#if {obj_name_define}\n""" \
-            f"""#include "mandatory/{self.obj_names["obj_name_folder"]}/{obj_name_class}.h"\n""" \
+            f"""#include "{"mandatory" if is_obj_mandatory else "optional"}/{self.obj_names["obj_name_folder"]}/{obj_name_class}.h"\n""" \
             f"""#endif\n"""
 
         content_reg_h_prt = \
@@ -106,11 +106,12 @@ class ObjectIntegrator:
 
 if __name__ == "__main__":
     parser = OptionParser()
-    parser.add_option("-f", "--file", dest="filename", help="The path to the xml file of the Object")
+    parser.add_option("-f", "--file", dest="xml_file", help="the path to the xml file of the Object")
+    parser.add_option("-u", "--url", dest="xml_url", help="the url to the xml file of the Object")
     options, args = parser.parse_args()
 
-    if options.filename is not None:
-        oi = ObjectIntegrator(options.filename)
+    if options.xml_file or options.xml_url:
+        oi = ObjectIntegrator(options.xml_file, options.xml_url)
         oi.update_files()
     else:
-        parser.error("The path to xml file is not provided")
+        parser.error("the path or url to the XML-file of the Object is not provided")

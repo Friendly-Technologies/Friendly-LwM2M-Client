@@ -41,40 +41,44 @@ protected:
 	 * Returns list with available resources
 	 */
 	std::vector<Resource *> getResourcesList() override;
-	std::vector<Resource *> getResourcesList(const Operation& filter) override;
+	std::vector<Resource *> getResourcesList(const ResOp& filter) override;
 	/*
 	 * Returns list with available instantiated resources
 	 */
 	std::vector<Resource *> getInstantiatedResourcesList() override;
-	std::vector<Resource *> getInstantiatedResourcesList(const Operation& filter) override;
+	std::vector<Resource *> getInstantiatedResourcesList(const ResOp& filter) override;
+	/*
+	 * Reset all resources values and internal state to default.
+	 */
+	void setDefaultState() override;
 	/*
 	 * Handles information about resource operation that made server
 	 */
-	void serverOperationNotifier(Operation::TYPE type, const ResLink &resId) override;
+	void serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) override;
 	/*
 	 * Handles information about resource operation that made user
 	 */
-	void userOperationNotifier(Operation::TYPE type, const ResLink &resId) override;
+	void userOperationNotifier(ResOp::TYPE type, const ResLink &resId) override;
 
 private:
 	/* --------------- Class private methods --------------- */
 	/*
 	 * Initialize resources with default values.
-	 * Resource always must have at least one instance.
+	 * Resources always must have at least one instance.
 	 */
 	void resourcesInit();
 
 private:
     std::unordered_map<ID_T, Resource> _resources = {
     	//  KEY            				 VALUE
-    	{SERVER_URI, 		{SERVER_URI, 		Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::STRING}},
-		{BOOTSTRAP_SERVER, 	{BOOTSTRAP_SERVER, 	Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::BOOL}},
-		{SECURITY_MODE,     {SECURITY_MODE,     Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::INT}},
-		{PUBLIC_KEY, 		{PUBLIC_KEY, 		Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::OPAQUE}},
-		{SERVER_PUBLIC_KEY, {SERVER_PUBLIC_KEY, Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::OPAQUE}},
-		{SECRET_KEY, 		{SECRET_KEY, 		Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::OPAQUE}},
-		{SERVER_ID, 		{SERVER_ID, 		Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::INT}},
-		{HOLD_OFF_TIME, 	{HOLD_OFF_TIME, 	Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::INT}},
+    	{SERVER_URI, 		{SERVER_URI, 		ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::STRING}},
+		{BOOTSTRAP_SERVER, 	{BOOTSTRAP_SERVER, 	ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::BOOL}},
+		{SECURITY_MODE,     {SECURITY_MODE,     ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::INT}},
+		{PUBLIC_KEY, 		{PUBLIC_KEY, 		ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::OPAQUE}},
+		{SERVER_PUBLIC_KEY, {SERVER_PUBLIC_KEY, ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::OPAQUE}},
+		{SECRET_KEY, 		{SECRET_KEY, 		ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::OPAQUE}},
+		{SERVER_ID, 		{SERVER_ID, 		ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::INT}},
+		{HOLD_OFF_TIME, 	{HOLD_OFF_TIME, 	ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::INT}},
 	};
 };
 

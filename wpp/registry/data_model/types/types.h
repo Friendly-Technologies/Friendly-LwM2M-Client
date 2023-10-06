@@ -39,6 +39,7 @@ using BOOL_T = bool;
 using INT_T = int64_t;
 using UINT_T = uint64_t;
 using FLOAT_T = double;
+using TIME_T = INT_T;
 using STRING_T = std::string;
 /*
  * Opaque - represent buffer or string as lwm2m_data_t.value.asBuffer

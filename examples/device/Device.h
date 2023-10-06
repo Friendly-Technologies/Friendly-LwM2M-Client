@@ -21,6 +21,9 @@ class DeviceImpl: public ObjObserver<Device>, public InstObserver<Device> {
         });
         device->set(Device::ERROR_CODE, (INT_T)0);
         device->set(Device::SUPPORTED_BINDINGS, (STRING_T)"U");
+        device->set(Device::MANUFACTURE, (STRING_T)"Open Mobile Alliance");
+        device->set(Device::MODEL_NUM, (STRING_T)"Lightweight M2M Client");
+        device->set(Device::SERIAL_NUM, (STRING_T)"345000123");
     }
 
 	void objectRestore(Object<Device> &object) override {
@@ -37,16 +40,20 @@ class DeviceImpl: public ObjObserver<Device>, public InstObserver<Device> {
 		cout << "Device: instanceDeleting: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
 	}
 
-	virtual void resourceRead(Device &inst, const ResLink &resId) override {
+	void resourceRead(Device &inst, const ResLink &resId) override {
         cout << "Device: resourceRead: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
     }
 
-    virtual void resourceWrite(Device &inst, const ResLink &resId) override {
+    void resourceWrite(Device &inst, const ResLink &resId) override {
         cout << "Device: resourceWrite: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
     }
 
-    virtual void resourceExecute(Device &inst, const ResLink &resId) override {
+    void resourceExecute(Device &inst, const ResLink &resId) override {
         cout << "Device: resourceExecute: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
+    }
+
+    void resourcesReplaced(Device &inst) override {
+        cout << "Device: resourcesReplaced: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << endl;
     }
 };
 

@@ -41,20 +41,24 @@ protected:
 	 * Returns list with available resources
 	 */
 	std::vector<Resource *> getResourcesList() override;
-	std::vector<Resource *> getResourcesList(const Operation& filter) override;
+	std::vector<Resource *> getResourcesList(const ResOp& filter) override;
 	/*
 	 * Returns list with available instantiated resources
 	 */
 	std::vector<Resource *> getInstantiatedResourcesList() override;
-	std::vector<Resource *> getInstantiatedResourcesList(const Operation& filter) override;
+	std::vector<Resource *> getInstantiatedResourcesList(const ResOp& filter) override;
+	/*
+	 * Reset all resources values and internal state to default.
+	 */
+	void setDefaultState() override;
 	/*
 	 * Handles information about resource operation that made server
 	 */
-	void serverOperationNotifier(Operation::TYPE type, const ResLink &resId) override;
+	void serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) override;
 	/*
 	 * Handles information about resource operation that made user
 	 */
-	void userOperationNotifier(Operation::TYPE type, const ResLink &resId) override;
+	void userOperationNotifier(ResOp::TYPE type, const ResLink &resId) override;
 
 private:
 	/* --------------- Class private methods --------------- */
@@ -67,14 +71,14 @@ private:
 private:
     std::unordered_map<ID_T, Resource> _resources = {
     	//  KEY            				 VALUE
-    	{SHORT_SERV_ID, 			  {SHORT_SERV_ID, 				Operation(Operation::READ),                  IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::INT}},
-		{LIFETIME, 					  {LIFETIME, 					Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::INT}},
-		{DISABLE,       			  {DISABLE,       				Operation(Operation::EXECUTE),               IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::EXECUTE}},
-		{NOTIFICATION_STORING, 		  {NOTIFICATION_STORING, 		Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::BOOL}},
-		{BUINDING,      			  {BUINDING,      				Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::STRING}},
-		{REGISTRATION_UPDATE_TRIGGER, {REGISTRATION_UPDATE_TRIGGER, Operation(Operation::EXECUTE), 				 IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::EXECUTE}},
-		{APN_LINK,      		      {APN_LINK,      				Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::OBJ_LINK}},
-    	{TRIGGER,       			  {TRIGGER,      				Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::BOOL}},
+    	{SHORT_SERV_ID, 			  {SHORT_SERV_ID, 				ResOp(ResOp::READ),                  IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::INT}},
+		{LIFETIME, 					  {LIFETIME, 					ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::INT}},
+		{DISABLE,       			  {DISABLE,       				ResOp(ResOp::EXECUTE),               IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::EXECUTE}},
+		{NOTIFICATION_STORING, 		  {NOTIFICATION_STORING, 		ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::BOOL}},
+		{BUINDING,      			  {BUINDING,      				ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::STRING}},
+		{REGISTRATION_UPDATE_TRIGGER, {REGISTRATION_UPDATE_TRIGGER, ResOp(ResOp::EXECUTE), 				 IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::EXECUTE}},
+		{APN_LINK,      		      {APN_LINK,      				ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::OBJ_LINK}},
+    	{TRIGGER,       			  {TRIGGER,      				ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::BOOL}},
     };
 };
 

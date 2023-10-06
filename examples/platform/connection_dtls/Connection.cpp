@@ -1,11 +1,8 @@
 #include "Connection.h"
 
+#include <algorithm>
 #include <iostream>
-#include <cstring>
-#include <sys/types.h>
 #include <unistd.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
 #include <netdb.h>
 #include <fcntl.h>
 
@@ -109,9 +106,9 @@ Connection::Connection(string port, int addressFamily): _port(port), _addressFam
 Connection::~Connection() {}
 
 Connection::SESSION_T Connection::connect(Security& security) {
-    struct addrinfo hints, *servinfo = NULL, *p;
+    addrinfo hints, *servinfo = NULL, *p;
     int s;
-    struct sockaddr *sa;
+    sockaddr *sa;
     socklen_t sl;
     dtls_connection_t * conn = NULL;
 
@@ -119,8 +116,8 @@ Connection::SESSION_T Connection::connect(Security& security) {
     security.get(Security::SERVER_URI, uri);
     string host = uriToHost(uri);
     string port = uriToPort(uri);
-    cout << "Connection: connect to host " << host << ", port " << port << endl;
-    cout << "Connection: connect to uri " << uri << endl;
+    cout << "Connection: connect to host " << host << ", host len: " << strlen(host.c_str()) << ", port " << port << ", port len: " << strlen(port.c_str()) << endl;
+    cout << "Connection: connect to uri " << uri << ", uri len: " << strlen(uri.c_str()) << endl;
     if (!host.length() || !port.length()) return NULL;
    
     memset(&hints, 0, sizeof(hints));
@@ -393,7 +390,9 @@ string Connection::uriToPort(string uri) {
     start++;
     if (start >= uri.length()) return "";
 
-    return uri.substr(start);
+    string port = uri.substr(start);
+    port.erase(std::remove_if(port.begin(), port.end(), static_cast<int(*)(int)>(std::isspace)), port.end());
+    return port;
 }
     
 string Connection::uriToHost(string uri) {

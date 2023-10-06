@@ -21,12 +21,12 @@ static const ObjectInfo SERVER_OBJ_INFO = {
         /* Is Mandatory */
 		IS_MANDATORY::MANDATORY,
         /* Object supported operations */
-		Operation(Operation::READ|
-					Operation::WRITE|
-					Operation::DISCOVER|
-					Operation::EXECUTE|
-					Operation::CREATE|
-					Operation::DELETE),
+		InstOp(InstOp::CREATE|
+                      InstOp::DELETE),
+        ResOp(ResOp::READ|
+                     ResOp::WRITE|
+                     ResOp::EXECUTE|
+                     ResOp::DISCOVER),
 };
 
 }

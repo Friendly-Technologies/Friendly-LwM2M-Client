@@ -87,7 +87,7 @@ time_t WppClient::loop() {
 	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Processing internal state: result -> %d, state -> %d", result, getState());
 	if (result) {
 		WPP_LOGW_ARG(TAG_WPP_CLIENT, "LWM2M core step failed, error code: %d", result);
-		if (getState() == STATE_BOOTSTRAPPING) {
+		if (getState() == STATE_BOOTSTRAPPING || getState() == STATE_BOOTSTRAP_REQUIRED) {
 			WPP_LOGW(TAG_WPP_CLIENT, "Trying to restore security and server objects");
 			registry().security().restore();
 			registry().server().restore();

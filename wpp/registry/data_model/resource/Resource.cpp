@@ -15,7 +15,7 @@ Resource::Resource():
 	_id(ID_T_MAX_VAL), _operation(), _isSingle(IS_SINGLE::MULTIPLE), _isMandatory(IS_MANDATORY::OPTIONAL), _typeID(TYPE_ID::UNDEFINED) {
 }
 
-Resource::Resource(ID_T id, const Operation &operation, IS_SINGLE isSingle, IS_MANDATORY isMandatory, TYPE_ID dataType):
+Resource::Resource(ID_T id, const ResOp &operation, IS_SINGLE isSingle, IS_MANDATORY isMandatory, TYPE_ID dataType):
 	_id(id), _operation(operation), _isSingle(isSingle), _isMandatory(isMandatory), _typeID(dataType) {
 }
 
@@ -37,6 +37,37 @@ Resource::Resource(Resource&& resource) {
 	_typeID = resource._typeID;
 	_instances.insert(std::make_move_iterator(resource._instances.begin()), std::make_move_iterator(resource._instances.end()));
 	_dataVerifier = resource._dataVerifier;
+	resource.clear();
+}
+
+Resource& Resource::operator=(const Resource& resource) {
+    if (this == &resource) return *this; 
+
+    _id = resource._id;
+    _operation = resource._operation;
+    _isSingle = resource._isSingle;
+    _isMandatory = resource._isMandatory;
+    _typeID = resource._typeID;
+    _instances = resource._instances;
+    _dataVerifier = resource._dataVerifier;
+
+    return *this;
+}
+
+Resource& Resource::operator=(Resource&& resource) {
+    if (this == &resource) return *this;
+
+    _id = resource._id;
+    _operation = resource._operation;
+    _isSingle = resource._isSingle;
+    _isMandatory = resource._isMandatory;
+    _typeID = resource._typeID;
+    _instances.clear();
+    _instances.insert(std::make_move_iterator(resource._instances.begin()), std::make_move_iterator(resource._instances.end()));
+    _dataVerifier = resource._dataVerifier;
+	resource.clear();
+
+    return *this;
 }
 
 ID_T Resource::getID() const {
@@ -47,7 +78,7 @@ TYPE_ID Resource::getTypeId() const {
 	return _typeID;
 }
 
-const Operation& Resource::getOperation() const {
+const ResOp& Resource::getOperation() const {
 	return _operation;
 }
 
@@ -67,7 +98,7 @@ bool Resource::isMultiple() const {
 	return _isSingle == IS_SINGLE::MULTIPLE;
 }
 
-bool Resource::isOperationValid(Operation::TYPE type) const {
+bool Resource::isOperationValid(ResOp::TYPE type) const {
 	return _operation.isSupported(type);
 }
 
@@ -176,13 +207,11 @@ bool Resource::get(EXECUTE_T &value, ID_T resInstId) const {
 bool Resource::remove(ID_T resInstId) {
 	if (!isInstanceExist(resInstId) || isSingle()) return false;
 	_instances.erase(resInstId);
-
 	return true;
 }
 
 bool Resource::clear() {
 	_instances.clear();
-
 	return true;
 }
 

@@ -12,7 +12,7 @@
 
 #include "WppClient.h"
 #include "Resource.h"
-#include "Operation.h"
+#include "ResOp.h"
 #include "types.h"
 
 namespace wpp {
@@ -33,6 +33,8 @@ class WppClient;
  * of any of the resources changes bypassing the Instance::get()/set() methods, then the developer
  * must immediately call the method WppClient::notifyValueChanged() or the one that encapsulates
  * this call. It is necessary to notify about the change for all resources except those marked as EXECUTE.
+ * 
+ * Note: Empty resource == undefined resource.
  */
 class Instance {
 	template<typename T>
@@ -97,26 +99,32 @@ protected: /* Interface implemented by Instance derived class */
 	 * If resources does not exist then return empty list.
 	 */
 	virtual std::vector<Resource *> getResourcesList() = 0;
-	virtual std::vector<Resource *> getResourcesList(const Operation& filter) = 0;
+	virtual std::vector<Resource *> getResourcesList(const ResOp& filter) = 0;
 	/*
 	 * This method must be implemented by derived class,
 	 * and return list with resources that has been instantiated.
 	 * If resources does not exist then return empty list.
 	 */
 	virtual std::vector<Resource *> getInstantiatedResourcesList() = 0;
-	virtual std::vector<Resource *> getInstantiatedResourcesList(const Operation& filter) = 0;
+	virtual std::vector<Resource *> getInstantiatedResourcesList(const ResOp& filter) = 0;
+	/*
+	 * This method must be implemented by derived class.
+	 * Reset all resources values and internal state to default.
+	 */
+	virtual void setDefaultState() = 0;
 	/*
 	 * This method must be implemented by derived class, and handle
-     * information about resource operation (READ, WRITE, EXECUTE, DISCOVER, DELETE).
+     * information about resource operation (READ, WRITE_UPD, 
+	 * WRITE_REPLACE_INST, WRITE_REPLACE_RES, EXECUTE, DISCOVER).
 	 * Called by Instance after resource operation performed by SERVER.
 	 */
-	virtual void serverOperationNotifier(Operation::TYPE type, const ResLink &resId) = 0;
+	virtual void serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) = 0;
 	/*
 	 * This method must be implemented by derived class, and handle
-     * information about resource operation (READ, WRITE, DELETE).
+     * information about resource operation (READ, WRITE_UPD, DELETE).
 	 * Called by Instance after resource operation performed by USER.
 	 */
-	virtual void userOperationNotifier(Operation::TYPE type, const ResLink &resId) = 0;
+	virtual void userOperationNotifier(ResOp::TYPE type, const ResLink &resId) = 0;
 
 private: /* Interface used by Object<T> or Instance class */
 	/* ------------- Implementation of user set/get methods ------------- */
@@ -131,11 +139,18 @@ private: /* Interface used by Object<T> or Instance class */
 	 */
 	bool resourceToLwm2mData(Resource &resource, ID_T instanceId, lwm2m_data_t &data);
 	bool lwm2mDataToResource(const lwm2m_data_t &data, Resource &resource, ID_T instanceId);
-	/* ------------- Server callback ------------- */
-	uint8_t resourceRead(ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP);
-	uint8_t resourceWrite(ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_write_type_t writeType);
-	uint8_t resourceExecute(ID_T instanceId, ID_T resId, uint8_t * buffer, int length);
-	uint8_t resourceDiscover(ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP);
+	/* ------------- Helpful methods for server callbacks ------------- */
+	Resource* getValidatedResForWrite(const lwm2m_data_t &data, lwm2m_write_type_t writeType, uint8_t &errCode);
+	uint8_t resourceWrite(Resource &res, const lwm2m_data_t &data, lwm2m_write_type_t writeType);
+	Resource* getValidatedResForRead(const lwm2m_data_t &data, uint8_t &errCode);
+	uint8_t resourceRead(lwm2m_data_t &data, Resource &res);
+	Resource* getValidatedResForExecute(ID_T resId, uint8_t &errCode);
+	uint8_t createEmptyLwm2mDataArray(std::vector<Resource*> resources, lwm2m_data_t **dataArray, int *numData);
+	/* ------------- Server callbacks ------------- */
+	uint8_t read(int * numDataP, lwm2m_data_t ** dataArray);
+	uint8_t write(int numData, lwm2m_data_t * dataArray, lwm2m_write_type_t writeType);
+	uint8_t execute(ID_T resId, uint8_t * buffer, int length);
+	uint8_t discover(int * numDataP, lwm2m_data_t ** dataArray);
 
 protected:
 	WppClient &_client;
@@ -154,7 +169,7 @@ bool Instance::userSet(const ResLink &resId, const T &value) {
 	bool result = resource->set(value, resId.resInstId);
 	if (result) {
 		client().notifyValueChanged({_id, {resId.resId, resId.resInstId}});
-		userOperationNotifier(Operation::WRITE, resId);
+		userOperationNotifier(ResOp::WRITE_UPD, resId);
 	}
 
 	return result;
@@ -170,7 +185,7 @@ bool Instance::userGet(const ResLink &resId, T &value) {
 
 	bool result = resource->get(value, resId.resInstId);
 	if (result) {
-		userOperationNotifier(Operation::READ, resId);
+		userOperationNotifier(ResOp::READ, resId);
 	}
 
 	return result;

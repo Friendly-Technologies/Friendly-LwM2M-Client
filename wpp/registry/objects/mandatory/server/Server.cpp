@@ -11,7 +11,7 @@
 #include <iostream>
 
 #include "Resource.h"
-#include "Operation.h"
+#include "ResOp.h"
 #include "types.h"
 #include "WppLogs.h"
 
@@ -36,7 +36,7 @@ std::vector<Resource *> Server::getResourcesList() {
 	return list;
 }
 
-std::vector<Resource *> Server::getResourcesList(const Operation& filter) {
+std::vector<Resource *> Server::getResourcesList(const ResOp& filter) {
 	std::vector<Resource *> list;
 	for (auto &pair : _resources) {
 		if (filter.isCompatible(pair.second.getOperation())) list.push_back(&pair.second);
@@ -50,7 +50,7 @@ std::vector<Resource *> Server::getInstantiatedResourcesList() {
 	return list;
 }
 
-std::vector<Resource *> Server::getInstantiatedResourcesList(const Operation& filter) {
+std::vector<Resource *> Server::getInstantiatedResourcesList(const ResOp& filter) {
 	std::vector<Resource *> list;
 	for (auto &pair : _resources) {
 		if (!pair.second.isEmpty() && filter.isCompatible(pair.second.getOperation())) list.push_back(&pair.second);
@@ -58,37 +58,45 @@ std::vector<Resource *> Server::getInstantiatedResourcesList(const Operation& fi
 	return list;
 }
 
-void Server::serverOperationNotifier(Operation::TYPE type, const ResLink &resId) {
+void Server::setDefaultState() {
+	for (auto &pair : _resources) pair.second.clear();
+	resourcesInit();
+}
+
+void Server::serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
 	observerNotify(*this, resId, type);
 	switch (type) {
-	case Operation::READ:
+	case ResOp::READ:
 		WPP_LOGD_ARG(TAG, "Server READ -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
 		break;
-	case Operation::WRITE:
-		WPP_LOGD_ARG(TAG, "Server WRITE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
+	case ResOp::WRITE_REPLACE_INST:
+		WPP_LOGD_ARG(TAG, "Server WRITE_REPLACE_INST -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
 		break;
-	case Operation::EXECUTE:
+	case ResOp::WRITE_REPLACE_RES:
+		WPP_LOGD_ARG(TAG, "Server WRITE_REPLACE_RES -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
+		break;
+	case ResOp::WRITE_UPD:
+		WPP_LOGD_ARG(TAG, "Server WRITE_UPD -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
+		break;
+	case ResOp::EXECUTE:
 		WPP_LOGD_ARG(TAG, "Server EXECUTE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
 		break;
-	case Operation::DISCOVER:
+	case ResOp::DISCOVER:
 		WPP_LOGD_ARG(TAG, "Server DISCOVER -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case Operation::DELETE:
-		WPP_LOGD_ARG(TAG, "Server DELETE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
 		break;
 	default: break;
 	}
 }
 
-void Server::userOperationNotifier(Operation::TYPE type, const ResLink &resId) {
+void Server::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
 	switch (type) {
-	case Operation::READ:
+	case ResOp::READ:
 		WPP_LOGD_ARG(TAG, "User READ -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
 		break;
-	case Operation::WRITE:
+	case ResOp::WRITE:
 		WPP_LOGD_ARG(TAG, "User WRITE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
 		break;
-	case Operation::DELETE:
+	case ResOp::DELETE:
 		WPP_LOGD_ARG(TAG, "User DELETE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
 		break;
 	default: break;

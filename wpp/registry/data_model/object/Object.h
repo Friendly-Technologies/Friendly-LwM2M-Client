@@ -96,24 +96,24 @@ Object<T>::Object(WppClient &client, const ObjectInfo &info): Lwm2mObject(info),
 	_lwm2m_object.versionMinor = _objInfo.objVersion.minor;
 	_lwm2m_object.userData = NULL;
 
-	if (_objInfo.operation.isRead()) _lwm2m_object.readFunc = read_clb;
+	if (_objInfo.resOperation.isRead()) _lwm2m_object.readFunc = read_clb;
 	else  _lwm2m_object.readFunc = NULL;
-	if (_objInfo.operation.isDiscover()) _lwm2m_object.discoverFunc = discover_clb;
+	if (_objInfo.resOperation.isDiscover()) _lwm2m_object.discoverFunc = discover_clb;
 	else  _lwm2m_object.discoverFunc = NULL;
-	if (_objInfo.operation.isWrite()) _lwm2m_object.writeFunc = write_clb;
+	if (_objInfo.resOperation.isWrite()) _lwm2m_object.writeFunc = write_clb;
 	else  _lwm2m_object.writeFunc = NULL;
-	if (_objInfo.operation.isExecute()) _lwm2m_object.executeFunc = execute_clb;
+	if (_objInfo.resOperation.isExecute()) _lwm2m_object.executeFunc = execute_clb;
 	else  _lwm2m_object.executeFunc = NULL;
-	if (_objInfo.operation.isCreate()) _lwm2m_object.createFunc = create_clb;
+	if (_objInfo.instOperation.isCreate()) _lwm2m_object.createFunc = create_clb;
 	else  _lwm2m_object.createFunc = NULL;
-	if (_objInfo.operation.isDelete()) _lwm2m_object.deleteFunc = delete_clb;
+	if (_objInfo.instOperation.isDelete()) _lwm2m_object.deleteFunc = delete_clb;
 	else  _lwm2m_object.deleteFunc = NULL;
 #ifdef LWM2M_RAW_BLOCK1_REQUESTS
-	if (_objInfo.operation.isBlock1Create()) _lwm2m_object.rawBlock1CreateFunc = block1Ccreate_clb;
+	if (_objInfo.instOperation.isBlock1Create()) _lwm2m_object.rawBlock1CreateFunc = block1Ccreate_clb;
 	else  _lwm2m_object.rawBlock1CreateFunc = NULL;
-	if (_objInfo.operation.isBlock1Write()) _lwm2m_object.rawBlock1WriteFunc = block1Write_clb;
+	if (_objInfo.resOperation.isBlock1Write()) _lwm2m_object.rawBlock1WriteFunc = block1Write_clb;
 	else  _lwm2m_object.rawBlock1WriteFunc = NULL;
-	if (_objInfo.operation.isBlock1Execute()) _lwm2m_object.rawBlock1ExecuteFunc = block1Execute_clb;
+	if (_objInfo.resOperation.isBlock1Execute()) _lwm2m_object.rawBlock1ExecuteFunc = block1Execute_clb;
 	else  _lwm2m_object.rawBlock1ExecuteFunc = NULL;
 #endif
 }
@@ -251,43 +251,38 @@ ID_T Object<T>::getFirstAvailableInstanceID() {
 /* ------------- Lwm2m core callback ------------- */
 template<typename T>
 uint8_t Object<T>::read_clb(lwm2m_context_t * contextP, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP) {
-	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama read %d:%d", object()->getObjectID(), instanceId);
-	return object()->_instances[instanceId]->resourceRead(instanceId, numDataP, dataArrayP);
+	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
+	return object()->_instances[instanceId]->read(numDataP, dataArrayP);
 }
 
 template<typename T>
 uint8_t Object<T>::write_clb(lwm2m_context_t * contextP, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP, lwm2m_write_type_t writeType) {
-	if (writeType == LWM2M_WRITE_REPLACE_INSTANCE) {
-		delete_clb(contextP, instanceId, objectP);
-		return create_clb(contextP, instanceId, numData, dataArray, objectP);
-	} else {
-		if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
-		WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama write %d:%d", object()->getObjectID(), instanceId);
-		return object()->_instances[instanceId]->resourceWrite(instanceId, numData, dataArray, writeType);
-	}
+	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama write %d:%d", object()->getObjectID(), instanceId);
+	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
+	return object()->_instances[instanceId]->write(numData, dataArray, writeType);
 }
 
 template<typename T>
 uint8_t Object<T>::execute_clb(lwm2m_context_t * contextP, ID_T instanceId, ID_T resId, uint8_t * buffer, int length, lwm2m_object_t * objectP) {
-	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama execute %d:%d", object()->getObjectID(), instanceId);
-	return object()->_instances[instanceId]->resourceExecute(instanceId, resId, buffer, length);
+	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
+	return object()->_instances[instanceId]->execute(resId, buffer, length);
 }
 
 template<typename T>
 uint8_t Object<T>::discover_clb(lwm2m_context_t * contextP, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP) {
-	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama discover %d:%d", object()->getObjectID(), instanceId);
-	return object()->_instances[instanceId]->resourceDiscover(instanceId, numDataP, dataArrayP);
+	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
+	return object()->_instances[instanceId]->discover(numDataP, dataArrayP);
 }
 
 template<typename T>
 uint8_t Object<T>::create_clb(lwm2m_context_t * contextP, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP) {
-	if (!object()->createInstance(instanceId)) return COAP_500_INTERNAL_SERVER_ERROR;
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama create %d:%d", object()->getObjectID(), instanceId);
+	if (!object()->createInstance(instanceId)) return COAP_500_INTERNAL_SERVER_ERROR;
 	// Notify user about creating instance
-	object()->observerNotify(*object(), instanceId, Operation::TYPE::CREATE);
+	object()->observerNotify(*object(), instanceId, InstOp::CREATE);
 
 	uint8_t result = write_clb(contextP, instanceId, numData, dataArray, objectP, LWM2M_WRITE_REPLACE_RESOURCES);
 	if (result != COAP_204_CHANGED) {
@@ -300,10 +295,10 @@ uint8_t Object<T>::create_clb(lwm2m_context_t * contextP, ID_T instanceId, int n
 
 template<typename T>
 uint8_t Object<T>::delete_clb(lwm2m_context_t * contextP, ID_T instanceId, lwm2m_object_t * objectP) {
-	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama delete %d:%d", object()->getObjectID(), instanceId);
+	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
 	// Notify user about deleting instance
-	object()->observerNotify(*object(), instanceId, Operation::TYPE::DELETE);
+	object()->observerNotify(*object(), instanceId, InstOp::DELETE);
 
 	return object()->removeInstance(instanceId)? COAP_202_DELETED : COAP_404_NOT_FOUND;
 }

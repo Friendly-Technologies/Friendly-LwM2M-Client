@@ -267,7 +267,7 @@ uint8_t Instance::resourceRead(lwm2m_data_t &data, Resource &res) {
 			return COAP_400_BAD_REQUEST;
 		}
 		// Notify implementation about read resource operation
-		serverOperationNotifier(ResOp::READ, {res.getID(), resInstId});
+		serverOperationNotifier(ResOp::READ, {res.getID(), (res.isSingle()? ID_T_MAX_VAL : resInstId)});
 	}
 
 	return COAP_NO_ERROR;
@@ -275,7 +275,7 @@ uint8_t Instance::resourceRead(lwm2m_data_t &data, Resource &res) {
 
 Resource* Instance::getValidatedResForExecute(ID_T resId, uint8_t &errCode) {
 	Resource *resource = getResource(resId);
-	if (IS_RES_EXISTS(resource)) {
+	if (!IS_RES_EXISTS(resource)) {
 		WPP_LOGW_ARG(TAG_WPP_INST, "Resource does not exist: %d:%d:%d", _id.objId, _id.objInstId, resId);
 		errCode = COAP_404_NOT_FOUND;
 		return NULL;
@@ -404,7 +404,7 @@ uint8_t Instance::execute(ID_T resId, uint8_t * buffer, int length) {
 	WPP_LOGD_ARG(TAG_WPP_INST, "Resource execute: %d:%d:%d, buffer length: %d", _id.objId, _id.objInstId, resId, length);
 	execute(resId, OPAQUE_T(buffer, buffer + length));
 	// Notify implementation about execute resource operation
-	serverOperationNotifier(ResOp::EXECUTE, {resource->getID(), SINGLE_INSTANCE_ID});
+	serverOperationNotifier(ResOp::EXECUTE, {resource->getID(), ID_T_MAX_VAL});
 
 	return COAP_204_CHANGED;
 }

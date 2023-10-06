@@ -258,7 +258,7 @@ uint8_t Object<T>::read_clb(lwm2m_context_t * contextP, ID_T instanceId, int * n
 
 template<typename T>
 uint8_t Object<T>::write_clb(lwm2m_context_t * contextP, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP, lwm2m_write_type_t writeType) {
-	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama write %d:%d, type %d", object()->getObjectID(), instanceId, writeType);
+	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama write %d:%d", object()->getObjectID(), instanceId);
 	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
 	return object()->_instances[instanceId]->write(numData, dataArray, writeType);
 }

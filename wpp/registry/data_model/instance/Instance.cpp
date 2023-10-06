@@ -278,11 +278,13 @@ Resource* Instance::getValidatedResForExecute(ID_T resId, uint8_t &errCode) {
 	if (IS_RES_EXISTS(resource)) {
 		WPP_LOGW_ARG(TAG_WPP_INST, "Resource does not exist: %d:%d:%d", _id.objId, _id.objInstId, resId);
 		errCode = COAP_404_NOT_FOUND;
+		return NULL;
 	}
 	// Check the server operation permission for resource
 	if (!resource->getOperation().isExecute()) {
 		WPP_LOGE_ARG(TAG_WPP_INST, "Server does not have permission for execute resource: %d:%d:%d", _id.objId, _id.objInstId, resId);
 		errCode = COAP_405_METHOD_NOT_ALLOWED;
+		return NULL;
 	}
 	return resource;
 }
@@ -354,7 +356,7 @@ uint8_t Instance::write(int numData, lwm2m_data_t *dataArray, lwm2m_write_type_t
 	// the reading or writing is done by wakaama core and set the correct behavior in the
 	// absence of a resource.
 	bool ignore = numData > 1;
-	WPP_LOGD_ARG(TAG_WPP_INST, "Write %d:%d, ignore: %d, numData: %d", _id.objId, _id.objInstId, ignore, numData);
+	WPP_LOGD_ARG(TAG_WPP_INST, "Write %d:%d, ignore: %d, numData: %d, write type %d", _id.objId, _id.objInstId, ignore, numData, writeType);
 
 	// During the replace instance we should reset instance to default
 	// state and then write with replace all resources in array. During

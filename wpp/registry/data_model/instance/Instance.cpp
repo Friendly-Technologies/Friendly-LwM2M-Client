@@ -206,11 +206,12 @@ uint8_t Instance::resourceWrite(Resource &res, const lwm2m_data_t &data, lwm2m_w
 		WPP_LOGD_ARG(TAG_WPP_INST, "Resource write: %d:%d:%d:%d", _id.objId, _id.objInstId, data.id, resInstId);
 		if (!lwm2mDataToResource(data_ptr[i], res, resInstId)) {
 			WPP_LOGE_ARG(TAG_WPP_INST, "Problem with converting lwm2mData to resource: %d:%d:%d:%d", _id.objId, _id.objInstId, data.id, resInstId);
+			// Restore resource state
 			if (isReplace) res = std::move(resBackup);
 			return COAP_400_BAD_REQUEST;
 		}
 		// Notify implementation about update operation
-		if (writeType == LWM2M_WRITE_PARTIAL_UPDATE) serverOperationNotifier(ResOp::WRITE_UPD, {res.getID(), resInstId});
+		if (writeType == LWM2M_WRITE_PARTIAL_UPDATE) serverOperationNotifier(ResOp::WRITE_UPD, {res.getID(), (res.isSingle()? ID_T_MAX_VAL : resInstId)});
 	}
 	// Notify implementation about replace resource operation
 	if (writeType == LWM2M_WRITE_REPLACE_RESOURCES) serverOperationNotifier(ResOp::WRITE_REPLACE_RES, {res.getID(), ID_T_MAX_VAL});

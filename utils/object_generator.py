@@ -438,8 +438,9 @@ class ObjectGenerator:
         ifnotdef = f"""{self.object_names["obj_name_class"].upper()}CONFIG_H"""
         defines = ""
         for i in self.meta_resources:
-            defines += f"""#define {i["Name"]}_{"M" if i["Mandatory"] == "MANDATORY" else "O"}_"""
-            defines += " 1\n" if i["Mandatory"] == "MANDATORY" else " 0\n"
+            if i["Mandatory"] == "MANDATORY":
+                continue
+            defines += f"""#define {i["Name"]}_O 0\n"""
         content = \
             f"""#ifndef {ifnotdef}\n""" \
             f"""#define {ifnotdef}\n\n""" \

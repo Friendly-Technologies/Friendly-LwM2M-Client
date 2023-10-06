@@ -1,4 +1,6 @@
 import xml.etree.ElementTree as ElementTree
+import requests
+import json
 
 
 class ObjectXmlParser:
@@ -11,8 +13,17 @@ class ObjectXmlParser:
     that will be useful at code generation to integrate Object to Wpp project structure.
     """
     
-    def __init__(self, xml_file_path):
-        self.xml_file_path = xml_file_path
+    def __init__(self, xml_file=None, xml_url=None):
+        self.xml_file_path = self.download_xml(xml_url) if xml_url is not None else xml_file
+
+    def download_xml(self, xml_url):
+        filename = xml_url.split("/")[-1]
+        object_description = json.loads(requests.get(xml_url).content.decode('utf-8'))["payload"]["blob"]["rawLines"]
+        with open(f'./{filename}', 'w') as f:
+            for i in object_description:
+                f.write(i + "\n")
+        f.close()
+        return filename
 
     def parse_xml(self):
         tree = ElementTree.parse(self.xml_file_path)

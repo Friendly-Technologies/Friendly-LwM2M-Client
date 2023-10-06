@@ -17,7 +17,7 @@ class SecurityImpl: public ObjObserver<Security>, public InstObserver<Security> 
         security->subscribe(this);
         
         #if LWM2M_BOOTSTRAP
-            string url = "coaps://127.0.0.1:5685";
+            string url = "coap://demodm.friendly-tech.com:5680";
             security->set(Security::BOOTSTRAP_SERVER, true);
             security->set(Security::HOLD_OFF_TIME, (INT_T)10);
         #else

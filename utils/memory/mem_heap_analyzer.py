@@ -4,27 +4,25 @@
 # main.cpp, after that collect logs to the file and run this script with retrieved logs.
 #
 # void* operator new(std::size_t sz) {
-#     heap_usage += sz;
 # 	void *ptr = std::malloc(sz);
 # 	cout << endl << "[_NEW_:" << hex << ptr << dec << ":" << sz << "]" << endl;
-#     return ptr;
+#   return ptr;
 # }
 #
 # void* operator new[](std::size_t sz) {
-#     heap_usage += sz;
-#     void *ptr = std::malloc(sz);
+#   void *ptr = std::malloc(sz);
 # 	cout << endl << "[_NEW_:" << hex << ptr << dec << ":" << sz << "]" << dec << endl;
-#     return ptr;
+#   return ptr;
 # }
 #
 # void operator delete(void* ptr) noexcept {
 # 	cout << endl << "[_DELETE_:" << hex << ptr << "]" << dec << endl;
-#     std::free(ptr);
+#   std::free(ptr);
 # }
 #
 # void operator delete[](void* ptr) noexcept {
 # 	cout << endl << "[_DELETE_:" << hex << ptr << "]" <<  dec << endl;
-#     std::free(ptr);
+#   std::free(ptr);
 # }
 
 import sys

@@ -2,7 +2,8 @@ import object_xml_parser
 
 import os
 from datetime import datetime
-from tabulate import tabulate
+from prettytable import PrettyTable
+from prettytable import PLAIN_COLUMNS
 from optparse import OptionParser
 
 PLACE_CLASS_NAME_UPPER = "<<<0>>>"
@@ -266,26 +267,38 @@ class ObjectGenerator:
 
     def get_map_of_resources(self, resources_list_xml):
         resources_enum = ""
-        resources_map = []
+        x = PrettyTable()
+        x.set_style(PLAIN_COLUMNS)
+        x.header = False
+        x.align = "l"
+
         for resource_xml in resources_list_xml:
             resource_name = resource_xml['Name']
             postfix = "M" if resource_xml['Mandatory'] == "MANDATORY" else "O"
+
             # fill the Resources' enum:
             resource_define = f"{resource_name}_{postfix}"
             resource_enum = f"\t\t\t{resource_define} = {resource_xml['ID']},\n"
             resources_enum += resource_enum
-            # fill the unordered_map<ID_T, Resource> table:
-            resource = [f"TAB#if {resource_define}_",
-                        f"CRLFTAB{{{resource_name}_{postfix},",
-                        f"{{{resource_name}_{postfix},",
-                        self.parse_operation(resource_xml['Operations']),
-                        f"IS_SINGLE::{resource_xml['MultipleInstances']},",
-                        f"IS_MANDATORY::{resource_xml['Mandatory']},",
-                        f"{self.parse_resource_data_type(resource_xml['Type'])} }}}},"
-                        f"CRLFTAB#endif"]
-            resources_map.append(resource)
 
-        return resources_enum, tabulate(resources_map, tablefmt="plain")
+            # fill the unordered_map<ID_T, Resource> table:
+
+            if resource_xml['Mandatory'] != "MANDATORY":
+                x.add_row([f"*TAB*#if DEF_{resource_define}", "", "", "", "", ""])
+
+            x.add_row([f"*TAB*{{{resource_define},",
+                       f"{{{resource_define},",
+                       self.parse_operation(resource_xml['Operations']),
+                       f"IS_SINGLE::{resource_xml['MultipleInstances']},",
+                       f"IS_MANDATORY::{resource_xml['Mandatory']},",
+                       f"{self.parse_resource_data_type(resource_xml['Type'])} }}}},"])
+
+            if resource_xml['Mandatory'] != "MANDATORY":
+                x.add_row([f"*TAB*#endif", "", "", "", "", ""])
+
+        resources_map = str(x).replace("*TAB*", "\t\t\t")
+
+        return resources_enum, resources_map
 
     def get_content_resourcesInit_f(self, resources_list_xml):
         content = f"""\tvoid {PLACE_CLASS_NAME}::resourcesInit() {{\n""" \
@@ -363,8 +376,6 @@ class ObjectGenerator:
         code_header = code_header.replace(PLACE_CLASS_NAME, self.object_names["obj_name_class"])
         code_header = code_header.replace(PLACE_RESOURCES_ENUM, resources_enum)
         code_header = code_header.replace(PLACE_RESOURCES_MAP, resources_map)
-        code_header = code_header.replace("TAB", "\t\t\t")
-        code_header = code_header.replace("CRLF", "\n")
 
         return code_header
 

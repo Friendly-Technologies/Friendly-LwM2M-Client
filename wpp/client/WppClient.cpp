@@ -21,8 +21,10 @@ WppClient::WppClient(WppConnection &connection, time_t maxSleepTime): _connectio
 }
 
 WppClient::~WppClient() {
+	WPP_LOGE(TAG_WPP_CLIENT, "Destroying WppClient");
 	lwm2mContextClose();
 	delete _registry;
+	_client = NULL;
 }
 
 /* ------------- WppClient management ------------- */
@@ -30,16 +32,23 @@ bool WppClient::create(const ClientInfo &info, WppConnection &connection, time_t
 	if (isCreated()) return true;
 	
 	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Creating WppClient instance with info: endpoint->%s, msisdn->%s, altPath->%s", info.endpointName.c_str(), info.msisdn.c_str(), info.altPath.c_str());
-	static WppClient client(connection, maxSleepTime);
-	_client = &client;
-	// TODO split creation of the client and configuration 
+	_client = new WppClient(connection, maxSleepTime);
 	bool result = _client->lwm2mConfigure(info.endpointName, info.msisdn, info.altPath);
 	if (!result) {
 		WPP_LOGE(TAG_WPP_CLIENT, "Error during client configuration");
+		delete _client;
 		_client = NULL;
 	}
 
 	return result;
+}
+
+void WppClient::remove() {
+	if (!isCreated()) return;
+	WPP_LOGD(TAG_WPP_CLIENT, "Removing WppClient instance");
+	_client->giveOwnership();
+	delete _client;
+	_client = NULL;
 }
 
 bool WppClient::isCreated() {
@@ -48,7 +57,7 @@ bool WppClient::isCreated() {
 
 WppClient* WppClient::takeOwnership() {
 	// WPP_LOGD(TAG_WPP_CLIENT, "Taking ownership of client instance");
-    if (!_clientGuard.try_lock()) return NULL;
+    if (!isCreated() || !_clientGuard.try_lock()) return NULL;
 	// WPP_LOGD(TAG_WPP_CLIENT, "Lock acquired, transferring ownership");
     return _client;
 }

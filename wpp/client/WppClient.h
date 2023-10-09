@@ -43,6 +43,7 @@ public:
 
 	/* ------------- WppClient management ------------- */
 	static bool create(const ClientInfo &info, WppConnection &connection, time_t maxSleepTime=WPP_CLIENT_MAX_SLEEP_TIME_S);
+	static void remove();
 	static bool isCreated();
 	
 	/*

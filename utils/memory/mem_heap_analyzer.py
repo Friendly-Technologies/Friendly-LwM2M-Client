@@ -138,7 +138,7 @@ class MemActsLogParser:
             corrupted_info = self.get_corrupted_acts_info()
 
             new_file.write(f"################ COMMON MEMORY ACTIONS {len(self.get_mem_acts())}, CORRUPTED {len(corrupted_info.get_corrupted_acts())}\n")
-            new_file.write( f"\n################ MEMORY HEAP USAGE {self.get_max_heap_usage_size()} BYTES, {self.get_max_heap_usage_pos()} LINE\n")
+            new_file.write( f"\n################ MEMORY MAX HEAP USAGE {self.get_max_heap_usage_size()} BYTES, AT LINE  {self.get_max_heap_usage_pos()}\n")
             new_file.write(f"\n################ MEMORY LEAK SIZE {corrupted_info.get_mem_leak_size()} BYTES, ACTION {len(corrupted_info.get_leak_acts())} COUNT\n")
             for leak in corrupted_info.get_leak_acts():
                 new_file.write(f"######## {leak.to_str()}\n")

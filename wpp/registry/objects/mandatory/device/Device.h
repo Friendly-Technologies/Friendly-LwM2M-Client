@@ -39,7 +39,7 @@ public:
 	/* --------------- Сode_h block 1 end --------------- */
 
 public:
-	Device(WppClient &client, const OBJ_LINK_T &id);
+	Device(lwm2m_context_t &context, const OBJ_LINK_T &id);
 	~Device();
 
 	/* --------------- Сode_h block 2 start --------------- */

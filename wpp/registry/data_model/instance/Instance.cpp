@@ -18,7 +18,7 @@ bool Instance::clear(ID_T resId) {
 
 	bool result = resource->clear();
 	if (result) {
-		client().notifyValueChanged({_id, {resId,}});
+		notifyValueChanged({_id, {resId,}});
 		userOperationNotifier(ResOp::DELETE, {resId,});
 	}
 
@@ -31,15 +31,17 @@ bool Instance::remove(const ResLink &resId) {
 
 	bool result = resource->remove(resId.resInstId);
 	if (result) {
-		client().notifyValueChanged({_id, {resId.resId, resId.resInstId}});
+		notifyValueChanged({_id, {resId.resId, resId.resInstId}});
 		userOperationNotifier(ResOp::DELETE, {resId.resId, resId.resInstId});
 	}
 
 	return result;
 }
 
-WppClient& Instance::client() {
-	return _client;
+void Instance::notifyValueChanged(const DataLink &data) {
+	WPP_LOGD_ARG(TAG_WPP_INST, "Notify value changed: objID=%d, instID=%d, resID=%d, resInstID=%d", data.instance.objId, data.instance.objInstId, data.resource.resId, data.resource.resInstId);	
+	lwm2m_uri_t uri = {data.instance.objId, data.instance.objInstId, data.resource.resId, data.resource.resInstId};
+	lwm2m_resource_value_changed(&_context, &uri);
 }
 
 bool Instance::resourceToLwm2mData(Resource &resource, ID_T instanceId, lwm2m_data_t &data) {
@@ -165,7 +167,7 @@ Resource* Instance::getValidatedResForWrite(const lwm2m_data_t &data, lwm2m_writ
 	// Bootstrap server can write evan if resource is not writable.
 	// Also allowed to write R resources during instance creation.
 	if (!resource->getOperation().isWrite() && 
-	      (client().getState() != STATE_BOOTSTRAPPING) && 
+	      (_context.state != STATE_BOOTSTRAPPING) && 
 	      (writeType != LWM2M_WRITE_REPLACE_INSTANCE)) {
 		WPP_LOGW_ARG(TAG_WPP_INST, "Server does not have permission for write resource: %d:%d:%d", _id.objId, _id.objInstId, data.id);
 		errCode = COAP_405_METHOD_NOT_ALLOWED;

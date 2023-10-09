@@ -61,12 +61,12 @@ uint16_t WppConnection::getDataBlockSize()  {
 	return lwm2m_get_coap_block_size();
 }
 
-void WppConnection::handlePacketsInQueue(lwm2m_context_t *context) {
+void WppConnection::handlePacketsInQueue(lwm2m_context_t &context) {
 	WPP_LOGD_ARG(TAG_WPP_CONN, "Handling packets in queue: packets count -> %d", getPacketQueueSize());
 	while (packets.size()) {
 		Packet *pkt = packets.front();
 		if (pkt && pkt->buffer) {
-			lwm2m_handle_packet(context, pkt->buffer, pkt->length, pkt->session);
+			lwm2m_handle_packet(&context, pkt->buffer, pkt->length, pkt->session);
 			delete [] pkt->buffer;
 		}
 		packets.pop();

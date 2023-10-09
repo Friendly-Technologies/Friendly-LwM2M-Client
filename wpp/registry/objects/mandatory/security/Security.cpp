@@ -19,7 +19,7 @@
 
 namespace wpp {
 
-Security::Security(WppClient &client, const OBJ_LINK_T &id): Instance(client, id) {
+Security::Security(lwm2m_context_t &context, const OBJ_LINK_T &id): Instance(context, id) {
 	resourcesInit();
 }
 

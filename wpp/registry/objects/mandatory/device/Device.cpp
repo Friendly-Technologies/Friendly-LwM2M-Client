@@ -22,7 +22,7 @@
 
 namespace wpp {
 
-Device::Device(WppClient &client, const OBJ_LINK_T &id): Instance(client, id) {
+Device::Device(lwm2m_context_t &context, const OBJ_LINK_T &id): Instance(context, id) {
 	/* --------------- Code_cpp block 1 start --------------- */
 	/* --------------- Code_cpp block 1 end --------------- */
 	

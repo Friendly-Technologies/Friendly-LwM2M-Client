@@ -16,13 +16,13 @@ WppClient *WppClient::_client = NULL;
 std::mutex WppClient::_clientGuard;
 
 WppClient::WppClient(WppConnection &connection, time_t maxSleepTime): _connection(connection), _maxSleepTime(maxSleepTime) {
-	 _registry = new WppRegistry(*this);
 	lwm2mContextOpen();
+	_registry = new WppRegistry(getContext());
 }
 
 WppClient::~WppClient() {
-	delete _registry;
 	lwm2mContextClose();
+	delete _registry;
 }
 
 /* ------------- WppClient management ------------- */
@@ -30,13 +30,12 @@ bool WppClient::create(const ClientInfo &info, WppConnection &connection, time_t
 	if (isCreated()) return true;
 	
 	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Creating WppClient instance with info: endpoint->%s, msisdn->%s, altPath->%s", info.endpointName.c_str(), info.msisdn.c_str(), info.altPath.c_str());
-	_client = new WppClient(connection);
-	
-	// Try to configure client with user data
+	static WppClient client(connection, maxSleepTime);
+	_client = &client;
+	// TODO split creation of the client and configuration 
 	bool result = _client->lwm2mConfigure(info.endpointName, info.msisdn, info.altPath);
 	if (!result) {
 		WPP_LOGE(TAG_WPP_CLIENT, "Error during client configuration");
-		delete _client;
 		_client = NULL;
 	}
 
@@ -131,14 +130,6 @@ bool WppClient::isObjectRegistered(Lwm2mObject &object) {
 }
 
 
-/* ------------- Wakaama core observer notify ------------- */
-void WppClient::notifyValueChanged(const DataLink &data) {
-	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Notify value changed: objID=%d, instID=%d, resID=%d, resInstID=%d", data.instance.objId, data.instance.objInstId, data.resource.resId, data.resource.resInstId);	
-	lwm2m_uri_t uri = {data.instance.objId, data.instance.objInstId, data.resource.resId, data.resource.resInstId};
-	lwm2m_resource_value_changed(_lwm2m_context, &uri);
-}
-
-
 /* ------------- Wakaama client initialisation ------------- */
 bool WppClient::lwm2mContextOpen() {
 	_lwm2m_context = lwm2m_init(this);
@@ -150,8 +141,8 @@ void WppClient::lwm2mContextClose() {
 	_lwm2m_context = NULL;
 }
 
-lwm2m_context_t * WppClient::getContext() {
-	return _lwm2m_context;
+lwm2m_context_t & WppClient::getContext() {
+	return *_lwm2m_context;
 }
 
 bool WppClient::lwm2mConfigure(const std::string &endpointName, const std::string &msisdn, const std::string &altPath) {

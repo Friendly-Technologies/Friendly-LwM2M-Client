@@ -302,14 +302,14 @@ class ObjectGenerator:
 
     def get_content_resourcesInit_f(self, resources_list_xml):
         content = f"""\tvoid {PLACE_CLASS_NAME}::resourcesInit() {{\n""" \
-                  f"""\t\t/* --------------- {PLACE_CLASS_NAME}_cpp block 9 start --------------- */\n\n"""
+                  f"""\t\t/* --------------- {PLACE_CLASS_NAME}_cpp block 9 start --------------- */\n\t"""
         for resource in resources_list_xml:
             if resource["Mandatory"] == "MANDATORY":
-                content += f"""\t\t#if {resource["Name"]}_{resource["Mandatory"]}\n\t"""
-                content += f"\t\t_resources[{resource['Name']}].set( /* TODO */ );\n\t"
-                content += f"\t\t_resources[{resource['Name']}].setDataVerifier( /* TODO */ );\n"
-                content += f"\t\t#endif\n\n"
-        return content + f"""\t\t/* --------------- {PLACE_CLASS_NAME}_cpp block 9 end --------------- */\n\t}}\n\n"""
+                # content += f"""\t\t#if {resource["Name"]}_{resource["Mandatory"]}\n\t"""
+                content += f"\t_resources[{resource['Name']}_M].set( /* TODO */ );\n\t"
+                content += f"\t_resources[{resource['Name']}_M].setDataVerifier( /* TODO */ );\n\t"
+                # content += f"\t\t#endif\n\n"
+        return content + f"""\t/* --------------- {PLACE_CLASS_NAME}_cpp block 9 end --------------- */\n\t}}\n\n"""
 
     def create_log_string(self, text: str, arguments: list, is_std, pattern: str = "%d"):
         if not isinstance(text, str) or not isinstance(arguments, list):
@@ -451,7 +451,7 @@ class ObjectGenerator:
         for i in self.meta_resources:
             if i["Mandatory"] == "MANDATORY":
                 continue
-            defines += f"""#define {i["Name"]}_O 0\n"""
+            defines += f"""#define DEF_{i["Name"]}_O 0\n"""
         content = \
             f"""#ifndef {ifnotdef}\n""" \
             f"""#define {ifnotdef}\n\n""" \

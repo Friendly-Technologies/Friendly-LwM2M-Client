@@ -14,16 +14,13 @@
 
 #include "liblwm2m.h"
 #include "types.h"
+#include "WppRegistry.h"
 #include "Lwm2mObject.h"
+#include "WppConnection.h"
 
 #define WPP_CLIENT_MAX_SLEEP_TIME_S	30
 
 namespace wpp {
-
-// TODO: Review relationship between WppClient and WppConnection
-class WppConnection;
-class WppRegistry;
- 
 /*
  * To interact with the WppClient, it is necessary to take ownership of it,
  * even if control was transferred from the WppClient to the user-registered
@@ -39,13 +36,14 @@ public:
 	};
 
 private:
-	WppClient(WppConnection &connection, time_t maxSleepTime=WPP_CLIENT_MAX_SLEEP_TIME_S);
+	WppClient(WppConnection &connection, time_t maxSleepTime);
 
 public:
 	~WppClient();
 
 	/* ------------- WppClient management ------------- */
 	static bool create(const ClientInfo &info, WppConnection &connection, time_t maxSleepTime=WPP_CLIENT_MAX_SLEEP_TIME_S);
+	static void remove();
 	static bool isCreated();
 	
 	/*
@@ -81,19 +79,11 @@ public:
 
 	void deregister();
 
-	/* ------------- Wakaama core object managing ------------- */
-	bool registerObject(Lwm2mObject &object);
-	bool deregisterObject(Lwm2mObject &object);
-	bool isObjectRegistered(Lwm2mObject &object);
-
-	/* ------------- Wakaama core observer notify ------------- */
-	void notifyValueChanged(const DataLink &data);
-
 private:
 	/* ------------- Wakaama client initialisation ------------- */
 	bool lwm2mContextOpen();
 	void lwm2mContextClose();
-	lwm2m_context_t * getContext();
+	lwm2m_context_t & getContext();
 
 	bool lwm2mConfigure(const std::string &endpointName, const std::string &msisdn, const std::string &altPath);
 

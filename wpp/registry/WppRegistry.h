@@ -39,19 +39,13 @@
 /* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 
 namespace wpp {
-
-class WppClient;
-
-template<typename T>
-class Object;
-
 // TODO: Split mandatory and optional registers
 // TODO: Add ability to check whether some object id is exist
 // TODO: Add ability to get Lwm2mObject by ID
 // TODO: Try to redesign the registry and objects to simplify access
 class WppRegistry {
 public:
-	WppRegistry(WppClient &client);
+	WppRegistry(lwm2m_context_t &context);
 	~WppRegistry() {}
 
 	WppRegistry(const WppRegistry&) = delete;
@@ -59,7 +53,11 @@ public:
 	WppRegistry& operator=(const WppRegistry&) = delete;
 	WppRegistry& operator=(WppRegistry&&) = delete;
 
-	/* The start of the prototypes of the mandatory objects. */
+	bool registerObj(Lwm2mObject &object);
+	bool deregisterObj(Lwm2mObject &object);
+	bool isObjRegistered(Lwm2mObject &object);
+
+	/* ------------- Mandatory objects prototype start ------------- */
 	#if MANDATORY_SECURITY_OBJ
 	Object<Security>& security();
 	#endif
@@ -86,7 +84,7 @@ public:
 	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 
 private:
-	WppClient &_client;
+	lwm2m_context_t &_context;
 };
 
 } // namespace wpp

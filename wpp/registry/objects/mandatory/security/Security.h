@@ -29,7 +29,7 @@ public:
 	};
 
 public:
-	Security(WppClient &client, const OBJ_LINK_T &id);
+	Security(lwm2m_context_t &context, const OBJ_LINK_T &id);
 	
 protected:
 	/* ---------------Instance implementation part --------------- */

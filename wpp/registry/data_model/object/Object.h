@@ -31,7 +31,7 @@ class WppClient;
 template<typename T>
 class Object : public Lwm2mObject, public ObjSubject<T> {
 private:
-	Object(WppClient &client, const ObjectInfo &info);
+	Object(lwm2m_context_t &context, const ObjectInfo &info);
 
 	Object(const Object&) = delete;
 	Object(Object&&) = delete;
@@ -42,7 +42,7 @@ public:
 	~Object();
 
 /* ------------- Object management ------------- */
-	static bool create(WppClient &client, const ObjectInfo &info);
+	static bool create(lwm2m_context_t &context, const ObjectInfo &info);
 	static bool isCreated();
 	static Object<T>* object();
 
@@ -76,7 +76,7 @@ private:
 private:
 	static Object<T> *_object;
 	
-	WppClient &_client;
+	lwm2m_context_t &_context;
 	std::unordered_map<ID_T, Instance*> _instances; // TODO: maybe here is better to use share_ptr instead simple Instance*
 };
 
@@ -86,7 +86,7 @@ template<typename T>
 Object<T> *Object<T>::_object = NULL;
 
 template<typename T>
-Object<T>::Object(WppClient &client, const ObjectInfo &info): Lwm2mObject(info), _client(client) {
+Object<T>::Object(lwm2m_context_t &context, const ObjectInfo &info): Lwm2mObject(info), _context(context) {
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "Creating object with ID -> %d", (ID_T)info.objID);
 
 	// Initialising core object representation
@@ -125,8 +125,10 @@ Object<T>::~Object() {
 
 /* ------------- Object management ------------- */
 template<typename T>
-bool Object<T>::create(WppClient &client, const ObjectInfo &info) {
-	_object = new Object<T>(client, info);
+bool Object<T>::create(lwm2m_context_t &context, const ObjectInfo &info) {
+	if (isCreated()) return true;
+	static Object<T> obj(context, info);
+	_object = &obj;
 	return true;
 }
 
@@ -167,7 +169,7 @@ T* Object<T>::createInstance(ID_T instanceId) {
 	// TODO: Use lwm2m_object_t.instanceList and its elements lwm2m_list_t * for save instances instead std:: conatainer
 	// TODO: Add check to each new or malloc operation
 	// Creating new instance
-	_instances[instanceId] = new T(_client, {(ID_T)_objInfo.objID, instanceId});
+	_instances[instanceId] = new T(_context, {(ID_T)_objInfo.objID, instanceId});
 	return static_cast<T*>(_instances[instanceId]);
 }
 

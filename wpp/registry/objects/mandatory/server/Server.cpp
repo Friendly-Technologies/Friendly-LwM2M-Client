@@ -19,7 +19,7 @@
 
 namespace wpp {
 
-Server::Server(WppClient &client, const OBJ_LINK_T &id): Instance(client, id) {
+Server::Server(lwm2m_context_t &context, const OBJ_LINK_T &id): Instance(context, id) {
 	resourcesInit();
 }
 

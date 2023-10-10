@@ -148,8 +148,12 @@ Connection::SESSION_T Connection::connect(Security& security) {
             security.get(Security::SECRET_KEY, conn->privKey);
             INT_T mode;
             security.get(Security::SECURITY_MODE, mode);
-            if (mode != LWM2M_SECURITY_MODE_NONE) conn->dtlsContext = _dtlsContext;
-            else conn->dtlsSession = NULL;
+            if (mode != LWM2M_SECURITY_MODE_NONE) {
+                conn->dtlsContext = _dtlsContext;
+            } else if (conn->dtlsSession) {
+                delete conn->dtlsSession;
+                conn->dtlsSession = NULL;
+            }
         }
     }
 
@@ -163,12 +167,14 @@ void Connection::disconnect(SESSION_T session) {
 
     if (conn == _connections) {
         _connections = conn->next;
+        if (conn->dtlsSession) delete conn->dtlsSession;
         delete conn;
     } else {
         dtls_connection_t * parent = _connections;
         while (parent != NULL && parent->next != conn) parent = parent->next;
         if (parent != NULL) {
             parent->next = conn->next;
+            if (conn->dtlsSession) delete conn->dtlsSession;
             delete conn;
         }
     }

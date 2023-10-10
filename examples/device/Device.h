@@ -11,13 +11,16 @@ using namespace std;
 
 class DeviceImpl: public ObjObserver<Device>, public InstObserver<Device> {
 	public:
+    DeviceImpl(): _reboot(false) {}
+
     void init(Object<Device> &deviceObj) {
         deviceObj.subscribe(this);
         wpp::Device *device = deviceObj.createInstance();
         device->subscribe(this);
 
-        device->set(Device::REBOOT, (EXECUTE_T)[](ID_T id, const OPAQUE_T& data) {
+        device->set(Device::REBOOT, (EXECUTE_T)[this](ID_T id, const OPAQUE_T& data) {
             cout << "Device: execute REBOOT" << endl;
+            this->_reboot = true;
         });
         device->set(Device::ERROR_CODE, (INT_T)0);
         device->set(Device::SUPPORTED_BINDINGS, (STRING_T)"U");
@@ -26,6 +29,11 @@ class DeviceImpl: public ObjObserver<Device>, public InstObserver<Device> {
         device->set(Device::SERIAL_NUM, (STRING_T)"345000123");
     }
 
+    bool isNeededReboot() {
+        return _reboot;
+    }
+
+    private:
 	void objectRestore(Object<Device> &object) override {
 		cout << "Device: objectRestore: " << (ID_T)object.getObjectID() << endl;
 		object.clear();
@@ -55,6 +63,9 @@ class DeviceImpl: public ObjObserver<Device>, public InstObserver<Device> {
     void resourcesReplaced(Device &inst) override {
         cout << "Device: resourcesReplaced: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << endl;
     }
+
+    private:
+    bool _reboot;
 };
 
 #endif // DEVICE_H_

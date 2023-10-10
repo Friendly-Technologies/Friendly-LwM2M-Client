@@ -90,7 +90,7 @@ class ObjectIntegrator:
             f"""# if {obj_name_define}\n""" \
             f"""{TYPE_OBJECT} <{obj_name_class}> & {TYPE_REGISTRY}::{obj_name_camelcase}() {{\n\t""" \
             f"""if (!{TYPE_OBJECT} <{obj_name_class}>::isCreated()) {TYPE_OBJECT} <{obj_name_class}>::""" \
-            f"""create(_client, {self.obj_names["obj_name_object_info"]});\n\t""" \
+            f"""create(_context, {self.obj_names["obj_name_object_info"]});\n\t""" \
             f"""return *{TYPE_OBJECT} <{obj_name_class}>::object();\n""" \
             f"""}}\n""" \
             f"""# endif\n"""

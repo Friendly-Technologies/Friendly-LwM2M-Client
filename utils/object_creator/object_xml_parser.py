@@ -75,7 +75,7 @@ class ObjectXmlParser:
         obj_name_class = f"Wpp{_obj_name_plain_no_space}"                                   # WppLwM2MServer
         _obj_requirement = "mandatory" if object_data["is_mandatory"] else "optional"
         _obj_requirement_short = "M" if object_data["is_mandatory"] else "O"
-        _obj_version = object_data["object_lwm2m_version"].replace(".", "_")
+        _obj_version = object_data["object_version"].replace(".", "_")
         obj_name_folder = f"{obj_name_plain_underline.lower()}_{_obj_version}"             # lwm2m_server_1_1
         _path_to_folder = f"{_obj_requirement}/{obj_name_folder}"                           # mandatory/lwm2m_server_1_1
         obj_name_path_to_folder = \

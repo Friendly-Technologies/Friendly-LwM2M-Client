@@ -50,21 +50,21 @@ PREFIX_H = \
     f"""#include "{PLACE_CLASS_NAME}Info.h"\n""" \
     f"""#include "{TYPE_INSTANCE}.h"\n""" \
     f"""#include "{TYPE_I_SUBJECT}.h"\n\n""" \
-    f"""/* --------------- {PLACE_CLASS_NAME}_h block 0 start --------------- */\n""" \
-    f"""/* --------------- {PLACE_CLASS_NAME}_h block 0 end --------------- */\n\n""" \
+    f"""/* --------------- Сode_h block 0 start --------------- */\n""" \
+    f"""/* --------------- Сode_h block 0 end --------------- */\n\n""" \
     f"""namespace wpp {{\n\nclass {PLACE_CLASS_NAME} : """ \
     f"""public {TYPE_INSTANCE}, public {TYPE_I_SUBJECT}<{PLACE_CLASS_NAME}> {{\n"""
 
 PUBLIC_ENUM_H = \
     f"""public:\n\tenum ID: ID_T {{\n{PLACE_RESOURCES_ENUM}\t}};\n\n""" \
-    f"""\t/* --------------- {PLACE_CLASS_NAME}_h block 1 start --------------- */\n""" \
-    f"""\t/* --------------- {PLACE_CLASS_NAME}_h block 1 end --------------- */\n\n""" \
+    f"""\t/* --------------- Code_h block 1 start --------------- */\n""" \
+    f"""\t/* --------------- Code_h block 1 end --------------- */\n\n""" \
 
 PUBLIC_CONSTRUCTOR_H = \
     f"""public:\n\t{PLACE_CLASS_NAME}(lwm2m_context_t &context, const OBJ_LINK_T &id);\n\t""" \
     f"""~{PLACE_CLASS_NAME}();\n\n""" \
-    f"""\t/* --------------- {PLACE_CLASS_NAME}_h block 2 start --------------- */\n""" \
-    f"""\t/* --------------- {PLACE_CLASS_NAME}_h block 2 end --------------- */\n\n"""
+    f"""\t/* --------------- Code_h block 2 start --------------- */\n""" \
+    f"""\t/* --------------- Code_h block 2 end --------------- */\n\n"""
 
 I_INSTANCE_IMPLEMENTATIONS = \
     f"""/* --------------- {TYPE_INSTANCE} implementation part --------------- */\n"""
@@ -90,12 +90,12 @@ CLASS_PRIVATE_METHODS_H = \
     f"""/*\n\t * Initialize resources with default values\n\t""" \
     f""" * Resource always must have at least one instance.\n\t */\t\n\t""" \
     f"""void resourcesInit();\n\t\n""" \
-    f"""\t/* --------------- {PLACE_CLASS_NAME}_h block 3 start --------------- */\n""" \
-    f"""\t/* --------------- {PLACE_CLASS_NAME}_h block 3 end --------------- */\n\n""" \
+    f"""\t/* --------------- Code_h block 3 start --------------- */\n""" \
+    f"""\t/* --------------- Code_h block 3 end --------------- */\n\n""" \
     f"""private:\n\tstd::unordered_map<ID_T, {TYPE_RESOURCE}> _resources = {{\n\t""" \
     f"""\t// KEY   VALUE\n{PLACE_RESOURCES_MAP}\n\t}};\n\n""" \
-    f"""\t/* --------------- {PLACE_CLASS_NAME}_h block 4 start --------------- */\n""" \
-    f"""\t/* --------------- {PLACE_CLASS_NAME}_h block 4 end --------------- */\n""" \
+    f"""\t/* --------------- Code_h block 4 start --------------- */\n""" \
+    f"""\t/* --------------- Code_h block 4 end --------------- */\n""" \
     f"""}};\n\n""" \
     f"""}} /* namespace wpp */\n\n#endif /* WPP_{PLACE_IF_DEF_DIRECTIVE}_H */\n"""
 
@@ -107,30 +107,30 @@ PREFIX_CPP = \
     f"""#include "{TYPE_OPERATION}.h"\n""" \
     f"""#include "types.h"\n""" \
     f"""#include "WppLogs.h"\n\n""" \
-    f"""/* --------------- {PLACE_CLASS_NAME}_cpp block 0 start --------------- */\n""" \
-    f"""/* --------------- {PLACE_CLASS_NAME}_cpp block 0 end --------------- */\n\n""" \
+    f"""/* --------------- Code_cpp block 0 start --------------- */\n""" \
+    f"""/* --------------- Code_cpp block 0 end --------------- */\n\n""" \
     f"""#define TAG "{PLACE_CLASS_NAME}"\n\n""" \
     f"""namespace wpp {{\n\n"""
 
 PUBLIC_CONSTRUCTOR_CPP = \
     f"""{PLACE_CLASS_NAME}::{PLACE_CLASS_NAME}(lwm2m_context_t &context, const OBJ_LINK_T &id): {TYPE_INSTANCE}(context, id) {{\n\n""" \
-    f"""\t/* --------------- {PLACE_CLASS_NAME}_cpp block 1 start --------------- */\n""" \
-    f"""\t/* --------------- {PLACE_CLASS_NAME}_cpp block 1 end --------------- */\n""" \
+    f"""\t/* --------------- Code_cpp block 1 start --------------- */\n""" \
+    f"""\t/* --------------- Code_cpp block 1 end --------------- */\n""" \
     f"""\n\tresourcesInit();\n\n""" \
-    f"""\t/* --------------- {PLACE_CLASS_NAME}_cpp block 2 start --------------- */\n""" \
-    f"""\t/* --------------- {PLACE_CLASS_NAME}_cpp block 2 end --------------- */\n""" \
+    f"""\t/* --------------- Code_cpp block 2 start --------------- */\n""" \
+    f"""\t/* --------------- Code_cpp block 2 end --------------- */\n""" \
     f"""}}\n\n"""
 
 PUBLIC_DESTRUCTOR_CPP = \
     f"""{PLACE_CLASS_NAME}::~{PLACE_CLASS_NAME}() {{\n""" \
-    f"""\t/* --------------- {PLACE_CLASS_NAME}_cpp block 3 start --------------- */\n""" \
-    f"""\t/* --------------- {PLACE_CLASS_NAME}_cpp block 3 end --------------- */\n""" \
+    f"""\t/* --------------- Code_cpp block 3 start --------------- */\n""" \
+    f"""\t/* --------------- Code_cpp block 3 end --------------- */\n""" \
     f"""}}\n\n"""
 
 CLASS_PRIVATE_METHODS_CPP = \
     f"""\t/* --------------- Class private methods --------------- */\n{PLACE_RESOURCES_INIT}""" \
-    f"""/* --------------- {PLACE_CLASS_NAME}_cpp block 10 start --------------- */\n""" \
-    f"""/* --------------- {PLACE_CLASS_NAME}_cpp block 10 end --------------- */\n\n"""
+    f"""/* --------------- Code_cpp block 10 start --------------- */\n""" \
+    f"""/* --------------- Code_cpp block 10 end --------------- */\n\n"""
 
 FUNC_GET_RESOURCE_T = \
     f"""{TYPE_RESOURCE} * {PLACE_CLASS_NAME}::getResource(ID_T id) {{\n\t""" \
@@ -383,7 +383,7 @@ class ObjectGenerator:
                        I_INSTANCE_IMPLEMENTATIONS_H +
                        CLASS_PRIVATE_METHODS_H +
                        "")
-        code_header = code_header.replace(PLACE_IF_DEF_DIRECTIVE, self.object_names["obj_name_underline"].upper())
+        code_header = code_header.replace(PLACE_IF_DEF_DIRECTIVE, self.object_names["obj_name_folder"].upper())
         code_header = code_header.replace(PLACE_CLASS_NAME, self.object_names["obj_name_class"])
         code_header = code_header.replace(PLACE_RESOURCES_ENUM, resources_enum)
         code_header = code_header.replace(PLACE_RESOURCES_MAP, resources_map)
@@ -395,7 +395,6 @@ class ObjectGenerator:
                     PREFIX_CPP +
                     PUBLIC_CONSTRUCTOR_CPP +
                     PUBLIC_DESTRUCTOR_CPP +
-                    I_INSTANCE_IMPLEMENTATIONS +
                     FUNC_GET_RESOURCE_T +
                     FUNC_GET_RESOURCE_LIST +
                     FUNC_GET_RESOURCE_LIST_P +
@@ -414,16 +413,22 @@ class ObjectGenerator:
         return code_cpp
 
     def generate_content_cmake_list(self):
-        main_line = f"""set(WPP_SOURCES ${{WPP_SOURCES}} ${{CMAKE_CURRENT_SOURCE_DIR}}/{self.object_names["obj_name_class"]}.cpp PARENT_SCOPE)\n""" \
-                    f"""\t# --------------- CMake block 0 start ---------------\n""" \
-                    f"""\t# --------------- CMake block 0 end ---------------\n"""
+        name_class = self.object_names["obj_name_class"]
+        name_def = self.object_names["obj_name_define"]
 
-        return f"""if({self.object_names["obj_name_define"]})\n\t""" \
+        main_line = \
+            f"""set(WPP_SOURCES ${{WPP_SOURCES}} ${{CMAKE_CURRENT_SOURCE_DIR}}/{name_class}.cpp)\n\n""" \
+                    f"""\t# --------------- CMake block 0 start ---------------\n""" \
+                    f"""\t# --------------- CMake block 0 end ---------------\n\n""" \
+                    f"""\t# Update WPP_SOURCES variable from parent scope.\n""" \
+                    f"""\tset(WPP_SOURCES ${{WPP_SOURCES}} PARENT_SCOPE)\n"""
+
+        return f"""if({name_def})\n\t""" \
                f"""# Update SOURCES variable from parent scope.\n\t""" \
                f"""{main_line}\nendif()"""
 
     def generate_content_info_header(self):
-        if_not_def = f"""WPP_{self.object_names["obj_name_underline"].upper()}_INFO_H"""
+        if_not_def = f"""WPP_{self.object_names["obj_name_folder"].upper()}_INFO_H"""
         is_multiple = "MULTIPLE" if self.meta_object["is_multiple"] else "SINGLE"
         is_mandatory = "MANDATORY" if self.meta_object["is_mandatory"] else "OPTIONAL"
 
@@ -437,14 +442,14 @@ class ObjectGenerator:
             f"""\t/* Name */\n\t"{self.meta_object["object_name"]}",\n""" \
             f"""\t/* Object ID */\n\tOBJ_ID::SERVER,\n""" \
             f"""\t/* URN */\n\t"{self.meta_object["object_urn"]}",\n""" \
-            f"""\t/* Object version */\n\t{{{self.meta_object["object_lwm2m_version"].replace('.', ',')}}},\n""" \
-            f"""\t/* Lwm2m version */\n\t{{{self.meta_object["object_version"].replace('.', ',')}}},\n""" \
+            f"""\t/* Object version */\n\t{{{self.meta_object["object_version"].replace('.', ',')}}},\n""" \
+            f"""\t/* Lwm2m version */\n\t{{{self.meta_object["object_lwm2m_version"].replace('.', ',')}}},\n""" \
             f"""\t/* Is single */\n\tIS_SINGLE::{is_multiple},\n""" \
             f"""\t/* Is Mandatory */\n\tIS_MANDATORY::{is_mandatory},\n""" \
             f"""\t/* Object supported operations */\n""" \
             f"""\t/* --------------- Info block 0 start --------------- */\n""" \
             f"""\tInstOp(\tInstOp::CREATE |\n""" \
-            f"""\t\t\tInstOp::CREATE),\n""" \
+            f"""\t\t\tInstOp::DELETE),\n""" \
             f"""\t{TYPE_OPERATION}(\t{TYPE_OPERATION}::READ|\n""" \
             f"""\t\t\t{TYPE_OPERATION}::WRITE|\n""" \
             f"""\t\t\t{TYPE_OPERATION}::DISCOVER|\n""" \
@@ -459,7 +464,7 @@ class ObjectGenerator:
         return content
 
     def generate_content_config(self):
-        if_not_def = f"""WPP_{self.object_names["obj_name_underline"].upper()}_CONFIG_H"""
+        if_not_def = f"""WPP_{self.object_names["obj_name_folder"].upper()}_CONFIG_H"""
         defines = ""
         for resource in self.meta_resources:
             if resource["Mandatory"] == "MANDATORY":

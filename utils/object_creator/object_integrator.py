@@ -95,13 +95,13 @@ class ObjectIntegrator:
             f"""}}\n""" \
             f"""# endif\n"""
 
-        self.update_file(stop_string_obj_id, content_obj_id, "../wpp/registry/ObjectID.h")
-        self.update_file(stop_string_cfg_cmk, content_cnfg_cmk, "../wpp/config/config.cmake")
+        self.update_file(stop_string_obj_id, content_obj_id, "../../wpp/registry/ObjectID.h")
+        self.update_file(stop_string_cfg_cmk, content_cnfg_cmk, "../../wpp/config/config.cmake")
 
-        self.update_file(stop_string_reg_incl, content_reg_h_incl, "../wpp/registry/WppRegistry.h")
-        self.update_file(stop_string_reg_prot, content_reg_h_prt, "../wpp/registry/WppRegistry.h")
+        self.update_file(stop_string_reg_incl, content_reg_h_incl, "../../wpp/registry/WppRegistry.h")
+        self.update_file(stop_string_reg_prot, content_reg_h_prt, "../../wpp/registry/WppRegistry.h")
 
-        self.update_file(stop_string_reg_cpp, content_reg_cpp, "../wpp/registry/WppRegistry.cpp")
+        self.update_file(stop_string_reg_cpp, content_reg_cpp, "../../wpp/registry/WppRegistry.cpp")
 
 
 if __name__ == "__main__":

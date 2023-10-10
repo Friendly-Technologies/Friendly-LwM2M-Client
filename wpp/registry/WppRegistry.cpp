@@ -1,10 +1,26 @@
 #include "WppRegistry.h"
 #include "WppLogs.h"
+#include "liblwm2m.h"
 
 namespace wpp {
 
 WppRegistry::WppRegistry(lwm2m_context_t &context): _context(context) {
     WPP_LOGD(TAG_WPP_REG, "Creating registry instance");
+}
+
+bool WppRegistry::registerObj(Lwm2mObject &object) {
+	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Register object with id: %d", object.getObjectID());
+	return !lwm2m_add_object(&_context, &object.getLwm2mObject());
+}
+
+bool WppRegistry::deregisterObj(Lwm2mObject &object) {
+	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Deregister object with id: %d", object.getObjectID());
+	return !lwm2m_remove_object(&_context, object.getLwm2mObject().objID);
+}
+
+bool WppRegistry::isObjRegistered(Lwm2mObject &object) {
+	lwm2m_object_t * lwm2m_object = (lwm2m_object_t *)LWM2M_LIST_FIND(_context.objectList, object.getLwm2mObject().objID);
+	return lwm2m_object != NULL;
 }
 
 /* ------------- Mandatory objects prototype start ------------- */

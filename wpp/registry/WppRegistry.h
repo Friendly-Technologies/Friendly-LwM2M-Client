@@ -51,6 +51,10 @@ public:
 	WppRegistry& operator=(const WppRegistry&) = delete;
 	WppRegistry& operator=(WppRegistry&&) = delete;
 
+	bool registerObj(Lwm2mObject &object);
+	bool deregisterObj(Lwm2mObject &object);
+	bool isObjRegistered(Lwm2mObject &object);
+
 	/* ------------- Mandatory objects prototype start ------------- */
 	#if MANDATORY_SECURITY_OBJ
 	Object<Security>& security();

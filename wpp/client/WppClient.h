@@ -79,11 +79,6 @@ public:
 
 	void deregister();
 
-	/* ------------- Wakaama core object managing ------------- */
-	bool registerObject(Lwm2mObject &object);
-	bool deregisterObject(Lwm2mObject &object);
-	bool isObjectRegistered(Lwm2mObject &object);
-
 private:
 	/* ------------- Wakaama client initialisation ------------- */
 	bool lwm2mContextOpen();

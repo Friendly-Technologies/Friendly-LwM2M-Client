@@ -34,6 +34,9 @@ namespace wpp {
  * Note: Empty resource == undefined resource.
  */
 class Instance {
+template <typename T>
+friend class Object;
+
 public: /* Interface that can be used by user */
 	Instance(lwm2m_context_t &context, const OBJ_LINK_T &id): _context(context), _id(id) {}
 	virtual ~Instance() {}
@@ -76,12 +79,6 @@ public: /* Interface that can be used by user */
 	 * possible. Because instantiated resources must have at least one instance.
 	 */
 	bool remove(const ResLink &resId);
-
-	/* ------------- Server operation methods ------------- */
-	uint8_t read(int * numDataP, lwm2m_data_t ** dataArray);
-	uint8_t write(int numData, lwm2m_data_t * dataArray, lwm2m_write_type_t writeType);
-	uint8_t execute(ID_T resId, uint8_t * buffer, int length);
-	uint8_t discover(int * numDataP, lwm2m_data_t ** dataArray);
 
 protected: /* Interface that can be used by derived class */
 	void notifyValueChanged(const DataLink &data);
@@ -146,6 +143,11 @@ private: /* Interface used by Object<T> or Instance class */
 	uint8_t resourceRead(lwm2m_data_t &data, Resource &res);
 	Resource* getValidatedResForExecute(ID_T resId, uint8_t &errCode);
 	uint8_t createEmptyLwm2mDataArray(std::vector<Resource*> resources, lwm2m_data_t **dataArray, int *numData);
+	/* ------------- Server operation methods ------------- */
+	uint8_t read(int * numDataP, lwm2m_data_t ** dataArray);
+	uint8_t write(int numData, lwm2m_data_t * dataArray, lwm2m_write_type_t writeType);
+	uint8_t execute(ID_T resId, uint8_t * buffer, int length);
+	uint8_t discover(int * numDataP, lwm2m_data_t ** dataArray);
 
 protected:
 	lwm2m_context_t &_context;

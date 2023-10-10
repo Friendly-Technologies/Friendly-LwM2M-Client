@@ -20,6 +20,8 @@ namespace wpp {
 class Security;
 
 class WppConnection {
+	friend class WppClient;
+	
 public:
 	using SESSION_T = void*;
 
@@ -77,6 +79,7 @@ public:
 	bool setDataBlockSize(uint16_t size);
 	uint16_t getDataBlockSize();
 
+private:
 	/*
 	* This method is called by ownershiped WppClient in loop() if the queue contains at
 	* least one message. And processes all the messages found in the queue. If an error

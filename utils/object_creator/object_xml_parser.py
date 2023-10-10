@@ -50,6 +50,13 @@ class ObjectXmlParser:
                 for character in repl_characters:
                     resource_name = resource_name.replace(character, '_')
                 resource_dict[resource.tag] = resource_name.upper()
+                # print(resource_name.upper())
+            # generate define of the resource:
+            name_res = resource_dict['Name']
+            id_obj = object_data['object_id']
+            id_res = resource_dict['ID']
+            resource_dict['Define'] = f"RES_{name_res}_{id_obj}_{id_res}"
+            # add prepared resource dictionary to the list:
             resources_list.append(resource_dict)
 
         return object_data, resources_list

@@ -61,7 +61,7 @@ PUBLIC_ENUM_H = \
     f"""\t\t/* --------------- {PLACE_CLASS_NAME}_h block 1 end --------------- */\n\n""" \
 
 PUBLIC_CONSTRUCTOR_H = \
-    f"""\tpublic:\n\t\t{PLACE_CLASS_NAME}(WppClient &client, const OBJ_LINK_T &id);\n\t""" \
+    f"""\tpublic:\n\t\t{PLACE_CLASS_NAME}(lwm2m_context_t &context, const OBJ_LINK_T &id);\n\t""" \
     f"""\t~{PLACE_CLASS_NAME}();\n\n""" \
     f"""\t\t/* --------------- {PLACE_CLASS_NAME}_h block 2 start --------------- */\n""" \
     f"""\t\t/* --------------- {PLACE_CLASS_NAME}_h block 2 end --------------- */\n\n"""
@@ -113,7 +113,7 @@ PREFIX_CPP = \
     f"""namespace wpp {{\n\n"""
 
 PUBLIC_CONSTRUCTOR_CPP = \
-    f"""\t{PLACE_CLASS_NAME}::{PLACE_CLASS_NAME}(WppClient &client, const OBJ_LINK_T &id): {TYPE_INSTANCE}(client, id) {{\n\n""" \
+    f"""\t{PLACE_CLASS_NAME}::{PLACE_CLASS_NAME}(lwm2m_context_t &context, const OBJ_LINK_T &id): {TYPE_INSTANCE}(context, id) {{\n\n""" \
     f"""\t\t/* --------------- {PLACE_CLASS_NAME}_cpp block 1 start --------------- */\n""" \
     f"""\t\t/* --------------- {PLACE_CLASS_NAME}_cpp block 1 end --------------- */\n""" \
     f"""\n\t\tresourcesInit();\n\n""" \
@@ -286,17 +286,18 @@ class ObjectGenerator:
             postfix = "M" if resource_xml['Mandatory'] == "MANDATORY" else "O"
 
             # fill the Resources' enum:
-            resource_define = f"{resource_name}_{postfix}"
-            resource_enum = f"\t\t\t{resource_define} = {resource_xml['ID']},\n"
+            resource_define = resource_xml['Define']
+            resource = f"{resource_name}_{postfix}"
+            resource_enum = f"\t\t\t{resource} = {resource_xml['ID']},\n"
             resources_enum += resource_enum
 
             # fill the unordered_map<ID_T, Resource> table:
 
             if resource_xml['Mandatory'] != "MANDATORY":
-                x.add_row([f"*TAB*#if DEF_{resource_define}", "", "", "", "", ""])
+                x.add_row([f"*TAB*#if {resource_define}", "", "", "", "", ""])
 
-            x.add_row([f"*TAB*{{{resource_define},",
-                       f"{{{resource_define},",
+            x.add_row([f"*TAB*{{{resource},",
+                       f"{{{resource},",
                        self.parse_operation(resource_xml['Operations']),
                        f"IS_SINGLE::{resource_xml['MultipleInstances']},",
                        f"IS_MANDATORY::{resource_xml['Mandatory']},",
@@ -458,10 +459,10 @@ class ObjectGenerator:
     def generate_content_config(self):
         ifnotdef = f"""{self.object_names["obj_name_class"].upper()}CONFIG_H"""
         defines = ""
-        for i in self.meta_resources:
-            if i["Mandatory"] == "MANDATORY":
+        for resource in self.meta_resources:
+            if resource["Mandatory"] == "MANDATORY":
                 continue
-            defines += f"""#define DEF_{i["Name"]}_O 0\n"""
+            defines += f"""#define {resource['Define']} 0\n"""
         content = \
             f"""#ifndef {ifnotdef}\n""" \
             f"""#define {ifnotdef}\n\n""" \

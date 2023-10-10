@@ -14,14 +14,14 @@ PLACE_FOLDER = "<<<4>>>"
 PLACE_RESOURCES_INIT = "<<<5>>>"
 
 TYPE_REGISTRY = "WppRegistry"
-TYPE_OPERATION = "Operation"
+TYPE_OPERATION = "ResOp"
 TYPE_OBJECT = "Object"
 TYPE_OBJECT_INFO = "ObjectInfo"
 TYPE_RESOURCE = "Resource"
 TYPE_INSTANCE = "Instance"
 TYPE_I_SUBJECT = "InstSubject"
 
-TYPE_1 = "Operation::TYPE"
+TYPE_1 = f"{TYPE_OPERATION}::TYPE"
 TYPE_2 = "const ResLink"
 
 LOG_FUNC_CUSTOM = "WPP_LOGD_ARG"
@@ -79,7 +79,7 @@ I_INSTANCE_IMPLEMENTATIONS_H = \
     f"""\tstd::vector<{TYPE_RESOURCE} *> getInstantiatedResourcesList() override;\n\t""" \
     f"""\tstd::vector<{TYPE_RESOURCE} *> getInstantiatedResourcesList(const {TYPE_OPERATION}& filter) override;\n\t""" \
     f"""\t/*\n\t\t * Reset all resources values and internal state to default.\n\t\t */\n\t""" \
-    f"""\tvoid clear() override;\n\t\t/*\n\t""" \
+    f"""\tvoid setDefaultState() override;\n\t\t/*\n\t""" \
     f"""\t * Handles information about resource operation that made server\n\t\t */\n\t""" \
     f"""\tvoid serverOperationNotifier({TYPE_1} type, {TYPE_2} &resId) override;\n\t\t/*\n\t""" \
     f"""\t * Handles information about resource operation that made user\n\t\t */\n\t""" \
@@ -176,6 +176,15 @@ FUNC_CLEAR = \
     f"""\t/* --------------- Code_cpp block 5 end --------------- */\n\t""" \
     f"""}}\n\n"""
 
+FUNC_SET_DEF_STATE = \
+    f"""\tvoid {PLACE_CLASS_NAME}::setDefaultState() {{\n\t""" \
+    f"""\t/* --------------- Code_cpp block 4 start --------------- */\n\t""" \
+    f"""\t/* --------------- Code_cpp block 4 end --------------- */\n\n\t""" \
+    f"""\tfor (auto &pair : _resources) pair.second.clear();\n\t""" \
+    f"""\tresourcesInit();\n\n\t""" \
+    f"""\t/* --------------- Code_cpp block 5 start --------------- */\n\t""" \
+    f"""\t/* --------------- Code_cpp block 5 end --------------- */\n\t""" \
+    f"""}}\n\n"""
 
 class ObjectGenerator:
     """Add some comments here"""
@@ -194,7 +203,7 @@ class ObjectGenerator:
         return self.object_names["obj_name_path_to_folder"]
 
     def parse_operation(self, xml_operation):
-        operation = f"{TYPE_OPERATION}::"
+        operation = f"{TYPE_OPERATION}({TYPE_OPERATION}::"
         match xml_operation:
             case "E":
                 operation += "EXECUTE"
@@ -203,10 +212,10 @@ class ObjectGenerator:
             case "W":
                 operation += "WRITE"
             case "RW":
-                operation = f"{TYPE_OPERATION}::READ|{TYPE_OPERATION}::WRITE"
+                operation = f"{TYPE_OPERATION}({TYPE_OPERATION}::READ|{TYPE_OPERATION}::WRITE"
             case default:
-                operation = f"{TYPE_OPERATION}::READ|{TYPE_OPERATION}::WRITE"
-        operation += ","
+                operation = f"{TYPE_OPERATION}({TYPE_OPERATION}::READ|{TYPE_OPERATION}::WRITE"
+        operation += "),"
         return operation
 
     def parse_resource_data_type(self, xml_type):
@@ -390,7 +399,8 @@ class ObjectGenerator:
                     FUNC_GET_RESOURCE_LIST_P +
                     FUNC_GET_INSTANTIATED_LIST +
                     FUNC_GET_INSTANTIATED_LIST_P +
-                    FUNC_CLEAR +
+                    # FUNC_CLEAR +
+                    FUNC_SET_DEF_STATE +
                     self.get_content_serverOperationNotifier(TYPE_1, TYPE_2) +
                     self.get_content_userOperationNotifier(TYPE_1, TYPE_2) +
                     CLASS_PRIVATE_METHODS_CPP +
@@ -431,11 +441,11 @@ class ObjectGenerator:
             f"""\t/* Is Mandatory */\n\tIS_MANDATORY::{is_mandatory},\n\n""" \
             f"""\t/* Object supported operations */\n""" \
             f"""\t/* --------------- Info block 0 start --------------- */\n""" \
+            f"""\tInstOp(InstOp::CREATE),\n""" \
             f"""\t{TYPE_OPERATION}(\t{TYPE_OPERATION}::READ|\n""" \
             f"""\t\t\t\t{TYPE_OPERATION}::WRITE|\n""" \
             f"""\t\t\t\t{TYPE_OPERATION}::DISCOVER|\n""" \
             f"""\t\t\t\t{TYPE_OPERATION}::EXECUTE|\n""" \
-            f"""\t\t\t\t{TYPE_OPERATION}::CREATE|\n""" \
             f"""\t\t\t\t{TYPE_OPERATION}::DELETE),\n""" \
             f"""\t/* --------------- Info block 0 end --------------- */\n""" \
             f"""}};\n\n""" \

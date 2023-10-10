@@ -68,23 +68,27 @@ class ObjectXmlParser:
 
         obj_name_plain = object_data["object_name"]                                         # LwM2M Server
         _obj_name_plain_no_space = obj_name_plain.replace(' ', '')             # LwM2MServer
-        _obj_name_plain_underline = obj_name_plain.replace(' ', '_')           # LwM2M_Server
+        obj_name_plain_underline = obj_name_plain.replace(' ', '_')           # LwM2M_Server
         _obj_name_plain_list = obj_name_plain.split(" ")
         _obj_name_plain_list[0] = _obj_name_plain_list[0][0].lower() + _obj_name_plain_list[0][1:]
         obj_name_camelcase = ''.join(_obj_name_plain_list)                                  # lwM2MServer
         obj_name_class = f"Wpp{_obj_name_plain_no_space}"                                   # WppLwM2MServer
         _obj_requirement = "mandatory" if object_data["is_mandatory"] else "optional"
+        _obj_requirement_short = "M" if object_data["is_mandatory"] else "O"
         _obj_version = object_data["object_lwm2m_version"].replace(".", "_")
-        obj_name_folder = f"{_obj_name_plain_underline.lower()}_{_obj_version}"             # lwm2m_server_1_1
+        obj_name_folder = f"{obj_name_plain_underline.lower()}_{_obj_version}"             # lwm2m_server_1_1
         _path_to_folder = f"{_obj_requirement}/{obj_name_folder}"                           # mandatory/lwm2m_server_1_1
         obj_name_path_to_folder = \
-            f"../wpp/registry/objects/{_path_to_folder}"            # ../wpp/registry/objects/mandatory/lwm2m_server_1_1
+            f"../../wpp/registry/objects/{_path_to_folder}"            # ../wpp/registry/objects/mandatory/lwm2m_server_1_1
 
-        obj_name_object_info = f"WPP_{_obj_name_plain_underline}_OBJ_INFO".upper()          # WPP_LWM2M_SERVER_OBJ_INFO
+        obj_name_object_info = f"WPP_{obj_name_plain_underline}_OBJ_INFO".upper()          # WPP_LWM2M_SERVER_OBJ_INFO
+        # obj_name_define = \
+        #     f"{_obj_requirement}_{obj_name_plain_underline}_{_obj_version}_OBJ".upper()    # MANDATORY_LWM2M_SERVER_1_1_OBJ
         obj_name_define = \
-            f"{_obj_requirement}_{_obj_name_plain_underline}_{_obj_version}_OBJ".upper()    # MANDATORY_LWM2M_SERVER_1_1_OBJ
+            f"OBJ_{obj_name_plain_underline}_{_obj_version}_{_obj_requirement_short}".upper()  # OBJ_LWM2M_SERVER_1_1_M
 
         object_metadata["obj_name"] = obj_name_plain
+        object_metadata["obj_name_underline"] = obj_name_plain_underline
         object_metadata["obj_name_camelcase"] = obj_name_camelcase
         object_metadata["obj_name_class"] = obj_name_class
         object_metadata["obj_name_folder"] = obj_name_folder

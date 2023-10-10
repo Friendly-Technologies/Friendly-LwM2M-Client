@@ -113,9 +113,13 @@ class MemActsLogParser:
     MEM_SIZE_POS = 2
 
     def __init__(self, logs_file_path:str):
+        print(f"MemActsLogParser: Parsing file '{logs_file_path}'")
         self.__logs_file = logs_file_path
+        print(f"MemActsLogParser: Extracting each memory action from logs")
         self.__mem_acts = self.__get_mem_acts()
+        print(f"MemActsLogParser: Computing corrupted memory actions")
         self.__corrupted_acts = self.__get_corrupted_mem_acts()
+        print(f"MemActsLogParser: Computing max heap usage and position in logs")
         self.__max_heap_size, self.__max_heap_pos = self.__get_max_heap_usage()
 
     def get_mem_acts(self) -> list[MemAct]:
@@ -131,6 +135,7 @@ class MemActsLogParser:
         return self.__max_heap_pos
 
     def create_report(self, out_file_path:str = DEFAULT_OUT_FILE_PATH):
+        print(f"MemActsLogParser: Creating report in the file '{out_file_path}'")
         with open(out_file_path, 'w') as new_file:
             new_file.truncate(0)
             corrupted_info = self.get_corrupted_acts_info()

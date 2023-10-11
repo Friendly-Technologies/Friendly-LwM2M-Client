@@ -21,10 +21,6 @@ if (MANDATORY_SERVER_OBJ)
     set(WPP_DEFINITIONS ${WPP_DEFINITIONS} MANDATORY_SERVER_OBJ=1)
 endif()
 
-option(MANDATORY_DEVICE_OBJ "Include mandatory Device object in the build" ON)
-if (MANDATORY_DEVICE_OBJ)
-    set(WPP_DEFINITIONS ${WPP_DEFINITIONS} MANDATORY_DEVICE_OBJ=1)
-endif()
 # The end of the options of the mandatory objects.
 # !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!!
 

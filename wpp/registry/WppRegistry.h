@@ -19,9 +19,6 @@
 #if MANDATORY_SERVER_OBJ
 #include "mandatory/server/Server.h"
 #endif
-#if MANDATORY_DEVICE_OBJ
-#include "mandatory/device/Device.h"
-#endif
 /* The end of the includes of the mandatory objects. */
 /* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 
@@ -63,9 +60,6 @@ public:
 	#endif
 	#if MANDATORY_SERVER_OBJ
 	Object<Server>& server();
-	#endif
-	#if MANDATORY_DEVICE_OBJ
-	Object<Device>& device();
 	#endif
 	/* The end of the prototypes of the mandatory objects. */
 	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */

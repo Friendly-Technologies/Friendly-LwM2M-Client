@@ -9,7 +9,6 @@ enum class OBJ_ID: ID_T {
 	/* The start of the IDs of the mandatory objects. */
 	SECURITY = 0,
 	SERVER = 1,
-	DEVICE = 3,
 	/* The end of the IDs of the mandatory objects. */
 	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 

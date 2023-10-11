@@ -36,12 +36,6 @@ Object<Server>& WppRegistry::server() {
     return *Object<Server>::object();
 }
 #endif
-#if MANDATORY_DEVICE_OBJ
-Object<Device>& WppRegistry::device() {
-    if (!Object<Device>::isCreated()) Object<Device>::create(_context, DEVICE_OBJ_INFO);
-    return *Object<Device>::object();
-}
-#endif
 /* The end of the prototypes of the mandatory objects. */
 /* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE! */
 

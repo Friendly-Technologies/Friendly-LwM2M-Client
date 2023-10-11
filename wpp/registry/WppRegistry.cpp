@@ -23,7 +23,7 @@ bool WppRegistry::isObjRegistered(Lwm2mObject &object) {
 	return lwm2m_object != NULL;
 }
 
-/* ------------- Mandatory objects prototype start ------------- */
+/* The start of the prototypes of the mandatory objects. */
 #if MANDATORY_SECURITY_OBJ
 Object<Security>& WppRegistry::security() {
     if (!Object<Security>::isCreated()) Object<Security>::create(_context, SECURITY_OBJ_INFO);
@@ -42,9 +42,10 @@ Object<Device>& WppRegistry::device() {
     return *Object<Device>::object();
 }
 #endif
-/* ------------- Mandatory objects prototype end ------------- */
+/* The end of the prototypes of the mandatory objects. */
+/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE! */
 
-/* ------------- Optional objects prototype start ------------- */
+/* The start of the prototypes of the optional objects. */
 #if OPTIONAL_ACL_OBJ
 #endif
 
@@ -53,7 +54,8 @@ Object<Device>& WppRegistry::device() {
 
 #if OPTIONAL_FIRMWARE_UPD_OBJ
 #endif
-/* ------------- Optional objects prototype end ------------- */
+/* The end of the prototypes of the optional objects. */
+/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE! */
 
 
 } //wpp

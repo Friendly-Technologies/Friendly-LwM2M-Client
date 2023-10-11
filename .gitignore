@@ -1,2 +1,3 @@
 /_build/
-/utils/.idea
+/utils/object_creator/.idea
+/utils/object_creator/__pycache__

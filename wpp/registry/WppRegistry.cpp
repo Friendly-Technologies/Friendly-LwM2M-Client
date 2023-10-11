@@ -36,6 +36,12 @@ Object <WppLWM2MSecurity> & WppRegistry::lWM2MSecurity() {
 	return *Object <WppLWM2MSecurity>::object();
 }
 # endif
+# if OBJ_LWM2M_SERVER_1_2_M
+Object <WppLwM2MServer> & WppRegistry::lwM2MServer() {
+	if (!Object <WppLwM2MServer>::isCreated()) Object <WppLwM2MServer>::create(_context, WPP_LWM2M_SERVER_OBJ_INFO);
+	return *Object <WppLwM2MServer>::object();
+}
+# endif
 /* The end of the prototypes of the mandatory objects. */
 /* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE! */
 

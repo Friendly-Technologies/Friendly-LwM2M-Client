@@ -13,6 +13,9 @@ enum class OBJ_ID: ID_T {
 #ifdef OBJ_LWM2M_SECURITY_1_2_M
 	WPPLWM2MSECURITY = 0,
 #endif /* OBJ_LWM2M_SECURITY_1_2_M */
+#ifdef OBJ_LWM2M_SERVER_1_2_M
+	WPPLWM2MSERVER = 1,
+#endif /* OBJ_LWM2M_SERVER_1_2_M */
 	/* The end of the IDs of the mandatory objects. */
 	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 

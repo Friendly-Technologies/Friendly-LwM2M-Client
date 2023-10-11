@@ -313,14 +313,14 @@ class ObjectGenerator:
 
     def get_content_resourcesInit_f(self, resources_list_xml):
         content = f"""void {PLACE_CLASS_NAME}::resourcesInit() {{\n""" \
-                  f"""\t/* --------------- {PLACE_CLASS_NAME}_cpp block 9 start --------------- */\n\t"""
+                  f"""\t/* --------------- Code_cpp block 9 start --------------- */\n\t"""
         for resource in resources_list_xml:
             if resource["Mandatory"] == "MANDATORY":
                 # content += f"""\t\t#if {resource["Name"]}_{resource["Mandatory"]}\n\t"""
                 content += f"_resources[{resource['Name']}_M].set( /* TODO */ );\n\t"
                 content += f"_resources[{resource['Name']}_M].setDataVerifier( /* TODO */ );\n\t"
                 # content += f"\t\t#endif\n\n"
-        return content + f"""/* --------------- {PLACE_CLASS_NAME}_cpp block 9 end --------------- */\n}}\n\n"""
+        return content + f"""/* --------------- Code_cpp block 9 end --------------- */\n}}\n\n"""
 
     def create_log_string(self, text: str, arguments: list, is_std, pattern: str = "%d"):
         if not isinstance(text, str) or not isinstance(arguments, list):
@@ -344,10 +344,10 @@ class ObjectGenerator:
         cases = ["READ", "WRITE", "EXECUTE", "DISCOVER", "DELETE"]
         base = \
             f"""void {PLACE_CLASS_NAME}::serverOperationNotifier({param_1} type, {param_2} &resId) {{\n""" \
-            f"""\t/* --------------- {PLACE_CLASS_NAME}_cpp block 6 start --------------- */\n""" \
-            f"""\t/* --------------- {PLACE_CLASS_NAME}_cpp block 6 end --------------- */\n""" \
+            f"""\t/* --------------- Code_cpp block 6 start --------------- */\n""" \
+            f"""\t/* --------------- Code_cpp block 6 end --------------- */\n""" \
             f"""\n\tobserverNotify(*this, resId, type);\n\n""" \
-            f"""\t/* --------------- {PLACE_CLASS_NAME}_cpp block 7 start --------------- */\n""" \
+            f"""\t/* --------------- Code_cpp block 7 start --------------- */\n""" \
             f"""\tswitch (type) {{\n\t"""
         for case in cases:
             base += f"""case {TYPE_OPERATION}::{case}:\n\t\t{self.create_log_string(
@@ -356,13 +356,13 @@ class ObjectGenerator:
                 False
             )}\n\t\tbreak;\n\t"""
         return f"""{base}default: break;\n\t}}\n\t""" \
-               f"""/* --------------- {PLACE_CLASS_NAME}_cpp block 7 end --------------- */\n}}\n\n"""
+               f"""/* --------------- Code_cpp block 7 end --------------- */\n}}\n\n"""
 
     def get_content_userOperationNotifier(self, param_1, param_2):
         cases = ["READ", "WRITE", "DELETE"]
         prefix = \
             f"""void {PLACE_CLASS_NAME}::userOperationNotifier({param_1} type, {param_2} &resId) {{\n""" \
-            f"""\t/* --------------- {PLACE_CLASS_NAME}_cpp block 8 start --------------- */\n""" \
+            f"""\t/* --------------- Code_cpp block 8 start --------------- */\n""" \
             f"""\tswitch (type) {{\n\t"""
         for case in cases:
             prefix += f"""case {TYPE_OPERATION}::{case}:\n\t\t{self.create_log_string(
@@ -371,7 +371,7 @@ class ObjectGenerator:
                 False
             )}\n\t\tbreak;\n\t"""
         postfix = f"""default: break;\n\t}}\n""" \
-                  f"""\t/* --------------- {PLACE_CLASS_NAME}_cpp block 8 end --------------- */\n}}\n\n"""
+                  f"""\t/* --------------- Code_cpp block 8 end --------------- */\n}}\n\n"""
         return prefix + postfix
 
     def generate_content_header(self):

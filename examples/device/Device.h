@@ -18,8 +18,8 @@ class DeviceImpl: public ObjObserver<WppDevice>, public InstObserver<WppDevice> 
         wpp::WppDevice *device = deviceObj.createInstance();
         device->subscribe(this);
 
-        device->set(WppDevice::REBOOT, (EXECUTE_T)[this](ID_T id, const OPAQUE_T& data) {
-            cout << "WppDevice: execute REBOOT" << endl;
+        device->set(WppDevice::REBOOT_4, (EXECUTE_T)[this](ID_T id, const OPAQUE_T& data) {
+            cout << "WppDevice: execute REBOOT_4" << endl;
             this->_reboot = true;
         });
         device->set(WppDevice::ERROR_CODE_11, (INT_T)0);

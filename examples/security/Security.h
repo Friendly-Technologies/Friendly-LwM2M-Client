@@ -37,7 +37,7 @@ class SecurityImpl: public ObjObserver<WppLWM2MSecurity>, public InstObserver<Wp
                 url += "5683";
                 security->set(WppLWM2MSecurity::SECURITY_MODE_2, (INT_T)LWM2M_SECURITY_MODE_NONE);
             #endif
-            security->set(WppLWM2MSecurity::BOOTSTRAP_SERVER_ACCOUNT_TIMEOUT_12, false);
+            security->set(WppLWM2MSecurity::BOOTSTRAP_SERVER_1, false);
         #endif
 
         security->set(WppLWM2MSecurity::LWM2M_SERVER_URI_0, (STRING_T)url);

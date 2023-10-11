@@ -11,22 +11,22 @@ public:
      * Notifies observer immediately after read resource by server. 
      * Resource is already readed during this call.
      */
-    virtual void resourceRead(T &inst, const ResLink &resource) = 0;
+    virtual void resourceRead(T &inst, const ResLink &resource) {};
     /*
      * Notifies observer immediately after write resource by server. 
      * Resource is already written during this call.
      */
-    virtual void resourceWrite(T &inst, const ResLink &resource) = 0;
+    virtual void resourceWrite(T &inst, const ResLink &resource) {};
     /*
      * Notifies observer immediately after execute resource by server. 
      * Resource is already executed during this call.
      */
-    virtual void resourceExecute(T &inst, const ResLink &resource) = 0;
+    virtual void resourceExecute(T &inst, const ResLink &resource) {};
     /*
      * Notifies observer immediately after replace instance by server. 
      * Instance and resource are already written during this call.
      */
-    virtual void resourcesReplaced(T &inst) = 0;
+    virtual void resourcesReplaced(T &inst) {};
 };
 
 } // namespace wpp

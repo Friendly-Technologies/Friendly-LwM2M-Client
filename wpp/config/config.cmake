@@ -12,10 +12,6 @@ endif()
 # The option of the mandatory object ends with the letter M.
 # The start of the options of the mandatory objects.
 
-option(MANDATORY_SERVER_OBJ "Include mandatory Server object in the build" ON)
-if (MANDATORY_SERVER_OBJ)
-    set(WPP_DEFINITIONS ${WPP_DEFINITIONS} MANDATORY_SERVER_OBJ=1)
-endif()
 
 # The end of the options of the mandatory objects.
 # !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!!

@@ -7,7 +7,6 @@ namespace wpp {
 
 enum class OBJ_ID: ID_T {
 	/* The start of the IDs of the mandatory objects. */
-	SERVER = 1,
 	/* The end of the IDs of the mandatory objects. */
 	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 

@@ -13,9 +13,6 @@
 #include "Object.h"
 
 /* The start of the includes of the mandatory objects. */
-#if MANDATORY_SECURITY_OBJ
-#include "mandatory/security/Security.h"
-#endif
 #if MANDATORY_SERVER_OBJ
 #include "mandatory/server/Server.h"
 #endif
@@ -55,9 +52,6 @@ public:
 	bool isObjRegistered(Lwm2mObject &object);
 
 	/* ------------- Mandatory objects prototype start ------------- */
-	#if MANDATORY_SECURITY_OBJ
-	Object<Security>& security();
-	#endif
 	#if MANDATORY_SERVER_OBJ
 	Object<Server>& server();
 	#endif

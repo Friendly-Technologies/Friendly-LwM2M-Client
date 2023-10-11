@@ -24,12 +24,6 @@ bool WppRegistry::isObjRegistered(Lwm2mObject &object) {
 }
 
 /* The start of the prototypes of the mandatory objects. */
-#if MANDATORY_SECURITY_OBJ
-Object<Security>& WppRegistry::security() {
-    if (!Object<Security>::isCreated()) Object<Security>::create(_context, SECURITY_OBJ_INFO);
-    return *Object<Security>::object();
-}
-#endif
 #if MANDATORY_SERVER_OBJ
 Object<Server>& WppRegistry::server() {
     if (!Object<Server>::isCreated()) Object<Server>::create(_context, SERVER_OBJ_INFO);

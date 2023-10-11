@@ -16,6 +16,9 @@
 #if OBJ_DEVICE_1_2_M
 #include "mandatory/device_1_2/WppDevice.h"
 #endif
+#if OBJ_LWM2M_SECURITY_1_2_M
+#include "mandatory/lwm2m_security_1_2/WppLWM2MSecurity.h"
+#endif
 /* The end of the includes of the mandatory objects. */
 /* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 
@@ -54,6 +57,9 @@ public:
 	/* ------------- Mandatory objects prototype start ------------- */
 	#if OBJ_DEVICE_1_2_M
 	Object <WppDevice> & device();
+	#endif
+	#if OBJ_LWM2M_SECURITY_1_2_M
+	Object <WppLWM2MSecurity> & lWM2MSecurity();
 	#endif
 	/* The end of the prototypes of the mandatory objects. */
 	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */

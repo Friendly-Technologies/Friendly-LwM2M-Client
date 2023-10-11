@@ -1,0 +1,11 @@
+if(OBJ_LWM2M_SECURITY_1_2_M)
+	# Update SOURCES variable from parent scope.
+	set(WPP_SOURCES ${WPP_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/WppLWM2MSecurity.cpp)
+
+	# --------------- CMake block 0 start ---------------
+	# --------------- CMake block 0 end ---------------
+
+	# Update WPP_SOURCES variable from parent scope.
+	set(WPP_SOURCES ${WPP_SOURCES} PARENT_SCOPE)
+
+endif()

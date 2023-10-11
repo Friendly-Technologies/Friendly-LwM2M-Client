@@ -16,6 +16,10 @@
 #include "WppLogs.h"
 
 /* --------------- Code_cpp block 0 start --------------- */
+#if RES_APN_LINK_1_10
+#define TLS_DTLS_ALERT_CODE_MIN	0
+#define TLS_DTLS_ALERT_CODE_MAX	255
+#endif
 /* --------------- Code_cpp block 0 end --------------- */
 
 #define TAG "WppLwM2MServer"
@@ -135,20 +139,32 @@ void WppLwM2MServer::userOperationNotifier(ResOp::TYPE type, const ResLink &resI
 	/* --------------- Class private methods --------------- */
 void WppLwM2MServer::resourcesInit() {
 	/* --------------- Code_cpp block 9 start --------------- */
-	_resources[SHORT_SERVER_ID_M].set( /* TODO */ );
-	_resources[SHORT_SERVER_ID_M].setDataVerifier( /* TODO */ );
-	_resources[LIFETIME_M].set( /* TODO */ );
-	_resources[LIFETIME_M].setDataVerifier( /* TODO */ );
-	_resources[NOTIFICATION_STORING_WHEN_DISABLED_OR_OFFLINE_M].set( /* TODO */ );
-	_resources[NOTIFICATION_STORING_WHEN_DISABLED_OR_OFFLINE_M].setDataVerifier( /* TODO */ );
-	_resources[BINDING_M].set( /* TODO */ );
-	_resources[BINDING_M].setDataVerifier( /* TODO */ );
-	_resources[REGISTRATION_UPDATE_TRIGGER_M].set( /* TODO */ );
-	_resources[REGISTRATION_UPDATE_TRIGGER_M].setDataVerifier( /* TODO */ );
+	// TODO: The most part of the server resources logic must be implemented
+	// on wakaama core level, because the Server is only a state holder and
+	// at this level, it does not have the required information for doing
+	// sings described in the documentation.
+	// TODO: Disable (Res id 4) must be implemented by wakaama core or WppClient
+	// TODO: Notification Storing (Res id 6) must be implemented by wakaama core
+	// TODO: Registration Update (Res id 8) must be implemented by wakaama core or WppClient
+	// TODO: Bootstrap Request (Res id 9) must be implemented by wakaama core or WppClient
+	_resources[BINDING_7].setDataVerifier((VERIFY_STRING_T)([this](const STRING_T& value) { return this->isBindingValid(value); }));
+	#if RES_APN_LINK_1_10
+	_resources[APN_LINK_10].setDataVerifier((VERIFY_UINT_T)[](const UINT_T& value) { return TLS_DTLS_ALERT_CODE_MIN <= value && value <= TLS_DTLS_ALERT_CODE_MAX; });
+	#endif
+	#if RES_PREFERRED_TRANSPORT_1_22
+	_resources[PREFERRED_TRANSPORT_22].setDataVerifier((VERIFY_STRING_T)([this](const STRING_T& value) { return this->isBindingValid(value); }));
+	#endif
 	/* --------------- Code_cpp block 9 end --------------- */
 }
 
 /* --------------- Code_cpp block 10 start --------------- */
+ool isBindingValid(const STRING_T& binding) {
+	if(binding == WPP_SERV_BINDING_UDP) return true;
+	if(binding == WPP_SERV_BINDING_TCP) return true;
+	if(binding == WPP_SERV_BINDING_SMS) return true;
+	if(binding == WPP_SERV_BINDING_NON_IP) return true;
+	return false;
+}
 /* --------------- Code_cpp block 10 end --------------- */
 
 } /* namespace wpp */

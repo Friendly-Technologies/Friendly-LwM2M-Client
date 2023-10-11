@@ -16,6 +16,12 @@
 #include "WppLogs.h"
 
 /* --------------- Code_cpp block 0 start --------------- */
+#if RES_SMS_SECURITY_MODE_0_6
+#define SERVER_URI_MAX_SIZE	255
+#endif
+#if RES_SMS_BINDING_KEY_PARAMETERS_0_7
+#define SMS_BIND_KEY_PARAMS_SIZE	6
+#endif
 /* --------------- Code_cpp block 0 end --------------- */
 
 #define TAG "WppLWM2MSecurity"
@@ -135,18 +141,26 @@ void WppLWM2MSecurity::userOperationNotifier(ResOp::TYPE type, const ResLink &re
 	/* --------------- Class private methods --------------- */
 void WppLWM2MSecurity::resourcesInit() {
 	/* --------------- Code_cpp block 9 start --------------- */
-	_resources[LWM2M_SERVER_URI_M].set( /* TODO */ );
-	_resources[LWM2M_SERVER_URI_M].setDataVerifier( /* TODO */ );
-	_resources[BOOTSTRAP_SERVER_M].set( /* TODO */ );
-	_resources[BOOTSTRAP_SERVER_M].setDataVerifier( /* TODO */ );
-	_resources[SECURITY_MODE_M].set( /* TODO */ );
-	_resources[SECURITY_MODE_M].setDataVerifier( /* TODO */ );
-	_resources[PUBLIC_KEY_OR_IDENTITY_M].set( /* TODO */ );
-	_resources[PUBLIC_KEY_OR_IDENTITY_M].setDataVerifier( /* TODO */ );
-	_resources[SERVER_PUBLIC_KEY_M].set( /* TODO */ );
-	_resources[SERVER_PUBLIC_KEY_M].setDataVerifier( /* TODO */ );
-	_resources[SECRET_KEY_M].set( /* TODO */ );
-	_resources[SECRET_KEY_M].setDataVerifier( /* TODO */ );
+	_resources[BOOTSTRAP_SERVER_1].setDataVerifier((VERIFY_STRING_T)[](const STRING_T& value) { return value.size() < SERVER_URI_MAX_SIZE ; });
+	_resources[SECURITY_MODE_2].setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return LWM2M_SECURITY_MODE_PRE_SHARED_KEY <= value && value <= LWM2M_SECURITY_MODE_NONE; });
+	#if RES_SMS_SECURITY_MODE_0_6
+	_resources[SMS_SECURITY_MODE_6].setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return SMS_SEC_MODE_MIN <= value && value <= SMS_SEC_MODE_MAX; });
+	#endif
+	#if RES_SMS_BINDING_KEY_PARAMETERS_0_7
+	_resources[SMS_BINDING_KEY_PARAMETERS_7].setDataVerifier((VERIFY_OPAQUE_T)[](const OPAQUE_T& value) { return value.size() == SMS_BIND_KEY_PARAMS_SIZE; });
+	#endif
+	#if RES_SMS_BINDING_SECRET_KEY_S__0_8
+	_resources[SMS_BINDING_SECRET_KEY_S__8].setDataVerifier((VERIFY_OPAQUE_T)[](const OPAQUE_T& value) { return MIN_SMS_KEY_LEN <= value.size() && value.size() <= MAX_SMS_KEY_LEN; });
+	#endif
+	#if RES_SHORT_SERVER_ID_0_10
+	_resources[SHORT_SERVER_ID_10].setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return SINGLE_INSTANCE_ID < value && value < ID_T_MAX_VAL; });
+	#endif
+	#if RES_MATCHING_TYPE_0_13
+	_resources[MATCHING_TYPE_13].setDataVerifier((VERIFY_UINT_T)[](const UINT_T& value) { return EXACT_MATCH <= value && value < MAX_MATCH_TYPE; });
+	#endif
+	#if RES_CERTIFICATE_USAGE_0_15
+	_resources[CERTIFICATE_USAGE_15].setDataVerifier((VERIFY_UINT_T)[](const UINT_T& value) { return CA_CONSTRAINT <= value && value < MAX_CERT_USAGE; });
+	#endif
 	/* --------------- Code_cpp block 9 end --------------- */
 }
 

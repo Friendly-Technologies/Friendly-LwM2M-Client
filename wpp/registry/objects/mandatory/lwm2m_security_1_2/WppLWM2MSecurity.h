@@ -55,6 +55,42 @@ public:
 	};
 
 	/* --------------- Code_h block 1 start --------------- */
+	#if RES_SMS_SECURITY_MODE_0_6
+	enum SmsSecMode: uint8_t {
+		SMS_SEC_MODE_MIN = 0,
+		SMS_SEC_DTLS_PSK = 1,
+		SMS_SEC_PACK_STRUCT = 2,
+		SMS_NO_SEC = 3,
+		SMS_SEC_MODE_MAX = 255
+	};
+	#endif
+
+	#if RES_SMS_BINDING_SECRET_KEY_S__0_8
+	enum SmsKeyLen: uint8_t {
+		MIN_SMS_KEY_LEN = 16,
+		MAX_SMS_KEY_LEN = 48
+	};
+	#endif
+
+	#if RES_MATCHING_TYPE_0_13
+	enum MatchType: uint8_t {
+		EXACT_MATCH = 0,
+		SHA_256 = 1,
+		SHA_384 = 2,
+		SHA_512 = 3,
+		MAX_MATCH_TYPE
+	};
+	#endif
+
+	#if RES_CERTIFICATE_USAGE_0_15
+	enum CertUsage: uint8_t {
+		CA_CONSTRAINT = 0,
+		SERVICE_CERT_CONSTRAINT = 1,
+		TRUST_ANCHOR_ASSERTION = 2,
+		DOMAIN_ISSUED_CERT = 3,
+		MAX_CERT_USAGE
+	};
+	#endif
 	/* --------------- Code_h block 1 end --------------- */
 
 public:

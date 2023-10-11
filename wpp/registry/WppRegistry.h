@@ -13,6 +13,9 @@
 #include "Object.h"
 
 /* The start of the includes of the mandatory objects. */
+#if OBJ_DEVICE_1_2_M
+#include "mandatory/device_1_2/WppDevice.h"
+#endif
 /* The end of the includes of the mandatory objects. */
 /* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 
@@ -49,6 +52,9 @@ public:
 	bool isObjRegistered(Lwm2mObject &object);
 
 	/* ------------- Mandatory objects prototype start ------------- */
+	#if OBJ_DEVICE_1_2_M
+	Object <WppDevice> & device();
+	#endif
 	/* The end of the prototypes of the mandatory objects. */
 	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 

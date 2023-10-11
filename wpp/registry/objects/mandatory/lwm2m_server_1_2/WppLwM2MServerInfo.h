@@ -11,7 +11,7 @@ static const ObjectInfo WPP_LWM2M_SERVER_OBJ_INFO = {
 	/* Name */
 	"LwM2M Server",
 	/* Object ID */
-	OBJ_ID::SERVER,
+	OBJ_ID::WPP_LWM2M_SERVER,
 	/* URN */
 	"urn:oma:lwm2m:oma:1:1.2",
 	/* Object version */

@@ -5,9 +5,9 @@
 
 /* ---------- Server optional resources start ---------- */
 
-#define RES_MANUFACTURER_3_0 0
-#define RES_MODEL_NUMBER_3_1 0
-#define RES_SERIAL_NUMBER_3_2 0
+#define RES_MANUFACTURER_3_0 1
+#define RES_MODEL_NUMBER_3_1 1
+#define RES_SERIAL_NUMBER_3_2 1
 #define RES_FIRMWARE_VERSION_3_3 0
 #define RES_FACTORY_RESET_3_5 0
 #define RES_AVAILABLE_POWER_SOURCES_3_6 0

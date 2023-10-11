@@ -48,9 +48,9 @@ int main() {
 
 	// Initialize wpp objects
 	cout << endl << "---- Initialization wpp Server ----" << endl;
-	server.init(registry.server());
+	server.init(registry.lwM2MServer());
 	cout << endl << "---- Initialization wpp Security ----" << endl;
-	security.init(registry.security());
+	security.init(registry.lWM2MSecurity());
 	cout << endl << "---- Initialization wpp Device ----" << endl;
 	device.init(registry.device());
 	

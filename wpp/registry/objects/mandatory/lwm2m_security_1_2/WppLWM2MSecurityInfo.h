@@ -11,7 +11,7 @@ static const ObjectInfo WPP_LWM2M_SECURITY_OBJ_INFO = {
 	/* Name */
 	"LWM2M Security",
 	/* Object ID */
-	OBJ_ID::SERVER,
+	OBJ_ID::WPP_LWM2M_SECURITY,
 	/* URN */
 	"urn:oma:lwm2m:oma:0:1.2",
 	/* Object version */

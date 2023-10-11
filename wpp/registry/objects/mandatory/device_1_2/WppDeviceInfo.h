@@ -11,7 +11,7 @@ static const ObjectInfo WPP_DEVICE_OBJ_INFO = {
 	/* Name */
 	"Device",
 	/* Object ID */
-	OBJ_ID::SERVER,
+	OBJ_ID::WPP_DEVICE,
 	/* URN */
 	"urn:oma:lwm2m:oma:3:1.2",
 	/* Object version */

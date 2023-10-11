@@ -135,12 +135,12 @@ void WppDevice::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
 	/* --------------- Class private methods --------------- */
 void WppDevice::resourcesInit() {
 	/* --------------- Code_cpp block 9 start --------------- */
-	_resources[REBOOT_M].set( /* TODO */ );
-	_resources[REBOOT_M].setDataVerifier( /* TODO */ );
-	_resources[ERROR_CODE_M].set( /* TODO */ );
-	_resources[ERROR_CODE_M].setDataVerifier( /* TODO */ );
-	_resources[SUPPORTED_BINDING_AND_MODES_M].set( /* TODO */ );
-	_resources[SUPPORTED_BINDING_AND_MODES_M].setDataVerifier( /* TODO */ );
+	// _resources[REBOOT_M].set( /* TODO */ );
+	// _resources[REBOOT_M].setDataVerifier( /* TODO */ );
+	// _resources[ERROR_CODE_M].set( /* TODO */ );
+	// _resources[ERROR_CODE_M].setDataVerifier( /* TODO */ );
+	// _resources[SUPPORTED_BINDING_AND_MODES_M].set( /* TODO */ );
+	// _resources[SUPPORTED_BINDING_AND_MODES_M].setDataVerifier( /* TODO */ );
 	/* --------------- Code_cpp block 9 end --------------- */
 }
 

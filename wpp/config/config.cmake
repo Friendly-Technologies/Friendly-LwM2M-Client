@@ -9,7 +9,7 @@ if (ENABLE_LOGS)
 endif()
 # The end of loging.
 
-# The option of the mandatory object starts with the word MANDATORY_.
+# The option of the mandatory object ends with the letter M.
 # The start of the options of the mandatory objects.
 option(MANDATORY_SECURITY_OBJ "Include mandatory Security object in the build" ON)
 if (MANDATORY_SECURITY_OBJ)
@@ -28,7 +28,7 @@ endif()
 # The end of the options of the mandatory objects.
 # !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!!
 
-# The option of the optional object starts with the word OPTIONAL_.
+# The option of the optional object ends with the letter O.
 # The start of the options of the optional objects.
 option(OPTIONAL_ACL_OBJ "Include optional ACL object in the build" OFF)
 if (ACL_OBJ)

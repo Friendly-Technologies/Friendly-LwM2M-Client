@@ -135,16 +135,16 @@ void WppLwM2MServer::userOperationNotifier(ResOp::TYPE type, const ResLink &resI
 	/* --------------- Class private methods --------------- */
 void WppLwM2MServer::resourcesInit() {
 	/* --------------- Code_cpp block 9 start --------------- */
-	_resources[SHORT_SERVER_ID_M].set( /* TODO */ );
-	_resources[SHORT_SERVER_ID_M].setDataVerifier( /* TODO */ );
-	_resources[LIFETIME_M].set( /* TODO */ );
-	_resources[LIFETIME_M].setDataVerifier( /* TODO */ );
-	_resources[NOTIFICATION_STORING_WHEN_DISABLED_OR_OFFLINE_M].set( /* TODO */ );
-	_resources[NOTIFICATION_STORING_WHEN_DISABLED_OR_OFFLINE_M].setDataVerifier( /* TODO */ );
-	_resources[BINDING_M].set( /* TODO */ );
-	_resources[BINDING_M].setDataVerifier( /* TODO */ );
-	_resources[REGISTRATION_UPDATE_TRIGGER_M].set( /* TODO */ );
-	_resources[REGISTRATION_UPDATE_TRIGGER_M].setDataVerifier( /* TODO */ );
+	// _resources[SHORT_SERVER_ID_M].set( /* TODO */ );
+	// _resources[SHORT_SERVER_ID_M].setDataVerifier( /* TODO */ );
+	// _resources[LIFETIME_M].set( /* TODO */ );
+	// _resources[LIFETIME_M].setDataVerifier( /* TODO */ );
+	// _resources[NOTIFICATION_STORING_WHEN_DISABLED_OR_OFFLINE_M].set( /* TODO */ );
+	// _resources[NOTIFICATION_STORING_WHEN_DISABLED_OR_OFFLINE_M].setDataVerifier( /* TODO */ );
+	// _resources[BINDING_M].set( /* TODO */ );
+	// _resources[BINDING_M].setDataVerifier( /* TODO */ );
+	// _resources[REGISTRATION_UPDATE_TRIGGER_M].set( /* TODO */ );
+	// _resources[REGISTRATION_UPDATE_TRIGGER_M].setDataVerifier( /* TODO */ );
 	/* --------------- Code_cpp block 9 end --------------- */
 }
 

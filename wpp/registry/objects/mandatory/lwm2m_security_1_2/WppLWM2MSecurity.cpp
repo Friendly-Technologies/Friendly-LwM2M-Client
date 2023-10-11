@@ -135,18 +135,18 @@ void WppLWM2MSecurity::userOperationNotifier(ResOp::TYPE type, const ResLink &re
 	/* --------------- Class private methods --------------- */
 void WppLWM2MSecurity::resourcesInit() {
 	/* --------------- Code_cpp block 9 start --------------- */
-	_resources[LWM2M_SERVER_URI_M].set( /* TODO */ );
-	_resources[LWM2M_SERVER_URI_M].setDataVerifier( /* TODO */ );
-	_resources[BOOTSTRAP_SERVER_M].set( /* TODO */ );
-	_resources[BOOTSTRAP_SERVER_M].setDataVerifier( /* TODO */ );
-	_resources[SECURITY_MODE_M].set( /* TODO */ );
-	_resources[SECURITY_MODE_M].setDataVerifier( /* TODO */ );
-	_resources[PUBLIC_KEY_OR_IDENTITY_M].set( /* TODO */ );
-	_resources[PUBLIC_KEY_OR_IDENTITY_M].setDataVerifier( /* TODO */ );
-	_resources[SERVER_PUBLIC_KEY_M].set( /* TODO */ );
-	_resources[SERVER_PUBLIC_KEY_M].setDataVerifier( /* TODO */ );
-	_resources[SECRET_KEY_M].set( /* TODO */ );
-	_resources[SECRET_KEY_M].setDataVerifier( /* TODO */ );
+	// _resources[LWM2M_SERVER_URI_M].set( /* TODO */ );
+	// _resources[LWM2M_SERVER_URI_M].setDataVerifier( /* TODO */ );
+	// _resources[BOOTSTRAP_SERVER_M].set( /* TODO */ );
+	// _resources[BOOTSTRAP_SERVER_M].setDataVerifier( /* TODO */ );
+	// _resources[SECURITY_MODE_M].set( /* TODO */ );
+	// _resources[SECURITY_MODE_M].setDataVerifier( /* TODO */ );
+	// _resources[PUBLIC_KEY_OR_IDENTITY_M].set( /* TODO */ );
+	// _resources[PUBLIC_KEY_OR_IDENTITY_M].setDataVerifier( /* TODO */ );
+	// _resources[SERVER_PUBLIC_KEY_M].set( /* TODO */ );
+	// _resources[SERVER_PUBLIC_KEY_M].setDataVerifier( /* TODO */ );
+	// _resources[SECRET_KEY_M].set( /* TODO */ );
+	// _resources[SECRET_KEY_M].setDataVerifier( /* TODO */ );
 	/* --------------- Code_cpp block 9 end --------------- */
 }
 

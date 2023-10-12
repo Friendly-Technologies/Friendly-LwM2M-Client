@@ -19,9 +19,6 @@
 #if OBJ_LWM2M_SECURITY_1_2_M
 #include "lwm2m_security_1_2/WppLWM2MSecurity.h"
 #endif
-#if OBJ_LWM2M_SERVER_1_2_M
-#include "lwm2m_server_1_2/WppLwM2MServer.h"
-#endif
 /* The end of the includes of the mandatory objects. */
 /* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 
@@ -63,9 +60,6 @@ public:
 	#endif
 	#if OBJ_LWM2M_SECURITY_1_2_M
 	Object <WppLWM2MSecurity> & lWM2MSecurity();
-	#endif
-	#if OBJ_LWM2M_SERVER_1_2_M
-	Object <WppLwM2MServer> & lwM2MServer();
 	#endif
 	/* The end of the prototypes of the mandatory objects. */
 	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */

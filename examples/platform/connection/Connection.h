@@ -3,7 +3,7 @@
 
 #include <netinet/in.h>
 #include "WppConnection.h"
-#include "mandatory/lwm2m_security_1_2/WppLWM2MSecurity.h"
+#include "WppRegistry.h"
 
 using namespace std;
 using namespace wpp;

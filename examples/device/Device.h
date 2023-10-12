@@ -22,8 +22,8 @@ class DeviceImpl: public ObjObserver<WppDevice>, public InstObserver<WppDevice> 
             cout << "WppDevice: execute REBOOT_4" << endl;
             this->_reboot = true;
         });
-        device->set(WppDevice::ERROR_CODE_11, (INT_T)0);
-        device->set(WppDevice::SUPPORTED_BINDING_AND_MODES_16, (STRING_T)"U");
+        device->set(WppDevice::ERROR_CODE_11, (INT_T)WppDevice::NO_ERROR);
+        device->set(WppDevice::SUPPORTED_BINDING_AND_MODES_16, WPP_BINDING_UDP);
         device->set(WppDevice::MANUFACTURER_0, (STRING_T)"Open Mobile Alliance");
         device->set(WppDevice::MODEL_NUMBER_1, (STRING_T)"Lightweight M2M Client");
         device->set(WppDevice::SERIAL_NUMBER_2, (STRING_T)"345000123");

@@ -14,6 +14,7 @@
 #include "InstSubject.h"
 
 /* --------------- Сode_h block 0 start --------------- */
+#include "WppBindings.h"
 /* --------------- Сode_h block 0 end --------------- */
 
 namespace wpp {
@@ -47,6 +48,45 @@ public:
 	};
 
 	/* --------------- Code_h block 1 start --------------- */
+	#if RES_AVAILABLE_POWER_SOURCES_3_6
+	enum PwrSrcs: uint8_t {
+		DC = 0,
+		INTERN_BUTT = 1,
+		EXTERN_BUTT = 2,
+		FUEL_CELL = 3,
+		PWR_OVER_ETHERNET = 4,
+		USB = 5,
+		AC = 6,
+		SOLAR = 7,
+		PWR_SRC_MAX
+	};
+	#endif
+
+	enum ErrCode: uint8_t {
+		NO_ERROR = 0,
+		LOW_BUTT = 1,
+		EXT_PWR_SUPP_OFF = 2,
+		GPS_FAIL = 3,
+		LOW_SIG_STRENGTH = 4,
+		OUT_OF_MEM = 5,
+		SMS_FAIL = 6,
+		IP_CONN_FAIL = 7,
+		PERIPH_FAIL = 8,
+		ERR_CODE_MAX
+	};
+
+	#if RES_BATTERY_STATUS_3_20
+	enum ButtStatus {
+		NORMAL = 0,
+		CHARGING = 1,
+		CHARGED = 2,
+		DAMAGED = 3,
+		LOW_BATTERY = 4,
+		NOT_INSTALLED = 5,
+		UNKNOWN = 6,
+		BUTT_STATUS_MAX
+	};
+	#endif
 	/* --------------- Code_h block 1 end --------------- */
 
 public:
@@ -90,6 +130,7 @@ private:
 	/*
 	 * Initialize resources with default values
 	 * Resource always must have at least one instance.
+	 * Note: From server side, empty resource == undefined resource.
 	 */	
 	void resourcesInit();
 	

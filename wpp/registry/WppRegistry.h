@@ -14,26 +14,26 @@
 
 /* The start of the includes of the mandatory objects. */
 #if OBJ_DEVICE_1_2_M
-#include "mandatory/device_1_2/WppDevice.h"
+#include "device_1_2/WppDevice.h"
 #endif
 #if OBJ_LWM2M_SECURITY_1_2_M
-#include "mandatory/lwm2m_security_1_2/WppLWM2MSecurity.h"
+#include "lwm2m_security_1_2/WppLWM2MSecurity.h"
 #endif
 #if OBJ_LWM2M_SERVER_1_2_M
-#include "mandatory/lwm2m_server_1_2/WppLwM2MServer.h"
+#include "lwm2m_server_1_2/WppLwM2MServer.h"
 #endif
 /* The end of the includes of the mandatory objects. */
 /* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 
 /* The start of the includes of the optional objects. */
 #if OPTIONAL_ACL_OBJ
-#include "optional/acl/Acl.h"
+#include "acl/Acl.h"
 #endif
 #if OPTIONAL_CONN_MONITORING_OBJ
-#include "optional/conn_monitoring/ConnMonitoring.h"
+#include "conn_monitoring/ConnMonitoring.h"
 #endif
 #if OPTIONAL_FIRMWARE_UPD_OBJ
-#include "optional/firmware_upd/FirmwareUpd.h"
+#include "firmware_upd/FirmwareUpd.h"
 #endif
 /* The end of the includes of the optional objects. */
 /* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */

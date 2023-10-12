@@ -17,7 +17,7 @@ class ServerImpl: public ObjObserver<WppLwM2MServer>, public InstObserver<WppLwM
         server->subscribe(this);
 
         server->set(WppLwM2MServer::SHORT_SERVER_ID_0, (INT_T)123);
-        server->set(WppLwM2MServer::BINDING_7, (STRING_T)"U");
+        server->set(WppLwM2MServer::BINDING_7, WPP_BINDING_UDP);
         server->set(WppLwM2MServer::LIFETIME_1, (INT_T)25);
         server->set(WppLwM2MServer::NOTIFICATION_STORING_WHEN_DISABLED_OR_OFFLINE_6, false);
     }

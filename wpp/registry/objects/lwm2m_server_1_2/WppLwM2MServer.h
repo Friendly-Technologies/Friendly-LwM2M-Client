@@ -14,6 +14,7 @@
 #include "InstSubject.h"
 
 /* --------------- Сode_h block 0 start --------------- */
+#include "WppBindings.h"
 /* --------------- Сode_h block 0 end --------------- */
 
 namespace wpp {

@@ -1,10 +1,10 @@
 import shutil
 from optparse import OptionParser
 
-files = ["../wpp/registry/ObjectID.h",
-         "../wpp/config/config.cmake",
-         "../wpp/registry/WppRegistry.h",
-         "../wpp/registry/WppRegistry.cpp"]
+files = ["../../wpp/registry/ObjectID.h",
+         "../../wpp/config/config.cmake",
+         "../../wpp/registry/WppRegistry.h",
+         "../../wpp/registry/WppRegistry.cpp"]
 
 
 class ObjectRemover:

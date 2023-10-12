@@ -134,7 +134,6 @@ private:
 	/*
 	 * Initialize resources with default values
 	 * Resource always must have at least one instance.
-	 *	
 	 * Note: From server side, empty resource == undefined resource.
 	 */	
 	void resourcesInit();

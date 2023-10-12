@@ -63,16 +63,23 @@ def put_info(path_to_file, file_user_code_dict):
 def read_files(path):
     datas = {}
     dir_list = os.listdir(path)
-    for filee in dir_list:
-        datas[filee] = get_info(f"{path}/{filee}")
-
+    for file in dir_list:
+        datas[scan_filename(file)] = get_info(f"{path}/{file}")
     return datas
 
 
 def write_files(folder_path, datas):
     dir_list = os.listdir(folder_path)
-    for filee in dir_list:
-        put_info(f"{folder_path}/{filee}", datas[filee])
+    for file_playn in dir_list:
+        file_keyword = scan_filename(file_playn)
+        put_info(f"{folder_path}/{file_playn}", datas[file_keyword])
+
+
+def scan_filename(filename: str):
+    keywords = ["Config", "Info", "CMakeLists", ".h", ".cpp"]
+    for keyword in keywords:
+        if re.search(keyword, filename):
+            return keyword
 
 
 if __name__ == "__main__":

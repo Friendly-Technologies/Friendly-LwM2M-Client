@@ -1,6 +1,6 @@
-if(OBJ_DEVICE_1_2_M)
+if(OBJ_M_3_DEVICE_V12)
 	# Update SOURCES variable from parent scope.
-	set(WPP_SOURCES ${WPP_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/WppDevice.cpp)
+	set(WPP_SOURCES ${WPP_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/Device.cpp)
 
 	# --------------- CMake block 0 start ---------------
 	# --------------- CMake block 0 end ---------------

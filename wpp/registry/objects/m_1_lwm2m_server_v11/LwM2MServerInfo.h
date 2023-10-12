@@ -1,23 +1,23 @@
-#ifndef WPP_LWM2M_SERVER_1_2_INFO_H
-#define WPP_LWM2M_SERVER_1_2_INFO_H
+#ifndef WPP_LWM2M_SERVER_INFO_H
+#define WPP_LWM2M_SERVER_INFO_H
 
 #include "ObjectInfo.h"
 
-#if OBJ_LWM2M_SERVER_1_2_M
+#if OBJ_M_1_LWM2M_SERVER_V11
 
 namespace wpp {
 
-static const ObjectInfo WPP_LWM2M_SERVER_OBJ_INFO = {
+static const ObjectInfo WPP_LwM2M_Server_OBJ_INFO = {
 	/* Name */
 	"LwM2M Server",
 	/* Object ID */
-	OBJ_ID::WPP_LWM2M_SERVER,
+	OBJ_ID::LWM2M_SERVER,
 	/* URN */
-	"urn:oma:lwm2m:oma:1:1.2",
+	"urn:oma:lwm2m:oma:1:1.1",
 	/* Object version */
-	{1,2},
+	{1,1},
 	/* Lwm2m version */
-	{1,2},
+	{1,1},
 	/* Is single */
 	IS_SINGLE::MULTIPLE,
 	/* Is Mandatory */
@@ -36,5 +36,5 @@ static const ObjectInfo WPP_LWM2M_SERVER_OBJ_INFO = {
 
 } /* namespace wpp */
 
-#endif /* OBJ_LWM2M_SERVER_1_2_M */
-#endif // WPP_LWM2M_SERVER_1_2_INFO_H
+#endif /* OBJ_M_1_LWM2M_SERVER_V11 */
+#endif // WPP_LWM2M_SERVER_INFO_H

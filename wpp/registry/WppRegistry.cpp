@@ -24,24 +24,6 @@ bool WppRegistry::isObjRegistered(Lwm2mObject &object) {
 }
 
 /* The start of the prototypes of the mandatory objects. */
-# if OBJ_DEVICE_1_2_M
-Object <WppDevice> & WppRegistry::device() {
-	if (!Object <WppDevice>::isCreated()) Object <WppDevice>::create(_context, WPP_DEVICE_OBJ_INFO);
-	return *Object <WppDevice>::object();
-}
-# endif
-# if OBJ_LWM2M_SECURITY_1_2_M
-Object <WppLWM2MSecurity> & WppRegistry::lWM2MSecurity() {
-	if (!Object <WppLWM2MSecurity>::isCreated()) Object <WppLWM2MSecurity>::create(_context, WPP_LWM2M_SECURITY_OBJ_INFO);
-	return *Object <WppLWM2MSecurity>::object();
-}
-# endif
-# if OBJ_LWM2M_SERVER_1_2_M
-Object <WppLwM2MServer> & WppRegistry::lwM2MServer() {
-	if (!Object <WppLwM2MServer>::isCreated()) Object <WppLwM2MServer>::create(_context, WPP_LWM2M_SERVER_OBJ_INFO);
-	return *Object <WppLwM2MServer>::object();
-}
-# endif
 /* The end of the prototypes of the mandatory objects. */
 /* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE! */
 

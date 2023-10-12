@@ -13,18 +13,6 @@ endif()
 # The start of the options of the mandatory objects.
 
 
-option(OBJ_DEVICE_1_2_M "Include mandatory WppDevice object in the build" ON)
-if (OBJ_DEVICE_1_2_M)
-	set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_DEVICE_1_2_M=1)
-endif()
-option(OBJ_LWM2M_SECURITY_1_2_M "Include mandatory WppLWM2MSecurity object in the build" ON)
-if (OBJ_LWM2M_SECURITY_1_2_M)
-	set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_LWM2M_SECURITY_1_2_M=1)
-endif()
-option(OBJ_LWM2M_SERVER_1_2_M "Include mandatory WppLwM2MServer object in the build" ON)
-if (OBJ_LWM2M_SERVER_1_2_M)
-	set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_LWM2M_SERVER_1_2_M=1)
-endif()
 # The end of the options of the mandatory objects.
 # !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!!
 

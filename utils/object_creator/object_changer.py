@@ -9,7 +9,7 @@ import os
 def get_info(path_to_file):
     add_line = False
     counter = 0
-    user_code_block = ''
+    user_code_block = ""
     user_code_blocks = {}
     with open(path_to_file, 'r') as f:
         for line in f:
@@ -20,6 +20,7 @@ def get_info(path_to_file):
             if re.search("block \d end", line):
                 add_line = False
                 user_code_blocks[counter] = user_code_block
+                user_code_block = ""
                 counter += 1
 
             if add_line:
@@ -42,6 +43,7 @@ def put_info(path_to_file, file_user_code_dict):
         new_content += line + "\n"
         if re.search("block \d start", line):
             new_content += file_user_code_dict[counter]
+            counter += 1
 
     with open(path_to_file, 'w') as f:
         f.write(new_content[:-1])
@@ -71,7 +73,7 @@ if __name__ == "__main__":
 
     if options.file_path is not None and options.folder_path is not None:
         obj_r = object_remover.ObjectRemover(options.folder_path)
-        obj_g = object_generator.ObjectGenerator(options.file_path)
+        obj_g = object_generator.ObjectGenerator(options.file_path, None)
 
         path_to_object_old = options.folder_path
         path_to_object_new = obj_g.get_folder_path()

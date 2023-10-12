@@ -55,6 +55,7 @@ class ObjectIntegrator:
         is_obj_mandatory = self.obj_meta["is_mandatory"]
 
         obj_name_class = self.obj_names['obj_name_class']
+        obj_name_class_underline = self.obj_names['obj_name_underline']
         obj_name_define = self.obj_names['obj_name_define']
         obj_name_camelcase = self.obj_names["obj_name_camelcase"]
 
@@ -66,7 +67,7 @@ class ObjectIntegrator:
 
         content_obj_id = \
             f"#ifdef {obj_name_define}\n" \
-            f"\t{obj_name_class.upper()} = {self.obj_meta['object_id']},\n" \
+            f"\tWPP_{obj_name_class_underline.upper()} = {self.obj_meta['object_id']},\n" \
             f"#endif /* {obj_name_define} */\n"
 
         content_cnfg_cmk = \

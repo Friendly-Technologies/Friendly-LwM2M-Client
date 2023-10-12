@@ -1,17 +1,17 @@
-#ifndef WPP_DEVICE_1_2_INFO_H
-#define WPP_DEVICE_1_2_INFO_H
+#ifndef WPP_DEVICE_INFO_H
+#define WPP_DEVICE_INFO_H
 
 #include "ObjectInfo.h"
 
-#if OBJ_DEVICE_1_2_M
+#if OBJ_M_3_DEVICE_V12
 
 namespace wpp {
 
-static const ObjectInfo WPP_DEVICE_OBJ_INFO = {
+static const ObjectInfo WPP_Device_OBJ_INFO = {
 	/* Name */
 	"Device",
 	/* Object ID */
-	OBJ_ID::WPP_DEVICE,
+	OBJ_ID::DEVICE,
 	/* URN */
 	"urn:oma:lwm2m:oma:3:1.2",
 	/* Object version */
@@ -29,10 +29,17 @@ static const ObjectInfo WPP_DEVICE_OBJ_INFO = {
 		  ResOp::WRITE|
 		  ResOp::EXECUTE|
 		  ResOp::DISCOVER),
+	InstOp(	InstOp::CREATE |
+			InstOp::DELETE),
+	ResOp(	ResOp::READ|
+			ResOp::WRITE|
+			ResOp::DISCOVER|
+			ResOp::EXECUTE|
+			ResOp::DELETE),
 	/* --------------- Info block 0 end --------------- */
 };
 
 } /* namespace wpp */
 
-#endif /* OBJ_DEVICE_1_2_M */
-#endif // WPP_DEVICE_1_2_INFO_H
+#endif /* OBJ_M_3_DEVICE_V12 */
+#endif // WPP_DEVICE_INFO_H

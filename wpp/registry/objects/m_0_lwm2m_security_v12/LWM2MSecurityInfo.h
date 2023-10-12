@@ -1,17 +1,17 @@
-#ifndef WPP_LWM2M_SECURITY_1_2_INFO_H
-#define WPP_LWM2M_SECURITY_1_2_INFO_H
+#ifndef WPP_LWM2M_SECURITY_INFO_H
+#define WPP_LWM2M_SECURITY_INFO_H
 
 #include "ObjectInfo.h"
 
-#if OBJ_LWM2M_SECURITY_1_2_M
+#if OBJ_M_0_LWM2M_SECURITY_V12
 
 namespace wpp {
 
-static const ObjectInfo WPP_LWM2M_SECURITY_OBJ_INFO = {
+static const ObjectInfo WPP_LWM2M_Security_OBJ_INFO = {
 	/* Name */
 	"LWM2M Security",
 	/* Object ID */
-	OBJ_ID::WPP_LWM2M_SECURITY,
+	OBJ_ID::LWM2M_SECURITY,
 	/* URN */
 	"urn:oma:lwm2m:oma:0:1.2",
 	/* Object version */
@@ -36,5 +36,5 @@ static const ObjectInfo WPP_LWM2M_SECURITY_OBJ_INFO = {
 
 } /* namespace wpp */
 
-#endif /* OBJ_LWM2M_SECURITY_1_2_M */
-#endif // WPP_LWM2M_SECURITY_1_2_INFO_H
+#endif /* OBJ_M_0_LWM2M_SECURITY_V12 */
+#endif // WPP_LWM2M_SECURITY_INFO_H

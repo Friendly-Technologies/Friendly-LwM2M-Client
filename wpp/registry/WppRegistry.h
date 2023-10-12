@@ -13,6 +13,15 @@
 #include "Object.h"
 
 /* The start of the includes of the mandatory objects. */
+#if OBJ_M_3_DEVICE_V12
+#include "m_3_device_v12/Device.h"
+#endif
+#if OBJ_M_0_LWM2M_SECURITY_V12
+#include "m_0_lwm2m_security_v12/LWM2MSecurity.h"
+#endif
+#if OBJ_M_1_LWM2M_SERVER_V11
+#include "m_1_lwm2m_server_v11/LwM2MServer.h"
+#endif
 /* The end of the includes of the mandatory objects. */
 /* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 
@@ -49,6 +58,15 @@ public:
 	bool isObjRegistered(Lwm2mObject &object);
 
 	/* ------------- Mandatory objects prototype start ------------- */
+	#if OBJ_M_3_DEVICE_V12
+	Object <Device> & device();
+	#endif
+	#if OBJ_M_0_LWM2M_SECURITY_V12
+	Object <LWM2MSecurity> & lWM2MSecurity();
+	#endif
+	#if OBJ_M_1_LWM2M_SERVER_V11
+	Object <LwM2MServer> & lwM2MServer();
+	#endif
 	/* The end of the prototypes of the mandatory objects. */
 	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 

@@ -7,9 +7,6 @@ namespace wpp {
 
 enum class OBJ_ID: ID_T {
 	/* The start of the IDs of the mandatory objects. */
-#ifdef OBJ_DEVICE_1_2_M
-	WPP_DEVICE = 3,
-#endif /* OBJ_DEVICE_1_2_M */
 	/* The end of the IDs of the mandatory objects. */
 	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 

@@ -148,18 +148,29 @@ void WppLWM2MSecurity::resourcesInit() {
 	_resources[SECURITY_MODE_2].setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return LWM2M_SECURITY_MODE_PRE_SHARED_KEY <= value && value <= LWM2M_SECURITY_MODE_NONE; });
 
 	_resources[PUBLIC_KEY_OR_IDENTITY_3].set(OPAQUE_T());
+
 	_resources[SERVER_PUBLIC_KEY_4].set(OPAQUE_T());
+	
 	_resources[SECRET_KEY_5].set(OPAQUE_T());
 
 	#if RES_SMS_SECURITY_MODE_0_6
+	_resources[SMS_SECURITY_MODE_6].set(INT_T(SMS_SEC_MODE_MAX));
 	_resources[SMS_SECURITY_MODE_6].setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return SMS_SEC_MODE_MIN <= value && value <= SMS_SEC_MODE_MAX; });
 	#endif
+	
 	#if RES_SMS_BINDING_KEY_PARAMETERS_0_7
+	_resources[SMS_BINDING_KEY_PARAMETERS_7].set(OPAQUE_T());
 	_resources[SMS_BINDING_KEY_PARAMETERS_7].setDataVerifier((VERIFY_OPAQUE_T)[](const OPAQUE_T& value) { return value.size() == SMS_BIND_KEY_PARAMS_SIZE; });
 	#endif
+
 	#if RES_SMS_BINDING_SECRET_KEY_S__0_8
+	_resources[SMS_BINDING_SECRET_KEY_S__8].set(OPAQUE_T());
 	_resources[SMS_BINDING_SECRET_KEY_S__8].setDataVerifier((VERIFY_OPAQUE_T)[](const OPAQUE_T& value) { return MIN_SMS_KEY_LEN <= value.size() && value.size() <= MAX_SMS_KEY_LEN; });
 	#endif
+
+	#if RES_LWM2M_SERVER_SMS_NUMBER_0_9
+	_resources[LWM2M_SERVER_SMS_NUMBER_9].set(STRING_T(""));                                                                                                                                                                                                                        
+	#endif 
 
 	#if RES_SHORT_SERVER_ID_0_10
 	_resources[SHORT_SERVER_ID_10].set(INT_T(0));
@@ -170,12 +181,31 @@ void WppLWM2MSecurity::resourcesInit() {
 	_resources[CLIENT_HOLD_OFF_TIME_11].set(INT_T(0));
 	#endif
 	
+	#if RES_BOOTSTRAP_SERVER_ACCOUNT_TIMEOUT_0_12
+	_resources[BOOTSTRAP_SERVER_ACCOUNT_TIMEOUT_12].set(INT_T(0));                                                                                                                                                                                                             
+	#endif
+
 	#if RES_MATCHING_TYPE_0_13
+	_resources[MATCHING_TYPE_13].set(UINT_T(MAX_MATCH_TYPE));
 	_resources[MATCHING_TYPE_13].setDataVerifier((VERIFY_UINT_T)[](const UINT_T& value) { return EXACT_MATCH <= value && value < MAX_MATCH_TYPE; });
 	#endif
+
+	#if RES_SNI_0_14
+	_resources[SNI_14].set(STRING_T(""));                                                                                                                                                                                                                                     
+	#endif
+
 	#if RES_CERTIFICATE_USAGE_0_15
+	_resources[CERTIFICATE_USAGE_15].set(UINT_T(MAX_MATCH_TYMAX_CERT_USAGEPE));
 	_resources[CERTIFICATE_USAGE_15].setDataVerifier((VERIFY_UINT_T)[](const UINT_T& value) { return CA_CONSTRAINT <= value && value < MAX_CERT_USAGE; });
 	#endif
+
+	#if RES_DTLS_TLS_CIPHERSUITE_0_16                                                                                                                                                                                                                            
+	_resources[DTLS_TLS_CIPHERSUITE_16].set(UINT_T(0));
+	#endif   
+
+	#if RES_OSCORE_SECURITY_MODE_0_17
+	_resources[OSCORE_SECURITY_MODE_17].set(OBJ_LINK_T());                                                                                                                                                                                                                        
+	#endif  
 	/* --------------- Code_cpp block 9 end --------------- */
 }
 

@@ -35,16 +35,25 @@ def put_info(path_to_file, file_user_code_dict):
     counter = 0
     new_content = ''
     old_content = ''
+    add_flag = True
     with open(path_to_file, 'r') as f:
         for i in f:
             old_content += i
     f.close()
 
     for line in old_content.split("\n"):
-        new_content += line + "\n"
         if re.search("block \d start", line):
+            new_content += line + "\n"
+            if file_user_code_dict[counter] == "":
+                counter += 1
+                continue
+            add_flag = False
             new_content += file_user_code_dict[counter]
             counter += 1
+        if re.search("block \d end", line):
+            add_flag = True
+        if add_flag:
+            new_content += line + "\n"
 
     with open(path_to_file, 'w') as f:
         f.write(new_content[:-1])

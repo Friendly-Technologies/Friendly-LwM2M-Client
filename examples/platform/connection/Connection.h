@@ -3,7 +3,7 @@
 
 #include <netinet/in.h>
 #include "WppConnection.h"
-#include "mandatory/security/Security.h"
+#include "WppRegistry.h"
 
 using namespace std;
 using namespace wpp;
@@ -21,7 +21,7 @@ public:
     Connection(string port, int addressFamily);
     ~Connection();
 
-    SESSION_T connect(Security& security) override;
+    SESSION_T connect(WppLWM2MSecurity& security) override;
 	void disconnect(SESSION_T session) override;
 	bool sessionCmp(SESSION_T session1, SESSION_T session2) override;
 	bool sendPacket(const Packet &packet) override;

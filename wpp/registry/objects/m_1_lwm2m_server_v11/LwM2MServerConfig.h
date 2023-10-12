@@ -1,0 +1,34 @@
+#ifndef WPP_LWM2M_SERVER_CONFIG_H
+#define WPP_LWM2M_SERVER_CONFIG_H
+
+#if OBJ_M_1_LWM2M_SERVER_V11
+
+/* ---------- Server optional resources start ---------- */
+
+#define RES_1_2_DEFAULT_MINIMUM_PERIOD 0
+#define RES_1_3_DEFAULT_MAXIMUM_PERIOD 0
+#define RES_1_4_DISABLE 0
+#define RES_1_5_DISABLE_TIMEOUT 0
+#define RES_1_9_BOOTSTRAP_REQUEST_TRIGGER 0
+#define RES_1_10_APN_LINK 0
+#define RES_1_11_TLS_DTLS_ALERT_CODE 0
+#define RES_1_12_LAST_BOOTSTRAPPED 0
+#define RES_1_13_REGISTRATION_PRIORITY_ORDER 0
+#define RES_1_14_INITIAL_REGISTRATION_DELAY_TIMER 0
+#define RES_1_15_REGISTRATION_FAILURE_BLOCK 0
+#define RES_1_16_BOOTSTRAP_ON_REGISTRATION_FAILURE 0
+#define RES_1_17_COMMUNICATION_RETRY_COUNT 0
+#define RES_1_18_COMMUNICATION_RETRY_TIMER 0
+#define RES_1_19_COMMUNICATION_SEQUENCE_DELAY_TIMER 0
+#define RES_1_20_COMMUNICATION_SEQUENCE_RETRY_COUNT 0
+#define RES_1_21_TRIGGER 0
+#define RES_1_22_PREFERRED_TRANSPORT 0
+#define RES_1_23_MUTE_SEND 0
+
+/* ---------- Server optional resources end ---------- */
+
+/* --------------- Config block 0 start --------------- */
+/* --------------- Config block 0 end --------------- */
+
+#endif // WPP_LWM2M_SERVER_CONFIG_H
+#endif // OBJ_M_1_LWM2M_SERVER_V11

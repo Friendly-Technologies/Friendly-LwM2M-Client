@@ -31,7 +31,7 @@ namespace wpp {
  * must immediately call the method WppClient::notifyValueChanged() or the one that encapsulates
  * this call. It is necessary to notify about the change for all resources except those marked as EXECUTE.
  * 
- * Note: Empty resource == undefined resource.
+ * Note: From server side, empty resource == undefined resource.
  */
 class Instance {
 template <typename T>

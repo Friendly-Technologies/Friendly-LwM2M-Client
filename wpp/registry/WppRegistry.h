@@ -13,27 +13,27 @@
 #include "Object.h"
 
 /* The start of the includes of the mandatory objects. */
-#if MANDATORY_SECURITY_OBJ
-#include "mandatory/security/Security.h"
+#if OBJ_M_3_DEVICE_V12
+#include "m_3_device_v12/Device.h"
 #endif
-#if MANDATORY_SERVER_OBJ
-#include "mandatory/server/Server.h"
+#if OBJ_M_0_LWM2M_SECURITY_V12
+#include "m_0_lwm2m_security_v12/LWM2MSecurity.h"
 #endif
-#if MANDATORY_DEVICE_OBJ
-#include "mandatory/device/Device.h"
+#if OBJ_M_1_LWM2M_SERVER_V11
+#include "m_1_lwm2m_server_v11/LwM2MServer.h"
 #endif
 /* The end of the includes of the mandatory objects. */
 /* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 
 /* The start of the includes of the optional objects. */
 #if OPTIONAL_ACL_OBJ
-#include "optional/acl/Acl.h"
+#include "acl/Acl.h"
 #endif
 #if OPTIONAL_CONN_MONITORING_OBJ
-#include "optional/conn_monitoring/ConnMonitoring.h"
+#include "conn_monitoring/ConnMonitoring.h"
 #endif
 #if OPTIONAL_FIRMWARE_UPD_OBJ
-#include "optional/firmware_upd/FirmwareUpd.h"
+#include "firmware_upd/FirmwareUpd.h"
 #endif
 /* The end of the includes of the optional objects. */
 /* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
@@ -58,14 +58,14 @@ public:
 	bool isObjRegistered(Lwm2mObject &object);
 
 	/* ------------- Mandatory objects prototype start ------------- */
-	#if MANDATORY_SECURITY_OBJ
-	Object<Security>& security();
+	#if OBJ_M_3_DEVICE_V12
+	Object <Device> & device();
 	#endif
-	#if MANDATORY_SERVER_OBJ
-	Object<Server>& server();
+	#if OBJ_M_0_LWM2M_SECURITY_V12
+	Object <LWM2MSecurity> & lWM2MSecurity();
 	#endif
-	#if MANDATORY_DEVICE_OBJ
-	Object<Device>& device();
+	#if OBJ_M_1_LWM2M_SERVER_V11
+	Object <LwM2MServer> & lwM2MServer();
 	#endif
 	/* The end of the prototypes of the mandatory objects. */
 	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */

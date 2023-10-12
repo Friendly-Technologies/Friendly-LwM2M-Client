@@ -11,19 +11,19 @@ endif()
 
 # The option of the mandatory object ends with the letter M.
 # The start of the options of the mandatory objects.
-option(MANDATORY_SECURITY_OBJ "Include mandatory Security object in the build" ON)
-if (MANDATORY_SECURITY_OBJ)
-    set(WPP_DEFINITIONS ${WPP_DEFINITIONS} MANDATORY_SECURITY_OBJ=1)
-endif()
 
-option(MANDATORY_SERVER_OBJ "Include mandatory Server object in the build" ON)
-if (MANDATORY_SERVER_OBJ)
-    set(WPP_DEFINITIONS ${WPP_DEFINITIONS} MANDATORY_SERVER_OBJ=1)
-endif()
 
-option(MANDATORY_DEVICE_OBJ "Include mandatory Device object in the build" ON)
-if (MANDATORY_DEVICE_OBJ)
-    set(WPP_DEFINITIONS ${WPP_DEFINITIONS} MANDATORY_DEVICE_OBJ=1)
+option(OBJ_M_3_DEVICE_V12 "Include mandatory Device object in the build" ON)
+if (OBJ_M_3_DEVICE_V12)
+	set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_M_3_DEVICE_V12=1)
+endif()
+option(OBJ_M_0_LWM2M_SECURITY_V12 "Include mandatory LWM2MSecurity object in the build" ON)
+if (OBJ_M_0_LWM2M_SECURITY_V12)
+	set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_M_0_LWM2M_SECURITY_V12=1)
+endif()
+option(OBJ_M_1_LWM2M_SERVER_V11 "Include mandatory LwM2MServer object in the build" ON)
+if (OBJ_M_1_LWM2M_SERVER_V11)
+	set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_M_1_LWM2M_SERVER_V11=1)
 endif()
 # The end of the options of the mandatory objects.
 # !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!!

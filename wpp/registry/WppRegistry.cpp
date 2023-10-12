@@ -24,24 +24,24 @@ bool WppRegistry::isObjRegistered(Lwm2mObject &object) {
 }
 
 /* The start of the prototypes of the mandatory objects. */
-#if MANDATORY_SECURITY_OBJ
-Object<Security>& WppRegistry::security() {
-    if (!Object<Security>::isCreated()) Object<Security>::create(_context, SECURITY_OBJ_INFO);
-    return *Object<Security>::object();
+# if OBJ_M_3_DEVICE_V12
+Object <Device> & WppRegistry::device() {
+	if (!Object <Device>::isCreated()) Object <Device>::create(_context, DEVICE_OBJ_INFO);
+	return *Object <Device>::object();
 }
-#endif
-#if MANDATORY_SERVER_OBJ
-Object<Server>& WppRegistry::server() {
-    if (!Object<Server>::isCreated()) Object<Server>::create(_context, SERVER_OBJ_INFO);
-    return *Object<Server>::object();
+# endif
+# if OBJ_M_0_LWM2M_SECURITY_V12
+Object <LWM2MSecurity> & WppRegistry::lWM2MSecurity() {
+	if (!Object <LWM2MSecurity>::isCreated()) Object <LWM2MSecurity>::create(_context, LWM2M_SECURITY_OBJ_INFO);
+	return *Object <LWM2MSecurity>::object();
 }
-#endif
-#if MANDATORY_DEVICE_OBJ
-Object<Device>& WppRegistry::device() {
-    if (!Object<Device>::isCreated()) Object<Device>::create(_context, DEVICE_OBJ_INFO);
-    return *Object<Device>::object();
+# endif
+# if OBJ_M_1_LWM2M_SERVER_V11
+Object <LwM2MServer> & WppRegistry::lwM2MServer() {
+	if (!Object <LwM2MServer>::isCreated()) Object <LwM2MServer>::create(_context, LWM2M_SERVER_OBJ_INFO);
+	return *Object <LwM2MServer>::object();
 }
-#endif
+# endif
 /* The end of the prototypes of the mandatory objects. */
 /* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE! */
 

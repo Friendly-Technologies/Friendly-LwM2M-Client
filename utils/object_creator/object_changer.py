@@ -73,7 +73,7 @@ if __name__ == "__main__":
 
     if options.file_path is not None and options.folder_path is not None:
         obj_r = object_remover.ObjectRemover(options.folder_path)
-        obj_g = object_generator.ObjectGenerator(options.file_path)
+        obj_g = object_generator.ObjectGenerator(options.file_path, None)
 
         path_to_object_old = options.folder_path
         path_to_object_new = obj_g.get_folder_path()

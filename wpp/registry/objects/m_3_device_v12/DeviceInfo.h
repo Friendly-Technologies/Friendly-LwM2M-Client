@@ -7,7 +7,7 @@
 
 namespace wpp {
 
-static const ObjectInfo WPP_Device_OBJ_INFO = {
+static const ObjectInfo DEVICE_OBJ_INFO = {
 	/* Name */
 	"Device",
 	/* Object ID */

@@ -7,7 +7,7 @@
 
 namespace wpp {
 
-static const ObjectInfo WPP_LwM2M_Server_OBJ_INFO = {
+static const ObjectInfo LWM2M_SERVER_OBJ_INFO = {
 	/* Name */
 	"LwM2M Server",
 	/* Object ID */

@@ -88,7 +88,7 @@ I_INSTANCE_IMPLEMENTATIONS_H = \
 CLASS_PRIVATE_METHODS_H = \
     f"""\n\nprivate:\n\t/* --------------- Class private methods --------------- */\n\t""" \
     f"""/*\n\t * Initialize resources with default values\n\t""" \
-    f""" * Resource always must have at least one instance.\n\t */\t\n\t""" \
+    f""" * Resource always must have at least one instance.\n\t""" \
     f""" * Note: From server side, empty resource == undefined resource.\n\t */\t\n\t""" \
     f"""void resourcesInit();\n\t\n""" \
     f"""\t/* --------------- Code_h block 3 start --------------- */\n""" \

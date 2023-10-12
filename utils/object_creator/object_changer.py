@@ -1,5 +1,6 @@
 import object_generator
 import object_remover
+import object_integrator
 
 from optparse import OptionParser
 import re
@@ -74,6 +75,7 @@ if __name__ == "__main__":
     if options.file_path is not None and options.folder_path is not None:
         obj_r = object_remover.ObjectRemover(options.folder_path)
         obj_g = object_generator.ObjectGenerator(options.file_path, None)
+        obj_i = object_integrator.ObjectIntegrator(options.file_path, None)
 
         path_to_object_old = options.folder_path
         path_to_object_new = obj_g.get_folder_path()
@@ -82,5 +84,6 @@ if __name__ == "__main__":
         obj_r.remove_object()
         obj_g.object_code_generate()
         write_files(path_to_object_new, user_code_blocks)
+        obj_i.update_files()
     else:
         parser.error("The path to the folder of the Object is not provided")

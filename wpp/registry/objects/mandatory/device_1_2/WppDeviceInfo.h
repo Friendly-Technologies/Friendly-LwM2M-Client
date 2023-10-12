@@ -24,13 +24,11 @@ static const ObjectInfo WPP_DEVICE_OBJ_INFO = {
 	IS_MANDATORY::MANDATORY,
 	/* Object supported operations */
 	/* --------------- Info block 0 start --------------- */
-	InstOp(	InstOp::CREATE |
-			InstOp::DELETE),
-	ResOp(	ResOp::READ|
-			ResOp::WRITE|
-			ResOp::DISCOVER|
-			ResOp::EXECUTE|
-			ResOp::DELETE),
+	InstOp(InstOp::CREATE),
+	ResOp(ResOp::READ|
+		  ResOp::WRITE|
+		  ResOp::EXECUTE|
+		  ResOp::DISCOVER),
 	/* --------------- Info block 0 end --------------- */
 };
 

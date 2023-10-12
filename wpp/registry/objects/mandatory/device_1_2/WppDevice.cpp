@@ -16,6 +16,10 @@
 #include "WppLogs.h"
 
 /* --------------- Code_cpp block 0 start --------------- */
+#if RES_BATTERY_LEVEL_3_9
+#define BUTT_LVL_MIN	0
+#define BUTT_LVL_MAX	100
+#endif
 /* --------------- Code_cpp block 0 end --------------- */
 
 #define TAG "WppDevice"
@@ -135,12 +139,30 @@ void WppDevice::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
 	/* --------------- Class private methods --------------- */
 void WppDevice::resourcesInit() {
 	/* --------------- Code_cpp block 9 start --------------- */
-	// _resources[REBOOT_M].set( /* TODO */ );
-	// _resources[REBOOT_M].setDataVerifier( /* TODO */ );
-	// _resources[ERROR_CODE_M].set( /* TODO */ );
-	// _resources[ERROR_CODE_M].setDataVerifier( /* TODO */ );
-	// _resources[SUPPORTED_BINDING_AND_MODES_M].set( /* TODO */ );
-	// _resources[SUPPORTED_BINDING_AND_MODES_M].setDataVerifier( /* TODO */ );
+	#if RES_AVAILABLE_POWER_SOURCES_3_6
+	_resources[AVAILABLE_POWER_SOURCES_6].setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return DC <= value && value < PWR_SRC_MAX; });
+	#endif
+	
+	#if RES_BATTERY_LEVEL_3_9
+	_resources[BATTERY_LEVEL_9].setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return BUTT_LVL_MIN <= value && value <= BUTT_LVL_MAX; });
+	#endif
+
+	_resources[ERROR_CODE_11].set((INT_T)NO_ERROR);
+	_resources[ERROR_CODE_11].setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return NO_ERROR <= value && value < ERR_CODE_MAX; });
+	
+	#if RES_RESET_ERROR_CODE_3_12
+	_resources[RESET_ERROR_CODE_12].set((EXECUTE_T)[this](ID_T id, const OPAQUE_T& buff) { 
+		this->_resources[ERROR_CODE_11].clear();
+		_resources[ERROR_CODE_11].set((INT_T)NO_ERROR);
+	});
+	#endif
+
+	_resources[SUPPORTED_BINDING_AND_MODES_16].set(STRING_T(""));
+	_resources[SUPPORTED_BINDING_AND_MODES_16].setDataVerifier((VERIFY_STRING_T)([](const STRING_T& value) { return wppBindingValidate(value); }));
+
+	#if RES_BATTERY_STATUS_3_20
+	_resources[BATTERY_STATUS_20].setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return NORMAL <= value && value < BUTT_STATUS_MAX; });
+	#endif
 	/* --------------- Code_cpp block 9 end --------------- */
 }
 

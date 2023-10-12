@@ -143,28 +143,35 @@ void WppLwM2MServer::resourcesInit() {
 	// on wakaama core level, because the Server is only a state holder and
 	// at this level, it does not have the required information for doing
 	// sings described in the documentation.
+
+	_resources[SHORT_SERVER_ID_0].set(INT_T(0));
+	_resources[SHORT_SERVER_ID_0].setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return SINGLE_INSTANCE_ID < value && value < ID_T_MAX_VAL; });
+
+	_resources[LIFETIME_1].set(INT_T(0));
+
 	// TODO: Disable (Res id 4) must be implemented by wakaama core or WppClient
+
 	// TODO: Notification Storing (Res id 6) must be implemented by wakaama core
+	_resources[NOTIFICATION_STORING_WHEN_DISABLED_OR_OFFLINE_6].set(false);
+	
+	_resources[BINDING_7].set(STRING_T(""));
+	_resources[BINDING_7].setDataVerifier((VERIFY_STRING_T)[](const STRING_T& value) { return wppBindingValidate(value); });
+
 	// TODO: Registration Update (Res id 8) must be implemented by wakaama core or WppClient
+
 	// TODO: Bootstrap Request (Res id 9) must be implemented by wakaama core or WppClient
-	_resources[BINDING_7].setDataVerifier((VERIFY_STRING_T)([this](const STRING_T& value) { return this->isBindingValid(value); }));
+
 	#if RES_APN_LINK_1_10
 	_resources[APN_LINK_10].setDataVerifier((VERIFY_UINT_T)[](const UINT_T& value) { return TLS_DTLS_ALERT_CODE_MIN <= value && value <= TLS_DTLS_ALERT_CODE_MAX; });
 	#endif
+	
 	#if RES_PREFERRED_TRANSPORT_1_22
-	_resources[PREFERRED_TRANSPORT_22].setDataVerifier((VERIFY_STRING_T)([this](const STRING_T& value) { return this->isBindingValid(value); }));
+	_resources[PREFERRED_TRANSPORT_22].setDataVerifier((VERIFY_STRING_T)[](const STRING_T& value) { return wppBindingValidate(value); });
 	#endif
 	/* --------------- Code_cpp block 9 end --------------- */
 }
 
 /* --------------- Code_cpp block 10 start --------------- */
-ool isBindingValid(const STRING_T& binding) {
-	if(binding == WPP_SERV_BINDING_UDP) return true;
-	if(binding == WPP_SERV_BINDING_TCP) return true;
-	if(binding == WPP_SERV_BINDING_SMS) return true;
-	if(binding == WPP_SERV_BINDING_NON_IP) return true;
-	return false;
-}
 /* --------------- Code_cpp block 10 end --------------- */
 
 } /* namespace wpp */

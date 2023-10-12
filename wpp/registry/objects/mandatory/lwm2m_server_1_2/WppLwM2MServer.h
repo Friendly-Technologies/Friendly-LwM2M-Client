@@ -14,10 +14,7 @@
 #include "InstSubject.h"
 
 /* --------------- Сode_h block 0 start --------------- */
-#define WPP_SERV_BINDING_UDP	STRING_T("U")
-#define WPP_SERV_BINDING_TCP	STRING_T("T")
-#define WPP_SERV_BINDING_SMS	STRING_T("S")
-#define WPP_SERV_BINDING_NON_IP STRING_T("N")
+#include "WppBindings.h"
 /* --------------- Сode_h block 0 end --------------- */
 
 namespace wpp {
@@ -103,7 +100,6 @@ private:
 	void resourcesInit();
 	
 	/* --------------- Code_h block 3 start --------------- */
-	bool isBindingValid(const STRING_T& binding);
 	/* --------------- Code_h block 3 end --------------- */
 
 private:

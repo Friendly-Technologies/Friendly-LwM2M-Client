@@ -89,6 +89,7 @@ CLASS_PRIVATE_METHODS_H = \
     f"""\n\nprivate:\n\t/* --------------- Class private methods --------------- */\n\t""" \
     f"""/*\n\t * Initialize resources with default values\n\t""" \
     f""" * Resource always must have at least one instance.\n\t */\t\n\t""" \
+    f""" * Note: From server side, empty resource == undefined resource.\n\t */\t\n\t""" \
     f"""void resourcesInit();\n\t\n""" \
     f"""\t/* --------------- Code_h block 3 start --------------- */\n""" \
     f"""\t/* --------------- Code_h block 3 end --------------- */\n\n""" \
@@ -100,7 +101,7 @@ CLASS_PRIVATE_METHODS_H = \
     f"""}} /* namespace wpp */\n\n#endif /* WPP_{PLACE_IF_DEF_DIRECTIVE}_H */\n"""
 
 PREFIX_CPP = \
-    f"""#include "mandatory/{PLACE_FOLDER}/{PLACE_CLASS_NAME}.h"\n\n""" \
+    f"""#include "{PLACE_FOLDER}/{PLACE_CLASS_NAME}.h"\n\n""" \
     f"""#include <unordered_map>\n""" \
     f"""#include <iostream>\n\n""" \
     f"""#include "{TYPE_RESOURCE}.h"\n""" \
@@ -313,13 +314,19 @@ class ObjectGenerator:
 
     def get_content_resourcesInit_f(self, resources_list_xml):
         content = f"""void {PLACE_CLASS_NAME}::resourcesInit() {{\n""" \
-                  f"""\t/* --------------- Code_cpp block 9 start --------------- */\n\t"""
+                  f"""\t/* --------------- Code_cpp block 9 start --------------- */\n"""
         for resource in resources_list_xml:
             if resource["Mandatory"] == "MANDATORY":
                 # content += f"""\t\t#if {resource["Name"]}_{resource["Mandatory"]}\n\t"""
-                content += f"_resources[{resource['Name']}_M].set( /* TODO */ );\n\t"
-                content += f"_resources[{resource['Name']}_M].setDataVerifier( /* TODO */ );\n\t"
+                content += f"\t_resources[{resource['Name']}_M].set( /* TODO */ );\n"
+                content += f"\t_resources[{resource['Name']}_M].setDataVerifier( /* TODO */ );\n\n"
                 # content += f"\t\t#endif\n\n"
+            if resource["Mandatory"] == "OPTIONAL":
+                content += f"""#if {resource["Define"]}\n"""
+                content += f"\t_resources[{resource['Name']}_O].set( /* TODO */ );\n"
+                content += f"\t_resources[{resource['Name']}_O].setDataVerifier( /* TODO */ );\n"
+                content += f"#endif\n\n"
+
         return content + f"""/* --------------- Code_cpp block 9 end --------------- */\n}}\n\n"""
 
     def create_log_string(self, text: str, arguments: list, is_std, pattern: str = "%d"):
@@ -428,7 +435,7 @@ class ObjectGenerator:
                f"""{main_line}\nendif()"""
 
     def generate_content_info_header(self):
-        if_not_def = f"""WPP_{self.object_names["obj_name_folder"].upper()}_INFO_H"""
+        if_not_def = f"""WPP_{self.object_names["obj_name_underline"].upper()}_INFO_H"""
         is_multiple = "MULTIPLE" if self.meta_object["is_multiple"] else "SINGLE"
         is_mandatory = "MANDATORY" if self.meta_object["is_mandatory"] else "OPTIONAL"
 
@@ -440,7 +447,7 @@ class ObjectGenerator:
             f"""namespace wpp {{\n\n""" \
             f"""static const {TYPE_OBJECT_INFO} {self.object_names["obj_name_object_info"]} = {{\n""" \
             f"""\t/* Name */\n\t"{self.meta_object["object_name"]}",\n""" \
-            f"""\t/* Object ID */\n\tOBJ_ID::SERVER,\n""" \
+            f"""\t/* Object ID */\n\tOBJ_ID::{self.object_names["obj_name_underline"].upper()},\n""" \
             f"""\t/* URN */\n\t"{self.meta_object["object_urn"]}",\n""" \
             f"""\t/* Object version */\n\t{{{self.meta_object["object_version"].replace('.', ',')}}},\n""" \
             f"""\t/* Lwm2m version */\n\t{{{self.meta_object["object_lwm2m_version"].replace('.', ',')}}},\n""" \
@@ -464,7 +471,7 @@ class ObjectGenerator:
         return content
 
     def generate_content_config(self):
-        if_not_def = f"""WPP_{self.object_names["obj_name_folder"].upper()}_CONFIG_H"""
+        if_not_def = f"""WPP_{self.object_names["obj_name_underline"].upper()}_CONFIG_H"""
         defines = ""
         for resource in self.meta_resources:
             if resource["Mandatory"] == "MANDATORY":

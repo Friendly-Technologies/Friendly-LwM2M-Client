@@ -16,7 +16,7 @@
 #include "WppLogs.h"
 
 /* --------------- Code_cpp block 0 start --------------- */
-#if RES_TLS_DTLS_ALERT_CODE_1_11
+#if RES_1_11_TLS_DTLS_ALERT_CODE
 #define TLS_DTLS_ALERT_CODE_MIN	0
 #define TLS_DTLS_ALERT_CODE_MAX	255
 #endif
@@ -149,17 +149,17 @@ void LwM2MServer::resourcesInit() {
 
 	_resources[LIFETIME_1].set(INT_T(0));
 
-	#if RES_DEFAULT_MINIMUM_PERIOD_1_2    
+	#if RES_1_2_DEFAULT_MINIMUM_PERIOD    
 	_resources[DEFAULT_MINIMUM_PERIOD_2].set(INT_T(0));                                                                                                                                                                                                             
 	#endif    
 
-	#if RES_DEFAULT_MAXIMUM_PERIOD_1_3       
+	#if RES_1_3_DEFAULT_MAXIMUM_PERIOD       
 	_resources[DEFAULT_MAXIMUM_PERIOD_3].set(INT_T(0));                                                                                                                                                                                                          
 	#endif                       
 
 	// TODO: Disable (Res id 4) must be implemented by wakaama core or WppClient
 
-	#if RES_DISABLE_TIMEOUT_1_5                                                                                                                                                                                                                        
+	#if RES_1_5_DISABLE_TIMEOUT                                                                                                                                                                                                                        
 	_resources[DISABLE_TIMEOUT_5].set(INT_T(0));
 	#endif 
 
@@ -173,60 +173,60 @@ void LwM2MServer::resourcesInit() {
 
 	// TODO: Bootstrap Request (Res id 9) must be implemented by wakaama core or WppClient
 
-	#if RES_APN_LINK_1_10    
+	#if RES_1_10_APN_LINK    
 	_resources[APN_LINK_10].set(OBJ_LINK_T());                                                                                                                                                                                                                          
 	#endif 
 
-	#if RES_TLS_DTLS_ALERT_CODE_1_11
+	#if RES_1_11_TLS_DTLS_ALERT_CODE
 	_resources[TLS_DTLS_ALERT_CODE_11].set(UINT_T(TLS_DTLS_ALERT_CODE_MIN));
 	_resources[TLS_DTLS_ALERT_CODE_11].setDataVerifier((VERIFY_UINT_T)[](const UINT_T& value) { return TLS_DTLS_ALERT_CODE_MIN <= value && value <= TLS_DTLS_ALERT_CODE_MAX; });
 	#endif
 	                                                                                                                                                                                                                                       
-	#if RES_LAST_BOOTSTRAPPED_1_12
+	#if RES_1_12_LAST_BOOTSTRAPPED
 	_resources[LAST_BOOTSTRAPPED_12].set(TIME_T(0));                                                                                                                                                                                                                    
 	#endif                                                                                                                                                                                                                                             
 	
-	#if RES_REGISTRATION_PRIORITY_ORDER_1_13
+	#if RES_1_13_REGISTRATION_PRIORITY_ORDER
 	_resources[REGISTRATION_PRIORITY_ORDER_13].set(UINT_T(0));                                                                                                                                                                                                           
 	#endif                                                                                                                                                                                                                                             
 	
-	#if RES_INITIAL_REGISTRATION_DELAY_TIMER_1_14
+	#if RES_1_14_INITIAL_REGISTRATION_DELAY_TIMER
 	_resources[INITIAL_REGISTRATION_DELAY_TIMER_14].set(UINT_T(0));                                                                                                                                                                                                      
 	#endif                                                                                                                                                                                                                                             
 	
-	#if RES_REGISTRATION_FAILURE_BLOCK_1_15  
+	#if RES_1_15_REGISTRATION_FAILURE_BLOCK  
 	_resources[REGISTRATION_FAILURE_BLOCK_15].set(false);                                                                                                                                                                                                             
 	#endif                                                                                                                                                                                                                                             
 	
-	#if RES_BOOTSTRAP_ON_REGISTRATION_FAILURE_1_16
+	#if RES_1_16_BOOTSTRAP_ON_REGISTRATION_FAILURE
 	_resources[BOOTSTRAP_ON_REGISTRATION_FAILURE_16].set(false);                                                                                                                                                                                                    
 	#endif                                                                                                                                                                                                                                             
 	
-	#if RES_COMMUNICATION_RETRY_COUNT_1_17                                                                                                                                                                                                             
+	#if RES_1_17_COMMUNICATION_RETRY_COUNT                                                                                                                                                                                                             
 	_resources[COMMUNICATION_RETRY_COUNT_17].set(UINT_T(0));
 	#endif                                                                                                                                                                                                                                             
 	
-	#if RES_COMMUNICATION_RETRY_TIMER_1_18                                                                                                                                                                                                             
+	#if RES_1_18_COMMUNICATION_RETRY_TIMER                                                                                                                                                                                                             
 	_resources[COMMUNICATION_RETRY_TIMER_18].set(UINT_T(0));
 	#endif                                                                                                                                                                                                                                             
 	
-	#if RES_COMMUNICATION_SEQUENCE_DELAY_TIMER_1_19                                                                                                                                                                                                    
+	#if RES_1_19_COMMUNICATION_SEQUENCE_DELAY_TIMER                                                                                                                                                                                                    
 	_resources[COMMUNICATION_SEQUENCE_DELAY_TIMER_19].set(UINT_T(0));
 	#endif                                                                                                                                                                                                                                             
 	
-	#if RES_COMMUNICATION_SEQUENCE_RETRY_COUNT_1_20                                                                                                                                                                                                    
+	#if RES_1_20_COMMUNICATION_SEQUENCE_RETRY_COUNT                                                                                                                                                                                                    
 	_resources[COMMUNICATION_SEQUENCE_RETRY_COUNT_20].set(UINT_T(0));
 	#endif                                                                                                                                                                                                                                             
 	
-	#if RES_TRIGGER_1_21
+	#if RES_1_21_TRIGGER
 	_resources[TRIGGER_21].set(false);                                                                                                                                                                                                                               
 	#endif 
 
-	#if RES_PREFERRED_TRANSPORT_1_22
+	#if RES_1_22_PREFERRED_TRANSPORT
 	_resources[PREFERRED_TRANSPORT_22].set(STRING_T(""));
 	#endif
 
-	#if RES_MUTE_SEND_1_23                                                                                                                                                                                                                             
+	#if RES_1_23_MUTE_SEND                                                                                                                                                                                                                             
 	resources[MUTE_SEND_23].set(false);
 	#endif 
 	/* --------------- Code_cpp block 9 end --------------- */

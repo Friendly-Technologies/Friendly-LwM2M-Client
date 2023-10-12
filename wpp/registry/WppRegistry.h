@@ -17,7 +17,7 @@
 #include "m_3_device_v12/Device.h"
 #endif
 #if OBJ_M_0_LWM2M_SECURITY_V12
-#include "m_0_lwm2m_security_v12/LWM2MSecurity.h"
+#include "m_0_lwm2m_security_v12/LwM2MSecurity.h"
 #endif
 #if OBJ_M_1_LWM2M_SERVER_V11
 #include "m_1_lwm2m_server_v11/LwM2MServer.h"
@@ -62,7 +62,7 @@ public:
 	Object <Device> & device();
 	#endif
 	#if OBJ_M_0_LWM2M_SECURITY_V12
-	Object <LWM2MSecurity> & lWM2MSecurity();
+	Object <LwM2MSecurity> & lWM2MSecurity();
 	#endif
 	#if OBJ_M_1_LWM2M_SERVER_V11
 	Object <LwM2MServer> & lwM2MServer();

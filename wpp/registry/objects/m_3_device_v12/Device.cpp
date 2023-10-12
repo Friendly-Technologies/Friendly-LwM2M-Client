@@ -16,7 +16,7 @@
 #include "WppLogs.h"
 
 /* --------------- Code_cpp block 0 start --------------- */
-#if RES_BATTERY_LEVEL_3_9
+#if RES_3_9_BATTERY_LEVEL
 #define BUTT_LVL_MIN	0
 #define BUTT_LVL_MAX	100
 #endif
@@ -139,87 +139,91 @@ void Device::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
 	/* --------------- Class private methods --------------- */
 void Device::resourcesInit() {
 	/* --------------- Code_cpp block 9 start --------------- */
-	#if RES_MANUFACTURER_3_0                                                                                                                                                                                            
+	#if RES_3_0_MANUFACTURER                                                                                                                                                                                            
 	_resources[MANUFACTURER_0].set(STRING_T(""));
 	#endif          
 
-	#if RES_MODEL_NUMBER_3_1    
+	#if RES_3_1_MODEL_NUMBER    
 	_resources[MODEL_NUMBER_1].set(STRING_T(""));                                                                                                                                                                                        
 	#endif                                                                                                                                                                                                              
 	
-	#if RES_SERIAL_NUMBER_3_2                                                                                                                                                                                           
+	#if RES_3_2_SERIAL_NUMBER                                                                                                                                                                                           
 	_resources[SERIAL_NUMBER_2].set(STRING_T("")); 
 	#endif                                                                                                                                                                                                              
 	
-	#if RES_FIRMWARE_VERSION_3_3                                                                                                                                                                                        
+	#if RES_3_3_FIRMWARE_VERSION                                                                                                                                                                                        
 	_resources[FIRMWARE_VERSION_3].set(STRING_T("")); 
 	#endif                                                                                                                                                                                                                                     
 
-	#if RES_AVAILABLE_POWER_SOURCES_3_6
+	#if RES_3_6_AVAILABLE_POWER_SOURCES
 	_resources[AVAILABLE_POWER_SOURCES_6].set(INT_T(PWR_SRC_MAX));
 	_resources[AVAILABLE_POWER_SOURCES_6].setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return DC <= value && value < PWR_SRC_MAX; });
 	#endif
 
-	#if RES_POWER_SOURCE_VOLTAGE_3_7
+	#if RES_3_7_POWER_SOURCE_VOLTAGE
 	_resources[POWER_SOURCE_VOLTAGE_7].set(INT_T(0));                                                                                                                                                                                 
 	#endif                                                                                                                                                                                                              
 	
-	#if RES_POWER_SOURCE_CURRENT_3_8
+	#if RES_3_8_POWER_SOURCE_CURRENT
 	_resources[POWER_SOURCE_CURRENT_8].set(INT_T(0));                                                                                                                                                                                  
 	#endif 
 	
-	#if RES_BATTERY_LEVEL_3_9
+	#if RES_3_9_BATTERY_LEVEL
 	_resources[BATTERY_LEVEL_9].set(INT_T(BUTT_LVL_MIN));
 	_resources[BATTERY_LEVEL_9].setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return BUTT_LVL_MIN <= value && value <= BUTT_LVL_MAX; });
 	#endif
 
-	#if RES_MEMORY_FREE_3_10
+	#if RES_3_10_MEMORY_FREE
 	_resources[MEMORY_FREE_10].set(INT_T(0));                                                                                                                                                                                         
 	#endif
 
 	_resources[ERROR_CODE_11].set((INT_T)NO_ERROR);
 	_resources[ERROR_CODE_11].setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return NO_ERROR <= value && value < ERR_CODE_MAX; });
 	
-	#if RES_RESET_ERROR_CODE_3_12
+	#if RES_3_12_RESET_ERROR_CODE
 	_resources[RESET_ERROR_CODE_12].set((EXECUTE_T)[this](ID_T id, const OPAQUE_T& buff) { 
 		this->_resources[ERROR_CODE_11].clear();
 		_resources[ERROR_CODE_11].set((INT_T)NO_ERROR);
 	});
 	#endif
 
-	#if RES_CURRENT_TIME_3_13
+	#if RES_3_13_CURRENT_TIME
 	_resources[CURRENT_TIME_13].set(TIME_T(0));                                                                                                                                                                                       
 	#endif                                                                                                                                                                                                              
 	
-	#if RES_UTC_OFFSET_3_14
+	#if RES_3_14_UTC_OFFSET
 	_resources[UTC_OFFSET_14].set(STRING_T(""));                                                                                                                                                                                             
 	#endif                                                                                                                                                                                                              
 	
-	#if RES_TIMEZONE_3_15 
+	#if RES_3_15_TIMEZONE 
 	_resources[TIMEZONE_15].set(STRING_T(""));                                                                                                                                                                                     
 	#endif
 
 	_resources[SUPPORTED_BINDING_AND_MODES_16].set(STRING_T(""));
 	_resources[SUPPORTED_BINDING_AND_MODES_16].setDataVerifier((VERIFY_STRING_T)([](const STRING_T& value) { return wppBindingValidate(value); }));
 
-	#if RES_HARDWARE_VERSION_3_18
+	#if RES_3_17_DEVICE_TYPE 
+	_resources[DEVICE_TYPE_17].set(STRING_T(""));                                                                                                                                                                                           
+	#endif
+
+	#if RES_3_18_HARDWARE_VERSION
 	_resources[HARDWARE_VERSION_18].set(STRING_T(""));                                                                                                                                                                              
 	#endif                                                                                                                                                                                                              
 	
-	#if RES_SOFTWARE_VERSION_3_19
+	#if RES_3_19_SOFTWARE_VERSION
 	_resources[SOFTWARE_VERSION_19].set(STRING_T(""));                                                                                                                                                                                    
 	#endif                 
 
-	#if RES_BATTERY_STATUS_3_20
+	#if RES_3_20_BATTERY_STATUS
 	_resources[BATTERY_STATUS_20].set(INT_T(BUTT_STATUS_MAX));
 	_resources[BATTERY_STATUS_20].setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return NORMAL <= value && value < BUTT_STATUS_MAX; });
 	#endif
 
-	#if RES_MEMORY_TOTAL_3_21                                                                                                                                                                                           
+	#if RES_3_21_MEMORY_TOTAL                                                                                                                                                                                           
 	_resources[MEMORY_TOTAL_21].set((INT_T)NO_ERROR);
 	#endif                                                                                                                                                                                                              
 	
-	#if RES_EXTDEVINFO_3_22                                                                                                                                                                                         
+	#if RES_3_22_EXTDEVINFO                                                                                                                                                                                         
 	_resources[EXTDEVINFO_22].set(OBJ_LINK_T());
 	#endif     
 	/* --------------- Code_cpp block 9 end --------------- */

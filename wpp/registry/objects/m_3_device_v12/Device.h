@@ -48,7 +48,7 @@ public:
 	};
 
 	/* --------------- Code_h block 1 start --------------- */
-	#if RES_AVAILABLE_POWER_SOURCES_3_6
+	#if RES_3_6_AVAILABLE_POWER_SOURCES
 	enum PwrSrcs: uint8_t {
 		DC = 0,
 		INTERN_BUTT = 1,
@@ -75,7 +75,7 @@ public:
 		ERR_CODE_MAX
 	};
 
-	#if RES_BATTERY_STATUS_3_20
+	#if RES_3_20_BATTERY_STATUS
 	enum ButtStatus {
 		NORMAL = 0,
 		CHARGING = 1,

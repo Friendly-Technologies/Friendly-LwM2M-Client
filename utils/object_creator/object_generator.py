@@ -440,7 +440,7 @@ class ObjectGenerator:
             f"""namespace wpp {{\n\n""" \
             f"""static const {TYPE_OBJECT_INFO} {self.object_names["obj_name_object_info"]} = {{\n""" \
             f"""\t/* Name */\n\t"{self.meta_object["object_name"]}",\n""" \
-            f"""\t/* Object ID */\n\tOBJ_ID::SERVER,\n""" \
+            f"""\t/* Object ID */\n\tOBJ_ID::WPP_{self.object_names["obj_name_underline"].upper()},\n""" \
             f"""\t/* URN */\n\t"{self.meta_object["object_urn"]}",\n""" \
             f"""\t/* Object version */\n\t{{{self.meta_object["object_version"].replace('.', ',')}}},\n""" \
             f"""\t/* Lwm2m version */\n\t{{{self.meta_object["object_lwm2m_version"].replace('.', ',')}}},\n""" \

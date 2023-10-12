@@ -29,13 +29,6 @@ static const ObjectInfo WPP_Device_OBJ_INFO = {
 		  ResOp::WRITE|
 		  ResOp::EXECUTE|
 		  ResOp::DISCOVER),
-	InstOp(	InstOp::CREATE |
-			InstOp::DELETE),
-	ResOp(	ResOp::READ|
-			ResOp::WRITE|
-			ResOp::DISCOVER|
-			ResOp::EXECUTE|
-			ResOp::DELETE),
 	/* --------------- Info block 0 end --------------- */
 };
 

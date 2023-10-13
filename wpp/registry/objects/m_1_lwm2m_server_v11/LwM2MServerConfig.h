@@ -3,8 +3,7 @@
 
 #if OBJ_M_1_LWM2M_SERVER_V11
 
-/* ---------- Server optional resources start ---------- */
-
+/* ---------- Optional resource configs start ---------- */
 #define RES_1_2_DEFAULT_MINIMUM_PERIOD 0
 #define RES_1_3_DEFAULT_MAXIMUM_PERIOD 0
 #define RES_1_4_DISABLE 0
@@ -24,8 +23,7 @@
 #define RES_1_21_TRIGGER 0
 #define RES_1_22_PREFERRED_TRANSPORT 0
 #define RES_1_23_MUTE_SEND 0
-
-/* ---------- Server optional resources end ---------- */
+/* ---------- Optional resource configs end ---------- */
 
 /* --------------- Config block 0 start --------------- */
 /* --------------- Config block 0 end --------------- */

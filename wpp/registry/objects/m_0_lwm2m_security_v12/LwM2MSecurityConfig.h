@@ -3,8 +3,7 @@
 
 #if OBJ_M_0_LWM2M_SECURITY_V12
 
-/* ---------- Server optional resources start ---------- */
-
+/* ---------- Optional resource configs start ---------- */
 #define RES_0_6_SMS_SECURITY_MODE 0
 #define RES_0_7_SMS_BINDING_KEY_PARAMETERS 0
 #define RES_0_8_SMS_BINDING_SECRET_KEY_S_ 0
@@ -30,8 +29,7 @@
 #define RES_0_28_RDS_DESTINATION_PORT 0
 #define RES_0_29_RDS_SOURCE_PORT 0
 #define RES_0_30_RDS_APPLICATION_ID 0
-
-/* ---------- Server optional resources end ---------- */
+/* ---------- Optional resource configs end ---------- */
 
 /* --------------- Config block 0 start --------------- */
 /* --------------- Config block 0 end --------------- */

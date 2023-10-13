@@ -3,8 +3,7 @@
 
 #if OBJ_M_3_DEVICE_V12
 
-/* ---------- Server optional resources start ---------- */
-
+/* ---------- Optional resource configs start ---------- */
 #define RES_3_0_MANUFACTURER 1
 #define RES_3_1_MODEL_NUMBER 1
 #define RES_3_2_SERIAL_NUMBER 1
@@ -25,8 +24,7 @@
 #define RES_3_20_BATTERY_STATUS 0
 #define RES_3_21_MEMORY_TOTAL 0
 #define RES_3_22_EXTDEVINFO 0
-
-/* ---------- Server optional resources end ---------- */
+/* ---------- Optional resource configs end ---------- */
 
 /* --------------- Config block 0 start --------------- */
 /* --------------- Config block 0 end --------------- */

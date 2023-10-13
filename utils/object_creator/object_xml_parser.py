@@ -55,7 +55,7 @@ class ObjectXmlParser:
             name_res = resource_dict['Name']
             id_obj = object_data['object_id']
             id_res = resource_dict['ID']
-            resource_dict['Define'] = f"RES_{id_obj}_{id_res}_{name_res}"
+            resource_dict['Define'] = f"RES_{id_obj}_{id_res}"
             # add prepared resource dictionary to the list:
             resources_list.append(resource_dict)
 
@@ -85,7 +85,7 @@ class ObjectXmlParser:
                           f"v{_obj_version}"                                            # lwm2m_server_1_1
         obj_name_path_to_folder = \
             f"../../wpp/registry/objects/{obj_name_folder}"         # ../../wpp/registry/objects/lwm2m_server_1_1
-        obj_name_object_info = f"WPP_{obj_name_plain_underline}_OBJ_INFO"               # WPP_LWM2M_SERVER_OBJ_INFO
+        obj_name_object_info = f"{obj_name_plain_underline}_OBJ_INFO".upper()           # WPP_LWM2M_SERVER_OBJ_INFO
         obj_name_define = f"OBJ_{_obj_requirement_short}_" \
                           f"{_obj_id}_" \
                           f"{_obj_name_plain_underline_up}_" \

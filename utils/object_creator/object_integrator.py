@@ -67,7 +67,7 @@ class ObjectIntegrator:
 
         content_obj_id = \
             f"#ifdef {obj_name_define}\n" \
-            f"\tWPP_{obj_name_class_underline.upper()} = {self.obj_meta['object_id']},\n" \
+            f"\t{obj_name_class_underline.upper()} = {self.obj_meta['object_id']},\n" \
             f"#endif /* {obj_name_define} */\n"
 
         content_cnfg_cmk = \
@@ -79,7 +79,7 @@ class ObjectIntegrator:
 
         content_reg_h_incl = \
             f"""#if {obj_name_define}\n""" \
-            f"""#include "{"mandatory" if is_obj_mandatory else "optional"}/{self.obj_names["obj_name_folder"]}/{obj_name_class}.h"\n""" \
+            f"""#include "{self.obj_names["obj_name_folder"]}/{obj_name_class}.h"\n""" \
             f"""#endif\n"""
 
         content_reg_h_prt = \

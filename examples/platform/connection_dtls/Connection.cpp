@@ -105,7 +105,7 @@ Connection::Connection(string port, int addressFamily): _port(port), _addressFam
 
 Connection::~Connection() {}
 
-Connection::SESSION_T Connection::connect(LwM2MSecurity& security) {
+Connection::SESSION_T Connection::connect(Lwm2mSecurity& security) {
     addrinfo hints, *servinfo = NULL, *p;
     int s;
     sockaddr *sa;
@@ -113,7 +113,7 @@ Connection::SESSION_T Connection::connect(LwM2MSecurity& security) {
     dtls_connection_t * conn = NULL;
 
     STRING_T uri;
-    security.get(LwM2MSecurity::LWM2M_SERVER_URI_0, uri);
+    security.get(Lwm2mSecurity::LWM2M_SERVER_URI_0, uri);
     string host = uriToHost(uri);
     string port = uriToPort(uri);
     cout << "Connection: connect to host " << host << ", host len: " << strlen(host.c_str()) << ", port " << port << ", port len: " << strlen(port.c_str()) << endl;
@@ -144,10 +144,10 @@ Connection::SESSION_T Connection::connect(LwM2MSecurity& security) {
 
         // do we need to start tinydtls?
         if (conn != NULL) {
-            security.get(LwM2MSecurity::PUBLIC_KEY_OR_IDENTITY_3, conn->pubKey);
-            security.get(LwM2MSecurity::SECRET_KEY_5, conn->privKey);
+            security.get(Lwm2mSecurity::PUBLIC_KEY_OR_IDENTITY_3, conn->pubKey);
+            security.get(Lwm2mSecurity::SECRET_KEY_5, conn->privKey);
             INT_T mode;
-            security.get(LwM2MSecurity::SECURITY_MODE_2, mode);
+            security.get(Lwm2mSecurity::SECURITY_MODE_2, mode);
             if (mode != LWM2M_SECURITY_MODE_NONE) {
                 conn->dtlsContext = _dtlsContext;
             } else if (conn->dtlsSession) {

@@ -17,7 +17,7 @@
 
 namespace wpp {
 
-class LwM2MSecurity;
+class Lwm2mSecurity;
 
 class WppConnection {
 	friend class WppClient;
@@ -45,7 +45,7 @@ public:
 	 * Virtual methods must be implemented by user and
 	 * will be called by wpp core.
 	 */
-	virtual SESSION_T connect(LwM2MSecurity& security) = 0;
+	virtual SESSION_T connect(Lwm2mSecurity& security) = 0;
 	virtual void disconnect(SESSION_T session) = 0;
 	virtual bool sessionCmp(SESSION_T session1, SESSION_T session2) = 0;
 	/*

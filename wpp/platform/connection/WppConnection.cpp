@@ -79,9 +79,9 @@ extern "C" {
     void * lwm2m_connect_server(uint16_t secObjInstID, void * userData) {
 		wpp::WppClient *client = (wpp::WppClient *)userData;
 		WPP_LOGD_ARG(TAG_WPP_CONN, "Connecting to server: security obj ID -> %d", secObjInstID);
-		wpp::LwM2MSecurity *security = client->registry().lWM2MSecurity().instance(secObjInstID);
+		wpp::Lwm2mSecurity *security = client->registry().lwm2mSecurity().instance(secObjInstID);
 		if (!security) {
-			WPP_LOGE_ARG(TAG_WPP_CONN, "LwM2MSecurity obj with ID -> %d not found", secObjInstID);
+			WPP_LOGE_ARG(TAG_WPP_CONN, "Lwm2mSecurity obj with ID -> %d not found", secObjInstID);
 			return NULL;
 		}
 

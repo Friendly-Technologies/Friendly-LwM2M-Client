@@ -6,14 +6,23 @@ from optparse import OptionParser
 import re
 import os
 
+keywords = ["FILETYPE_OBJ_IMPL_H", "FILETYPE_OBJ_IMPL_CPP", "FILETYPE_OBJ_CONF", "FILETYPE_OBJ_NFO"]
 
 def get_info(path_to_file):
     add_line = False
     counter = 0
     user_code_block = ""
     user_code_blocks = {}
+    user_code_file_key = ""
+    user_code_file_key_found = False
     with open(path_to_file, 'r') as f:
         for line in f:
+            for keyword in keywords:
+                if not user_code_file_key_found:
+                    if re.search(keyword, line):
+                        user_code_file_key = keyword
+                        user_code_file_key_found = True
+
             if re.search("block \d start", line):
                 add_line = True
                 continue
@@ -28,7 +37,7 @@ def get_info(path_to_file):
                 user_code_block += line
     f.close()
 
-    return user_code_blocks
+    return user_code_file_key, user_code_blocks
 
 
 def put_info(path_to_file, file_user_code_dict):
@@ -64,22 +73,25 @@ def read_files(path):
     datas = {}
     dir_list = os.listdir(path)
     for file in dir_list:
-        datas[scan_filename(file)] = get_info(f"{path}/{file}")
+        file_keyword, user_codes = get_info(f"{path}/{file}")
+        datas[file_keyword] = user_codes
     return datas
 
 
 def write_files(folder_path, datas):
     dir_list = os.listdir(folder_path)
-    for file_playn in dir_list:
-        file_keyword = scan_filename(file_playn)
-        put_info(f"{folder_path}/{file_playn}", datas[file_keyword])
+    for file in dir_list:
+        file_keyword = get_file_keyword(f"{folder_path}/{file}")
+        put_info(f"{folder_path}/{file}", datas[file_keyword])
 
 
-def scan_filename(filename: str):
-    keywords = ["Config", "Info", "CMakeLists", ".h", ".cpp"]
-    for keyword in keywords:
-        if re.search(keyword, filename):
-            return keyword
+def get_file_keyword(file):
+    with open(file, 'r') as f:
+        for line in f:
+            for keyword in keywords:
+                if re.search(keyword, line):
+                    return keyword
+    f.close()
 
 
 def get_path_to_obj_file(obj_path, type):

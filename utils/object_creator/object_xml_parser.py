@@ -55,7 +55,7 @@ class ObjectXmlParser:
             name_res = resource_dict['Name']
             id_obj = object_data['object_id']
             id_res = resource_dict['ID']
-            resource_dict['Define'] = f"RES_{id_obj}_{id_res}_{name_res}"
+            resource_dict['Define'] = f"RES_{id_obj}_{id_res}"
             # add prepared resource dictionary to the list:
             resources_list.append(resource_dict)
 

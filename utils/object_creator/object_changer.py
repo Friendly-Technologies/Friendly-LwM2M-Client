@@ -121,32 +121,6 @@ def get_file_type_by_path(obj_file_path):
     return ""
 
 
-def get_resource_defines_from_file(obj_path):
-    cfg_file = get_obj_file_name_by_type(obj_path, object_generator.FILE_TYPE_OBJ_CFG)
-    if not cfg_file:
-        print(f"File with type '{object_generator.FILE_TYPE_OBJ_CFG}' not found in the path '{obj_path}'")
-        return dict()
-
-    defines = dict()
-    with open(obj_path+"/"+cfg_file, 'r') as file:
-        for line in file:
-            if not re.search(RES_DEF_PATTERN, line):
-                continue
-            line_parts = line.split(" ")
-            if len(line_parts) < RES_DEF_PARTS_CNT:
-                print(f"Incorrect definition format '{line}'")
-                continue
-            define_parts = line_parts[1].split("_")
-            if len(define_parts) < 4:
-                print(f"Incorrect define name format '{line_parts[1]}'")
-                continue
-            if not define_parts[2].isnumeric():
-                print(f"Incorrect define prefix format '{line_parts[1]}'")
-                continue
-            defines[int(define_parts[2])] = line_parts[1]
-    return defines
-
-
 def get_obj_res_enum_content_from_file(obj_path):
     impl_file = get_obj_file_name_by_type(obj_path, object_generator.FILE_TYPE_OBJ_IMPL_H)
     if not impl_file:
@@ -194,13 +168,6 @@ def get_resource_names_from_file(obj_path):
     return names
 
 
-def get_resource_defines_from_gen(obj_gen):
-    defines = dict()
-    for res in obj_gen.meta_resources:
-        defines[int(res['ID'])] = res['Define']
-    return defines
-
-
 def get_resource_names_from_gen(obj_gen):
     names = dict()
     for res in obj_gen.meta_resources:
@@ -217,14 +184,11 @@ def create_map_for_attribute(attr1, attr2):
 
 
 def get_updated_user_code(old_object_path, new_obj_gen):
-    # Returns {ID: <str>}
-    old_res_defines = get_resource_defines_from_file(old_object_path)
+    # Returns {ID: [<str>, <int>]}
     old_res_names = get_resource_names_from_file(old_object_path)
-    new_res_defines = get_resource_defines_from_gen(new_obj_gen)
     new_res_names = get_resource_names_from_gen(new_obj_gen)
 
     # Returns [[old_attr, new_attr],...]
-    res_defs_map = create_map_for_attribute(old_res_defines, new_res_defines)
     res_names_map = create_map_for_attribute(old_res_names, new_res_names)
 
     old_user_code_blocks = read_files(old_object_path)
@@ -233,8 +197,6 @@ def get_updated_user_code(old_object_path, new_obj_gen):
         new_user_code_blocks[type] = dict()
         for id, old_block in old_blocks.items():
             new_block = old_block
-            for def_pair in res_defs_map:
-                new_block = new_block.replace(def_pair[0], def_pair[1])
             for name_pair in res_names_map:
                 new_block = new_block.replace(name_pair[0], name_pair[1])
             new_user_code_blocks[type][id] = new_block

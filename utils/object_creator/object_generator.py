@@ -359,13 +359,13 @@ class ObjectGenerator:
         for resource in resources_list_xml:
             if resource["Mandatory"] == "MANDATORY":
                 # content += f"""\t\t#if {resource["Name"]}_{resource["Mandatory"]}\n\t"""
-                content += f"\t_resources[{resource['Name']}_M].set( /* TODO */ );\n"
-                content += f"\t_resources[{resource['Name']}_M].setDataVerifier( /* TODO */ );\n\n"
+                content += f"\t_resources[{resource['Name']}_{resource['ID']}].set( /* TODO */ );\n"
+                content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n\n"
                 # content += f"\t\t#endif\n\n"
             if resource["Mandatory"] == "OPTIONAL":
                 content += f"""#if {resource["Define"]}\n"""
-                content += f"\t_resources[{resource['Name']}_O].set( /* TODO */ );\n"
-                content += f"\t_resources[{resource['Name']}_O].setDataVerifier( /* TODO */ );\n"
+                content += f"\t_resources[{resource['Name']}_{resource['ID']}].set( /* TODO */ );\n"
+                content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n"
                 content += f"#endif\n\n"
 
         return content + f"""/* --------------- Code_cpp block 9 end --------------- */\n}}\n\n"""
@@ -525,9 +525,6 @@ class ObjectGenerator:
             f"""#ifndef {if_not_def}\n""" \
             f"""#define {if_not_def}\n\n""" \
             f"""#if {self.object_names["obj_name_define"]}\n\n""" \
-            f"""/* ---------- Optional resource configs start ---------- */\n""" \
-            f"""{defines}""" \
-            f"""/* ---------- Optional resource configs end ---------- */\n\n""" \
             f"""/* --------------- Config block 0 start --------------- */\n""" \
             f"""/* --------------- Config block 0 end --------------- */\n\n""" \
             f"""#endif // {if_not_def}\n""" \

@@ -7,6 +7,14 @@ import re
 import os
 
 
+RES_DEF_PATTERN = "#define RES_\d_\d_"
+RES_DEF_PARTS_CNT = 3
+
+ENUM_FIELD_PATTERN = " = \d"
+ENUM_START_PATTERN = "enum ID: ID_T {"
+ENUM_END_PATTERN = "};"
+ENUM_FIELD_PARTS_CNT = 2
+
 def get_info(path_to_file):
     add_line = False
     counter = 0
@@ -87,7 +95,7 @@ def get_path_to_obj_file(obj_path, type):
     for file_name in files_list:
         with open(obj_path+"/"+file_name, 'r') as file:
             for line in file:
-                if re.search(f"File type: {type}", line):
+                if re.search(type, line):
                     return obj_path+"/"+file_name
     return ""
 
@@ -100,10 +108,10 @@ def get_resource_defines_from_file(obj_path):
     defines = dict()
     with open(obj_path+"/"+cfg_file, 'r') as file:
         for line in file:
-            if not re.search("#define RES_\d_\d_", line):
+            if not re.search(RES_DEF_PATTERN, line):
                 continue
             line_parts = line.split(" ")
-            if len(line_parts) < 3:
+            if len(line_parts) < RES_DEF_PARTS_CNT:
                 print(f"Incorrect definition format '{line}'")
                 continue
             define_parts = line_parts[1].split("_")
@@ -129,13 +137,13 @@ def get_obj_res_enum_content_from_file(obj_path):
         block = list()
 
         for id in range(len(lines)):
-            if re.search("enum ID: ID_T {", lines[id]):
+            if re.search(ENUM_START_PATTERN, lines[id]):
                 enum_start_id = id
                 break
         if enum_start_id == -1:
             return list()
         for id in range(id, len(lines)):
-            if re.search("};", lines[id]):
+            if re.search(ENUM_END_PATTERN, lines[id]):
                 enum_end_id = id
                 break
             block.append(lines[id])
@@ -153,10 +161,10 @@ def get_resource_names_from_file(obj_path):
 
     names = dict()
     for line in res_enum:
-        if not re.search(" = \d", line):
+        if not re.search(ENUM_FIELD_PATTERN, line):
             continue
         field_parts = line.strip("\t ,\n").split("=")
-        if len(field_parts) != 2 or not field_parts[1].isnumeric():
+        if len(field_parts) != ENUM_FIELD_PARTS_CNT or not field_parts[1].isnumeric():
             print(f"Incorrect enum field format '{line}'")
             continue
 

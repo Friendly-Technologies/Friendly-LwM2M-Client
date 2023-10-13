@@ -167,7 +167,7 @@ PUBLIC_DESTRUCTOR_CPP = \
     f"""}}\n\n"""
 
 CLASS_PRIVATE_METHODS_CPP = \
-    f"""\t/* --------------- Class private methods --------------- */\n{PLACE_RESOURCES_INIT}""" \
+    f"""{PLACE_RESOURCES_INIT}""" \
     f"""/* --------------- Code_cpp block 10 start --------------- */\n""" \
     f"""/* --------------- Code_cpp block 10 end --------------- */\n\n"""
 

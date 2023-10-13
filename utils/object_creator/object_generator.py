@@ -289,12 +289,15 @@ class ObjectGenerator:
 
             # fill the Resources' enum:
             resource_define = resource_xml['Define']
-            resource = f"{resource_name}_{resource_id}"
-            resource_enum = f"\t\t{resource} = {resource_xml['ID']},\n"
-            resources_enum += resource_enum
+            resource = f"{resource_name}_{resource_id}"            
+
+            if resource_xml['Mandatory'] != "MANDATORY":
+                resources_enum += f"\t#if {resource_define}\n"
+            resources_enum += f"\t\t{resource} = {resource_xml['ID']},\n"
+            if resource_xml['Mandatory'] != "MANDATORY":
+                resources_enum += f"\t#endif\n"
 
             # fill the unordered_map<ID_T, Resource> table:
-
             if resource_xml['Mandatory'] != "MANDATORY":
                 x.add_row([f"*TAB*#if {resource_define}", "", "", "", "", ""])
 

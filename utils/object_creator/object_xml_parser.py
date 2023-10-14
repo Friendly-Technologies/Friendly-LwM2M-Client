@@ -1,3 +1,4 @@
+import string
 import xml.etree.ElementTree as ElementTree
 import requests
 import json
@@ -66,38 +67,32 @@ class ObjectXmlParser:
 
         object_metadata = {}
 
-        obj_name_plain = object_data["object_name"]                                     # LwM2M Server
-        _obj_name_plain_no_space = obj_name_plain.replace(' ', '')                      # LwM2MServer
-        obj_name_plain_underline = obj_name_plain.replace(' ', '_')                     # LwM2M_Server
-        _obj_name_plain_underline_up = obj_name_plain_underline.upper()                 # LWM2M_SERVER
-        _obj_name_plain_underline_lw = obj_name_plain_underline.lower()                 # lwm2m_server
-        _obj_name_plain_list = obj_name_plain.split(" ")
-        _obj_name_plain_list[0] = _obj_name_plain_list[0][0].lower() + _obj_name_plain_list[0][1:]
-        obj_name_camelcase = ''.join(_obj_name_plain_list)                              # lwM2MServer
-        obj_name_class = _obj_name_plain_no_space                                       # LwM2MServer
-        _obj_requirement = "mandatory" if object_data["is_mandatory"] else "optional"   # mandatory | optional
-        _obj_requirement_short = "M" if object_data["is_mandatory"] else "O"            # M | O
-        _obj_version = object_data["object_version"].replace(".", "")                   # 13
-        _obj_id = object_data['object_id']                                              # 1
-        obj_name_folder = f"{_obj_requirement_short.lower()}_" \
-                          f"{_obj_id}_" \
-                          f"{_obj_name_plain_underline_lw}_"\
-                          f"v{_obj_version}"                                            # lwm2m_server_1_1
-        obj_name_path_to_folder = \
-            f"../../wpp/registry/objects/{obj_name_folder}"         # ../../wpp/registry/objects/lwm2m_server_1_1
-        obj_name_object_info = f"{obj_name_plain_underline}_OBJ_INFO".upper()           # WPP_LWM2M_SERVER_OBJ_INFO
-        obj_name_define = f"OBJ_{_obj_requirement_short}_" \
-                          f"{_obj_id}_" \
-                          f"{_obj_name_plain_underline_up}_" \
-                          f"V{_obj_version}"                                            # OBJ_M_1_LWM2M_SERVER_V12
+        obj_name_plain = object_data["object_name"]                                 # 'LWM2M Server'
+        obj_name_lower = obj_name_plain.lower()                                     # 'lwm2m server'
+        obj_name_capwords = string.capwords(obj_name_lower)                         # 'Lwm2m Server'
+        obj_name_class = obj_name_capwords.replace(' ', '')                         # 'Lwm2mServer'
+        obj_name_camelcase = obj_name_class[0].lower() + obj_name_class[1:]         # 'lwm2mServer'
+        obj_name_underline = obj_name_plain.replace(' ', '_')                       # 'LWM2M_Server'
+        obj_name_underline_up = obj_name_underline.upper()                          # 'LWM2M_SERVER'
+        obj_name_underline_lw = obj_name_underline.lower()                          # 'lwm2m_server'
+        obj_requirement_short = "M" if object_data["is_mandatory"] else "O"         # 'M' | 'O'
+        obj_version = object_data["object_version"].replace(".", "")                # 13
+        obj_id = object_data['object_id']                                           # 1
+        obj_name_folder = f"{obj_requirement_short.lower()}_" \
+                          f"{obj_id}_" \
+                          f"{obj_name_underline_lw}_"\
+                          f"v{obj_version}"                                         # 'm_1_lwm2m_server_v11'
+        obj_name_path_to_folder = f"../../wpp/registry/objects/"                    # '../../wpp/registry/objects/'
+        obj_name_define = f"OBJ_{obj_requirement_short}_" \
+                          f"{obj_id}_" \
+                          f"{obj_name_underline_up}_" \
+                          f"V{obj_version}"                                         # 'OBJ_M_1_LWM2M_SERVER_V12'
 
-        object_metadata["obj_name"] = obj_name_plain
-        object_metadata["obj_name_underline"] = obj_name_plain_underline
-        object_metadata["obj_name_camelcase"] = obj_name_camelcase
-        object_metadata["obj_name_class"] = obj_name_class
-        object_metadata["obj_name_folder"] = obj_name_folder
-        object_metadata["obj_name_path_to_folder"] = obj_name_path_to_folder
-        object_metadata["obj_name_define"] = obj_name_define
-        object_metadata["obj_name_object_info"] = obj_name_object_info
+        object_metadata["obj_name_class"] = obj_name_class                          # 'Lwm2mServer'
+        object_metadata["obj_name_camelcase"] = obj_name_camelcase                  # 'lwm2mServer'
+        object_metadata["obj_name_define"] = obj_name_define                        # 'OBJ_M_1_LWM2M_SERVER_V12'
+        object_metadata["obj_name_folder"] = obj_name_folder                        # 'm_1_lwm2m_server_v11'
+        object_metadata["obj_name_path_to_folder"] = obj_name_path_to_folder        # '../../wpp/registry/objects/'
+        object_metadata["obj_name_up_underline"] = obj_name_underline_up            # 'LWM2M_SERVER'
 
         return object_metadata

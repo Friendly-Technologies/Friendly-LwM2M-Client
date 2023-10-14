@@ -1,4 +1,4 @@
-from tabulate import tabulate
+import shutil
 from optparse import OptionParser
 import object_xml_parser
 
@@ -51,11 +51,17 @@ class ObjectIntegrator:
             f.write(new_content[:-1])
         f.close()
 
+    def copy_main_files(self):
+        shutil.copytree(self.obj_names['obj_name_folder'],
+                        f"../../wpp/registry/objects/{self.obj_names['obj_name_folder']}")
+
     def update_files(self):
+        self.copy_main_files()
+
         is_obj_mandatory = self.obj_meta["is_mandatory"]
 
         obj_name_class = self.obj_names['obj_name_class']
-        obj_name_class_underline = self.obj_names['obj_name_underline']
+        obj_name_class_underline = self.obj_names['obj_name_up_underline']
         obj_name_define = self.obj_names['obj_name_define']
         obj_name_camelcase = self.obj_names["obj_name_camelcase"]
 
@@ -67,7 +73,7 @@ class ObjectIntegrator:
 
         content_obj_id = \
             f"#ifdef {obj_name_define}\n" \
-            f"\t{obj_name_class_underline.upper()} = {self.obj_meta['object_id']},\n" \
+            f"\t{obj_name_class_underline} = {self.obj_meta['object_id']},\n" \
             f"#endif /* {obj_name_define} */\n"
 
         content_cnfg_cmk = \
@@ -91,7 +97,7 @@ class ObjectIntegrator:
             f"""# if {obj_name_define}\n""" \
             f"""{TYPE_OBJECT} <{obj_name_class}> & {TYPE_REGISTRY}::{obj_name_camelcase}() {{\n\t""" \
             f"""if (!{TYPE_OBJECT} <{obj_name_class}>::isCreated()) {TYPE_OBJECT} <{obj_name_class}>::""" \
-            f"""create(_context, {self.obj_names["obj_name_object_info"]});\n\t""" \
+            f"""create(_context, {self.obj_names["obj_name_up_underline"]}_OBJ_INFO);\n\t""" \
             f"""return *{TYPE_OBJECT} <{obj_name_class}>::object();\n""" \
             f"""}}\n""" \
             f"""# endif\n"""

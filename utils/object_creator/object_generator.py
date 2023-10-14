@@ -330,10 +330,10 @@ class ObjectGenerator:
             resource = f"{resource_name}_{resource_id}"            
 
             if resource_xml['Mandatory'] != "MANDATORY":
-                resources_enum += f"\t#if {resource_define}\n"
+                resources_enum += f"\t\t#if {resource_define}\n"
             resources_enum += f"\t\t{resource} = {resource_xml['ID']},\n"
             if resource_xml['Mandatory'] != "MANDATORY":
-                resources_enum += f"\t#endif\n"
+                resources_enum += f"\t\t#endif\n"
 
             # fill the unordered_map<ID_T, Resource> table:
             if resource_xml['Mandatory'] != "MANDATORY":
@@ -363,10 +363,10 @@ class ObjectGenerator:
                 content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n\n"
                 # content += f"\t\t#endif\n\n"
             if resource["Mandatory"] == "OPTIONAL":
-                content += f"""#if {resource["Define"]}\n"""
+                content += f"""\t#if {resource["Define"]}\n"""
                 content += f"\t_resources[{resource['Name']}_{resource['ID']}].set( /* TODO */ );\n"
                 content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n"
-                content += f"#endif\n\n"
+                content += f"\t#endif\n\n"
 
         return content + f"""/* --------------- Code_cpp block 9 end --------------- */\n}}\n\n"""
 
@@ -477,7 +477,7 @@ class ObjectGenerator:
                f"""{main_line}\nendif()"""
 
     def generate_content_info_header(self):
-        if_not_def = f"""WPP_{self.object_names["obj_name_underline"].upper()}_INFO_H"""
+        if_not_def = f"""WPP_{self.object_names["obj_name_up_underline"]}_INFO_H"""
         is_multiple = "MULTIPLE" if self.meta_object["is_multiple"] else "SINGLE"
         is_mandatory = "MANDATORY" if self.meta_object["is_mandatory"] else "OPTIONAL"
 
@@ -488,9 +488,9 @@ class ObjectGenerator:
             f"""#include "{TYPE_OBJECT_INFO}.h"\n\n""" \
             f"""#if {self.object_names["obj_name_define"]}\n\n""" \
             f"""namespace wpp {{\n\n""" \
-            f"""static const {TYPE_OBJECT_INFO} {self.object_names["obj_name_object_info"]} = {{\n""" \
+            f"""static const {TYPE_OBJECT_INFO} {self.object_names["obj_name_up_underline"]}_OBJ_INFO = {{\n""" \
             f"""\t/* Name */\n\t"{self.meta_object["object_name"]}",\n""" \
-            f"""\t/* Object ID */\n\tOBJ_ID::{self.object_names["obj_name_underline"].upper()},\n""" \
+            f"""\t/* Object ID */\n\tOBJ_ID::{self.object_names["obj_name_up_underline"]},\n""" \
             f"""\t/* URN */\n\t"{self.meta_object["object_urn"]}",\n""" \
             f"""\t/* Object version */\n\t{{{self.meta_object["object_version"].replace('.', ',')}}},\n""" \
             f"""\t/* Lwm2m version */\n\t{{{self.meta_object["object_lwm2m_version"].replace('.', ',')}}},\n""" \
@@ -514,7 +514,7 @@ class ObjectGenerator:
         return content
 
     def generate_content_config(self):
-        if_not_def = f"""WPP_{self.object_names["obj_name_underline"].upper()}_CONFIG_H"""
+        if_not_def = f"""WPP_{self.object_names["obj_name_up_underline"]}_CONFIG_H"""
         defines = ""
         for resource in self.meta_resources:
             if resource["Mandatory"] == "MANDATORY":
@@ -533,12 +533,12 @@ class ObjectGenerator:
 
     def create_folder(self):
         try:
-            os.mkdir(self.object_names['obj_name_path_to_folder'])
+            os.mkdir(self.object_names['obj_name_folder'])
         except FileExistsError:
             pass
 
     def create_file(self, filename, filetype, content):
-        f = open(f"{self.object_names['obj_name_path_to_folder']}/{filename}.{filetype}", "w+")
+        f = open(f"./{self.object_names['obj_name_folder']}/{filename}.{filetype}", "w+")
         f.write(content)
         f.close()
 

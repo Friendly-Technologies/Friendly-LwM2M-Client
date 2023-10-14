@@ -533,12 +533,12 @@ class ObjectGenerator:
 
     def create_folder(self):
         try:
-            os.mkdir(self.object_names['obj_name_path_to_folder'])
+            os.mkdir(self.object_names['obj_name_folder'])
         except FileExistsError:
             pass
 
     def create_file(self, filename, filetype, content):
-        f = open(f"{self.object_names['obj_name_path_to_folder']}/{filename}.{filetype}", "w+")
+        f = open(f"./{self.object_names['obj_name_folder']}/{filename}.{filetype}", "w+")
         f.write(content)
         f.close()
 

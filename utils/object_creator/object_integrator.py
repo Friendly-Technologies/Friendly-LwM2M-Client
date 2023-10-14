@@ -1,4 +1,4 @@
-from tabulate import tabulate
+import shutil
 from optparse import OptionParser
 import object_xml_parser
 
@@ -51,7 +51,13 @@ class ObjectIntegrator:
             f.write(new_content[:-1])
         f.close()
 
+    def copy_main_files(self):
+        shutil.copytree(self.obj_names['obj_name_folder'],
+                        f"../../wpp/registry/objects/{self.obj_names['obj_name_folder']}")
+
     def update_files(self):
+        self.copy_main_files()
+
         is_obj_mandatory = self.obj_meta["is_mandatory"]
 
         obj_name_class = self.obj_names['obj_name_class']

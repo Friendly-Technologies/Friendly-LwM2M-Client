@@ -19,7 +19,7 @@ option(OBJ_M_0_LWM2M_SECURITY_V11 "Include mandatory Lwm2mSecurity object in the
 if (OBJ_M_0_LWM2M_SECURITY_V11)
 	set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_M_0_LWM2M_SECURITY_V11=1)
 endif()
-option(OBJ_M_1_LWM2M_SERVER_V11 "Include mandatory LwM2MServer object in the build" ON)
+option(OBJ_M_1_LWM2M_SERVER_V11 "Include mandatory Lwm2mServer object in the build" ON)
 if (OBJ_M_1_LWM2M_SERVER_V11)
 	set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_M_1_LWM2M_SERVER_V11=1)
 endif()

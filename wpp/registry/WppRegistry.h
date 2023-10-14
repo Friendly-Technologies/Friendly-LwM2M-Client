@@ -65,7 +65,7 @@ public:
 	Object <Lwm2mSecurity> & lwm2mSecurity();
 	#endif
 	#if OBJ_M_1_LWM2M_SERVER_V11
-	Object <LwM2MServer> & lwm2mServer();
+	Object <Lwm2mServer> & lwm2mServer();
 	#endif
 	/* The end of the prototypes of the mandatory objects. */
 	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */

@@ -81,17 +81,17 @@ class ObjectXmlParser:
         obj_name_folder = f"{obj_requirement_short.lower()}_" \
                           f"{obj_id}_" \
                           f"{obj_name_underline_lw}_"\
-                          f"v{obj_version}"                                         # 'm_1_lwm2m_server_v11'
+                          f"v{obj_version}"                                         # 'm_1_lwm2m_server_v13'
         obj_name_path_to_folder = f"../../wpp/registry/objects/"                    # '../../wpp/registry/objects/'
         obj_name_define = f"OBJ_{obj_requirement_short}_" \
                           f"{obj_id}_" \
                           f"{obj_name_underline_up}_" \
-                          f"V{obj_version}"                                         # 'OBJ_M_1_LWM2M_SERVER_V12'
+                          f"V{obj_version}"                                         # 'OBJ_M_1_LWM2M_SERVER_V13'
 
         object_metadata["obj_name_class"] = obj_name_class                          # 'Lwm2mServer'
         object_metadata["obj_name_camelcase"] = obj_name_camelcase                  # 'lwm2mServer'
-        object_metadata["obj_name_define"] = obj_name_define                        # 'OBJ_M_1_LWM2M_SERVER_V12'
-        object_metadata["obj_name_folder"] = obj_name_folder                        # 'm_1_lwm2m_server_v11'
+        object_metadata["obj_name_define"] = obj_name_define                        # 'OBJ_M_1_LWM2M_SERVER_V13'
+        object_metadata["obj_name_folder"] = obj_name_folder                        # 'm_1_lwm2m_server_v13'
         object_metadata["obj_name_path_to_folder"] = obj_name_path_to_folder        # '../../wpp/registry/objects/'
         object_metadata["obj_name_up_underline"] = obj_name_underline_up            # 'LWM2M_SERVER'
 

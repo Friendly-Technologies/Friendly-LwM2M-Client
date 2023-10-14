@@ -20,7 +20,7 @@
 #include "m_0_lwm2m_security_v11/Lwm2mSecurity.h"
 #endif
 #if OBJ_M_1_LWM2M_SERVER_V11
-#include "m_1_lwm2m_server_v11/LwM2MServer.h"
+#include "m_1_lwm2m_server_v11/Lwm2mServer.h"
 #endif
 /* The end of the includes of the mandatory objects. */
 /* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */

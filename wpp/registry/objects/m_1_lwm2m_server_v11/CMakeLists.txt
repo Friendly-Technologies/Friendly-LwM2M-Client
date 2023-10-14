@@ -5,7 +5,7 @@
 
 if(OBJ_M_1_LWM2M_SERVER_V11)
 	# Update SOURCES variable from parent scope.
-	set(WPP_SOURCES ${WPP_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/LwM2MServer.cpp)
+	set(WPP_SOURCES ${WPP_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/Lwm2mServer.cpp)
 
 	# --------------- CMake block 0 start ---------------
 	# --------------- CMake block 0 end ---------------

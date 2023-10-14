@@ -8,8 +8,8 @@
 #ifndef WPP_M_1_LWM2M_SERVER_V11_H
 #define WPP_M_1_LWM2M_SERVER_V11_H
 
-#include "LwM2MServerConfig.h"
-#include "LwM2MServerInfo.h"
+#include "Lwm2mServerConfig.h"
+#include "Lwm2mServerInfo.h"
 #include "Instance.h"
 #include "InstSubject.h"
 

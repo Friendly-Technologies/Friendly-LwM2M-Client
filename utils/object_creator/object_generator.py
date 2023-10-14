@@ -330,10 +330,10 @@ class ObjectGenerator:
             resource = f"{resource_name}_{resource_id}"            
 
             if resource_xml['Mandatory'] != "MANDATORY":
-                resources_enum += f"\t#if {resource_define}\n"
+                resources_enum += f"\t\t#if {resource_define}\n"
             resources_enum += f"\t\t{resource} = {resource_xml['ID']},\n"
             if resource_xml['Mandatory'] != "MANDATORY":
-                resources_enum += f"\t#endif\n"
+                resources_enum += f"\t\t#endif\n"
 
             # fill the unordered_map<ID_T, Resource> table:
             if resource_xml['Mandatory'] != "MANDATORY":
@@ -363,10 +363,10 @@ class ObjectGenerator:
                 content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n\n"
                 # content += f"\t\t#endif\n\n"
             if resource["Mandatory"] == "OPTIONAL":
-                content += f"""#if {resource["Define"]}\n"""
+                content += f"""\t#if {resource["Define"]}\n"""
                 content += f"\t_resources[{resource['Name']}_{resource['ID']}].set( /* TODO */ );\n"
                 content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n"
-                content += f"#endif\n\n"
+                content += f"\t#endif\n\n"
 
         return content + f"""/* --------------- Code_cpp block 9 end --------------- */\n}}\n\n"""
 

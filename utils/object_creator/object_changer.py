@@ -5,6 +5,7 @@ import object_integrator
 from optparse import OptionParser
 import re
 import os
+import shutil
 
 keywords = ["FILETYPE_OBJ_IMPL_H", "FILETYPE_OBJ_IMPL_CPP", "FILETYPE_OBJ_CONF", "FILETYPE_OBJ_NFO"]
 
@@ -222,5 +223,7 @@ if __name__ == "__main__":
         obj_g.object_code_generate()
         write_files(path_to_object_new, user_code_blocks)
         obj_i.update_files()
+        if os.path.exists(path_to_object_new):
+            shutil.rmtree(path_to_object_new, ignore_errors=True)
     else:
         parser.error("The path to the folder of the Object is not provided")

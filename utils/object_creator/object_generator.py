@@ -239,7 +239,7 @@ class ObjectGenerator:
         self.object_names = obj_names
 
     def get_folder_path(self):
-        return self.object_names["obj_name_path_to_folder"]
+        return self.object_names["obj_name_folder"]
 
     def parse_operation(self, xml_operation):
         operation = f"{TYPE_OPERATION}({TYPE_OPERATION}::"
@@ -368,7 +368,7 @@ class ObjectGenerator:
                 content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n"
                 content += f"\t#endif\n\n"
 
-        return content + f"""/* --------------- Code_cpp block 9 end --------------- */\n}}\n\n"""
+        return content + f"""\t/* --------------- Code_cpp block 9 end --------------- */\n}}\n\n"""
 
     def create_log_string(self, text: str, arguments: list, is_std, pattern: str = "%d"):
         if not isinstance(text, str) or not isinstance(arguments, list):

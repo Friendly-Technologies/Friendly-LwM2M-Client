@@ -5,6 +5,7 @@ from datetime import datetime
 from prettytable import PrettyTable
 from prettytable import PLAIN_COLUMNS
 from optparse import OptionParser
+import json
 
 PLACE_IF_DEF_DIRECTIVE = "<<<0>>>"
 PLACE_CLASS_NAME = "<<<1>>>"
@@ -531,6 +532,68 @@ class ObjectGenerator:
             f"""#endif // {self.object_names["obj_name_define"]}\n"""
         return content
 
+    def generate_additional_data(self):
+        dictionary = {}
+
+        is_obj_mandatory = self.meta_object["is_mandatory"]
+
+        obj_name_class = self.object_names['obj_name_class']
+        obj_name_class_underline = self.object_names['obj_name_up_underline']
+        obj_name_define = self.object_names['obj_name_define']
+        obj_name_camelcase = self.object_names["obj_name_camelcase"]
+
+        stop_string_obj_id = STOP_STRING_OBJ_ID[0] if is_obj_mandatory else STOP_STRING_OBJ_ID[1]
+        stop_string_cfg_cmake = STOP_STRING_CNFG_CMK[0] if is_obj_mandatory else STOP_STRING_CNFG_CMK[1]
+        stop_string_reg_cpp = STOP_STRING_REG_PRT[0] if is_obj_mandatory else STOP_STRING_REG_PRT[1]
+        stop_string_reg_include = STOP_STRING_REG_INCL[0] if is_obj_mandatory else STOP_STRING_REG_INCL[1]
+        stop_string_reg_prototype = STOP_STRING_REG_PRT[0] if is_obj_mandatory else STOP_STRING_REG_PRT[1]
+
+        content_obj_id = \
+            f"#ifdef {obj_name_define}\n" \
+            f"\t{obj_name_class_underline} = {self.meta_object['object_id']},\n" \
+            f"#endif /* {obj_name_define} */\n"
+
+        content_cfg_cmake = \
+            f"""option({obj_name_define} """ \
+            f""""Include {"mandatory" if is_obj_mandatory else "optional"} """ \
+            f"""{obj_name_class} object in the build" {"ON" if is_obj_mandatory else "OFF"})\n""" \
+            f"""if ({obj_name_define})\n\tset(WPP_DEFINITIONS ${{WPP_DEFINITIONS}} {obj_name_define}=1)""" \
+            f"""\nendif()\n"""
+
+        content_reg_h_include = \
+            f"""#if {obj_name_define}\n""" \
+            f"""#include "{self.object_names["obj_name_folder"]}/{obj_name_class}.h"\n""" \
+            f"""#endif\n"""
+
+        content_reg_h_prototype = \
+            f"""\t#if {obj_name_define}\n\t""" \
+            f"""{TYPE_OBJECT} <{obj_name_class}> & {obj_name_camelcase}();\n\t""" \
+            f"""#endif\n"""
+
+        content_reg_cpp = \
+            f"""# if {obj_name_define}\n""" \
+            f"""{TYPE_OBJECT} <{obj_name_class}> & {TYPE_REGISTRY}::{obj_name_camelcase}() {{\n\t""" \
+            f"""if (!{TYPE_OBJECT} <{obj_name_class}>::isCreated()) {TYPE_OBJECT} <{obj_name_class}>::""" \
+            f"""create(_context, {self.object_names["obj_name_up_underline"]}_OBJ_INFO);\n\t""" \
+            f"""return *{TYPE_OBJECT} <{obj_name_class}>::object();\n}}\n# endif\n"""
+
+        dictionary[0] = \
+            {"file_name": "WppRegistry.h", "content": content_reg_h_include, "stop_string": stop_string_reg_include}
+
+        dictionary[1] = \
+            {"file_name": "WppRegistry.h", "content": content_reg_h_prototype, "stop_string": stop_string_reg_prototype}
+
+        dictionary[2] = \
+            {"file_name": "WppRegistry.cpp", "content": content_reg_cpp, "stop_string": stop_string_reg_cpp}
+
+        dictionary[3] = \
+            {"file_name": "ObjectID.h", "content": content_obj_id, "stop_string": stop_string_obj_id}
+
+        dictionary[4] = \
+            {"file_name": "config.cmake", "content": content_cfg_cmake, "stop_string": stop_string_cfg_cmake}
+
+        return json.dumps(dictionary, indent=4)
+
     def create_folder(self):
         try:
             os.mkdir(self.object_names['obj_name_folder'])
@@ -548,6 +611,7 @@ class ObjectGenerator:
         generated_cmake_list = self.generate_content_cmake_list()
         generated_info_header = self.generate_content_info_header()
         generated_config = self.generate_content_config()
+        generated_additional_data = self.generate_additional_data()
 
         name_class = self.object_names["obj_name_class"]
 
@@ -558,6 +622,8 @@ class ObjectGenerator:
         self.create_file(f"{name_class}Config", "h",    generated_config)
         self.create_file(f"{name_class}",       "cpp",  generated_cpp_file)
         self.create_file(f"CMakeLists",         "txt",  generated_cmake_list)
+
+        self.create_file(f"additional", "json", generated_additional_data)
 
 
 if __name__ == "__main__":

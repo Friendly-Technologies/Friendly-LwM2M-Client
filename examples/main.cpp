@@ -19,6 +19,28 @@
 using namespace std;
 using namespace wpp;
 
+void* operator new(std::size_t sz) {
+	void *ptr = std::malloc(sz);
+	cout << endl << "[_NEW_:" << hex << ptr << dec << ":" << sz << "]" << endl;
+	return ptr;
+}
+
+void* operator new[](std::size_t sz) {
+  	void *ptr = std::malloc(sz);
+	cout << endl << "[_NEW_:" << hex << ptr << dec << ":" << sz << "]" << dec << endl;
+	return ptr;
+}
+
+void operator delete(void* ptr) noexcept {
+	cout << endl << "[_DELETE_:" << hex << ptr << "]" << dec << endl;
+  	std::free(ptr);
+}
+
+void operator delete[](void* ptr) noexcept {
+	cout << endl << "[_DELETE_:" << hex << ptr << "]" <<  dec << endl;
+  	std::free(ptr);
+}
+
 void socketPolling(Connection *connection, DeviceImpl *device) {
 	while (!device->isNeededReboot()) {
 		connection->loop();

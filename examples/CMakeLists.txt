@@ -39,7 +39,7 @@ set(INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/)
 set(COMPILE_DEFINITIONS "")
 
 # General options
-option(WITH_UDP_DTLS "Enable UDP DTLS" ON)
+option(WITH_UDP_DTLS "Enable UDP DTLS" OFF)
 if (WITH_UDP_DTLS)
     set(COMPILE_DEFINITIONS ${COMPILE_DEFINITIONS} WITH_UDP_DTLS)
     # set(COMPILE_DEFINITIONS ${COMPILE_DEFINITIONS} DTLS_WITH_PSK)
@@ -79,7 +79,6 @@ add_custom_command(TARGET WakaamaPlusTest POST_BUILD
                    COMMAND ${CMAKE_OBJCOPY} -O ihex $<TARGET_FILE:WakaamaPlusTest> $<TARGET_FILE_DIR:WakaamaPlusTest>/WakaamaPlusTest.hex
                    COMMENT "Creating hex file")
 # Get information about size compiled program
-add_custom_command(
-    TARGET WakaamaPlusTest POST_BUILD
-    COMMAND size $<TARGET_FILE:WakaamaPlusTest>
-)
+add_custom_command(TARGET WakaamaPlusTest POST_BUILD
+                   COMMAND size $<TARGET_FILE:WakaamaPlusTest>
+                   COMMENT "Compiled program size")

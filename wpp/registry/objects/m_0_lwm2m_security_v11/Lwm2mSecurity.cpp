@@ -43,39 +43,40 @@ Lwm2mSecurity::~Lwm2mSecurity() {
 }
 
 Resource * Lwm2mSecurity::getResource(ID_T id) {
+	auto res = getResIter(id);
 	// Check if resource ID is valid
-	if (_resources.find(id) == _resources.end()) return NULL;
-	return &_resources[id];
+	if (res == _resources.end()) return NULL;
+	return &(*res);
 }
 
 std::vector<Resource *> Lwm2mSecurity::getResourcesList() {
 	std::vector<Resource *> list;
-	for (auto &pair : _resources) {
-		list.push_back(&pair.second);
+	for (auto &res : _resources) {
+		list.push_back(&res);
 	}
 	return list;
 }
 
 std::vector<Resource *> Lwm2mSecurity::getResourcesList(const ResOp& filter) {
 	std::vector<Resource *> list;
-	for (auto &pair : _resources) {
-		if (filter.isCompatible(pair.second.getOperation())) list.push_back(&pair.second);
+	for (auto &res : _resources) {
+		if (filter.isCompatible(res.getOperation())) list.push_back(&res);
 	}
 	return list;
 }
 
 std::vector<Resource *> Lwm2mSecurity::getInstantiatedResourcesList() {
 	std::vector<Resource *> list;
-	for (auto &pair : _resources) {
-		if (!pair.second.isEmpty()) list.push_back(&pair.second);
+	for (auto &res : _resources) {
+		if (!res.isEmpty()) list.push_back(&res);
 	}
 	return list;
 }
 
 std::vector<Resource *> Lwm2mSecurity::getInstantiatedResourcesList(const ResOp& filter) {
 	std::vector<Resource *> list;
-	for (auto &pair : _resources) {
-		if (!pair.second.isEmpty() && filter.isCompatible(pair.second.getOperation())) list.push_back(&pair.second);
+	for (auto &res : _resources) {
+		if (!res.isEmpty() && filter.isCompatible(res.getOperation())) list.push_back(&res);
 	}
 	return list;
 }
@@ -84,7 +85,7 @@ void Lwm2mSecurity::setDefaultState() {
 	/* --------------- Code_cpp block 4 start --------------- */
 	/* --------------- Code_cpp block 4 end --------------- */
 
-	for (auto &pair : _resources) pair.second.clear();
+	for (auto &res : _resources) res.clear();
 	resourcesInit();
 
 	/* --------------- Code_cpp block 5 start --------------- */
@@ -138,19 +139,19 @@ void Lwm2mSecurity::userOperationNotifier(ResOp::TYPE type, const ResLink &resId
 
 void Lwm2mSecurity::resourcesInit() {
 	/* --------------- Code_cpp block 9 start --------------- */
-	_resources[LWM2M_SERVER_URI_0].set(STRING_T(""));
-	_resources[LWM2M_SERVER_URI_0].setDataVerifier((VERIFY_STRING_T)[](const STRING_T& value) { return value.size() < SERVER_URI_MAX_SIZE; });
+	getResIter(LWM2M_SERVER_URI_0)->set(STRING_T(""));
+	getResIter(LWM2M_SERVER_URI_0)->setDataVerifier((VERIFY_STRING_T)[](const STRING_T& value) { return value.size() < SERVER_URI_MAX_SIZE; });
 
-	_resources[BOOTSTRAP_SERVER_1].set(false);
+	getResIter(BOOTSTRAP_SERVER_1)->set(false);
 
-	_resources[SECURITY_MODE_2].set(INT_T(LWM2M_SECURITY_MODE_NONE));
-	_resources[SECURITY_MODE_2].setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return LWM2M_SECURITY_MODE_PRE_SHARED_KEY <= value && value <= LWM2M_SECURITY_MODE_NONE; });
+	getResIter(SECURITY_MODE_2)->set(INT_T(LWM2M_SECURITY_MODE_NONE));
+	getResIter(SECURITY_MODE_2)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return LWM2M_SECURITY_MODE_PRE_SHARED_KEY <= value && value <= LWM2M_SECURITY_MODE_NONE; });
 
-	_resources[PUBLIC_KEY_OR_IDENTITY_3].set(OPAQUE_T());
+	getResIter(PUBLIC_KEY_OR_IDENTITY_3)->set(OPAQUE_T());
 
-	_resources[SERVER_PUBLIC_KEY_4].set(OPAQUE_T());
+	getResIter(SERVER_PUBLIC_KEY_4)->set(OPAQUE_T());
 	
-	_resources[SECRET_KEY_5].set(OPAQUE_T());
+	getResIter(SECRET_KEY_5)->set(OPAQUE_T());
 
 	#if RES_0_6
 	_resources[SMS_SECURITY_MODE_6].set(INT_T(SMS_SEC_MODE_MAX));
@@ -172,16 +173,16 @@ void Lwm2mSecurity::resourcesInit() {
 	#endif 
 
 	#if RES_0_10
-	_resources[SHORT_SERVER_ID_10].set(INT_T(0));
-	_resources[SHORT_SERVER_ID_10].setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return SINGLE_INSTANCE_ID < value && value < ID_T_MAX_VAL; });
+	getResIter(SHORT_SERVER_ID_10)->set(INT_T(0));
+	getResIter(SHORT_SERVER_ID_10)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return SINGLE_INSTANCE_ID < value && value < ID_T_MAX_VAL; });
 	#endif
 	
 	#if RES_0_11
-	_resources[CLIENT_HOLD_OFF_TIME_11].set(INT_T(0));
+	getResIter(CLIENT_HOLD_OFF_TIME_11)->set(INT_T(0));
 	#endif
 	
 	#if RES_0_12
-	_resources[BOOTSTRAP_SERVER_ACCOUNT_TIMEOUT_12].set(INT_T(0));                                                                                                                                                                                                             
+	getResIter(BOOTSTRAP_SERVER_ACCOUNT_TIMEOUT_12)->set(INT_T(0));                                                                                                                                                                                                             
 	#endif
 
 	#if RES_0_13
@@ -206,6 +207,11 @@ void Lwm2mSecurity::resourcesInit() {
 	_resources[OSCORE_SECURITY_MODE_17].set(OBJ_LINK_T());                                                                                                                                                                                                                        
 	#endif  
 	/* --------------- Code_cpp block 9 end --------------- */
+}
+
+std::vector<Resource>::iterator Lwm2mSecurity::getResIter(ID_T resId) {
+	auto finder = [&resId](const Resource &res) -> bool { return res.getId() == resId; };
+	return std::find_if(_resources.begin(), _resources.end(), finder);
 }
 
 /* --------------- Code_cpp block 10 start --------------- */

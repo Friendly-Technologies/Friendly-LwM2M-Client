@@ -43,39 +43,40 @@ Lwm2mServer::~Lwm2mServer() {
 }
 
 Resource * Lwm2mServer::getResource(ID_T id) {
+	auto res = getResIter(id);
 	// Check if resource ID is valid
-	if (_resources.find(id) == _resources.end()) return NULL;
-	return &_resources[id];
+	if (res == _resources.end()) return NULL;
+	return &(*res);
 }
 
 std::vector<Resource *> Lwm2mServer::getResourcesList() {
 	std::vector<Resource *> list;
-	for (auto &pair : _resources) {
-		list.push_back(&pair.second);
+	for (auto &res : _resources) {
+		list.push_back(&res);
 	}
 	return list;
 }
 
 std::vector<Resource *> Lwm2mServer::getResourcesList(const ResOp& filter) {
 	std::vector<Resource *> list;
-	for (auto &pair : _resources) {
-		if (filter.isCompatible(pair.second.getOperation())) list.push_back(&pair.second);
+	for (auto &res : _resources) {
+		if (filter.isCompatible(res.getOperation())) list.push_back(&res);
 	}
 	return list;
 }
 
 std::vector<Resource *> Lwm2mServer::getInstantiatedResourcesList() {
 	std::vector<Resource *> list;
-	for (auto &pair : _resources) {
-		if (!pair.second.isEmpty()) list.push_back(&pair.second);
+	for (auto &res : _resources) {
+		if (!res.isEmpty()) list.push_back(&res);
 	}
 	return list;
 }
 
 std::vector<Resource *> Lwm2mServer::getInstantiatedResourcesList(const ResOp& filter) {
 	std::vector<Resource *> list;
-	for (auto &pair : _resources) {
-		if (!pair.second.isEmpty() && filter.isCompatible(pair.second.getOperation())) list.push_back(&pair.second);
+	for (auto &res : _resources) {
+		if (!res.isEmpty() && filter.isCompatible(res.getOperation())) list.push_back(&res);
 	}
 	return list;
 }
@@ -84,7 +85,7 @@ void Lwm2mServer::setDefaultState() {
 	/* --------------- Code_cpp block 4 start --------------- */
 	/* --------------- Code_cpp block 4 end --------------- */
 
-	for (auto &pair : _resources) pair.second.clear();
+	for (auto &res : _resources) res.clear();
 	resourcesInit();
 
 	/* --------------- Code_cpp block 5 start --------------- */
@@ -143,10 +144,10 @@ void Lwm2mServer::resourcesInit() {
 	// at this level, it does not have the required information for doing
 	// sings described in the documentation.
 
-	_resources[SHORT_SERVER_ID_0].set(INT_T(0));
-	_resources[SHORT_SERVER_ID_0].setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return SINGLE_INSTANCE_ID < value && value < ID_T_MAX_VAL; });
+	getResIter(SHORT_SERVER_ID_0)->set(INT_T(0));
+	getResIter(SHORT_SERVER_ID_0)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return SINGLE_INSTANCE_ID < value && value < ID_T_MAX_VAL; });
 
-	_resources[LIFETIME_1].set(INT_T(0));
+	getResIter(LIFETIME_1)->set(INT_T(0));
 
 	#if RES_1_2    
 	_resources[DEFAULT_MINIMUM_PERIOD_2].set(INT_T(0));                                                                                                                                                                                                             
@@ -163,10 +164,10 @@ void Lwm2mServer::resourcesInit() {
 	#endif 
 
 	// TODO: Notification Storing (Res id 6) must be implemented by wakaama core
-	_resources[NOTIFICATION_STORING_WHEN_DISABLED_OR_OFFLINE_6].set(false);
+	getResIter(NOTIFICATION_STORING_WHEN_DISABLED_OR_OFFLINE_6)->set(false);
 	
-	_resources[BINDING_7].set(STRING_T(""));
-	_resources[BINDING_7].setDataVerifier((VERIFY_STRING_T)[](const STRING_T& value) { return wppBindingValidate(value); });
+	getResIter(BINDING_7)->set(STRING_T(""));
+	getResIter(BINDING_7)->setDataVerifier((VERIFY_STRING_T)[](const STRING_T& value) { return wppBindingValidate(value); });
 
 	// TODO: Registration Update (Res id 8) must be implemented by wakaama core or WppClient
 
@@ -229,6 +230,11 @@ void Lwm2mServer::resourcesInit() {
 	resources[MUTE_SEND_23].set(false);
 	#endif 
 	/* --------------- Code_cpp block 9 end --------------- */
+}
+
+std::vector<Resource>::iterator Lwm2mServer::getResIter(ID_T resId) {
+	auto finder = [&resId](const Resource &res) -> bool { return res.getId() == resId; };
+	return std::find_if(_resources.begin(), _resources.end(), finder);
 }
 
 /* --------------- Code_cpp block 10 start --------------- */

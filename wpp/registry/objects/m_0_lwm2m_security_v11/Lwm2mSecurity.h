@@ -148,19 +148,21 @@ private:
 	 * Note: From server side, empty resource == undefined resource.
 	 */	
 	void resourcesInit();
+
+	std::vector<Resource>::iterator getResIter(ID_T resId);
 	
 	/* --------------- Code_h block 3 start --------------- */
 	/* --------------- Code_h block 3 end --------------- */
 
 private:
-	std::unordered_map<ID_T, Resource> _resources = {
+	std::vector<Resource> _resources = {
 		// KEY   VALUE
-		{LWM2M_SERVER_URI_0,                         {LWM2M_SERVER_URI_0,                         ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,          IS_MANDATORY::MANDATORY,        TYPE_ID::STRING }},          
-		{BOOTSTRAP_SERVER_1,                         {BOOTSTRAP_SERVER_1,                         ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,          IS_MANDATORY::MANDATORY,        TYPE_ID::BOOL }},            
-		{SECURITY_MODE_2,                            {SECURITY_MODE_2,                            ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,          IS_MANDATORY::MANDATORY,        TYPE_ID::INT }},             
-		{PUBLIC_KEY_OR_IDENTITY_3,                   {PUBLIC_KEY_OR_IDENTITY_3,                   ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,          IS_MANDATORY::MANDATORY,        TYPE_ID::OPAQUE }},          
-		{SERVER_PUBLIC_KEY_4,                        {SERVER_PUBLIC_KEY_4,                        ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,          IS_MANDATORY::MANDATORY,        TYPE_ID::OPAQUE }},          
-		{SECRET_KEY_5,                               {SECRET_KEY_5,                               ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,          IS_MANDATORY::MANDATORY,        TYPE_ID::OPAQUE }},          
+		{LWM2M_SERVER_URI_0,                         ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,          IS_MANDATORY::MANDATORY,        TYPE_ID::STRING },          
+		{BOOTSTRAP_SERVER_1,                         ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,          IS_MANDATORY::MANDATORY,        TYPE_ID::BOOL },            
+		{SECURITY_MODE_2,                            ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,          IS_MANDATORY::MANDATORY,        TYPE_ID::INT },             
+		{PUBLIC_KEY_OR_IDENTITY_3,                   ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,          IS_MANDATORY::MANDATORY,        TYPE_ID::OPAQUE },          
+		{SERVER_PUBLIC_KEY_4,                        ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,          IS_MANDATORY::MANDATORY,        TYPE_ID::OPAQUE },          
+		{SECRET_KEY_5,                               ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,          IS_MANDATORY::MANDATORY,        TYPE_ID::OPAQUE },          
 		#if RES_0_6                                                                                                                                                                                                                
 		{SMS_SECURITY_MODE_6,                        {SMS_SECURITY_MODE_6,                        ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::INT }},             
 		#endif                                                                                                                                                                                                                     
@@ -174,13 +176,13 @@ private:
 		{LWM2M_SERVER_SMS_NUMBER_9,                  {LWM2M_SERVER_SMS_NUMBER_9,                  ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::STRING }},          
 		#endif                                                                                                                                                                                                                     
 		#if RES_0_10                                                                                                                                                                                                               
-		{SHORT_SERVER_ID_10,                         {SHORT_SERVER_ID_10,                         ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::INT }},             
+		{SHORT_SERVER_ID_10,                         ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::INT },             
 		#endif                                                                                                                                                                                                                     
 		#if RES_0_11                                                                                                                                                                                                               
-		{CLIENT_HOLD_OFF_TIME_11,                    {CLIENT_HOLD_OFF_TIME_11,                    ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::INT }},             
+		{CLIENT_HOLD_OFF_TIME_11,                    ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::INT },             
 		#endif                                                                                                                                                                                                                     
 		#if RES_0_12                                                                                                                                                                                                               
-		{BOOTSTRAP_SERVER_ACCOUNT_TIMEOUT_12,        {BOOTSTRAP_SERVER_ACCOUNT_TIMEOUT_12,        ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::INT }},             
+		{BOOTSTRAP_SERVER_ACCOUNT_TIMEOUT_12,        ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::INT },             
 		#endif                                                                                                                                                                                                                     
 		#if RES_0_13                                                                                                                                                                                                               
 		{MATCHING_TYPE_13,                           {MATCHING_TYPE_13,                           ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::UINT }},            

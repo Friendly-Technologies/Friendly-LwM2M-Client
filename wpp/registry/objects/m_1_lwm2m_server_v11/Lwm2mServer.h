@@ -134,14 +134,16 @@ private:
 	 */	
 	void resourcesInit();
 	
+	std::vector<Resource>::iterator getResIter(ID_T resId);
+
 	/* --------------- Code_h block 3 start --------------- */
 	/* --------------- Code_h block 3 end --------------- */
 
 private:
-	std::unordered_map<ID_T, Resource> _resources = {
+	std::vector<Resource> _resources = {
 		// KEY   VALUE
-		{SHORT_SERVER_ID_0,                                      {SHORT_SERVER_ID_0,                                      ResOp(ResOp::READ),                     IS_SINGLE::SINGLE,        IS_MANDATORY::MANDATORY,        TYPE_ID::INT }},             
-		{LIFETIME_1,                                             {LIFETIME_1,                                             ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::MANDATORY,        TYPE_ID::INT }},             
+		{SHORT_SERVER_ID_0,                                      ResOp(ResOp::READ),                     IS_SINGLE::SINGLE,        IS_MANDATORY::MANDATORY,        TYPE_ID::INT },             
+		{LIFETIME_1,                                             ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::MANDATORY,        TYPE_ID::INT },             
 		#if RES_1_2                                                                                                                                                                                                                                      
 		{DEFAULT_MINIMUM_PERIOD_2,                               {DEFAULT_MINIMUM_PERIOD_2,                               ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::INT }},             
 		#endif                                                                                                                                                                                                                                           
@@ -154,9 +156,9 @@ private:
 		#if RES_1_5                                                                                                                                                                                                                                      
 		{DISABLE_TIMEOUT_5,                                      {DISABLE_TIMEOUT_5,                                      ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::INT }},             
 		#endif                                                                                                                                                                                                                                           
-		{NOTIFICATION_STORING_WHEN_DISABLED_OR_OFFLINE_6,        {NOTIFICATION_STORING_WHEN_DISABLED_OR_OFFLINE_6,        ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::MANDATORY,        TYPE_ID::BOOL }},            
-		{BINDING_7,                                              {BINDING_7,                                              ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::MANDATORY,        TYPE_ID::STRING }},          
-		{REGISTRATION_UPDATE_TRIGGER_8,                          {REGISTRATION_UPDATE_TRIGGER_8,                          ResOp(ResOp::EXECUTE),                  IS_SINGLE::SINGLE,        IS_MANDATORY::MANDATORY,        TYPE_ID::EXECUTE }},         
+		{NOTIFICATION_STORING_WHEN_DISABLED_OR_OFFLINE_6,        ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::MANDATORY,        TYPE_ID::BOOL },            
+		{BINDING_7,                                              ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::MANDATORY,        TYPE_ID::STRING },          
+		{REGISTRATION_UPDATE_TRIGGER_8,                          ResOp(ResOp::EXECUTE),                  IS_SINGLE::SINGLE,        IS_MANDATORY::MANDATORY,        TYPE_ID::EXECUTE },         
 		#if RES_1_9                                                                                                                                                                                                                                      
 		{BOOTSTRAP_REQUEST_TRIGGER_9,                            {BOOTSTRAP_REQUEST_TRIGGER_9,                            ResOp(ResOp::EXECUTE),                  IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::EXECUTE }},         
 		#endif                                                                                                                                                                                                                                           

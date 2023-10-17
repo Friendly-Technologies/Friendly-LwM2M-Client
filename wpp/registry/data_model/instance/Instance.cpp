@@ -213,10 +213,10 @@ uint8_t Instance::resourceWrite(Resource &res, const lwm2m_data_t &data, lwm2m_w
 			return COAP_400_BAD_REQUEST;
 		}
 		// Notify implementation about update operation
-		if (writeType == LWM2M_WRITE_PARTIAL_UPDATE) serverOperationNotifier(ResOp::WRITE_UPD, {res.getID(), (res.isSingle()? ID_T_MAX_VAL : resInstId)});
+		if (writeType == LWM2M_WRITE_PARTIAL_UPDATE) serverOperationNotifier(ResOp::WRITE_UPD, {res.getId(), (res.isSingle()? ID_T_MAX_VAL : resInstId)});
 	}
 	// Notify implementation about replace resource operation
-	if (writeType == LWM2M_WRITE_REPLACE_RESOURCES) serverOperationNotifier(ResOp::WRITE_REPLACE_RES, {res.getID(), ID_T_MAX_VAL});
+	if (writeType == LWM2M_WRITE_REPLACE_RESOURCES) serverOperationNotifier(ResOp::WRITE_REPLACE_RES, {res.getId(), ID_T_MAX_VAL});
 
 	return COAP_NO_ERROR;
 }
@@ -250,7 +250,7 @@ uint8_t Instance::resourceRead(lwm2m_data_t &data, Resource &res) {
 	if (res.isMultiple() && data.type != LWM2M_TYPE_MULTIPLE_RESOURCE) {
 		lwm2m_data_t *subData = lwm2m_data_new(res.instanceCnt());
 		lwm2m_data_t *dataCnt = subData;
-		for (const auto& pair : res.getInstances()) (dataCnt++)->id = pair.first;
+		for (const auto& inst : res.getInstances()) (dataCnt++)->id = inst.id;
 		lwm2m_data_encode_instances(subData, res.instanceCnt(), &data);
 	}
 
@@ -270,7 +270,7 @@ uint8_t Instance::resourceRead(lwm2m_data_t &data, Resource &res) {
 			return COAP_400_BAD_REQUEST;
 		}
 		// Notify implementation about read resource operation
-		serverOperationNotifier(ResOp::READ, {res.getID(), (res.isSingle()? ID_T_MAX_VAL : resInstId)});
+		serverOperationNotifier(ResOp::READ, {res.getId(), (res.isSingle()? ID_T_MAX_VAL : resInstId)});
 	}
 
 	return COAP_NO_ERROR;
@@ -297,7 +297,7 @@ uint8_t Instance::createEmptyLwm2mDataArray(std::vector<Resource*> resources, lw
 	if (!arr) return COAP_500_INTERNAL_SERVER_ERROR;
 
 	lwm2m_data_t *arrCnt = arr;
-	for (auto &resource : resources) (arrCnt++)->id = resource->getID();
+	for (auto &resource : resources) (arrCnt++)->id = resource->getId();
 	*dataArray = arr;
 	*numData = resources.size();
 
@@ -407,7 +407,7 @@ uint8_t Instance::execute(ID_T resId, uint8_t * buffer, int length) {
 	WPP_LOGD_ARG(TAG_WPP_INST, "Resource execute: %d:%d:%d, buffer length: %d", _id.objId, _id.objInstId, resId, length);
 	execute(resId, OPAQUE_T(buffer, buffer + length));
 	// Notify implementation about execute resource operation
-	serverOperationNotifier(ResOp::EXECUTE, {resource->getID(), ID_T_MAX_VAL});
+	serverOperationNotifier(ResOp::EXECUTE, {resource->getId(), ID_T_MAX_VAL});
 
 	return COAP_204_CHANGED;
 }
@@ -437,17 +437,17 @@ uint8_t Instance::discover(int * numData, lwm2m_data_t ** dataArray) {
 		if (resource->isMultiple() && data->type != LWM2M_TYPE_MULTIPLE_RESOURCE) {
 			lwm2m_data_t *subData = lwm2m_data_new(resource->instanceCnt());
 			lwm2m_data_t *dataCnt = subData;
-			for (const auto& pair : resource->getInstances()) {
-				(dataCnt++)->id = pair.first;
-				WPP_LOGD_ARG(TAG_WPP_INST, "Resource instance discover: %d:%d:%d:%d", _id.objId, _id.objInstId, data->id, pair.first);
+			for (const auto& inst : resource->getInstances()) {
+				(dataCnt++)->id = inst.id;
+				WPP_LOGD_ARG(TAG_WPP_INST, "Resource instance discover: %d:%d:%d:%d", _id.objId, _id.objInstId, data->id, inst.id);
 				// Notify implementation about discover resource instance operation
-				serverOperationNotifier(ResOp::DISCOVER, {resource->getID(), pair.first});
+				serverOperationNotifier(ResOp::DISCOVER, {resource->getId(), inst.id});
 			}
 			lwm2m_data_encode_instances(subData, resource->instanceCnt(), data);
 		} else {
 			WPP_LOGD_ARG(TAG_WPP_INST, "Resource discover: %d:%d:%d", _id.objId, _id.objInstId, data->id);
 			// Notify implementation about discover resource operation
-			serverOperationNotifier(ResOp::DISCOVER, {resource->getID(), ID_T_MAX_VAL});
+			serverOperationNotifier(ResOp::DISCOVER, {resource->getId(), ID_T_MAX_VAL});
 		}
 	}
 	return COAP_205_CONTENT;

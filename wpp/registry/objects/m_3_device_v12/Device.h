@@ -173,26 +173,28 @@ private:
 	 * Note: From server side, empty resource == undefined resource.
 	 */	
 	void resourcesInit();
+
+	std::vector<Resource>::iterator getResIter(ID_T resId);
 	
 	/* --------------- Code_h block 3 start --------------- */
 	/* --------------- Code_h block 3 end --------------- */
 
 private:
-	std::unordered_map<ID_T, Resource> _resources = {
+	std::vector<Resource> _resources = {
 		// KEY   VALUE
 		#if RES_3_0                                                                                                                                                                                                      
-		{MANUFACTURER_0,                        {MANUFACTURER_0,                        ResOp(ResOp::READ),                     IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::STRING }},          
+		{MANUFACTURER_0,                        ResOp(ResOp::READ),                     IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::STRING },          
 		#endif                                                                                                                                                                                                           
 		#if RES_3_1                                                                                                                                                                                                      
-		{MODEL_NUMBER_1,                        {MODEL_NUMBER_1,                        ResOp(ResOp::READ),                     IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::STRING }},          
+		{MODEL_NUMBER_1,                        ResOp(ResOp::READ),                     IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::STRING },          
 		#endif                                                                                                                                                                                                           
 		#if RES_3_2                                                                                                                                                                                                      
-		{SERIAL_NUMBER_2,                       {SERIAL_NUMBER_2,                       ResOp(ResOp::READ),                     IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::STRING }},          
+		{SERIAL_NUMBER_2,                       ResOp(ResOp::READ),                     IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::STRING },          
 		#endif                                                                                                                                                                                                           
 		#if RES_3_3                                                                                                                                                                                                      
 		{FIRMWARE_VERSION_3,                    {FIRMWARE_VERSION_3,                    ResOp(ResOp::READ),                     IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::STRING }},          
 		#endif                                                                                                                                                                                                           
-		{REBOOT_4,                              {REBOOT_4,                              ResOp(ResOp::EXECUTE),                  IS_SINGLE::SINGLE,          IS_MANDATORY::MANDATORY,        TYPE_ID::EXECUTE }},         
+		{REBOOT_4,                              ResOp(ResOp::EXECUTE),                  IS_SINGLE::SINGLE,          IS_MANDATORY::MANDATORY,        TYPE_ID::EXECUTE },         
 		#if RES_3_5                                                                                                                                                                                                      
 		{FACTORY_RESET_5,                       {FACTORY_RESET_5,                       ResOp(ResOp::EXECUTE),                  IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::EXECUTE }},         
 		#endif                                                                                                                                                                                                           
@@ -211,7 +213,7 @@ private:
 		#if RES_3_10                                                                                                                                                                                                     
 		{MEMORY_FREE_10,                        {MEMORY_FREE_10,                        ResOp(ResOp::READ),                     IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::INT }},             
 		#endif                                                                                                                                                                                                           
-		{ERROR_CODE_11,                         {ERROR_CODE_11,                         ResOp(ResOp::READ),                     IS_SINGLE::MULTIPLE,        IS_MANDATORY::MANDATORY,        TYPE_ID::INT }},             
+		{ERROR_CODE_11,                         ResOp(ResOp::READ),                     IS_SINGLE::MULTIPLE,        IS_MANDATORY::MANDATORY,        TYPE_ID::INT },             
 		#if RES_3_12                                                                                                                                                                                                     
 		{RESET_ERROR_CODE_12,                   {RESET_ERROR_CODE_12,                   ResOp(ResOp::EXECUTE),                  IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::EXECUTE }},         
 		#endif                                                                                                                                                                                                           
@@ -224,7 +226,7 @@ private:
 		#if RES_3_15                                                                                                                                                                                                     
 		{TIMEZONE_15,                           {TIMEZONE_15,                           ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::STRING }},          
 		#endif                                                                                                                                                                                                           
-		{SUPPORTED_BINDING_AND_MODES_16,        {SUPPORTED_BINDING_AND_MODES_16,        ResOp(ResOp::READ),                     IS_SINGLE::SINGLE,          IS_MANDATORY::MANDATORY,        TYPE_ID::STRING }},          
+		{SUPPORTED_BINDING_AND_MODES_16,        ResOp(ResOp::READ),                     IS_SINGLE::SINGLE,          IS_MANDATORY::MANDATORY,        TYPE_ID::STRING },          
 		#if RES_3_17                                                                                                                                                                                                     
 		{DEVICE_TYPE_17,                        {DEVICE_TYPE_17,                        ResOp(ResOp::READ),                     IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::STRING }},          
 		#endif                                                                                                                                                                                                           

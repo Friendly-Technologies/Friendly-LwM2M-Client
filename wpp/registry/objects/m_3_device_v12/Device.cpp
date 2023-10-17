@@ -43,39 +43,40 @@ Device::~Device() {
 }
 
 Resource * Device::getResource(ID_T id) {
+	auto res = getResIter(id);
 	// Check if resource ID is valid
-	if (_resources.find(id) == _resources.end()) return NULL;
-	return &_resources[id];
+	if (res == _resources.end()) return NULL;
+	return &(*res);
 }
 
 std::vector<Resource *> Device::getResourcesList() {
 	std::vector<Resource *> list;
-	for (auto &pair : _resources) {
-		list.push_back(&pair.second);
+	for (auto &res : _resources) {
+		list.push_back(&res);
 	}
 	return list;
 }
 
 std::vector<Resource *> Device::getResourcesList(const ResOp& filter) {
 	std::vector<Resource *> list;
-	for (auto &pair : _resources) {
-		if (filter.isCompatible(pair.second.getOperation())) list.push_back(&pair.second);
+	for (auto &res : _resources) {
+		if (filter.isCompatible(res.getOperation())) list.push_back(&res);
 	}
 	return list;
 }
 
 std::vector<Resource *> Device::getInstantiatedResourcesList() {
 	std::vector<Resource *> list;
-	for (auto &pair : _resources) {
-		if (!pair.second.isEmpty()) list.push_back(&pair.second);
+	for (auto &res : _resources) {
+		if (!res.isEmpty()) list.push_back(&res);
 	}
 	return list;
 }
 
 std::vector<Resource *> Device::getInstantiatedResourcesList(const ResOp& filter) {
 	std::vector<Resource *> list;
-	for (auto &pair : _resources) {
-		if (!pair.second.isEmpty() && filter.isCompatible(pair.second.getOperation())) list.push_back(&pair.second);
+	for (auto &res : _resources) {
+		if (!res.isEmpty() && filter.isCompatible(res.getOperation())) list.push_back(&res);
 	}
 	return list;
 }
@@ -84,7 +85,7 @@ void Device::setDefaultState() {
 	/* --------------- Code_cpp block 4 start --------------- */
 	/* --------------- Code_cpp block 4 end --------------- */
 
-	for (auto &pair : _resources) pair.second.clear();
+	for (auto &res : _resources) res.clear();
 	resourcesInit();
 
 	/* --------------- Code_cpp block 5 start --------------- */
@@ -139,19 +140,19 @@ void Device::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
 void Device::resourcesInit() {
 	/* --------------- Code_cpp block 9 start --------------- */
 	#if RES_3_0                                                                                                                                                                                        
-	_resources[MANUFACTURER_0].set(STRING_T(""));
+	getResIter(MANUFACTURER_0)->set(STRING_T(""));
 	#endif          
 
 	#if RES_3_1  
-	_resources[MODEL_NUMBER_1].set(STRING_T(""));                                                                                                                                                                                        
+	getResIter(MODEL_NUMBER_1)->set(STRING_T(""));                                                                                                                                                                                        
 	#endif                                                                                                                                                                                                              
 	
 	#if RES_3_2                                                                                                                                                                                         
-	_resources[SERIAL_NUMBER_2].set(STRING_T("")); 
+	getResIter(SERIAL_NUMBER_2)->set(STRING_T("")); 
 	#endif                                                                                                                                                                                                              
 	
 	#if RES_3_3                                                                                                                                                                                        
-	_resources[FIRMWARE_VERSION_3].set(STRING_T("")); 
+	getResIter(FIRMWARE_VERSION_3)->set(STRING_T("")); 
 	#endif                                                                                                                                                                                                                                     
 
 	#if RES_3_6
@@ -176,8 +177,8 @@ void Device::resourcesInit() {
 	_resources[MEMORY_FREE_10].set(INT_T(0));                                                                                                                                                                                         
 	#endif
 
-	_resources[ERROR_CODE_11].set((INT_T)NO_ERROR);
-	_resources[ERROR_CODE_11].setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return NO_ERROR <= value && value < ERR_CODE_MAX; });
+	getResIter(ERROR_CODE_11)->set((INT_T)NO_ERROR);
+	getResIter(ERROR_CODE_11)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return NO_ERROR <= value && value < ERR_CODE_MAX; });
 	
 	#if RES_3_12
 	_resources[RESET_ERROR_CODE_12].set((EXECUTE_T)[this](ID_T id, const OPAQUE_T& buff) { 
@@ -198,8 +199,8 @@ void Device::resourcesInit() {
 	_resources[TIMEZONE_15].set(STRING_T(""));                                                                                                                                                                                     
 	#endif
 
-	_resources[SUPPORTED_BINDING_AND_MODES_16].set(STRING_T(""));
-	_resources[SUPPORTED_BINDING_AND_MODES_16].setDataVerifier((VERIFY_STRING_T)([](const STRING_T& value) { return wppBindingValidate(value); }));
+	getResIter(SUPPORTED_BINDING_AND_MODES_16)->set(STRING_T(""));
+	getResIter(SUPPORTED_BINDING_AND_MODES_16)->setDataVerifier((VERIFY_STRING_T)([](const STRING_T& value) { return wppBindingValidate(value); }));
 
 	#if RES_3_17
 	_resources[DEVICE_TYPE_17].set(STRING_T(""));                                                                                                                                                                                           
@@ -226,6 +227,11 @@ void Device::resourcesInit() {
 	_resources[EXTDEVINFO_22].set(OBJ_LINK_T());
 	#endif     
 	/* --------------- Code_cpp block 9 end --------------- */
+}
+
+std::vector<Resource>::iterator Device::getResIter(ID_T resId) {
+	auto finder = [&resId](const Resource &res) -> bool { return res.getId() == resId; };
+	return std::find_if(_resources.begin(), _resources.end(), finder);
 }
 
 /* --------------- Code_cpp block 10 start --------------- */

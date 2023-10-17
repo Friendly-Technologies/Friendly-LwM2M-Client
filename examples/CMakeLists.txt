@@ -78,3 +78,8 @@ add_custom_command(TARGET WakaamaPlusTest POST_BUILD
 add_custom_command(TARGET WakaamaPlusTest POST_BUILD
                    COMMAND ${CMAKE_OBJCOPY} -O ihex $<TARGET_FILE:WakaamaPlusTest> $<TARGET_FILE_DIR:WakaamaPlusTest>/WakaamaPlusTest.hex
                    COMMENT "Creating hex file")
+# Get information about size compiled program
+add_custom_command(
+    TARGET WakaamaPlusTest POST_BUILD
+    COMMAND size $<TARGET_FILE:WakaamaPlusTest>
+)

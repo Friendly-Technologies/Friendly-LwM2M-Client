@@ -8,13 +8,14 @@
 #include "Instance.h"
 #include "WppLogs.h"
 
-#define IS_RES_EXISTS(res) (res && !res->isEmpty())
+#define IS_PTR_VALID_AND_RES_EXISTS(resPtr) (resPtr && !resPtr->isEmpty())
+#define IS_ITER_VALID_AND_RES_EXISTS(iter) (iter != _resources.end() && !iter->isEmpty())
 
 namespace wpp {
 
 bool Instance::clear(ID_T resId) {
-	Resource *const resource = getResource(resId);
-	if (!resource) return false;
+	auto resource = getResIter(resId);
+	if (resource == _resources.end()) return false;
 
 	bool result = resource->clear();
 	if (result) {
@@ -26,8 +27,8 @@ bool Instance::clear(ID_T resId) {
 }
 
 bool Instance::remove(const ResLink &resId) {
-	Resource *const resource = getResource(resId.resInstId);
-	if (!resource) return false;
+	auto resource = getResIter(resId.resInstId);
+	if (resource == _resources.end()) return false;
 
 	bool result = resource->remove(resId.resInstId);
 	if (result) {
@@ -42,6 +43,27 @@ void Instance::notifyValueChanged(const DataLink &data) {
 	WPP_LOGD_ARG(TAG_WPP_INST, "Notify value changed: objID=%d, instID=%d, resID=%d, resInstID=%d", data.instance.objId, data.instance.objInstId, data.resource.resId, data.resource.resInstId);	
 	lwm2m_uri_t uri = {data.instance.objId, data.instance.objInstId, data.resource.resId, data.resource.resInstId};
 	lwm2m_resource_value_changed(&_context, &uri);
+}
+
+std::vector<Resource *> Instance::getInstantiatedResList() {
+	std::vector<Resource *> list;
+	for (auto &res : _resources) {
+		if (!res.isEmpty()) list.push_back(&res);
+	}
+	return list;
+}
+
+std::vector<Resource *> Instance::getInstantiatedResList(const ResOp& filter) {
+	std::vector<Resource *> list;
+	for (auto &res : _resources) {
+		if (!res.isEmpty() && filter.isCompatible(res.getOperation())) list.push_back(&res);
+	}
+	return list;
+}
+
+std::vector<Resource>::iterator Instance::getResIter(ID_T resId) {
+	auto finder = [&resId](const Resource &res) -> bool { return res.getId() == resId; };
+	return std::find_if(_resources.begin(), _resources.end(), finder);
 }
 
 bool Instance::resourceToLwm2mData(Resource &resource, ID_T instanceId, lwm2m_data_t &data) {
@@ -157,8 +179,8 @@ Resource* Instance::getValidatedResForWrite(const lwm2m_data_t &data, lwm2m_writ
 	// find the necessary description in the documentation, so this question
 	// needs to be investigated in detail.
 
-	Resource *resource = getResource(data.id);
-	if (!IS_RES_EXISTS(resource)) {
+	auto resource = getResIter(data.id);
+	if (!IS_ITER_VALID_AND_RES_EXISTS(resource)) {
 		WPP_LOGW_ARG(TAG_WPP_INST, "Resource does not exist: %d:%d:%d", _id.objId, _id.objInstId, data.id);
 		errCode = COAP_404_NOT_FOUND;
 		return NULL;
@@ -181,7 +203,7 @@ Resource* Instance::getValidatedResForWrite(const lwm2m_data_t &data, lwm2m_writ
 		return NULL;
 	}
 
-	return resource;
+	return &(*resource);
 }
 
 uint8_t Instance::resourceWrite(Resource &res, const lwm2m_data_t &data, lwm2m_write_type_t writeType) {
@@ -222,8 +244,8 @@ uint8_t Instance::resourceWrite(Resource &res, const lwm2m_data_t &data, lwm2m_w
 }
 
 Resource* Instance::getValidatedResForRead(const lwm2m_data_t &data, uint8_t &errCode) {
-	Resource *resource = getResource(data.id);
-	if (!IS_RES_EXISTS(resource)) {
+	auto resource = getResIter(data.id);
+	if (!IS_ITER_VALID_AND_RES_EXISTS(resource)) {
 		WPP_LOGW_ARG(TAG_WPP_INST, "Resource does not exist: %d:%d:%d", _id.objId, _id.objInstId, data.id);
 		errCode = COAP_404_NOT_FOUND;
 		return NULL;
@@ -241,7 +263,7 @@ Resource* Instance::getValidatedResForRead(const lwm2m_data_t &data, uint8_t &er
 		return NULL;
 	}
 
-	return resource;
+	return &(*resource);
 }
 
 uint8_t Instance::resourceRead(lwm2m_data_t &data, Resource &res) {
@@ -277,8 +299,8 @@ uint8_t Instance::resourceRead(lwm2m_data_t &data, Resource &res) {
 }
 
 Resource* Instance::getValidatedResForExecute(ID_T resId, uint8_t &errCode) {
-	Resource *resource = getResource(resId);
-	if (!IS_RES_EXISTS(resource)) {
+	auto resource = getResIter(resId);
+	if (!IS_ITER_VALID_AND_RES_EXISTS(resource)) {
 		WPP_LOGW_ARG(TAG_WPP_INST, "Resource does not exist: %d:%d:%d", _id.objId, _id.objInstId, resId);
 		errCode = COAP_404_NOT_FOUND;
 		return NULL;
@@ -289,7 +311,7 @@ Resource* Instance::getValidatedResForExecute(ID_T resId, uint8_t &errCode) {
 		errCode = COAP_405_METHOD_NOT_ALLOWED;
 		return NULL;
 	}
-	return resource;
+	return &(*resource);
 }
 
 uint8_t Instance::createEmptyLwm2mDataArray(std::vector<Resource*> resources, lwm2m_data_t **dataArray, int *numData) {
@@ -309,7 +331,7 @@ uint8_t Instance::read(int *numData, lwm2m_data_t **dataArray) {
 	bool readAllAvailableRes = *numData == 0;
 	WPP_LOGD_ARG(TAG_WPP_INST, "Read %d:%d, readAllAvailableRes: %d, numData: %d", _id.objId, _id.objInstId, readAllAvailableRes, *numData);
 	if (readAllAvailableRes) {
-		std::vector<Resource *> readResources = getInstantiatedResourcesList(ResOp(ResOp::READ));
+		std::vector<Resource *> readResources = getInstantiatedResList(ResOp(ResOp::READ));
 		uint8_t errCode = createEmptyLwm2mDataArray(readResources, dataArray, numData);
 		if (errCode != COAP_NO_ERROR) {
 			WPP_LOGE_ARG(TAG_WPP_INST, "Error during creating lwm2m_data_t for read instance %d:%d", _id.objId, _id.objInstId);
@@ -416,7 +438,7 @@ uint8_t Instance::discover(int * numData, lwm2m_data_t ** dataArray) {
 	bool discoverAllAvailableRes = *numData == 0;
 	WPP_LOGD_ARG(TAG_WPP_INST, "Discover %d:%d, discoverAllAvailableRes: %d, numData: %d", _id.objId, _id.objInstId, discoverAllAvailableRes, *numData);
 	if (discoverAllAvailableRes) {
-		std::vector<Resource *> resources = getInstantiatedResourcesList();
+		std::vector<Resource *> resources = getInstantiatedResList();
 		uint8_t errCode = createEmptyLwm2mDataArray(resources, dataArray, numData);
 		if (errCode != COAP_NO_ERROR) {
 			WPP_LOGE_ARG(TAG_WPP_INST, "Error during creating lwm2m_data_t for discover instance %d:%d", _id.objId, _id.objInstId);
@@ -426,8 +448,8 @@ uint8_t Instance::discover(int * numData, lwm2m_data_t ** dataArray) {
 
 	for (int i = 0; i < *numData; i++) {
 		lwm2m_data_t *data = (*dataArray) + i;
-		Resource *resource = getResource(data->id);
-		if (!IS_RES_EXISTS(resource)) {
+		auto resource = getResIter(data->id);
+		if (!IS_ITER_VALID_AND_RES_EXISTS(resource)) {
 			WPP_LOGE_ARG(TAG_WPP_INST, "Resource does not exist: %d:%d:%d", _id.objId, _id.objInstId, data->id);
 			return COAP_404_NOT_FOUND;
 		}

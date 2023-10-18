@@ -98,20 +98,6 @@ public:
 
 protected:
 	/* --------------- Instance implementation part --------------- */
-	/* 
-	 * Returns Resource object if it is exist
-	 */
-	Resource * getResource(ID_T id) override;
-	/*
-	 * Returns list with available resources
-	 */
-	std::vector<Resource *> getResourcesList() override;
-	std::vector<Resource *> getResourcesList(const ResOp& filter) override;
-	/*
-	 * Returns list with available instantiated resources
-	 */
-	std::vector<Resource *> getInstantiatedResourcesList() override;
-	std::vector<Resource *> getInstantiatedResourcesList(const ResOp& filter) override;
 	/*
 	 * Reset all resources values and internal state to default.
 	 */
@@ -128,84 +114,20 @@ protected:
 private:
 	/* --------------- Class private methods --------------- */
 	/*
+	 * Creates resources without initializing.
+	 */
+	void resourcesCreate();
+	/*
 	 * Initialize resources with default values
 	 * Resource always must have at least one instance.
 	 * Note: From server side, empty resource == undefined resource.
 	 */	
 	void resourcesInit();
-	
-	std::vector<Resource>::iterator getResIter(ID_T resId);
 
 	/* --------------- Code_h block 3 start --------------- */
 	/* --------------- Code_h block 3 end --------------- */
 
 private:
-	std::vector<Resource> _resources = {
-		// KEY   VALUE
-		{SHORT_SERVER_ID_0,                                      ResOp(ResOp::READ),                     IS_SINGLE::SINGLE,        IS_MANDATORY::MANDATORY,        TYPE_ID::INT },             
-		{LIFETIME_1,                                             ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::MANDATORY,        TYPE_ID::INT },             
-		#if RES_1_2                                                                                                                                                                                                                                      
-		{DEFAULT_MINIMUM_PERIOD_2,                               {DEFAULT_MINIMUM_PERIOD_2,                               ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::INT }},             
-		#endif                                                                                                                                                                                                                                           
-		#if RES_1_3                                                                                                                                                                                                                                      
-		{DEFAULT_MAXIMUM_PERIOD_3,                               {DEFAULT_MAXIMUM_PERIOD_3,                               ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::INT }},             
-		#endif                                                                                                                                                                                                                                           
-		#if RES_1_4                                                                                                                                                                                                                                      
-		{DISABLE_4,                                              {DISABLE_4,                                              ResOp(ResOp::EXECUTE),                  IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::EXECUTE }},         
-		#endif                                                                                                                                                                                                                                           
-		#if RES_1_5                                                                                                                                                                                                                                      
-		{DISABLE_TIMEOUT_5,                                      {DISABLE_TIMEOUT_5,                                      ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::INT }},             
-		#endif                                                                                                                                                                                                                                           
-		{NOTIFICATION_STORING_WHEN_DISABLED_OR_OFFLINE_6,        ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::MANDATORY,        TYPE_ID::BOOL },            
-		{BINDING_7,                                              ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::MANDATORY,        TYPE_ID::STRING },          
-		{REGISTRATION_UPDATE_TRIGGER_8,                          ResOp(ResOp::EXECUTE),                  IS_SINGLE::SINGLE,        IS_MANDATORY::MANDATORY,        TYPE_ID::EXECUTE },         
-		#if RES_1_9                                                                                                                                                                                                                                      
-		{BOOTSTRAP_REQUEST_TRIGGER_9,                            {BOOTSTRAP_REQUEST_TRIGGER_9,                            ResOp(ResOp::EXECUTE),                  IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::EXECUTE }},         
-		#endif                                                                                                                                                                                                                                           
-		#if RES_1_10                                                                                                                                                                                                                                     
-		{APN_LINK_10,                                            {APN_LINK_10,                                            ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::OBJ_LINK }},        
-		#endif                                                                                                                                                                                                                                           
-		#if RES_1_11                                                                                                                                                                                                                                     
-		{TLS_DTLS_ALERT_CODE_11,                                 {TLS_DTLS_ALERT_CODE_11,                                 ResOp(ResOp::READ),                     IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::UINT }},            
-		#endif                                                                                                                                                                                                                                           
-		#if RES_1_12                                                                                                                                                                                                                                     
-		{LAST_BOOTSTRAPPED_12,                                   {LAST_BOOTSTRAPPED_12,                                   ResOp(ResOp::READ),                     IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::TIME }},            
-		#endif                                                                                                                                                                                                                                           
-		#if RES_1_13                                                                                                                                                                                                                                     
-		{REGISTRATION_PRIORITY_ORDER_13,                         {REGISTRATION_PRIORITY_ORDER_13,                         ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::UINT }},            
-		#endif                                                                                                                                                                                                                                           
-		#if RES_1_14                                                                                                                                                                                                                                     
-		{INITIAL_REGISTRATION_DELAY_TIMER_14,                    {INITIAL_REGISTRATION_DELAY_TIMER_14,                    ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::UINT }},            
-		#endif                                                                                                                                                                                                                                           
-		#if RES_1_15                                                                                                                                                                                                                                     
-		{REGISTRATION_FAILURE_BLOCK_15,                          {REGISTRATION_FAILURE_BLOCK_15,                          ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::BOOL }},            
-		#endif                                                                                                                                                                                                                                           
-		#if RES_1_16                                                                                                                                                                                                                                     
-		{BOOTSTRAP_ON_REGISTRATION_FAILURE_16,                   {BOOTSTRAP_ON_REGISTRATION_FAILURE_16,                   ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::BOOL }},            
-		#endif                                                                                                                                                                                                                                           
-		#if RES_1_17                                                                                                                                                                                                                                     
-		{COMMUNICATION_RETRY_COUNT_17,                           {COMMUNICATION_RETRY_COUNT_17,                           ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::UINT }},            
-		#endif                                                                                                                                                                                                                                           
-		#if RES_1_18                                                                                                                                                                                                                                     
-		{COMMUNICATION_RETRY_TIMER_18,                           {COMMUNICATION_RETRY_TIMER_18,                           ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::UINT }},            
-		#endif                                                                                                                                                                                                                                           
-		#if RES_1_19                                                                                                                                                                                                                                     
-		{COMMUNICATION_SEQUENCE_DELAY_TIMER_19,                  {COMMUNICATION_SEQUENCE_DELAY_TIMER_19,                  ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::UINT }},            
-		#endif                                                                                                                                                                                                                                           
-		#if RES_1_20                                                                                                                                                                                                                                     
-		{COMMUNICATION_SEQUENCE_RETRY_COUNT_20,                  {COMMUNICATION_SEQUENCE_RETRY_COUNT_20,                  ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::UINT }},            
-		#endif                                                                                                                                                                                                                                           
-		#if RES_1_21                                                                                                                                                                                                                                     
-		{TRIGGER_21,                                             {TRIGGER_21,                                             ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::BOOL }},            
-		#endif                                                                                                                                                                                                                                           
-		#if RES_1_22                                                                                                                                                                                                                                     
-		{PREFERRED_TRANSPORT_22,                                 {PREFERRED_TRANSPORT_22,                                 ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::STRING }},          
-		#endif                                                                                                                                                                                                                                           
-		#if RES_1_23                                                                                                                                                                                                                                     
-		{MUTE_SEND_23,                                           {MUTE_SEND_23,                                           ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::BOOL }},            
-		#endif                                                                                                                                                                                                                                           
-	};
-
 	/* --------------- Code_h block 4 start --------------- */
 	/* --------------- Code_h block 4 end --------------- */
 };

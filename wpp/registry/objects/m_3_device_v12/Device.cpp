@@ -31,6 +31,7 @@ Device::Device(lwm2m_context_t &context, const OBJ_LINK_T &id): Instance(context
 	/* --------------- Code_cpp block 1 start --------------- */
 	/* --------------- Code_cpp block 1 end --------------- */
 
+	resourcesCreate();
 	resourcesInit();
 
 	/* --------------- Code_cpp block 2 start --------------- */
@@ -42,50 +43,12 @@ Device::~Device() {
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
-Resource * Device::getResource(ID_T id) {
-	auto res = getResIter(id);
-	// Check if resource ID is valid
-	if (res == _resources.end()) return NULL;
-	return &(*res);
-}
-
-std::vector<Resource *> Device::getResourcesList() {
-	std::vector<Resource *> list;
-	for (auto &res : _resources) {
-		list.push_back(&res);
-	}
-	return list;
-}
-
-std::vector<Resource *> Device::getResourcesList(const ResOp& filter) {
-	std::vector<Resource *> list;
-	for (auto &res : _resources) {
-		if (filter.isCompatible(res.getOperation())) list.push_back(&res);
-	}
-	return list;
-}
-
-std::vector<Resource *> Device::getInstantiatedResourcesList() {
-	std::vector<Resource *> list;
-	for (auto &res : _resources) {
-		if (!res.isEmpty()) list.push_back(&res);
-	}
-	return list;
-}
-
-std::vector<Resource *> Device::getInstantiatedResourcesList(const ResOp& filter) {
-	std::vector<Resource *> list;
-	for (auto &res : _resources) {
-		if (!res.isEmpty() && filter.isCompatible(res.getOperation())) list.push_back(&res);
-	}
-	return list;
-}
-
 void Device::setDefaultState() {
 	/* --------------- Code_cpp block 4 start --------------- */
 	/* --------------- Code_cpp block 4 end --------------- */
 
-	for (auto &res : _resources) res.clear();
+	_resources.clear();
+	resourcesCreate();
 	resourcesInit();
 
 	/* --------------- Code_cpp block 5 start --------------- */
@@ -137,6 +100,76 @@ void Device::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
 	/* --------------- Code_cpp block 8 end --------------- */
 }
 
+void Device::resourcesCreate() {
+	std::vector<Resource> resources = {
+		// KEY   VALUE
+		#if RES_3_0                                                                                                                                                                                                      
+		{MANUFACTURER_0,                        ResOp(ResOp::READ),                     IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::STRING },          
+		#endif                                                                                                                                                                                                           
+		#if RES_3_1                                                                                                                                                                                                      
+		{MODEL_NUMBER_1,                        ResOp(ResOp::READ),                     IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::STRING },          
+		#endif                                                                                                                                                                                                           
+		#if RES_3_2                                                                                                                                                                                                      
+		{SERIAL_NUMBER_2,                       ResOp(ResOp::READ),                     IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::STRING },          
+		#endif                                                                                                                                                                                                           
+		#if RES_3_3                                                                                                                                                                                                      
+		{FIRMWARE_VERSION_3,                    {FIRMWARE_VERSION_3,                    ResOp(ResOp::READ),                     IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::STRING }},          
+		#endif                                                                                                                                                                                                           
+		{REBOOT_4,                              ResOp(ResOp::EXECUTE),                  IS_SINGLE::SINGLE,          IS_MANDATORY::MANDATORY,        TYPE_ID::EXECUTE },         
+		#if RES_3_5                                                                                                                                                                                                      
+		{FACTORY_RESET_5,                       {FACTORY_RESET_5,                       ResOp(ResOp::EXECUTE),                  IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::EXECUTE }},         
+		#endif                                                                                                                                                                                                           
+		#if RES_3_6                                                                                                                                                                                                      
+		{AVAILABLE_POWER_SOURCES_6,             {AVAILABLE_POWER_SOURCES_6,             ResOp(ResOp::READ),                     IS_SINGLE::MULTIPLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::INT }},             
+		#endif                                                                                                                                                                                                           
+		#if RES_3_7                                                                                                                                                                                                      
+		{POWER_SOURCE_VOLTAGE_7,                {POWER_SOURCE_VOLTAGE_7,                ResOp(ResOp::READ),                     IS_SINGLE::MULTIPLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::INT }},             
+		#endif                                                                                                                                                                                                           
+		#if RES_3_8                                                                                                                                                                                                      
+		{POWER_SOURCE_CURRENT_8,                {POWER_SOURCE_CURRENT_8,                ResOp(ResOp::READ),                     IS_SINGLE::MULTIPLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::INT }},             
+		#endif                                                                                                                                                                                                           
+		#if RES_3_9                                                                                                                                                                                                      
+		{BATTERY_LEVEL_9,                       {BATTERY_LEVEL_9,                       ResOp(ResOp::READ),                     IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::INT }},             
+		#endif                                                                                                                                                                                                           
+		#if RES_3_10                                                                                                                                                                                                     
+		{MEMORY_FREE_10,                        {MEMORY_FREE_10,                        ResOp(ResOp::READ),                     IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::INT }},             
+		#endif                                                                                                                                                                                                           
+		{ERROR_CODE_11,                         ResOp(ResOp::READ),                     IS_SINGLE::MULTIPLE,        IS_MANDATORY::MANDATORY,        TYPE_ID::INT },             
+		#if RES_3_12                                                                                                                                                                                                     
+		{RESET_ERROR_CODE_12,                   {RESET_ERROR_CODE_12,                   ResOp(ResOp::EXECUTE),                  IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::EXECUTE }},         
+		#endif                                                                                                                                                                                                           
+		#if RES_3_13                                                                                                                                                                                                     
+		{CURRENT_TIME_13,                       {CURRENT_TIME_13,                       ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::TIME }},            
+		#endif                                                                                                                                                                                                           
+		#if RES_3_14                                                                                                                                                                                                     
+		{UTC_OFFSET_14,                         {UTC_OFFSET_14,                         ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::STRING }},          
+		#endif                                                                                                                                                                                                           
+		#if RES_3_15                                                                                                                                                                                                     
+		{TIMEZONE_15,                           {TIMEZONE_15,                           ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::STRING }},          
+		#endif                                                                                                                                                                                                           
+		{SUPPORTED_BINDING_AND_MODES_16,        ResOp(ResOp::READ),                     IS_SINGLE::SINGLE,          IS_MANDATORY::MANDATORY,        TYPE_ID::STRING },          
+		#if RES_3_17                                                                                                                                                                                                     
+		{DEVICE_TYPE_17,                        {DEVICE_TYPE_17,                        ResOp(ResOp::READ),                     IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::STRING }},          
+		#endif                                                                                                                                                                                                           
+		#if RES_3_18                                                                                                                                                                                                     
+		{HARDWARE_VERSION_18,                   {HARDWARE_VERSION_18,                   ResOp(ResOp::READ),                     IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::STRING }},          
+		#endif                                                                                                                                                                                                           
+		#if RES_3_19                                                                                                                                                                                                     
+		{SOFTWARE_VERSION_19,                   {SOFTWARE_VERSION_19,                   ResOp(ResOp::READ),                     IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::STRING }},          
+		#endif                                                                                                                                                                                                           
+		#if RES_3_20                                                                                                                                                                                                     
+		{BATTERY_STATUS_20,                     {BATTERY_STATUS_20,                     ResOp(ResOp::READ),                     IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::INT }},             
+		#endif                                                                                                                                                                                                           
+		#if RES_3_21                                                                                                                                                                                                     
+		{MEMORY_TOTAL_21,                       {MEMORY_TOTAL_21,                       ResOp(ResOp::READ),                     IS_SINGLE::SINGLE,          IS_MANDATORY::OPTIONAL,         TYPE_ID::INT }},             
+		#endif                                                                                                                                                                                                           
+		#if RES_3_22                                                                                                                                                                                                     
+		{EXTDEVINFO_22,                         {EXTDEVINFO_22,                         ResOp(ResOp::READ),                     IS_SINGLE::MULTIPLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::OBJ_LINK }},        
+		#endif                                                                                                                                                                                                           
+	};
+	_resources = std::move(resources);
+}
+
 void Device::resourcesInit() {
 	/* --------------- Code_cpp block 9 start --------------- */
 	#if RES_3_0                                                                                                                                                                                        
@@ -156,82 +189,77 @@ void Device::resourcesInit() {
 	#endif                                                                                                                                                                                                                                     
 
 	#if RES_3_6
-	_resources[AVAILABLE_POWER_SOURCES_6].set(INT_T(PWR_SRC_MAX));
-	_resources[AVAILABLE_POWER_SOURCES_6].setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return DC <= value && value < PWR_SRC_MAX; });
+	getResIter(AVAILABLE_POWER_SOURCES_6)->set(INT_T(PWR_SRC_MAX));
+	getResIter(AVAILABLE_POWER_SOURCES_6)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return DC <= value && value < PWR_SRC_MAX; });
 	#endif
 
 	#if RES_3_7
-	_resources[POWER_SOURCE_VOLTAGE_7].set(INT_T(0));                                                                                                                                                                                 
+	getResIter(POWER_SOURCE_VOLTAGE_7)->set(INT_T(0));                                                                                                                                                                                 
 	#endif                                                                                                                                                                                                              
 	
 	#if RES_3_8
-	_resources[POWER_SOURCE_CURRENT_8].set(INT_T(0));                                                                                                                                                                                  
+	getResIter(POWER_SOURCE_CURRENT_8)->set(INT_T(0));                                                                                                                                                                                  
 	#endif 
 	
 	#if RES_3_9
-	_resources[BATTERY_LEVEL_9].set(INT_T(BUTT_LVL_MIN));
-	_resources[BATTERY_LEVEL_9].setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return BUTT_LVL_MIN <= value && value <= BUTT_LVL_MAX; });
+	getResIter(BATTERY_LEVEL_9)->set(INT_T(BUTT_LVL_MIN));
+	getResIter(BATTERY_LEVEL_9)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return BUTT_LVL_MIN <= value && value <= BUTT_LVL_MAX; });
 	#endif
 
 	#if RES_3_10
-	_resources[MEMORY_FREE_10].set(INT_T(0));                                                                                                                                                                                         
+	getResIter(MEMORY_FREE_10)->set(INT_T(0));                                                                                                                                                                                         
 	#endif
 
 	getResIter(ERROR_CODE_11)->set((INT_T)NO_ERROR);
 	getResIter(ERROR_CODE_11)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return NO_ERROR <= value && value < ERR_CODE_MAX; });
 	
 	#if RES_3_12
-	_resources[RESET_ERROR_CODE_12].set((EXECUTE_T)[this](ID_T id, const OPAQUE_T& buff) { 
-		this->_resources[ERROR_CODE_11].clear();
-		_resources[ERROR_CODE_11].set((INT_T)NO_ERROR);
+	getResIter(RESET_ERROR_CODE_12)->set((EXECUTE_T)[this](ID_T id, const OPAQUE_T& buff) { 
+		this->getResIter(ERROR_CODE_11)->clear();
+		getResIter(ERROR_CODE_11)->set((INT_T)NO_ERROR);
 	});
 	#endif
 
 	#if RES_3_13
-	_resources[CURRENT_TIME_13].set(TIME_T(0));                                                                                                                                                                                       
+	getResIter(CURRENT_TIME_13)->set(TIME_T(0));                                                                                                                                                                                       
 	#endif                                                                                                                                                                                                              
 	
 	#if RES_3_14
-	_resources[UTC_OFFSET_14].set(STRING_T(""));                                                                                                                                                                                             
+	getResIter(UTC_OFFSET_14)->set(STRING_T(""));                                                                                                                                                                                             
 	#endif                                                                                                                                                                                                              
 	
 	#if RES_3_15
-	_resources[TIMEZONE_15].set(STRING_T(""));                                                                                                                                                                                     
+	getResIter(TIMEZONE_15)->set(STRING_T(""));                                                                                                                                                                                     
 	#endif
 
 	getResIter(SUPPORTED_BINDING_AND_MODES_16)->set(STRING_T(""));
 	getResIter(SUPPORTED_BINDING_AND_MODES_16)->setDataVerifier((VERIFY_STRING_T)([](const STRING_T& value) { return wppBindingValidate(value); }));
 
 	#if RES_3_17
-	_resources[DEVICE_TYPE_17].set(STRING_T(""));                                                                                                                                                                                           
+	getResIter(DEVICE_TYPE_17)->set(STRING_T(""));                                                                                                                                                                                           
 	#endif
 
 	#if RES_3_18
-	_resources[HARDWARE_VERSION_18].set(STRING_T(""));                                                                                                                                                                              
+	getResIter(HARDWARE_VERSION_18)->set(STRING_T(""));                                                                                                                                                                              
 	#endif                                                                                                                                                                                                              
 	
 	#if RES_3_19
-	_resources[SOFTWARE_VERSION_19].set(STRING_T(""));                                                                                                                                                                                    
+	getResIter(SOFTWARE_VERSION_19)->set(STRING_T(""));                                                                                                                                                                                    
 	#endif                 
 
 	#if RES_3_20
-	_resources[BATTERY_STATUS_20].set(INT_T(BUTT_STATUS_MAX));
-	_resources[BATTERY_STATUS_20].setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return NORMAL <= value && value < BUTT_STATUS_MAX; });
+	getResIter(BATTERY_STATUS_20)->set(INT_T(BUTT_STATUS_MAX));
+	getResIter(BATTERY_STATUS_20)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return NORMAL <= value && value < BUTT_STATUS_MAX; });
 	#endif
 
 	#if RES_3_21                                                                                                                                                                                          
-	_resources[MEMORY_TOTAL_21].set((INT_T)NO_ERROR);
+	getResIter(MEMORY_TOTAL_21)->set((INT_T)NO_ERROR);
 	#endif                                                                                                                                                                                                              
 	
 	#if RES_3_22                                                                                                                                                                                       
-	_resources[EXTDEVINFO_22].set(OBJ_LINK_T());
+	getResIter(EXTDEVINFO_22)->set(OBJ_LINK_T());
 	#endif     
 	/* --------------- Code_cpp block 9 end --------------- */
-}
-
-std::vector<Resource>::iterator Device::getResIter(ID_T resId) {
-	auto finder = [&resId](const Resource &res) -> bool { return res.getId() == resId; };
-	return std::find_if(_resources.begin(), _resources.end(), finder);
 }
 
 /* --------------- Code_cpp block 10 start --------------- */

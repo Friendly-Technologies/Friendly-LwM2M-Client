@@ -107,7 +107,7 @@ bool Resource::isInstanceIdPossible(ID_T resInstId) const {
 }
 
 bool Resource::isInstanceExist(ID_T resInstId) const {
-	return getInstIter(resInstId) != _instances.end();
+	return getResInstIter(resInstId) != _instances.end();
 }
 
 bool Resource::isTypeIdCompatible(TYPE_ID type) const {
@@ -206,7 +206,7 @@ bool Resource::get(EXECUTE_T &value, ID_T resInstId) const {
 
 bool Resource::remove(ID_T resInstId) {
 	if (!isInstanceExist(resInstId) || isSingle()) return false;
-	auto instForRemove = getInstIter(resInstId);
+	auto instForRemove = getResInstIter(resInstId);
 	_instances.erase(instForRemove);
 
 	return true;
@@ -235,7 +235,7 @@ bool Resource::isDataVerifierValid(const DATA_VERIFIER_T &verifier) const {
 	else return false;
 }
 
-std::vector<Resource::ResInst>::iterator Resource::getInstIter(ID_T resInstId) const {
+std::vector<Resource::ResInst>::iterator Resource::getResInstIter(ID_T resInstId) const {
 	auto finder = [&resInstId](const ResInst &inst) -> bool { return inst.id == resInstId; };
 	return std::find_if(_instances.begin(), _instances.end(), finder);
 }

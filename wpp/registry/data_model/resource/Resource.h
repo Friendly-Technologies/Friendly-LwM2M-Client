@@ -112,7 +112,7 @@ public: /* ---------- Public methods for common usage ----------*/
 	bool setDataVerifier(const DATA_VERIFIER_T &verifier);
 
 private:
-	std::vector<ResInst>::iterator getInstIter(ID_T resInstId) const;
+	std::vector<ResInst>::iterator getResInstIter(ID_T resInstId) const;
 
     template<typename T>
 	bool _set(const T &value, ID_T resInstId);
@@ -144,7 +144,7 @@ bool Resource::_set(const T &value, ID_T resInstId) {
 	if (!isDataValueValid(value)) return false;
 
 	if (isInstanceExist(resInstId)) {
-		auto instIter = getInstIter(resInstId);
+		auto instIter = getResInstIter(resInstId);
 		instIter->data = value;
 	} else {
 		_instances.push_back({resInstId, value});
@@ -158,7 +158,7 @@ bool Resource::_get(T &value, ID_T resInstId) const {
 	if (!isDataTypeValid<T>()) return false;
 	if (!isInstanceExist(resInstId)) return false;
 
-	auto instIter = getInstIter(resInstId);
+	auto instIter = getResInstIter(resInstId);
 	value = std::get<T>(instIter->data);
 
 	return true;

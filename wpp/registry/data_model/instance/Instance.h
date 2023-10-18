@@ -46,9 +46,9 @@ public: /* Interface that can be used by user */
 	Instance& operator=(const Instance&) = delete;
 	Instance& operator=(Instance&&) = delete;
 
-	OBJ_LINK_T getLink() { return _id; }
-	OBJ_ID getObjectID() { return (OBJ_ID)_id.objId; }
-	ID_T getInstanceID() { return _id.objInstId; }
+	OBJ_LINK_T getLink() const { return _id; }
+	OBJ_ID getObjectID() const { return (OBJ_ID)_id.objId; }
+	ID_T getInstanceID() const { return _id.objInstId; }
 
 	/*
 	 * Sets resource value

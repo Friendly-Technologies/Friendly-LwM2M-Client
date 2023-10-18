@@ -1,4 +1,4 @@
-import object_generator
+import scripts.object_generator
 import object_remover
 import object_integrator
 
@@ -108,7 +108,7 @@ def get_obj_file_name_by_type(obj_path, type):
 
 
 def get_file_type_by_path(obj_file_path):
-    with (open(obj_file_path, 'r') as file):
+    with open(obj_file_path, 'r') as file:
         for line in file:
             if not re.search(object_generator.FILE_TYPE_TAG, line):
                 continue

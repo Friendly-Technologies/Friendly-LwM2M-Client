@@ -22,8 +22,17 @@ def arguments_init(parser):
                       default=False,
                       help="file of the Object")
 
-    parser.add_option("-r", "--remove", dest="remove", help="file of the Object")
-    parser.add_option("-c", "--change", dest="change", help="file of the Object")
+    parser.add_option("-r", "--remove",
+                      dest="remove",
+                      action="store_true",
+                      default=False,
+                      help="file of the Object")
+
+    parser.add_option("-c", "--change",
+                      dest="change",
+                      action="store_true",
+                      default=False,
+                      help="file of the Object")
 
     options, args = parser.parse_args()
     return options, args
@@ -80,14 +89,14 @@ def main():
     if options.change:
         if len(args) != 2:
             parser.error("please, provide the folder's path of the exists Object and path to the new data")
-        # TODO: implement it
+        OC.change(args[0], args[1])
         return
 
     # ============================== removing ==============================
     if options.remove:
         if len(args) != 1:
             parser.error("please, provide path to folder of the Object")
-        OR.ObjectRemover(options.remove).remove_object()
+        OR.ObjectRemover(args[0]).remove_object()
         return
 
 

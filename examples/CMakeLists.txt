@@ -6,6 +6,9 @@ set(CMAKE_CXX_STANDARD 17)
 
 # Compiler options
 add_compile_options(
+    -fno-exceptions
+    -fno-rtti
+    
     -Waggregate-return
     -Wall
     -Wcast-align

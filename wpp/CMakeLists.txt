@@ -11,6 +11,9 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Comiler options
 add_compile_options(
+    -fno-exceptions
+    -fno-rtti
+    
     -Waggregate-return
     -Wall
     -Wcast-align

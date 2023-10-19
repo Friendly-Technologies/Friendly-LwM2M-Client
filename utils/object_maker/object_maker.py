@@ -36,7 +36,7 @@ def integrate_object(path_to_folder):
 def main():
     parser = OptionParser()
     options, args = arguments_init(parser)
-    if not options.generate or not options.generate or not options.generate or not options.generate:
+    if not options.generate or not options.integrate or not options.remove or not options.change:
         parser.error("no options selected")
 
     # ============================== generation ==============================

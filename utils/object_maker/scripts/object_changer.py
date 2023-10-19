@@ -1,4 +1,4 @@
-import scripts.object_generator
+import object_generator
 import object_remover
 import object_integrator
 

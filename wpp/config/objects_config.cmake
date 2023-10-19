@@ -1,14 +1,3 @@
-# Options that define here determine availability of general components
-# Settings for the behavior of a particular component should be in a
-# separate .h file near the definition of the component itself.
-
-# The start of loging.
-option(ENABLE_LOGS "Enable logs for WakaamaPlus" ON)
-if (ENABLE_LOGS)
-    set(WPP_DEFINITIONS ${WPP_DEFINITIONS} ENABLE_LOGS=1)
-endif()
-# The end of loging.
-
 # The option of the mandatory object ends with the letter M.
 # The start of the options of the mandatory objects.
 option(OBJ_M_3_DEVICE_V12 "Include mandatory Device object in the build" ON)

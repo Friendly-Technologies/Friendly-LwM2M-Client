@@ -4,33 +4,17 @@ project(WakaamaPlusTest CXX)
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 17)
 
+# Include file with compiler config
+include(../wpp/config/compiler_config.cmake)
+
 # Compiler options
 add_compile_options(
-    -fno-exceptions
-    -fno-rtti
-    
-    -Waggregate-return
-    -Wall
-    -Wcast-align
-    -Wextra
-    -Wfloat-equal
-    -Wpointer-arith
-    -Wshadow
-    -Wswitch-default
-    -Wwrite-strings
-    -pedantic
-    # Reduce noise: Unused parameters are common in this ifdef-littered code-base, but of no danger
-    -Wno-unused-parameter
+    # Disabled because Connection for dtls cast from 'sockaddr *' to 'sockaddr_in *' increases required alignment from 2 to 4
+    -Wno-cast-align
     # Reduce noise: Too many false positives
     -Wno-uninitialized
     # Allows to compile tinydtls without errors
     -Wno-c99-extensions
-    # Disabled because Connection for dtls cast from 'sockaddr *' to 'sockaddr_in *' increases required alignment from 2 to 4
-    -Wno-cast-align
-     # Turn (most) warnings into errors
-    -Werror
-    # Disabled because of existing, non-trivially fixable code
-    -Wno-error=cast-align
 )
 
 # Generating .map file

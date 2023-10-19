@@ -13,9 +13,17 @@
 #include "Resource.h"
 #include "Operation.h"
 #include "types.h"
+#include "WppLogs.h"
+
+#define TAG "Server"
 
 namespace wpp {
-/* --------------- Instance implementation part --------------- */
+
+Server::Server(WppClient &client, const InstanceID &id): IInstance(client, id) {
+	resourcesInit();
+}
+
+/* ---------------IInstance implementation part --------------- */
 Resource * Server::getResource(ID_T id) {
 	// Check if resource ID is valid
 	if (_resources.find(id) == _resources.end()) return NULL;
@@ -50,70 +58,45 @@ std::vector<Resource *> Server::getInstantiatedResourcesList(const Operation& fi
 	return list;
 }
 
-void Server::serverOperationNotifier(Operation::TYPE type, ID_T resourceId, ID_T resourceInstanceId) {
+void Server::serverOperationNotifier(Operation::TYPE type, const ResourceID &resId) {
+	observerNotify(*this, resId, type);
 	switch (type) {
 	case Operation::READ:
-		std::cout << "Server READ -> resourceId:" << resourceId << ", resourceInstanceId:" << resourceInstanceId << std::endl;
+		WPP_LOGD_ARG(TAG, "Server READ -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
 		break;
 	case Operation::WRITE:
-		std::cout << "Server WRITE -> resourceId:" << resourceId << ", resourceInstanceId:" << resourceInstanceId << std::endl;
+		WPP_LOGD_ARG(TAG, "Server WRITE -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
 		break;
 	case Operation::EXECUTE:
-		std::cout << "Server EXECUTE -> resourceId:" << resourceId << ", resourceInstanceId:" << resourceInstanceId << std::endl;
+		WPP_LOGD_ARG(TAG, "Server EXECUTE -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
 		break;
 	case Operation::DISCOVER:
-		std::cout << "Server DISCOVER -> resourceId:" << resourceId << ", resourceInstanceId:" << resourceInstanceId << std::endl;
+		WPP_LOGD_ARG(TAG, "Server DISCOVER -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
 		break;
 	case Operation::DELETE:
-		std::cout << "Server DELETE -> resourceId:" << resourceId << ", resourceInstanceId:" << resourceInstanceId << std::endl;
+		WPP_LOGD_ARG(TAG, "Server DELETE -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
 		break;
 	default: break;
 	}
 }
 
-/* --------------- User helpful methods for manage resources data --------------- */
-
-bool Server::clear(ID_T resourceId) {
-	Resource *const resource = getResource(resourceId);
-	if (!resource) return false;
-
-	bool result = resource->clear();
-	if (result) {
-		userPerformedOperation(Operation::DELETE, resourceId);
-	}
-
-	return resource->clear();
-}
-
-bool Server::remove(ID_T resourceId, ID_T resourceInstanceId) {
-	Resource *const resource = getResource(resourceId);
-	if (!resource) return false;
-
-	bool result = resource->remove(resourceInstanceId);
-	if (result) {
-		userPerformedOperation(Operation::DELETE, resourceId, resourceInstanceId);
-	}
-
-	return result;
-}
-
-void Server::userPerformedOperation(Operation::TYPE type, ID_T resourceId, ID_T resourceInstanceId) {
+void Server::userOperationNotifier(Operation::TYPE type, const ResourceID &resId) {
 	switch (type) {
 	case Operation::READ:
-		std::cout << "User READ -> resourceId:" << resourceId << ", resourceInstanceId:" << resourceInstanceId << std::endl;
+		WPP_LOGD_ARG(TAG, "User READ -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
 		break;
 	case Operation::WRITE:
-		std::cout << "User WRITE -> resourceId:" << resourceId << ", resourceInstanceId:" << resourceInstanceId << std::endl;
+		WPP_LOGD_ARG(TAG, "User WRITE -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
 		break;
 	case Operation::DELETE:
-		std::cout << "User DELETE -> resourceId:" << resourceId << ", resourceInstanceId:" << resourceInstanceId << std::endl;
+		WPP_LOGD_ARG(TAG, "User DELETE -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
 		break;
 	default: break;
 	}
 }
 
-/* --------------- Class helpful methods --------------- */
-void Server::_resourcesInit() {
+/* --------------- Class private methods --------------- */
+void Server::resourcesInit() {
 	_resources[SHORT_SERV_ID].setDataVerifier((VERIFY_INT_T)([](const INT_T& value) { return 1 <= value && value <= 65534; }));
 	_resources[SHORT_SERV_ID].set((INT_T)1);
 

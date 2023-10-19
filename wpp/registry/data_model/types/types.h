@@ -16,16 +16,47 @@ namespace wpp {
 using ID_T = uint16_t;
 #define ID_T_MAX_VAL (LWM2M_MAX_ID)
 
+/*
+ * Wpp data types ID
+ */
+enum class TYPE_ID: uint8_t {
+	BOOL,           // bool
+	INT,            // int64_t
+	UINT,           // uint64_t
+	FLOAT,          // double
+	OBJ_LINK,       // {object ID, instance ID}
+	TIME,         	// Derived from INT
+	OPAQUE,    		// vector<uint8_t>
+	STRING,    		// string
+	CORE_LINK, 		// Derived from STRING
+	EXECUTE,		// Type of executable resources
+	UNDEFINED     	// Undefined type
+};
+
+/*
+ * Wpp data types bindings
+ */
 using BOOL_T = bool;
 using INT_T = int64_t;
 using UINT_T = uint64_t;
 using FLOAT_T = double;
-using OPAQUE_T = std::vector<uint8_t>;
-struct OBJ_LINK_T {
-	ID_T objectId;
-    ID_T objectInstanceId;
-};
 using STRING_T = std::string;
+/*
+ * Opaque - represent buffer or string as lwm2m_data_t.value.asBuffer
+ */
+using OPAQUE_T = std::vector<uint8_t>;
+/*
+ * ObjLink - (object ID):(instance ID), example: 1:3. 
+ * Represent as two integers in lwm2m_data_t.value.asObjLink.
+ */
+struct OBJ_LINK_T {
+	ID_T objId;
+    ID_T objInstId;
+};
+/*
+ * CoreLink -  </3/0> or </1/0/>;ssid=101 or </5>,</4>,</55>;ver=1.9,</55/0>.
+ * Represent as string in lwm2m_data_t.value.asBuffer
+ */
 using CORE_LINK_T = std::string;
 /*
  * Keep in mind that while std::function itself is always copy able,
@@ -36,6 +67,24 @@ using CORE_LINK_T = std::string;
  * you try to call the copied std::function.
  */
 using EXECUTE_T = std::function<void(ID_T, const OPAQUE_T&)>;
+
+/*
+ * Determining type ID by real type
+ */
+template<typename T>
+TYPE_ID dataTypeToID() {
+	TYPE_ID typeID = TYPE_ID::UNDEFINED;
+	if constexpr (std::is_same<T, BOOL_T>::value) typeID = TYPE_ID::BOOL;
+	else if constexpr (std::is_same<T, INT_T>::value) typeID = TYPE_ID::INT;
+	else if constexpr (std::is_same<T, UINT_T>::value) typeID = TYPE_ID::UINT;
+	else if constexpr (std::is_same<T, FLOAT_T>::value) typeID = TYPE_ID::FLOAT;
+	else if constexpr (std::is_same<T, OPAQUE_T>::value) typeID = TYPE_ID::OPAQUE;
+	else if constexpr (std::is_same<T, OBJ_LINK_T>::value) typeID = TYPE_ID::OBJ_LINK;
+	else if constexpr (std::is_same<T, STRING_T>::value) typeID = TYPE_ID::STRING;
+	else if constexpr (std::is_same<T, EXECUTE_T>::value) typeID = TYPE_ID::EXECUTE;
+
+	return typeID;
+}
 
 /*
  * Data validation function types
@@ -74,13 +123,13 @@ struct Version {
 };
 
 struct InstanceID {
-	ID_T objectId = ID_T_MAX_VAL;
-    ID_T instanceId = ID_T_MAX_VAL; // TODO: use option<ID_T>
+	ID_T objId = ID_T_MAX_VAL;
+    ID_T objInstId = ID_T_MAX_VAL;
 };
 
 struct ResourceID{
-    ID_T resourceId = ID_T_MAX_VAL; // TODO: use option<ID_T>
-    ID_T resourceInstanceId = ID_T_MAX_VAL; // TODO: use option<ID_T>
+    ID_T resId = ID_T_MAX_VAL;
+    ID_T resInstId = ID_T_MAX_VAL;
 };
 
 struct DataID{

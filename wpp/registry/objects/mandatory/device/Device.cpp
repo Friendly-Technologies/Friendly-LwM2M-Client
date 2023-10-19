@@ -13,10 +13,17 @@
 #include "Resource.h"
 #include "Operation.h"
 #include "types.h"
+#include "WppLogs.h"
+
+#define TAG "Device"
 
 namespace wpp {
 
-/* --------------- Instance implementation part --------------- */
+Device::Device(WppClient &client, const InstanceID &id): IInstance(client, id) {
+	resourcesInit();
+}
+
+/* ---------------IInstance implementation part --------------- */
 Resource * Device::getResource(ID_T id) {
 	return NULL;
 }
@@ -41,25 +48,45 @@ std::vector<Resource *> Device::getInstantiatedResourcesList(const Operation& fi
 	return list;
 }
 
-void Device::serverOperationNotifier(Operation::TYPE type, ID_T resourceId, ID_T resourceInstanceId) {
+void Device::serverOperationNotifier(Operation::TYPE type, const ResourceID &resId) {
+	observerNotify(*this, resId, type);
 	switch (type) {
 	case Operation::READ:
-		std::cout << "Security READ -> resourceId:" << resourceId << ", resourceInstanceId:" << resourceInstanceId << std::endl;
+		WPP_LOGD_ARG(TAG, "Server READ -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
 		break;
 	case Operation::WRITE:
-		std::cout << "Security WRITE -> resourceId:" << resourceId << ", resourceInstanceId:" << resourceInstanceId << std::endl;
+		WPP_LOGD_ARG(TAG, "Server WRITE -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
 		break;
 	case Operation::EXECUTE:
-		std::cout << "Security EXECUTE -> resourceId:" << resourceId << ", resourceInstanceId:" << resourceInstanceId << std::endl;
+		WPP_LOGD_ARG(TAG, "Server EXECUTE -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
 		break;
 	case Operation::DISCOVER:
-		std::cout << "Security DISCOVER -> resourceId:" << resourceId << ", resourceInstanceId:" << resourceInstanceId << std::endl;
+		WPP_LOGD_ARG(TAG, "Server DISCOVER -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
 		break;
 	case Operation::DELETE:
-		std::cout << "Security DELETE -> resourceId:" << resourceId << ", resourceInstanceId:" << resourceInstanceId << std::endl;
+		WPP_LOGD_ARG(TAG, "Server DELETE -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
 		break;
 	default: break;
 	}
+}
+
+void Device::userOperationNotifier(Operation::TYPE type, const ResourceID &resId) {
+	switch (type) {
+	case Operation::READ:
+		WPP_LOGD_ARG(TAG, "User READ -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
+		break;
+	case Operation::WRITE:
+		WPP_LOGD_ARG(TAG, "User WRITE -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
+		break;
+	case Operation::DELETE:
+		WPP_LOGD_ARG(TAG, "User DELETE -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
+		break;
+	default: break;
+	}
+}
+
+/* --------------- Class private methods --------------- */
+void Device::resourcesInit() {
 }
 
 } /* namespace wpp */

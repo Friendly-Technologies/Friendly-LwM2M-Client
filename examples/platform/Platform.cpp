@@ -1,30 +1,10 @@
-#include "Platform.h"
+#include "WppPlatform.h"
+#include <ctime>
 
-
-void* Platform::malloc(size_t size) {
-    return NULL; //TODO: Implement
+time_t wpp::WppPlatform::getTime(void) {
+    return std::time(NULL);
 }
 
-void Platform::free(void *memPtr) {
-    //TODO: Implement
-}
-
-time_t Platform::getTime(void) {
-    return 0; //TODO: Implement
-}
-
-char* Platform::strdup(const char *str) {
-    return NULL; //TODO: Implement
-}
-
-int Platform::strncmp(const char *str1, const char *str2, size_t num) {
-    return 0; //TODO: Implement
-}
-
-int Platform::strcasecmp(const char *str1, const char *str2) {
-    return 0; //TODO: Implement
-}
-
-void Platform::print(const char * msg, va_list arg) {
-    //TODO: Implement
+void wpp::WppPlatform::print(const char * msg, va_list arg) {
+    vfprintf(stderr, msg, arg);
 }

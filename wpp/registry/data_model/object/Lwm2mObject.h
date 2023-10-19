@@ -16,7 +16,7 @@
 
 namespace wpp {
 
-// TODO: Add ability to get Instance class by ID
+// TODO: Add ability to get IInstance class by ID
 class Lwm2mObject {
 public:
 	Lwm2mObject(const ObjectInfo &info): _objInfo(info) {}
@@ -27,7 +27,7 @@ public:
 	Lwm2mObject& operator=(const Lwm2mObject&) = delete;
 	Lwm2mObject& operator=(Lwm2mObject&&) = delete;
 
-	OBJ_ID getObjectId() { return _objInfo.objID; }
+	OBJ_ID getObjectID() { return _objInfo.objID; }
 	lwm2m_object_t& getLwm2mObject() { return _lwm2m_object; }
 	const ObjectInfo& getObjectInfo() { return _objInfo; }
 
@@ -35,6 +35,7 @@ public:
 	virtual bool isInstanceExist(ID_T instanceID) = 0;
 
 	virtual void clear() = 0;
+	virtual void restore() = 0;
 
 protected:
 	lwm2m_object_t _lwm2m_object;

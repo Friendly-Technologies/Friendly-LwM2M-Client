@@ -1,10 +1,12 @@
 # Update SOURCES variable from parent scope.
-set(SOURCES ${SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/instance/Instance.cpp)
+set(SOURCES ${SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/instance/IInstance.cpp)
 set(SOURCES ${SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/resource/Resource.cpp)
 set(SOURCES ${SOURCES} PARENT_SCOPE)
 # Update INCLUDES variable from parent scope.
 set(INCLUDES ${INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/instance/)
+set(INCLUDES ${INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/instance/observer/)
 set(INCLUDES ${INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/object/)
+set(INCLUDES ${INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/object/observer/)
 set(INCLUDES ${INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/resource/)
 set(INCLUDES ${INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/types/)
 set(INCLUDES ${INCLUDES} PARENT_SCOPE)

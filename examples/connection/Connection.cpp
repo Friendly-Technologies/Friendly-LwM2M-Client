@@ -12,6 +12,6 @@ bool Connection::sessionCmp(SESSION_T session1, SESSION_T session2) {
     return true; //TODO: Implemnt
 }
 
-bool Connection::sendPacket(SESSION_T session, uint8_t* data, size_t length) {
+bool Connection::sendPacket(Packet packet) {
     return true; //TODO: Implemnt
 }

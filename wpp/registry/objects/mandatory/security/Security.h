@@ -8,35 +8,49 @@
 #ifndef SECURITY_H_
 #define SECURITY_H_
 
-#include "Instance.h"
-#include "ObjectInfo.h"
+#include "SecurityConfig.h"
+#include "SecurityInfo.h"
+#include "IInstance.h"
+#include "InstSubject.h"
 
 namespace wpp {
 
-class Security: public Instance {
+class Security: public IInstance, public InstSubject<Security> {
 public:
-	Security(OBJ_ID objID, ID_T instanceID): Instance(objID, instanceID) {
-	}
+	Security(WppClient &client, const InstanceID &id);
+	
 protected:
-	/* --------------- Instance implementation part --------------- */
+	/* ---------------IInstance implementation part --------------- */
 	/*
 	 * Returns Resource object if it is exist
 	 */
 	Resource * getResource(ID_T id) override;
 	/*
-	 * Returns return list with available resources
+	 * Returns list with available resources
 	 */
 	std::vector<Resource *> getResourcesList() override;
 	std::vector<Resource *> getResourcesList(const Operation& filter) override;
 	/*
-	 * Returns return list with available instantiated resources
+	 * Returns list with available instantiated resources
 	 */
 	std::vector<Resource *> getInstantiatedResourcesList() override;
 	std::vector<Resource *> getInstantiatedResourcesList(const Operation& filter) override;
 	/*
 	 * Handles information about resource operation that made server
 	 */
-	void serverOperationNotifier(Operation::TYPE type, ID_T resourceId, ID_T resourceInstanceId = 0) override;
+	void serverOperationNotifier(Operation::TYPE type, const ResourceID &resId) override;
+	/*
+	 * Handles information about resource operation that made user
+	 */
+	void userOperationNotifier(Operation::TYPE type, const ResourceID &resId) override;
+
+private:
+	/* --------------- Class private methods --------------- */
+	/*
+	 * Initialize resources with default values.
+	 * Resource always must have at least one instance.
+	 */
+	void resourcesInit();
 };
 
 } /* namespace wpp */

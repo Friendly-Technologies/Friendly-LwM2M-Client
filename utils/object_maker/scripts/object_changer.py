@@ -204,26 +204,25 @@ def get_updated_user_code(old_object_path, new_obj_gen):
     return new_user_code_blocks
 
 
+def change(destination, new_data):
+    obj_r = object_remover.ObjectRemover(destination)
+    obj_g = object_generator.ObjectGenerator(new_data, None)
+    obj_i = object_integrator.ObjectIntegrator(obj_g.get_folder_path())
+    path_to_object_new = obj_g.get_folder_path()
+    user_code_blocks = get_updated_user_code(destination, obj_g)
+    obj_r.remove_object()
+    obj_g.object_code_generate()
+    write_files(path_to_object_new, user_code_blocks)
+    obj_i.update_files()
+    if os.path.exists(path_to_object_new):
+        shutil.rmtree(path_to_object_new, ignore_errors=True)
+
+
 if __name__ == "__main__":
     parser = OptionParser()
     parser.add_option("--file", dest="file_path", help="The path to the xml file of the Object")
     parser.add_option("--folder", dest="folder_path", help="The path to the folder of the Object")
     options, args = parser.parse_args()
-
-    if options.file_path is not None and options.folder_path is not None:
-        obj_r = object_remover.ObjectRemover(options.folder_path)
-        obj_g = object_generator.ObjectGenerator(options.file_path, None)
-        obj_i = object_integrator.ObjectIntegrator(options.file_path, None)
-
-        path_to_object_old = options.folder_path
-        path_to_object_new = obj_g.get_folder_path()
-
-        user_code_blocks = get_updated_user_code(path_to_object_old, obj_g)
-        obj_r.remove_object()
-        obj_g.object_code_generate()
-        write_files(path_to_object_new, user_code_blocks)
-        obj_i.update_files()
-        if os.path.exists(path_to_object_new):
-            shutil.rmtree(path_to_object_new, ignore_errors=True)
-    else:
+    if not options.file_path or not options.folder_path:
         parser.error("The path to the folder of the Object is not provided")
+    change(destination=options.folder_path, new_data=options.file_path)

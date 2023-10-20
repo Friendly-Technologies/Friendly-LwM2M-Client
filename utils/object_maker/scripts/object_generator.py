@@ -28,6 +28,7 @@ FILE_INFO = f"{FOLDER_TEMPLATES}/FILE_OBJ_INFO.txt"
 FILE_CONFIG = f"{FOLDER_TEMPLATES}/FILE_OBJ_CONFIG.txt"
 FILE_CMAKE = f"{FOLDER_TEMPLATES}/FILE_OBJ_CMAKE.txt"
 
+DATETIME = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 
 class ObjectGenerator:
@@ -231,8 +232,9 @@ class ObjectGenerator:
         return prefix + postfix
 
     def generate_content_header(self):
-        data_str_h = self.read_file(FILE_PATH_TYPE_OBJ_IMPL_H)
+        data_str_h = self.read_file(FILE_IMPL_H)
         resources_enum, resources_map = self.get_map_of_resources(self.meta_resources)
+        data_str_h = data_str_h.replace("__DATETIME__", DATETIME)
         data_str_h = data_str_h.replace("__IF_NOT_DEFINED_DEFINE__", self.object_names["obj_name_folder"].upper())
         data_str_h = data_str_h.replace("__CLASS_NAME__", self.object_names["obj_name_class"])
         data_str_h = data_str_h.replace("__ID_ENUM__", resources_enum)
@@ -242,7 +244,8 @@ class ObjectGenerator:
         return data_str_h
 
     def generate_content_cpp(self):
-        data_str_cpp = self.read_file(FILE_PATH_TYPE_OBJ_IMPL_CPP)
+        data_str_cpp = self.read_file(FILE_IMPL_CPP)
+        data_str_cpp = data_str_cpp.replace("__DATETIME__", DATETIME)
         data_str_cpp = data_str_cpp.replace("__OBJ_FOLDER__", self.object_names["obj_name_folder"])
         data_str_cpp = data_str_cpp.replace("__F_SERVER_OPERATION_NOTIFIER__",
                                             self.get_content_serverOperationNotifier(TYPE_1, TYPE_2))

@@ -100,7 +100,7 @@ class ObjectIntegrator:
 
         content_reg_h_prototype = \
             f"""\t#if {obj_name_define}\n\t""" \
-            f"""{TYPE_OBJECT} <{obj_name_class}> & {obj_name_camelcase}();\n\t""" \
+            f"""{TYPE_OBJECT}<{obj_name_class}> & {obj_name_camelcase}();\n\t""" \
             f"""#endif\n"""
 
         content_reg_cpp = \

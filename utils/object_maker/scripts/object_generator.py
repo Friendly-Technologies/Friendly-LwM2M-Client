@@ -300,21 +300,17 @@ class ObjectGenerator:
         return content
 
     def generate_content_config(self):
-        if_not_def = f"""WPP_{self.object_names["obj_name_up_underline"]}_CONFIG_H"""
         defines = ""
         for resource in self.meta_resources:
-            if resource["Mandatory"] == "MANDATORY":
-                continue
-            defines += f"""#define {resource['Define']} 0\n"""
-        content = \
-            CONFIG_COMMENT + \
-            f"""#ifndef {if_not_def}\n""" \
-            f"""#define {if_not_def}\n\n""" \
-            f"""#if {self.object_names["obj_name_define"]}\n\n""" \
-            f"""/* --------------- Config block 0 start --------------- */\n""" \
-            f"""/* --------------- Config block 0 end --------------- */\n\n""" \
-            f"""#endif // {if_not_def}\n""" \
-            f"""#endif // {self.object_names["obj_name_define"]}\n"""
+            if resource["Mandatory"] == "OPTIONAL":
+                defines += f"""#define {resource['Define']} 0\n"""
+
+        content = self.read_file(FILE_CONFIG)
+        content = content.replace("__DATETIME__", DATETIME)
+        content = content.replace("<<IF_DEF_DIRECTIVE>>", self.object_names["obj_name_up_underline"])
+        content = content.replace("__OBJ_DEFINE__", self.object_names["obj_name_define"])
+        content = content.replace("__RES_DEFINES__", defines)
+
         return content
 
     def generate_obj_integration_data(self):

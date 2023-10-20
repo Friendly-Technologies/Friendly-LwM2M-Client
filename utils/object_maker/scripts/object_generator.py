@@ -263,39 +263,24 @@ class ObjectGenerator:
         return content
 
     def generate_content_info_header(self):
-        if_not_def = f"""WPP_{self.object_names["obj_name_up_underline"]}_INFO_H"""
         is_multiple = "MULTIPLE" if self.meta_object["is_multiple"] else "SINGLE"
         is_mandatory = "MANDATORY" if self.meta_object["is_mandatory"] else "OPTIONAL"
 
-        content = \
-            INFO_COMMENT + \
-            f"""#ifndef {if_not_def}\n""" \
-            f"""#define {if_not_def}\n\n""" \
-            f"""#include "{TYPE_OBJECT_INFO}.h"\n\n""" \
-            f"""#if {self.object_names["obj_name_define"]}\n\n""" \
-            f"""namespace wpp {{\n\n""" \
-            f"""static const {TYPE_OBJECT_INFO} {self.object_names["obj_name_up_underline"]}_OBJ_INFO = {{\n""" \
-            f"""\t/* Name */\n\t"{self.meta_object["object_name"]}",\n""" \
-            f"""\t/* Object ID */\n\tOBJ_ID::{self.object_names["obj_name_up_underline"]},\n""" \
-            f"""\t/* URN */\n\t"{self.meta_object["object_urn"]}",\n""" \
-            f"""\t/* Object version */\n\t{{{self.meta_object["object_version"].replace('.', ',')}}},\n""" \
-            f"""\t/* Lwm2m version */\n\t{{{self.meta_object["object_lwm2m_version"].replace('.', ',')}}},\n""" \
-            f"""\t/* Is single */\n\tIS_SINGLE::{is_multiple},\n""" \
-            f"""\t/* Is Mandatory */\n\tIS_MANDATORY::{is_mandatory},\n""" \
-            f"""\t/* Object supported operations */\n""" \
-            f"""\t/* --------------- Info block 0 start --------------- */\n""" \
-            f"""\tInstOp(\tInstOp::CREATE |\n""" \
-            f"""\t\t\tInstOp::DELETE),\n""" \
-            f"""\t{TYPE_OPERATION}(\t{TYPE_OPERATION}::READ|\n""" \
-            f"""\t\t\t{TYPE_OPERATION}::WRITE|\n""" \
-            f"""\t\t\t{TYPE_OPERATION}::DISCOVER|\n""" \
-            f"""\t\t\t{TYPE_OPERATION}::EXECUTE|\n""" \
-            f"""\t\t\t{TYPE_OPERATION}::DELETE),\n""" \
-            f"""\t/* --------------- Info block 0 end --------------- */\n""" \
-            f"""}};\n\n""" \
-            f"""}} /* namespace wpp */\n\n""" \
-            f"""#endif /* {self.object_names["obj_name_define"]} */\n""" \
-            f"""#endif // {if_not_def}\n"""
+        content = self.read_file(FILE_INFO)
+        content = content.replace("__DATETIME__", DATETIME)
+        content = content.replace("<<IF_DEF_DIRECTIVE>>", self.object_names["obj_name_up_underline"])
+        content = content.replace("__OBJ_DEFINE__", self.object_names["obj_name_define"])
+        content = content.replace("__UPNAME__", self.object_names["obj_name_up_underline"])
+        content = content.replace("__OBJ_DEFINE__", self.object_names["obj_name_define"])
+        content = content.replace("__NAME__", self.meta_object["object_name"])
+        content = content.replace("__OBJ_ID__", self.object_names["obj_name_up_underline"])
+        content = content.replace("__URN__", self.meta_object["object_urn"])
+        content = content.replace("__VERSION__",
+                                  f"{{{self.meta_object['object_version'].replace('.', ',')}}}")
+        content = content.replace("__LWM2M_VERSION__",
+                                  f"{{{self.meta_object['object_lwm2m_version'].replace('.', ',')}}}")
+        content = content.replace("__MULTIPLE__", is_multiple)
+        content = content.replace("__MANDATORY__", is_mandatory)
 
         return content
 

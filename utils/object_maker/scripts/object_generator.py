@@ -369,19 +369,26 @@ class ObjectGenerator:
     def generate_obj_integration_data(self):
         dictionary = {}
 
-        obj_dict = {"object_is_mandatory": "True" if self.meta_object["is_mandatory"] else "False",
-                    "object_name": self.meta_object["object_name"],
-                    "object_id": self.meta_object["object_id"],
-                    "object_lwm2m_version": self.meta_object["object_lwm2m_version"],
-                    "object_version": self.meta_object["object_version"]}
+        obj_dict = {"is_mandatory": "True" if self.meta_object["is_mandatory"] else "False",
+                    "name": self.meta_object["object_name"],
+                    "id": self.meta_object["object_id"],
+                    "lwm2m_version": self.meta_object["object_lwm2m_version"],
+                    "version": self.meta_object["object_version"]}
 
-        obj_names = {"obj_name_class": self.object_names["obj_name_class"],
-                     "obj_name_camelcase": self.object_names["obj_name_camelcase"],
-                     "obj_name_define": self.object_names["obj_name_define"],
-                     "obj_name_up_underline": self.object_names["obj_name_up_underline"]}
+        obj_names = {"class": self.object_names["obj_name_class"],
+                     "camelcase": self.object_names["obj_name_camelcase"],
+                     "define": self.object_names["obj_name_define"],
+                     "up_underline": self.object_names["obj_name_up_underline"]}
 
-        dictionary["obj_data"] = obj_dict
-        dictionary["obj_names"] = obj_names
+        obj_files = {"impl_h": f"{self.object_names['obj_name_class']}.h",
+                     "impl_cpp": f"{self.object_names['obj_name_class']}.cpp",
+                     "config": f"{self.object_names['obj_name_class']}Config.h",
+                     "info": f"{self.object_names['obj_name_class']}Info.h",
+                     "cmake": f"CMakeLists.txt"}
+
+        dictionary["object_data"] = obj_dict
+        dictionary["object_names"] = obj_names
+        dictionary["object_files"] = obj_files
 
         return json.dumps(dictionary, indent=4)
 

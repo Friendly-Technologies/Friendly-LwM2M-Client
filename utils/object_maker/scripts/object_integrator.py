@@ -6,7 +6,7 @@ FOLDER_OBJECTS = "../../wpp/registry/objects"
 FOLDER_CONFIG = "../../wpp/config"
 FOLDER_REGISTRY = "../../wpp/registry"
 
-FILE_ADD_DATA = "obj_integration_data.json"
+FILE_ADD_DATA = "object_metadata.json"
 
 STOP_STRING_CNFG_CMK = ["# The end of the options of the mandatory objects.",
                         "# The end of the options of the optional objects."]
@@ -64,16 +64,16 @@ class ObjectIntegrator:
             return
 
         data_dict = eval(data_str)
-        dict_obj_meta = data_dict["obj_data"]
-        dict_obj_names = data_dict["obj_names"]
+        dict_obj_meta = data_dict["object_data"]
+        dict_obj_names = data_dict["object_names"]
 
-        obj_is_mandatory = dict_obj_meta["object_is_mandatory"]
-        obj_id = dict_obj_meta["object_id"]
+        obj_is_mandatory = dict_obj_meta["is_mandatory"]
+        obj_id = dict_obj_meta["id"]
 
-        obj_name_class = dict_obj_names["obj_name_class"]
-        obj_name_define = dict_obj_names["obj_name_define"]
-        obj_name_camelcase = dict_obj_names["obj_name_camelcase"]
-        obj_name_underline = dict_obj_names["obj_name_up_underline"]
+        obj_name_class = dict_obj_names["class"]
+        obj_name_define = dict_obj_names["define"]
+        obj_name_camelcase = dict_obj_names["camelcase"]
+        obj_name_underline = dict_obj_names["up_underline"]
 
         stop_string_obj_id = STOP_STRING_OBJ_ID[0] if obj_is_mandatory else STOP_STRING_OBJ_ID[1]
         stop_string_cfg_cmk = STOP_STRING_CNFG_CMK[0] if obj_is_mandatory else STOP_STRING_CNFG_CMK[1]
@@ -130,7 +130,7 @@ class ObjectIntegrator:
 
     def update_files(self):
         self.copy_main_files()
-        self.remove_unused_files(f"{FOLDER_OBJECTS}/{self.folder_name}", FILE_ADD_DATA)
+        # self.remove_unused_files(f"{FOLDER_OBJECTS}/{self.folder_name}", FILE_ADD_DATA)
         self.insert_additional_data()
 
 

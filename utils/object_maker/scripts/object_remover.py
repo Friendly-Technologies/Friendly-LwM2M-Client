@@ -6,6 +6,8 @@ files = ["../../wpp/registry/ObjectID.h",
          "../../wpp/registry/WppRegistry.h",
          "../../wpp/registry/WppRegistry.cpp"]
 
+FILE_ADD_DATA = "object_metadata.json"
+
 
 class ObjectRemover:
     """Add some comments here"""
@@ -50,19 +52,17 @@ class ObjectRemover:
             self.update_file(file)
 
     def extract_define(self):
-        define = ""
         try:
-            with open(f"{self.object_folder_path}/CMakeLists.txt", 'r') as f:
-                for line in f:
-                    line = line.replace(" ", "")
-                    if line[:3] == "if(":
-                        define = line[3:-2]  # remove "if(" and ")" symbols
+            with open(f"{self.object_folder_path}/{FILE_ADD_DATA}", 'r') as f:
+                data_str = f.read()
             f.close()
         except FileNotFoundError:
-            print("There is no files to extract the define with")
+            print(F"No such file \"{FILE_ADD_DATA}\". Stopped")
+            return
 
-        # print(define)
-        return define
+        data_dict = eval(data_str)
+        dict_obj_meta = data_dict["object_names"]["define"]
+        return dict_obj_meta
 
     def remove_object_folder(self):
         try:

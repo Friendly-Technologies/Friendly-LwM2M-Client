@@ -356,7 +356,7 @@ class ObjectGenerator:
         self.create_file(f"{name_class}",       "cpp",  generated_cpp_file)
         self.create_file(f"CMakeLists",         "txt",  generated_cmake_list)
 
-        self.create_file(f"obj_integration_data", "json", generated_obj_integration_data)
+        self.create_file(f"object_metadata",    "json", generated_obj_integration_data)
 
 
 if __name__ == "__main__":

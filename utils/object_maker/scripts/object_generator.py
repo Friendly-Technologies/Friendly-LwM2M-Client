@@ -8,13 +8,9 @@ from optparse import OptionParser
 import json
 
 
-TYPE_REGISTRY = "WppRegistry"
 TYPE_OPERATION = "ResOp"
 TYPE_OBJECT = "Object"
-TYPE_OBJECT_INFO = "ObjectInfo"
-TYPE_RESOURCE = "Resource"
-TYPE_INSTANCE = "Instance"
-TYPE_I_SUBJECT = "InstSubject"
+
 
 TYPE_1 = f"{TYPE_OPERATION}::TYPE"
 TYPE_2 = "const ResLink"

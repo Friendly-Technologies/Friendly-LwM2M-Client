@@ -21,7 +21,7 @@ class SecurityImpl: public ObjObserver<Lwm2mSecurity>, public InstObserver<Lwm2m
             security->set(Lwm2mSecurity::BOOTSTRAP_SERVER_1, true);
             security->set(Lwm2mSecurity::CLIENT_HOLD_OFF_TIME_11, (INT_T)10);
         #else
-            string url = "coap://demodm.friendly-tech.com:"; //"coaps://leshan.eclipseprojects.io:";
+            string url = "coap://demodm.friendly-tech.com:";//"coap://eu.iot.avsystem.cloud:"; //"coaps://leshan.eclipseprojects.io:";
             #if DTLS_WITH_PSK
                 url += "5684";
                 string pskId = "SINAI_TEST_DEV_ID";

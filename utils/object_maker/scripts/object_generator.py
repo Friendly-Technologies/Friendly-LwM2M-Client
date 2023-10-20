@@ -255,20 +255,10 @@ class ObjectGenerator:
         return data_str_cpp
 
     def generate_content_cmake_list(self):
-        name_class = self.object_names["obj_name_class"]
-        name_def = self.object_names["obj_name_define"]
-
-        main_line = \
-            f"""set(WPP_SOURCES ${{WPP_SOURCES}} ${{CMAKE_CURRENT_SOURCE_DIR}}/{name_class}.cpp)\n\n""" \
-            f"""\t# --------------- CMake block 0 start ---------------\n""" \
-            f"""\t# --------------- CMake block 0 end ---------------\n\n""" \
-            f"""\t# Update WPP_SOURCES variable from parent scope.\n""" \
-            f"""\tset(WPP_SOURCES ${{WPP_SOURCES}} PARENT_SCOPE)\n"""
-
-        content = f"""{MAIN_COMMENT}""" \
-                  f"""if({name_def})\n\t""" \
-                  f"""# Update SOURCES variable from parent scope.\n\t""" \
-                  f"""{main_line}\nendif()"""
+        content = self.read_file(FILE_CMAKE)
+        content = content.replace("__DATETIME__", DATETIME)
+        content = content.replace("__OBJ_DEFINE__", self.object_names["obj_name_define"])
+        content = content.replace("__CLASS_NAME__", self.object_names["obj_name_class"])
 
         return content
 

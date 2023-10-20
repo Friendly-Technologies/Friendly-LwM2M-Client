@@ -8,9 +8,9 @@
 namespace wpp {
 
 struct ObjectInfo {
-	std::string name;
+	const char *name;
 	OBJ_ID objID;
-	std::string urn;
+	const char *urn;
 	Version objVersion;
 	Version lwm2mVersion;
 	IS_SINGLE isSingle;

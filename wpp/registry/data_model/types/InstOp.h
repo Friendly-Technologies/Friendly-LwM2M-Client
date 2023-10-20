@@ -25,9 +25,9 @@ public:
     inline bool isBlock1Create() const { return _flags & BLOCK1_CREATE; }
     inline uint8_t getFlags() const { return _flags; }
     inline std::vector<TYPE> asVector() const {
-    	uint8_t flags = _flags;
+    	uint16_t flags = _flags;
     	std::vector<TYPE> operations;
-    	for (size_t i = 1; i != 0x80; i <<= 1) {
+    	for (size_t i = 1; i != 0x100; i <<= 1) {
     		if (flags & i) operations.push_back((TYPE)i);
     	}
     	return operations;

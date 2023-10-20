@@ -1,7 +1,7 @@
 # Build options
-option(BUILD_WITH_EXCEPTIONS "Enable support of Exceptions" ON)
-option(BUILD_WITH_RTTI "Enable support of RTTI" ON)
-option(BUILD_FOR_64_BIT "Enable support of 32-bit system" ON)
+option(BUILD_WITH_EXCEPTIONS "Enable support of Exceptions" OFF)
+option(BUILD_WITH_RTTI "Enable support of RTTI" OFF)
+option(BUILD_FOR_64_BIT "Build for 64-bit system or 32-bit" ON)
 
 # Position-independent code is code that can execute
 # properly regardless of where in memory it is located.
@@ -33,30 +33,30 @@ add_compile_options(
 # Build for system type
 if (BUILD_FOR_64_BIT)
     message(STATUS "Building for 64 bit system")
-    set(CMAKE_C_FLAGS "-m64")
-    set(CMAKE_CXX_FLAGS "-m64")
-    set(CMAKE_EXE_LINKER_FLAGS "-m64")
+    add_compile_options(-m64)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -m64")
 else()
     message(STATUS "Building for 32 bit system")
-    set(CMAKE_C_FLAGS "-m32")
-    set(CMAKE_CXX_FLAGS "-m32")
-    set(CMAKE_EXE_LINKER_FLAGS "-m32")  
+    add_compile_options(-m32)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -m32")
 endif()
 
 # Exceptions comiler options
 if (BUILD_WITH_EXCEPTIONS)
     message(STATUS "Exceptions is supported")
-    add_compile_options(-fno-exceptions)
+    add_compile_options(-fexceptions)
 else()
     message(STATUS "Exceptions is not supported")
+    add_compile_options(-fno-exceptions)
 endif()
 
 # RTTI comiler options
 if (BUILD_WITH_RTTI)
     message(STATUS "RTTI is supported")
-    add_compile_options(-fno-rtti)
+    add_compile_options(-frtti)
 else()
     message(STATUS "RTTI is not supported")
+    add_compile_options(-fno-rtti)
 endif()
 
 # Share defines with target

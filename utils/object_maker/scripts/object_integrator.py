@@ -127,9 +127,12 @@ class ObjectIntegrator:
             shutil.copytree(self.folder_name, f"{FOLDER_OBJECTS}/{self.folder_name}")
         except FileExistsError:
             print(f"The folder \"{FOLDER_OBJECTS}/{self.folder_name}\" is already exists")
+            return False
+        return True
 
     def update_files(self):
-        self.copy_main_files()
+        if not self.copy_main_files():
+            return False
         # self.remove_unused_files(f"{FOLDER_OBJECTS}/{self.folder_name}", FILE_ADD_DATA)
         self.insert_additional_data()
 

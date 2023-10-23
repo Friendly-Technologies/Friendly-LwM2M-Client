@@ -8,110 +8,73 @@
 #include <thread>
 #include <chrono>
 
+#include "Server.h"
+#include "Security.h"
+#include "Device.h"
+#include "Connection.h"
+
 #include "WppClient.h"
 #include "WppRegistry.h"
-#include "IObjObserver.h"
-#include "IInstObserver.h"
-
-#include "Connection.h"
 
 using namespace std;
 using namespace wpp;
 
-void memConsumptionCheck() {
-//   std::shared_ptr<uint8_t> shared_array(new uint8_t[10], std::default_delete<uint8_t[]>());
-//   cout << "Object<Server>: " << sizeof(Object<Server>) << endl;
-//   cout << "Object<Server> serverObj: " << sizeof(serverObj) << endl;
-//   cout << "Server: " << sizeof(Server(1)) << endl;
-//   cout << "Resource: " << sizeof(Resource{}) << endl;
-//   cout << "Operation: " << sizeof(Operation{}) << endl;
-//   cout << "IS_MANDATORY: " << sizeof(IS_MANDATORY) << endl;
-//   cout << "IS_SINGLE: " << sizeof(IS_SINGLE) << endl;
-//   cout << "TYPE_ID: " << sizeof(Resource::TYPE_ID) << endl;
-//   cout << "DATA_T: " << sizeof(Resource::DATA_T) << endl;
-//   cout << "mutex: " << sizeof(mutex) << endl;
-//   cout << "std::unordered_map<ID_T, DATA_T>: " << sizeof(std::unordered_map<ID_T, Resource::DATA_T>) << endl;
-//   cout << "std::vector<DATA_T>: " << sizeof(std::vector<Resource::DATA_T>) << endl;
-//   cout << "DATA_VERIFIER_T: " << sizeof(Resource::DATA_VERIFIER_T) << endl;
+void socketPolling(Connection *connection) {
+	while (true) {
+		connection->loop();
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	}
 }
 
-class ServerObserver: public IObjObserver<Server>, public IInstObserver<Server> {
-	public:
-	void objectRestore(Object<Server> &object) override {
-		cout << "objectRestore: " << (ID_T)object.getObjectID() << endl;
-		object.clear();
-		object.createInstance();
-	}
-
-    void instanceCreated(Object<Server> &object, ID_T instanceId) override {
-        cout << "instanceCreated: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
-    }
-
-    void instanceDeleting(Object<Server> &object, ID_T instanceId) override {
-		cout << "instanceDeleting: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
-	}
-
-	virtual void resourceRead(Server &inst, const ResourceID &resId) override {
-        cout << "resourceRead: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
-    }
-
-    virtual void resourceWrite(Server &inst, const ResourceID &resId) override {
-        cout << "resourceWrite: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
-    }
-
-    virtual void resourceExecute(Server &inst, const ResourceID &resId) override {
-        cout << "resourceExecute: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
-    }
-};
-
-int main()
-{
-	cout << "Test memory consumption:" << endl;
-	memConsumptionCheck();
+int main() {
+	cout << endl << "---- Creating requiered components ----" << endl;
+	Connection connection("56830", AF_INET);
+	ServerImpl server;
+	SecurityImpl security;
+	DeviceImpl device;
 
 	// Client initialization
-	Connection connection;
-	WppClient::create({"Test name", "", ""}, connection);
-	
-	WppClient *client = WppClient::takeOwnership();
-	if (!client) {
-		cout << endl << "ERR: WppClient can not be taken" << endl;
-		return -1;
-	}
+	cout << endl << "---- Creating WppClient ----" << endl;
+	string clientName = "SinaiTestLwm2m";
+	#if DTLS_WITH_PSK
+	clientName += "PSK";
+	#elif DTLS_WITH_RPK
+	clientName += "RPK";
+	#endif
 
-	cout << endl << "Test WppRegistry:" << endl;
+	WppClient::create({clientName, "", ""}, connection);
+	WppClient *client = WppClient::takeOwnership();
 	WppRegistry &registry = client->registry();
 
-	Object<Server> &serverObj = registry.server();
-	ServerObserver observer;
-	serverObj.subscribe(&observer);
-
-	Server *server = serverObj.createInstance();
-	server->subscribe(&observer);
-
-	INT_T value;
-	server->get(Server::SHORT_SERV_ID, value);
-	cout << "Resource Server::SHORT_SERV_ID read: " << value << endl;
-
-	EXECUTE_T execute;
-	cout << "Resource Server::DISABLE execute: " << endl;
-	server->get(Server::DISABLE, execute);
-	execute(Server::SHORT_SERV_ID, OPAQUE_T());
-
+	// Initialize wpp objects
+	cout << endl << "---- Initialization wpp Server ----" << endl;
+	server.init(registry.server());
+	cout << endl << "---- Initialization wpp Security ----" << endl;
+	security.init(registry.security());
+	cout << endl << "---- Initialization wpp Device ----" << endl;
+	device.init(registry.device());
+	
 	// Giving ownership to registry
 	client->giveOwnership();
 
-	cout << endl << "Test WppClient:" << endl;
-	int iterationCnt = 10;
-	while (iterationCnt--) {
-		time_t sleepTime = 1;
+	cout << endl << "---- Starting Connection thread ----" << endl;
+	thread my_thread(socketPolling, &connection);
 
-		client = WppClient::takeOwnership();
-		if (client) client->loop(sleepTime);
-		client->giveOwnership();
+	time_t callTime = 0;
+	for (int iterationCnt = 0; true; iterationCnt++) {
+		time_t currTime = time(NULL);
 
-		cout << "Iteration: " << iterationCnt << ", sleep: " << sleepTime << endl;
-		std::this_thread::sleep_for(std::chrono::seconds(sleepTime));
+		cout << endl << "---- iteration:" << iterationCnt << " ----" << endl;
+		if (currTime >= callTime || connection.getPacketQueueSize()) {
+			// Handle client state and process packets from the server
+			client = WppClient::takeOwnership();
+			if (client) { 
+				callTime = currTime + client->loop();
+				client->giveOwnership();
+				cout << "Sleep time: " << callTime - time(NULL) << endl;
+			}
+		}
+		this_thread::sleep_for(chrono::seconds(1));
 	}
 }
 

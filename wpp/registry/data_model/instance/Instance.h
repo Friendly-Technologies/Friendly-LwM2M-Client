@@ -1,12 +1,12 @@
 /*
- *IInstance.h
+ *Instance.h
  *
  *  Created on: 6 Jul 2023
  *      Author: valentin
  */
 
-#ifndef INSTANCE_H_
-#define INSTANCE_H_
+#ifndef WPP_INSTANCE_H_
+#define WPP_INSTANCE_H_
 
 #include <vector>
 
@@ -20,35 +20,36 @@ namespace wpp {
 class WppClient;
 
 /*
- * IInstance is interface class that implements manipulation with derived class resources.
+ * Instance is interface class that implements manipulation with derived class resources.
  * The main target of this class is to encapsulate operations like resource write and read by core, for avoid
  * multiple definition of this mechanism in instance implementation classes. And give generalised
  * interface to resources for core(server).
  *
  * Note: It should be noted that the interface of the instance responsible for communication
  * with the client is specified through get()/set() methods, but the developer can define his
- * interface at the IInstance implementation level, whether it will be setters and getters or
+ * interface at the Instance implementation level, whether it will be setters and getters or
  * more abstract methods with algorithm encapsulation, it is not important. It is important
  * that the developer is responsible for notifying the core about resource changes, if the value
- * of any of the resources changes bypassing the IInstance::get()/set() methods, then the developer
+ * of any of the resources changes bypassing the Instance::get()/set() methods, then the developer
  * must immediately call the method WppClient::notifyValueChanged() or the one that encapsulates
  * this call. It is necessary to notify about the change for all resources except those marked as EXECUTE.
  */
-class IInstance {
+class Instance {
 	template<typename T>
 	friend class Object;
 
 public: /* Interface that can be used by user */
-	IInstance(WppClient &client, const InstanceID &id): _client(client), _id(id) {}
-	virtual ~IInstance() {}
+	Instance(WppClient &client, const OBJ_LINK_T &id): _client(client), _id(id) {}
+	virtual ~Instance() {}
 
-	IInstance(const IInstance&) = delete;
-	IInstance(IInstance&&) = delete;
-	IInstance& operator=(const IInstance&) = delete;
-	IInstance& operator=(IInstance&&) = delete;
+	Instance(const Instance&) = delete;
+	Instance(Instance&&) = delete;
+	Instance& operator=(const Instance&) = delete;
+	Instance& operator=(Instance&&) = delete;
 
-	OBJ_ID getObjectID() { return (OBJ_ID)_id.objId;}
-	ID_T getInstanceID() { return _id.objInstId;}
+	OBJ_LINK_T getLink() { return _id; }
+	OBJ_ID getObjectID() { return (OBJ_ID)_id.objId; }
+	ID_T getInstanceID() { return _id.objInstId; }
 
 	/*
 	 * Sets resource value
@@ -56,14 +57,14 @@ public: /* Interface that can be used by user */
 	template<typename T>
 	bool set(ID_T resId, const T &value) { return userSet({resId, SINGLE_INSTANCE_ID}, value); }
 	template<typename T>
-	bool set(const ResourceID &resId, const T &value)  { return userSet({resId.resId, resId.resInstId}, value); }
+	bool set(const ResLink &resId, const T &value)  { return userSet({resId.resId, resId.resInstId}, value); }
 	/*
 	 * Returns copy of resource value
 	 */
 	template<typename T>
 	bool get(ID_T resId, T &value) { return userGet({resId, SINGLE_INSTANCE_ID}, value); }
 	template<typename T>
-	bool get(const ResourceID &resId, T &value) { return userGet({resId.resId, resId.resInstId}, value); }
+	bool get(const ResLink &resId, T &value) { return userGet({resId.resId, resId.resInstId}, value); }
 	/*
 	 * It is quite dangerous to leave a resource without instances,
 	 * because when the server tries to read its value, the server
@@ -78,12 +79,12 @@ public: /* Interface that can be used by user */
 	 * if the resource is SINGLE or it has the last instance remove is not
 	 * possible. Because instantiated resources must have at least one instance.
 	 */
-	bool remove(const ResourceID &resId);
+	bool remove(const ResLink &resId);
 
 protected: /* Interface that can be used by derived class */
 	WppClient& client();
 
-protected: /* Interface implemented by IInstance derived class */
+protected: /* Interface implemented by Instance derived class */
 	/*
 	 * This method must be implemented by derived class,
 	 * and return resource if it is exists.
@@ -107,22 +108,22 @@ protected: /* Interface implemented by IInstance derived class */
 	/*
 	 * This method must be implemented by derived class, and handle
      * information about resource operation (READ, WRITE, EXECUTE, DISCOVER, DELETE).
-	 * Called by IInstance after resource operation performed by SERVER.
+	 * Called by Instance after resource operation performed by SERVER.
 	 */
-	virtual void serverOperationNotifier(Operation::TYPE type, const ResourceID &resId) = 0;
+	virtual void serverOperationNotifier(Operation::TYPE type, const ResLink &resId) = 0;
 	/*
 	 * This method must be implemented by derived class, and handle
      * information about resource operation (READ, WRITE, DELETE).
-	 * Called by IInstance after resource operation performed by USER.
+	 * Called by Instance after resource operation performed by USER.
 	 */
-	virtual void userOperationNotifier(Operation::TYPE type, const ResourceID &resId) = 0;
+	virtual void userOperationNotifier(Operation::TYPE type, const ResLink &resId) = 0;
 
-private: /* Interface used by Object<T> or IInstance class */
+private: /* Interface used by Object<T> or Instance class */
 	/* ------------- Implementation of user set/get methods ------------- */
 	template<typename T>
-	bool userSet(const ResourceID &resId, const T &value);
+	bool userSet(const ResLink &resId, const T &value);
 	template<typename T>
-	bool userGet(const ResourceID &resId, T &value);
+	bool userGet(const ResLink &resId, T &value);
 	/* ------------- Compatibility with core data structure ------------- */
 	/*
 	 * This methods can be used for convert resource to lwm2m_data_t
@@ -138,7 +139,7 @@ private: /* Interface used by Object<T> or IInstance class */
 
 protected:
 	WppClient &_client;
-	InstanceID _id;
+	OBJ_LINK_T _id;
 };
 
 /* ---------- Implementation of template methods ----------*/
@@ -146,7 +147,7 @@ protected:
  * Sets resource value
  */
 template<typename T>
-bool IInstance::userSet(const ResourceID &resId, const T &value) {
+bool Instance::userSet(const ResLink &resId, const T &value) {
 	Resource *const resource = getResource(resId.resId);
 	if (!resource) return false;
 
@@ -163,7 +164,7 @@ bool IInstance::userSet(const ResourceID &resId, const T &value) {
  * Returns copy of resource value
  */
 template<typename T>
-bool IInstance::userGet(const ResourceID &resId, T &value) {
+bool Instance::userGet(const ResLink &resId, T &value) {
 	Resource *const resource = getResource(resId.resId);
 	if (!resource) return false;
 
@@ -177,4 +178,4 @@ bool IInstance::userGet(const ResourceID &resId, T &value) {
 
 } /* namespace wpp */
 
-#endif /* INSTANCE_H_ */
+#endif /* WPP_INSTANCE_H_ */

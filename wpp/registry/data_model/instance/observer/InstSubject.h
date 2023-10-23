@@ -1,8 +1,8 @@
-#ifndef INSTSUBJECT_H_
-#define INSTSUBJECT_H_
+#ifndef WPP_INST_SUBJECT_H_
+#define WPP_INST_SUBJECT_H_
 
 #include "Operation.h"
-#include "IInstObserver.h"
+#include "InstObserver.h"
 
 namespace wpp {
 
@@ -13,12 +13,12 @@ public:
 	 * Subscribers will be notified about the write, delete
 	 * and execute of instance resources initiated by server.
 	 */
-	void subscribe(IInstObserver<T> *observer) {
+	void subscribe(InstObserver<T> *observer) {
     if (!observer) return;
     if (std::find(_observers.begin(), _observers.end(), observer) == _observers.end()) 
         _observers.push_back(observer);
     }
-	void unsubscribe(IInstObserver<T> *observer) {
+	void unsubscribe(InstObserver<T> *observer) {
         _observers.erase(std::find(_observers.begin(), _observers.end(), observer));
     }
 
@@ -26,8 +26,8 @@ protected:
     /*
 	 * Notify observers about operation
 	 */
-	void observerNotify(T &inst, const ResourceID &resId, Operation::TYPE type) {
-        for(IInstObserver<T>* observer : _observers) {
+	void observerNotify(T &inst, const ResLink &resId, Operation::TYPE type) {
+        for(InstObserver<T>* observer : _observers) {
             if (type == Operation::TYPE::READ) {
                 observer->resourceRead(inst, resId);
             } else if (type == Operation::TYPE::WRITE) {
@@ -39,9 +39,9 @@ protected:
     }
 
 private:
-    std::vector<IInstObserver<T> *> _observers;
+    std::vector<InstObserver<T> *> _observers;
 };
 
 }
 
-#endif //INSTSUBJECT_H_
+#endif //WPP_INST_SUBJECT_H_

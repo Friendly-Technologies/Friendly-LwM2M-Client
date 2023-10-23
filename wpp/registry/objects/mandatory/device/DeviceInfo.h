@@ -1,5 +1,5 @@
-#ifndef DEVICEINFO_H_
-#define DEVICEINFO_H_
+#ifndef WPP_DEVICE_INFO_H_
+#define WPP_DEVICE_INFO_H_
 
 #include "ObjectInfo.h"
 
@@ -30,4 +30,4 @@ static const ObjectInfo DEVICE_OBJ_INFO = {
 
 }
 
-#endif // DEVICEINFO_H_
+#endif // WPP_DEVICE_INFO_H_

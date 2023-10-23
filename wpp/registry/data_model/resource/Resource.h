@@ -1,5 +1,5 @@
-#ifndef RESOURCE_H
-#define RESOURCE_H
+#ifndef WPP_RESOURCE_H
+#define WPP_RESOURCE_H
 
 #include <unordered_map>
 #include <mutex>
@@ -57,17 +57,7 @@ public: /* ---------- Public methods for common usage ----------*/
 	size_t instanceCnt() const;
 
 	/* ---------- Extended abilities for access directly to resource data for avoid coping ----------*/
-	/*
-	 * Before call of this method must be called takeOwnership()
-	 * that must return true for guaranty unique property rights
-	 * to the resource.
-	 * After using of resource must be called giveOwnership() for
-	 * get it available for other.
-	 */
-	std::unordered_map<ID_T, DATA_T>& getInstances();
-	bool takeOwnership();
-	void giveOwnership();
-	std::mutex& getGuard();
+	const std::unordered_map<ID_T, DATA_T>& getInstances();
 
 	/* ---------- Methods for manage resource data ----------*/
     bool set(const BOOL_T &value, ID_T resInstId = SINGLE_INSTANCE_ID);
@@ -125,7 +115,6 @@ private: /* ---------- Private properties ----------*/
     IS_MANDATORY _isMandatory;
     TYPE_ID _typeID;
     mutable std::unordered_map<ID_T, DATA_T> _instances;
-    mutable std::mutex _resourceGuard;
     DATA_VERIFIER_T _dataVerifier;
 };
 
@@ -139,8 +128,6 @@ bool Resource::isDataTypeValid() const {
 
 template<typename T>
 bool Resource::_set(const T &value, ID_T resInstId) {
-	std::lock_guard<std::mutex> guard(_resourceGuard);
-
 	if (!isInstanceIdPossible(resInstId)) return false;
 	if (!isDataValueValid(value)) return false;
 
@@ -151,8 +138,6 @@ bool Resource::_set(const T &value, ID_T resInstId) {
 
 template<typename T>
 bool Resource::_get(T &value, ID_T resInstId) const {
-	std::lock_guard<std::mutex> guard(_resourceGuard);
-
 	if (!isDataTypeValid<T>()) return false;
 	if (!isInstanceExist(resInstId)) return false;
 
@@ -189,4 +174,4 @@ bool Resource::isDataValueValid(const T &data) const {
 
 } // namespace wpp
 
-#endif //RESOURCE_H
+#endif //WPP_RESOURCE_H

@@ -5,8 +5,8 @@
  *      Author: valentin
  */
 
-#ifndef WPPREGISTRY_H_
-#define WPPREGISTRY_H_
+#ifndef WPP_REGISTRY_H_
+#define WPP_REGISTRY_H_
 
 #include <mutex>
 
@@ -87,4 +87,4 @@ private:
 
 } // namespace wpp
 
-#endif // WPPREGISTRY_H_
+#endif // WPP_REGISTRY_H_

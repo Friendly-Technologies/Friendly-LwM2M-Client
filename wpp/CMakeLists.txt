@@ -1,5 +1,5 @@
 # Project's name
-project(WppLib CXX)
+project(Wpp CXX)
 
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 17)
@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD 17)
 # This is essential for shared libraries.
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# Compiler options
+# Comiler options
 add_compile_options(
     -Waggregate-return
     -Wall
@@ -21,15 +21,10 @@ add_compile_options(
     -Wswitch-default
     -Wwrite-strings
     -pedantic
-
     # Reduce noise: Unused parameters are common in this ifdef-littered code-base, but of no danger
     -Wno-unused-parameter
     # Reduce noise: Too many false positives
     -Wno-uninitialized
-    # TODO: Remove this two configs after integreting with wakaama
-    -Wno-unused-but-set-variable
-    -Wno-unused-variable
-
      # Turn (most) warnings into errors
     -Werror
     # Disabled because of existing, non-trivially fixable code
@@ -37,30 +32,30 @@ add_compile_options(
 )
 
 # Variables that will be filled in subdirectories
-set(SOURCES "")
-set(INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/)
-set(COMPILE_DEFINITIONS "")
+set(WPP_SOURCES "")
+set(WPP_INCLUDES "")
+set(WPP_DEFINITIONS "")
 
 # Include file with wpp config
 include(config/config.cmake)
-
-# TODO: Delete this src file
-set(SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/dep.cpp)
+# Include file with wakaama core config
+include(../wakaama_core/WakaamaCore.cmake)
 
 # Add subdiretories with sources
 add_subdirectory(client)
 add_subdirectory(registry)
 add_subdirectory(platform)
-add_subdirectory(connection)
 add_subdirectory(utils)
 
-# message("INCLUDES: ${INCLUDES}")
-# message("SOURCES: ${SOURCES}")
-# message("COMPILE_DEFINITIONS: ${COMPILE_DEFINITIONS}")
+# message(STATUS "Wpp:WPP_INCLUDES: ${WPP_INCLUDES}")
+# message(STATUS "Wpp:WPP_SOURCES: ${WPP_SOURCES}")
+# message(STATUS "Wpp:WPP_DEFINITIONS: ${WPP_DEFINITIONS}")
 
 # Creating target as static library
-add_library(WppLib STATIC ${SOURCES})
+add_library(Wpp STATIC ${WPP_SOURCES})
+# Link Wakaama that implements core functionality to Wpp
+target_link_wakaama_core(Wpp)
 # List of directories that will be set for compiler with key -I
-target_include_directories(WppLib PUBLIC ${INCLUDES})
+target_include_directories(Wpp PUBLIC ${WPP_INCLUDES})
 # List of preprocessor defines that will be set for compiler with key -D
-target_compile_definitions(WppLib PUBLIC ${COMPILE_DEFINITIONS})
+target_compile_definitions(Wpp PUBLIC ${WPP_DEFINITIONS})

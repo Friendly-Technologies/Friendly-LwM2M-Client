@@ -5,22 +5,34 @@
  *      Author: valentin
  */
 
-#ifndef SECURITY_H_
-#define SECURITY_H_
+#ifndef WPP_SECURITY_H_
+#define WPP_SECURITY_H_
 
 #include "SecurityConfig.h"
 #include "SecurityInfo.h"
-#include "IInstance.h"
+#include "Instance.h"
 #include "InstSubject.h"
 
 namespace wpp {
 
-class Security: public IInstance, public InstSubject<Security> {
+class Security: public Instance, public InstSubject<Security> {
 public:
-	Security(WppClient &client, const InstanceID &id);
+	enum ID: ID_T {
+		SERVER_URI = 0,
+		BOOTSTRAP_SERVER = 1,
+		SECURITY_MODE = 2,
+		PUBLIC_KEY = 3,
+		SERVER_PUBLIC_KEY = 4,
+		SECRET_KEY = 5,
+		SERVER_ID = 10,
+		HOLD_OFF_TIME = 11,
+	};
+
+public:
+	Security(WppClient &client, const OBJ_LINK_T &id);
 	
 protected:
-	/* ---------------IInstance implementation part --------------- */
+	/* ---------------Instance implementation part --------------- */
 	/*
 	 * Returns Resource object if it is exist
 	 */
@@ -38,11 +50,11 @@ protected:
 	/*
 	 * Handles information about resource operation that made server
 	 */
-	void serverOperationNotifier(Operation::TYPE type, const ResourceID &resId) override;
+	void serverOperationNotifier(Operation::TYPE type, const ResLink &resId) override;
 	/*
 	 * Handles information about resource operation that made user
 	 */
-	void userOperationNotifier(Operation::TYPE type, const ResourceID &resId) override;
+	void userOperationNotifier(Operation::TYPE type, const ResLink &resId) override;
 
 private:
 	/* --------------- Class private methods --------------- */
@@ -51,8 +63,21 @@ private:
 	 * Resource always must have at least one instance.
 	 */
 	void resourcesInit();
+
+private:
+    std::unordered_map<ID_T, Resource> _resources = {
+    	//  KEY            				 VALUE
+    	{SERVER_URI, 		{SERVER_URI, 		Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::STRING}},
+		{BOOTSTRAP_SERVER, 	{BOOTSTRAP_SERVER, 	Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::BOOL}},
+		{SECURITY_MODE,     {SECURITY_MODE,     Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::INT}},
+		{PUBLIC_KEY, 		{PUBLIC_KEY, 		Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::OPAQUE}},
+		{SERVER_PUBLIC_KEY, {SERVER_PUBLIC_KEY, Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::OPAQUE}},
+		{SECRET_KEY, 		{SECRET_KEY, 		Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::OPAQUE}},
+		{SERVER_ID, 		{SERVER_ID, 		Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::INT}},
+		{HOLD_OFF_TIME, 	{HOLD_OFF_TIME, 	Operation(Operation::READ|Operation::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::INT}},
+	};
 };
 
 } /* namespace wpp */
 
-#endif /* SECURITY_H_ */
+#endif /* WPP_SECURITY_H_ */

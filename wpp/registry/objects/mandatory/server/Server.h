@@ -5,17 +5,17 @@
  *      Author: valentin
  */
 
-#ifndef SERVER_H_
-#define SERVER_H_
+#ifndef WPP_SERVER_H_
+#define WPP_SERVER_H_
 
 #include "ServerConfig.h"
 #include "ServerInfo.h"
-#include "IInstance.h"
+#include "Instance.h"
 #include "InstSubject.h"
 
 namespace wpp {
 
-class Server : public IInstance, public InstSubject<Server> {
+class Server : public Instance, public InstSubject<Server> {
 public:
 	enum ID: ID_T {
 		SHORT_SERV_ID = 0,
@@ -29,10 +29,10 @@ public:
 	};
 
 public:
-	Server(WppClient &client, const InstanceID &id);
+	Server(WppClient &client, const OBJ_LINK_T &id);
 
 protected:
-	/* ---------------IInstance implementation part --------------- */
+	/* ---------------Instance implementation part --------------- */
 	/*
 	 * Returns Resource object if it is exist
 	 */
@@ -50,11 +50,11 @@ protected:
 	/*
 	 * Handles information about resource operation that made server
 	 */
-	void serverOperationNotifier(Operation::TYPE type, const ResourceID &resId) override;
+	void serverOperationNotifier(Operation::TYPE type, const ResLink &resId) override;
 	/*
 	 * Handles information about resource operation that made user
 	 */
-	void userOperationNotifier(Operation::TYPE type, const ResourceID &resId) override;
+	void userOperationNotifier(Operation::TYPE type, const ResLink &resId) override;
 
 private:
 	/* --------------- Class private methods --------------- */
@@ -63,7 +63,6 @@ private:
 	 * Resource always must have at least one instance.
 	 */
 	void resourcesInit();
-
 
 private:
     std::unordered_map<ID_T, Resource> _resources = {
@@ -81,4 +80,4 @@ private:
 
 } /* namespace wpp */
 
-#endif /* SERVER_H_ */
+#endif /* WPP_SERVER_H_ */

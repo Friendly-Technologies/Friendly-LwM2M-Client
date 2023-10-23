@@ -5,22 +5,29 @@
  *      Author: valentin
  */
 
-#ifndef DEVICE_H_
-#define DEVICE_H_
+#ifndef WPP_DEVICE_H_
+#define WPP_DEVICE_H_
 
 #include "DeviceConfig.h"
 #include "DeviceInfo.h"
-#include "IInstance.h"
+#include "Instance.h"
 #include "InstSubject.h"
 
 namespace wpp {
 
-class Device: public IInstance, public InstSubject<Device> {
+class Device: public Instance, public InstSubject<Device> {
 public:
-	Device(WppClient &client, const InstanceID &id);
+	enum ID: ID_T {
+		REBOOT = 4,
+		ERROR_CODE = 11,
+		SUPPORTED_BINDINGS = 16,
+	};
+
+public:
+	Device(WppClient &client, const OBJ_LINK_T &id);
 
 protected:
-	/* ---------------IInstance implementation part --------------- */
+	/* ---------------Instance implementation part --------------- */
 	/*
 	 * Returns Resource object if it is exist
 	 */
@@ -38,11 +45,11 @@ protected:
 	/*
 	 * Handles information about resource operation that made server
 	 */
-	void serverOperationNotifier(Operation::TYPE type, const ResourceID &resId) override;
+	void serverOperationNotifier(Operation::TYPE type, const ResLink &resId) override;
 	/*
 	 * Handles information about resource operation that made user
 	 */
-	void userOperationNotifier(Operation::TYPE type, const ResourceID &resId) override;
+	void userOperationNotifier(Operation::TYPE type, const ResLink &resId) override;
 
 private:
 	/* --------------- Class private methods --------------- */
@@ -51,8 +58,16 @@ private:
 	 * Resource always must have at least one instance.
 	 */
 	void resourcesInit();
+	
+private:
+    std::unordered_map<ID_T, Resource> _resources = {
+    	//  KEY            				 VALUE
+    	{REBOOT, 			  {REBOOT, 				Operation(Operation::EXECUTE),  IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::EXECUTE}},
+		{ERROR_CODE, 		  {ERROR_CODE, 			Operation(Operation::READ), 	IS_SINGLE::MULTIPLE, IS_MANDATORY::MANDATORY, TYPE_ID::INT}},
+		{SUPPORTED_BINDINGS,  {SUPPORTED_BINDINGS,  Operation(Operation::READ),     IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::STRING}},
+	};
 };
 
 } /* namespace wpp */
 
-#endif /* DEVICE_H_ */
+#endif /* WPP_DEVICE_H_ */

@@ -5,18 +5,17 @@
  *      Author: valentin
  */
 
-#ifndef LWM2MOBJECT_H_
-#define LWM2MOBJECT_H_
+#ifndef WPP_LWM2M_OBJECT_H_
+#define WPP_LWM2M_OBJECT_H_
 
 #include "types.h"
 #include "ObjectInfo.h"
 
-//TODO: #include "liblwm2m.h"
-#include <dep.h>
+#include "liblwm2m.h"
 
 namespace wpp {
 
-// TODO: Add ability to get IInstance class by ID
+// TODO: Add ability to get Instance class by ID
 class Lwm2mObject {
 public:
 	Lwm2mObject(const ObjectInfo &info): _objInfo(info) {}
@@ -45,4 +44,4 @@ protected:
 } // namespace wpp
 
 
-#endif /* LWM2MOBJECT_H_ */
+#endif /* WPP_LWM2M_OBJECT_H_ */

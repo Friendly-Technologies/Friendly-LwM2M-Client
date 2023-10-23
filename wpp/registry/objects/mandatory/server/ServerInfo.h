@@ -1,5 +1,5 @@
-#ifndef SERVERINFO_H_
-#define SERVERINFO_H_
+#ifndef WPP_SERVER_INFO_H_
+#define WPP_SERVER_INFO_H_
 
 #include "ObjectInfo.h"
 
@@ -31,4 +31,4 @@ static const ObjectInfo SERVER_OBJ_INFO = {
 
 }
 
-#endif // SERVERINFO_H_
+#endif // WPP_SERVER_INFO_H_

@@ -13,12 +13,10 @@ namespace wpp {
 
 Resource::Resource():
 	_id(ID_T_MAX_VAL), _operation(), _isSingle(IS_SINGLE::MULTIPLE), _isMandatory(IS_MANDATORY::OPTIONAL), _typeID(TYPE_ID::UNDEFINED) {
-	_resourceGuard.unlock();
 }
 
 Resource::Resource(ID_T id, const Operation &operation, IS_SINGLE isSingle, IS_MANDATORY isMandatory, TYPE_ID dataType):
 	_id(id), _operation(operation), _isSingle(isSingle), _isMandatory(isMandatory), _typeID(dataType) {
-	_resourceGuard.unlock();
 }
 
 Resource::Resource(const Resource& resource) {
@@ -29,8 +27,6 @@ Resource::Resource(const Resource& resource) {
 	_typeID = resource._typeID;
 	_instances = resource._instances;
 	_dataVerifier = resource._dataVerifier;
-	// The guard not inherit original object guard state
-	_resourceGuard.unlock();
 }
 
 Resource::Resource(Resource&& resource) {
@@ -41,8 +37,6 @@ Resource::Resource(Resource&& resource) {
 	_typeID = resource._typeID;
 	_instances.insert(std::make_move_iterator(resource._instances.begin()), std::make_move_iterator(resource._instances.end()));
 	_dataVerifier = resource._dataVerifier;
-	// The guard not inherit original object guard state
-	_resourceGuard.unlock();
 }
 
 ID_T Resource::getID() const {
@@ -110,22 +104,9 @@ size_t Resource::instanceCnt() const {
 
 
 /* ---------- Extended abilities for access directly to resource data for avoid coping ----------*/
-std::unordered_map<ID_T,Resource::DATA_T>& Resource::getInstances() {
+const std::unordered_map<ID_T, Resource::DATA_T>& Resource::getInstances() {
 	return _instances;
 }
-
-bool Resource::takeOwnership() {
-	return _resourceGuard.try_lock();
-}
-
-void Resource::giveOwnership() {
-	_resourceGuard.unlock();
-}
-
-std::mutex& Resource::getGuard() {
-	return _resourceGuard;
-}
-
 
 /* ---------- Methods for get and set resource value ----------*/
 bool Resource::set(const BOOL_T &value, ID_T resInstId) {
@@ -193,8 +174,6 @@ bool Resource::get(EXECUTE_T &value, ID_T resInstId) const {
 }
 
 bool Resource::remove(ID_T resInstId) {
-	std::lock_guard<std::mutex> guard(_resourceGuard);
-
 	if (!isInstanceExist(resInstId) || isSingle()) return false;
 	_instances.erase(resInstId);
 
@@ -202,8 +181,6 @@ bool Resource::remove(ID_T resInstId) {
 }
 
 bool Resource::clear() {
-	std::lock_guard<std::mutex> guard(_resourceGuard);
-
 	_instances.clear();
 
 	return true;

@@ -19,11 +19,11 @@
 
 namespace wpp {
 
-Server::Server(WppClient &client, const InstanceID &id): IInstance(client, id) {
+Server::Server(WppClient &client, const OBJ_LINK_T &id): Instance(client, id) {
 	resourcesInit();
 }
 
-/* ---------------IInstance implementation part --------------- */
+/* ---------------Instance implementation part --------------- */
 Resource * Server::getResource(ID_T id) {
 	// Check if resource ID is valid
 	if (_resources.find(id) == _resources.end()) return NULL;
@@ -58,38 +58,38 @@ std::vector<Resource *> Server::getInstantiatedResourcesList(const Operation& fi
 	return list;
 }
 
-void Server::serverOperationNotifier(Operation::TYPE type, const ResourceID &resId) {
+void Server::serverOperationNotifier(Operation::TYPE type, const ResLink &resId) {
 	observerNotify(*this, resId, type);
 	switch (type) {
 	case Operation::READ:
-		WPP_LOGD_ARG(TAG, "Server READ -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
+		WPP_LOGD_ARG(TAG, "Server READ -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
 		break;
 	case Operation::WRITE:
-		WPP_LOGD_ARG(TAG, "Server WRITE -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
+		WPP_LOGD_ARG(TAG, "Server WRITE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
 		break;
 	case Operation::EXECUTE:
-		WPP_LOGD_ARG(TAG, "Server EXECUTE -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
+		WPP_LOGD_ARG(TAG, "Server EXECUTE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
 		break;
 	case Operation::DISCOVER:
-		WPP_LOGD_ARG(TAG, "Server DISCOVER -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
+		WPP_LOGD_ARG(TAG, "Server DISCOVER -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
 		break;
 	case Operation::DELETE:
-		WPP_LOGD_ARG(TAG, "Server DELETE -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
+		WPP_LOGD_ARG(TAG, "Server DELETE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
 		break;
 	default: break;
 	}
 }
 
-void Server::userOperationNotifier(Operation::TYPE type, const ResourceID &resId) {
+void Server::userOperationNotifier(Operation::TYPE type, const ResLink &resId) {
 	switch (type) {
 	case Operation::READ:
-		WPP_LOGD_ARG(TAG, "User READ -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
+		WPP_LOGD_ARG(TAG, "User READ -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
 		break;
 	case Operation::WRITE:
-		WPP_LOGD_ARG(TAG, "User WRITE -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
+		WPP_LOGD_ARG(TAG, "User WRITE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
 		break;
 	case Operation::DELETE:
-		WPP_LOGD_ARG(TAG, "User DELETE -> resId: %d, resInstId: %d\n", resId.resId, resId.resInstId);
+		WPP_LOGD_ARG(TAG, "User DELETE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
 		break;
 	default: break;
 	}

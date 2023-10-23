@@ -1,13 +1,12 @@
-#ifndef TYPES_T
-#define TYPES_T
+#ifndef WPP_TYPES_T
+#define WPP_TYPES_T
 
 #include <vector>
 #include <string>
 #include <functional>
 #include <variant>
 
-//TODO: #include "liblwm2m.h"
-#include <dep.h>
+#include "liblwm2m.h"
 
 namespace wpp {
 
@@ -122,21 +121,16 @@ struct Version {
     uint8_t minor;
 };
 
-struct InstanceID {
-	ID_T objId = ID_T_MAX_VAL;
-    ID_T objInstId = ID_T_MAX_VAL;
-};
-
-struct ResourceID{
+struct ResLink {
     ID_T resId = ID_T_MAX_VAL;
     ID_T resInstId = ID_T_MAX_VAL;
 };
 
-struct DataID{
-    InstanceID instance;
-    ResourceID resource;
+struct DataLink {
+    OBJ_LINK_T instance;
+    ResLink resource;
 };
 
 } // namespace wpp
 
-#endif // TYPES_T
+#endif // WPP_TYPES_T

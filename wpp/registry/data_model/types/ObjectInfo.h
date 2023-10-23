@@ -1,5 +1,5 @@
-#ifndef OBJECT_INFO_H
-#define OBJECT_INFO_H
+#ifndef WPP_OBJECT_INFO_H
+#define WPP_OBJECT_INFO_H
 
 #include "Operation.h"
 #include "ObjectID.h"
@@ -19,4 +19,4 @@ struct ObjectInfo {
 
 }; // wpp
 
-#endif // OBJECT_INFO_H
+#endif // WPP_OBJECT_INFO_H

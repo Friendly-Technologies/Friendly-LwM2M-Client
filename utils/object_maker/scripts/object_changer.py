@@ -1,11 +1,14 @@
 import object_generator
 import object_remover
 import object_integrator
+import object_constants
 
 from optparse import OptionParser
 import re
 import os
 import shutil
+
+FILE_OBJ_METADATA = "object_metadata.json"
 
 keywords = ["FILETYPE_OBJ_IMPL_H", "FILETYPE_OBJ_IMPL_CPP", "FILETYPE_OBJ_CONF", "FILETYPE_OBJ_NFO"]
 
@@ -21,7 +24,39 @@ FILE_TYPE_COMPONENTS_CNT = 2
 
 
 class ObjectChanger:
-    
+    """Add some comments here"""
+
+    def __init__(self, obj_folder_to_change, obj_metadata_to_use):
+        self.user_codes_relations = None
+        self.obj_folder_to_change = obj_folder_to_change
+        self.obj_metadata_to_use = obj_metadata_to_use
+
+    """
+        note: the order of files on parameter is very important: first must be old, the second is new
+    """
+    def set_relations(self, folders):
+        relations = {}
+        datas = []
+        for folder in folders:
+            # check if files exists:
+            if not os.path.exists(f"{folder}/{object_constants.FILE_OBJ_METADATA}"):
+                print("There is impossible to create relationships for user code blocks saving")
+                return False
+            # just read and save data to list:
+            with open(f"{folder}/{object_constants.FILE_OBJ_METADATA}", 'r') as f:
+                datas.append(f.read())
+
+        # parse, pack and save object_files-dict to Class-field:
+        try:
+            relations["old"] = eval(datas[0])["object_files"]
+            relations["new"] = eval(datas[1])["object_files"]
+            self.user_codes_relations = relations
+            return True
+
+        except KeyError:
+            print("There is no \"object_files\" on dictionaries")
+            return False
+
     def get_info(self, path_to_file):
         add_line = False
         counter = 0
@@ -73,14 +108,16 @@ class ObjectChanger:
             f.write(new_content[:-1])
         f.close()
 
-    def read_files(self, path):
+    def read_files(self):
+        print(self.read_files.__name__)
         datas = {}
-        dir_list = os.listdir(path)
+        dir_list = os.listdir(self.obj_folder_to_change)
         for file in dir_list:
-            file_path = f"{path}/{file}"
-            file_type = self.get_file_type_by_path(file_path)
+            file_path = f"{self.obj_folder_to_change}/{file}"
+            file_type = self.get_file_type_by_name("old", file)
+            print(file_path, "->", file_type)
             if not file_type:
-                print(f"Incorrect file type in '{file_path}'")
+                print(f"Incorrect file type in '{file}'")
                 continue
             user_codes = self.get_info(file_path)
             datas[file_type] = user_codes
@@ -90,39 +127,29 @@ class ObjectChanger:
         dir_list = os.listdir(folder_path)
         for file in dir_list:
             file_path = f"{folder_path}/{file}"
-            file_type = self.get_file_type_by_path(file_path)
+            file_type = self.get_file_type_by_name("new", file)
             if not file_type:
                 print(f"Incorrect file type in '{file_path}'")
                 continue
             self.put_info(file_path, datas[file_type])
 
-    def get_obj_file_name_by_type(self, obj_path, type):
-        files_list = os.listdir(obj_path)
-        for file_name in files_list:
-            with open(obj_path+"/"+file_name, 'r') as file:
-                for line in file:
-                    if re.search(type, line):
-                        return file_name
-        return ""
+    def get_file_name_by_type(self, relations, file_type):
+        try:
+            return self.user_codes_relations[relations][file_type]
+        except KeyError:
+            return ""
 
-    def get_file_type_by_path(self, obj_file_path):
-        with open(obj_file_path, 'r') as file:
-            for line in file:
-                if not re.search(object_generator.FILE_TYPE_TAG, line):
-                    continue
-                type_components = line.split(":")
-                if len(type_components) < FILE_TYPE_COMPONENTS_CNT:
-                    break
-                file_type = type_components[1].replace(" ", "").strip("\t\n")
-                if file_type not in object_generator.FILE_TYPES:
-                    break
-                return file_type
-        return ""
+    def get_file_type_by_name(self, relations, file_name):
+        try:
+            return list(self.user_codes_relations[relations].keys())[list(self.user_codes_relations[relations].values()).index(file_name)]
+        except ValueError:
+            return ""
 
     def get_obj_res_enum_content_from_file(self, obj_path):
-        impl_file = self.get_obj_file_name_by_type(obj_path, object_generator.FILE_TYPE_OBJ_IMPL_H)
+        impl_file = self.get_file_name_by_type("old", object_constants.FILE_TYPE_OBJ_IMPL_H)
+        impl_file = self.get_file_name_by_type("old", "sdf")
         if not impl_file:
-            print(f"File with type '{object_generator.FILE_TYPE_OBJ_IMPL_H}' not found in the path '{obj_path}'")
+            print(f"File with type '{object_constants.FILE_TYPE_OBJ_IMPL_H}' not found in the path '{obj_path}'")
             return ""
 
         with open(obj_path + "/" + impl_file, 'r') as file:
@@ -146,9 +173,10 @@ class ObjectChanger:
                 return list()
         return block
 
-    def get_resource_names_from_file(self, obj_path):
+    def get_resource_names_old(self):
+        print(self.get_resource_names_old.__name__)
         # Return ["line0", "line1", ...]
-        res_enum = self.get_obj_res_enum_content_from_file(obj_path)
+        res_enum = self.get_obj_res_enum_content_from_file(self.obj_folder_to_change)
         if not res_enum:
             print("Enum with resources definitions not found")
             return dict()
@@ -164,7 +192,8 @@ class ObjectChanger:
             names[int(field_parts[1])] = field_parts[0]
         return names
 
-    def get_resource_names_from_gen(self, obj_gen):
+    def get_resource_names_new(self, obj_gen):
+        print(self.get_resource_names_new.__name__)
         names = dict()
         for res in obj_gen.meta_resources:
             names[int(res['ID'])] = f"{res['Name']}_{res['ID']}"
@@ -177,15 +206,16 @@ class ObjectChanger:
                 result_map.append([attr1[id], attr2[id]])
         return result_map
 
-    def get_updated_user_code(self, old_object_path, new_obj_gen):
+    def get_updated_user_code(self, object_generator_obj):
+        print(self.get_updated_user_code.__name__)
         # Returns {ID: [<str>, <int>]}
-        old_res_names = self.get_resource_names_from_file(old_object_path)
-        new_res_names = self.get_resource_names_from_gen(new_obj_gen)
+        old_res_names = self.get_resource_names_old()
+        new_res_names = self.get_resource_names_new(object_generator_obj)
 
         # Returns [[old_attr, new_attr],...]
         res_names_map = self.create_map_for_attribute(old_res_names, new_res_names)
 
-        old_user_code_blocks = self.read_files(old_object_path)
+        old_user_code_blocks = self.read_files()
         new_user_code_blocks = dict()
         for type, old_blocks in old_user_code_blocks.items():
             new_user_code_blocks[type] = dict()
@@ -196,27 +226,41 @@ class ObjectChanger:
                 new_user_code_blocks[type][id] = new_block
         return new_user_code_blocks
 
-    def change(self, destination, new_data):
-        obj_r = object_remover.ObjectRemover(destination)
-        obj_g = object_generator.ObjectGenerator(new_data, None)
-        obj_i = object_integrator.ObjectIntegrator(obj_g.get_folder_path())
-        path_to_object_new = obj_g.get_folder_path()
-        user_code_blocks = self.get_updated_user_code(destination, obj_g)
-        obj_r.remove_object()
+    def change(self):
+        # 1. generate new code from file/link/meta in current folder:
+        obj_g = object_generator.ObjectGenerator(self.obj_metadata_to_use, None)  # TODO: implement cr-n by link
         obj_g.object_code_generate()
-        self.write_files(path_to_object_new, user_code_blocks)
-        obj_i.update_files()
-        if os.path.exists(path_to_object_new):
-            shutil.rmtree(path_to_object_new, ignore_errors=True)
+        path_to_new_object = obj_g.get_folder_path()
+
+        # 2. check if there is possible and set the relations of user-code blocks (old_object -> updated_object):
+        if not self.set_relations([self.obj_folder_to_change, path_to_new_object]):     # don't change order in list
+            return False
+        # print(self.user_codes_relations)
+
+        # 3. update the code of the new Object by user-code block of the old Object:
+        user_code_blocks = self.get_updated_user_code(obj_g)
+        self.write_files(path_to_new_object, user_code_blocks)
+
+        # 4. remove old Object code:
+        obj_r = object_remover.ObjectRemover(self.obj_folder_to_change)
+        obj_r.remove_object()
+
+        # 5. integrate new code of the Object:
+        obj_i = object_integrator.ObjectIntegrator(path_to_new_object)
+        if not obj_i.update_files():
+            print("Please, Check the destination of the Object folder and try again")
 
 
-if __name__ == "__main__":
+def main():
     parser = OptionParser()
     parser.add_option("--file", dest="file_path", help="The path to the xml file of the Object")
     parser.add_option("--folder", dest="folder_path", help="The path to the folder of the Object")
     options, args = parser.parse_args()
     if not options.file_path or not options.folder_path:
         parser.error("The path to the folder of the Object is not provided")
+    oc = ObjectChanger(options.folder_path, options.file_path)
+    return oc.change()
 
-    oc = ObjectChanger()
-    oc.change(destination=options.folder_path, new_data=options.file_path)
+
+if __name__ == "__main__":
+    main()

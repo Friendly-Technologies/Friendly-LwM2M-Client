@@ -148,10 +148,9 @@ class ObjectChanger:
             return ""
 
     def get_obj_res_enum_content_from_file(self, obj_path):
-        impl_file = self.get_file_name_by_type("old", object_constants.FILE_TYPE_OBJ_IMPL_H)
-        impl_file = self.get_file_name_by_type("old", "sdf")
+        impl_file = self.get_file_name_by_type("old", const.KEY_FILE_IMPL_H)
         if not impl_file:
-            print(f"File with type '{object_constants.FILE_TYPE_OBJ_IMPL_H}' not found in the path '{obj_path}'")
+            print(f"File with type '{const.KEY_FILE_IMPL_H}' not found in the path '{obj_path}'")
             return ""
 
         with open(obj_path + "/" + impl_file, 'r') as file:

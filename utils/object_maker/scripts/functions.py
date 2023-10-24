@@ -18,3 +18,9 @@ def write_to_file_line_by_line(file_path, content):
         for line in content:
             file.write(line + '\n')
     file.close()
+
+
+def create_file(file_path, content):
+    with open(file_path, 'w+') as file:
+        file.write(content)
+    file.close()

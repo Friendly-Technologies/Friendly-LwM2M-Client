@@ -315,9 +315,8 @@ class ObjectGenerator:
             pass
 
     def create_file(self, filename, filetype, content):
-        f = open(f"./{self.object_names['obj_name_folder']}/{filename}.{filetype}", "w+")
-        f.write(content)
-        f.close()
+        file = filename if filetype == "" else f"{filename}.{filetype}"
+        func.create_file(f"./{self.object_names['obj_name_folder']}/{file}", content)
 
     def object_code_generate(self):
         generated_header = self.generate_content_header()

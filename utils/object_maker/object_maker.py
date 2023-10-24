@@ -39,7 +39,7 @@ def arguments_init(parser):
 
 
 def integrate_object(path_to_folder):
-    OI.ObjectIntegrator(path_to_folder).update_files()
+    return OI.ObjectIntegrator(path_to_folder).update_files()
 
 
 def main():
@@ -82,15 +82,15 @@ def main():
     if options.integrate:
         if len(args) != 1:
             parser.error("please, provide path to folder of the Object")
-        integrate_object(args[0])
-        return
+        if not integrate_object(args[0]):
+            sys.exit(1)
 
     # ============================== changing ==============================
     if options.change:
         if len(args) != 2:
             parser.error("please, provide the folder's path of the exists Object and path to the new data")
-        OC.change(args[0], args[1])
-        return
+        if not OC.ObjectChanger(args[0], args[1]).change():
+            sys.exit(1)
 
     # ============================== removing ==============================
     if options.remove:

@@ -61,7 +61,7 @@ class ObjectIntegrator:
             f.close()
         except FileNotFoundError:
             print(F"No such file \"{FILE_ADD_DATA}\". Stopped")
-            return
+            return False
 
         data_dict = eval(data_str)
         dict_obj_meta = data_dict["object_data"]
@@ -125,10 +125,10 @@ class ObjectIntegrator:
     def copy_main_files(self):
         try:
             shutil.copytree(self.folder_name, f"{FOLDER_OBJECTS}/{self.folder_name}")
+            return True
         except FileExistsError:
             print(f"The folder \"{FOLDER_OBJECTS}/{self.folder_name}\" is already exists")
             return False
-        return True
 
     def update_files(self):
         if not self.copy_main_files():

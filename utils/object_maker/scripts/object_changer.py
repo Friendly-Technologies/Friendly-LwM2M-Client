@@ -1,3 +1,5 @@
+import sys
+
 import object_generator
 import object_remover
 import object_integrator
@@ -229,13 +231,16 @@ class ObjectChanger:
     def change(self):
         # 1. generate new code from file/link/meta in current folder:
         obj_g = object_generator.ObjectGenerator(self.obj_metadata_to_use, None)  # TODO: implement cr-n by link
-        obj_g.object_code_generate()
+        # obj_g.object_code_generate()
         path_to_new_object = obj_g.get_folder_path()
 
         # 2. check if there is possible and set the relations of user-code blocks (old_object -> updated_object):
         if not self.set_relations([self.obj_folder_to_change, path_to_new_object]):     # don't change order in list
+            try:
+                shutil.rmtree(path_to_new_object)
+            except FileNotFoundError:
+                pass
             return False
-        # print(self.user_codes_relations)
 
         # 3. update the code of the new Object by user-code block of the old Object:
         user_code_blocks = self.get_updated_user_code(obj_g)

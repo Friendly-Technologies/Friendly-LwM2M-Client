@@ -1,18 +1,13 @@
-import sys
-
+import constants as const
+import functions as func
 import object_generator
 import object_remover
 import object_integrator
-import object_constants
 
-from optparse import OptionParser
-import re
 import os
+import re
 import shutil
-
-FILE_OBJ_METADATA = "object_metadata.json"
-
-keywords = ["FILETYPE_OBJ_IMPL_H", "FILETYPE_OBJ_IMPL_CPP", "FILETYPE_OBJ_CONF", "FILETYPE_OBJ_NFO"]
+from optparse import OptionParser
 
 RES_DEF_PATTERN = r'#define RES_\d+_\d+_'
 RES_DEF_PARTS_CNT = 3
@@ -33,30 +28,28 @@ class ObjectChanger:
         self.obj_folder_to_change = obj_folder_to_change
         self.obj_metadata_to_use = obj_metadata_to_use
 
-    """
-        note: the order of files on parameter is very important: first must be old, the second is new
-    """
     def set_relations(self, folders):
+        """ note: the order of files on parameter is very important:
+        the first must be old, the second is new"""
         relations = {}
         datas = []
+
         for folder in folders:
-            # check if files exists:
-            if not os.path.exists(f"{folder}/{object_constants.FILE_OBJ_METADATA}"):
-                print("There is impossible to create relationships for user code blocks saving")
-                return False
             # just read and save data to list:
-            with open(f"{folder}/{object_constants.FILE_OBJ_METADATA}", 'r') as f:
-                datas.append(f.read())
+            errcode, content = func.get_file_content(f"{folder}/{const.FILE_OBJ_METADATA}")
+            if not errcode:
+                return False
+            datas.append(content)
 
         # parse, pack and save object_files-dict to Class-field:
         try:
-            relations["old"] = eval(datas[0])["object_files"]
-            relations["new"] = eval(datas[1])["object_files"]
+            relations["old"] = eval(datas[0])[const.KEY_DICT_OBJ_FILES]
+            relations["new"] = eval(datas[1])[const.KEY_DICT_OBJ_FILES]
             self.user_codes_relations = relations
             return True
 
         except KeyError:
-            print("There is no \"object_files\" on dictionaries")
+            print(f'There is no "{const.KEY_DICT_OBJ_FILES}" key on dictionaries')
             return False
 
     def get_info(self, path_to_file):
@@ -85,13 +78,9 @@ class ObjectChanger:
     def put_info(self, path_to_file, file_user_code_dict):
         counter = 0
         new_content = ''
-        old_content = ''
+        old_content = func.get_file_content(path_to_file)[1]
         add_flag = True
-        with open(path_to_file, 'r') as f:
-            for i in f:
-                old_content += i
-        f.close()
-
+        
         for line in old_content.split("\n"):
             if re.search("block \d start", line):
                 new_content += line + "\n"
@@ -105,10 +94,7 @@ class ObjectChanger:
                 add_flag = True
             if add_flag:
                 new_content += line + "\n"
-
-        with open(path_to_file, 'w') as f:
-            f.write(new_content[:-1])
-        f.close()
+        func.write_to_file(path_to_file, new_content[:-1])
 
     def read_files(self):
         print(self.read_files.__name__)

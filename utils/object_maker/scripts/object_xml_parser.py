@@ -1,7 +1,9 @@
-import string
-import xml.etree.ElementTree as ElementTree
-import requests
+import functions as func
+
 import json
+import string
+import requests
+import xml.etree.ElementTree as ElementTree
 
 
 class ObjectXmlParser:
@@ -20,10 +22,7 @@ class ObjectXmlParser:
     def download_xml(self, xml_url):
         filename = xml_url.split("/")[-1]
         object_description = json.loads(requests.get(xml_url).content.decode('utf-8'))["payload"]["blob"]["rawLines"]
-        with open(f'./{filename}', 'w') as f:
-            for i in object_description:
-                f.write(i + "\n")
-        f.close()
+        func.write_to_file_line_by_line(f"./{filename}", object_description)
         return filename
 
     def parse_xml(self):

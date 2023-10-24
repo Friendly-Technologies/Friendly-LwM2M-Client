@@ -1,4 +1,6 @@
 import object_xml_parser
+import constants as const
+import functions as func
 
 import os
 from datetime import datetime
@@ -6,23 +8,6 @@ from prettytable import PrettyTable
 from prettytable import PLAIN_COLUMNS
 from optparse import OptionParser
 import json
-
-
-TYPE_OPERATION = "ResOp"
-TYPE_OBJECT = "Object"
-
-
-TYPE_1 = f"{TYPE_OPERATION}::TYPE"
-TYPE_2 = "const ResLink"
-
-LOG_FUNC_CUSTOM = "WPP_LOGD_ARG"
-
-FOLDER_TEMPLATES = "./file_templates"
-FILE_IMPL_H = f"{FOLDER_TEMPLATES}/FILE_OBJ_IMPL_H.txt"
-FILE_IMPL_CPP = f"{FOLDER_TEMPLATES}/FILE_OBJ_IMPL_CPP.txt"
-FILE_INFO = f"{FOLDER_TEMPLATES}/FILE_OBJ_INFO.txt"
-FILE_CONFIG = f"{FOLDER_TEMPLATES}/FILE_OBJ_CONFIG.txt"
-FILE_CMAKE = f"{FOLDER_TEMPLATES}/FILE_OBJ_CMAKE.txt"
 
 DATETIME = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
@@ -44,7 +29,8 @@ class ObjectGenerator:
         return self.object_names["obj_name_folder"]
 
     def parse_operation(self, xml_operation):
-        operation = f"{TYPE_OPERATION}({TYPE_OPERATION}::"
+        type = const.TYPE_OPERATION
+        operation = f"{type}({type}::"
         match xml_operation:
             case "E":
                 operation += "EXECUTE"
@@ -53,9 +39,9 @@ class ObjectGenerator:
             case "W":
                 operation += "WRITE"
             case "RW":
-                operation = f"{TYPE_OPERATION}({TYPE_OPERATION}::READ|{TYPE_OPERATION}::WRITE"
+                operation = f"{type}({type}::READ|{type}::WRITE"
             case default:
-                operation = f"{TYPE_OPERATION}({TYPE_OPERATION}::READ|{TYPE_OPERATION}::WRITE"
+                operation = f"{type}({type}::READ|{type}::WRITE"
         operation += "),"
         return operation
 
@@ -191,19 +177,19 @@ class ObjectGenerator:
             text = '"' + text + '"'
             for argument in arguments:
                 text += ', ' + argument
-            return f"""{LOG_FUNC_CUSTOM}(TAG, {text});"""
+            return f"""WPP_LOGD_ARG(TAG, {text});"""
 
-    def get_content_serverOperationNotifier(self, param_1, param_2):
+    def get_content_serverOperationNotifier(self):
         cases = ["READ", "WRITE", "EXECUTE", "DISCOVER", "DELETE"]
         base = \
-            f"""void __CLASS_NAME__::serverOperationNotifier({param_1} type, {param_2} &resId) {{\n""" \
+            f"""void __CLASS_NAME__::serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) {{\n""" \
             f"""\t/* --------------- Code_cpp block 6 start --------------- */\n""" \
             f"""\t/* --------------- Code_cpp block 6 end --------------- */\n""" \
             f"""\n\tobserverNotify(*this, resId, type);\n\n""" \
             f"""\t/* --------------- Code_cpp block 7 start --------------- */\n""" \
             f"""\tswitch (type) {{\n\t"""
         for case in cases:
-            base += f"""case {TYPE_OPERATION}::{case}:\n\t\t{self.create_log_string(
+            base += f"""case {const.TYPE_OPERATION}::{case}:\n\t\t{self.create_log_string(
                 f"Server {case} -> resId: %d, resInstId: %d",
                 ["resId.resId", "resId.resInstId"],
                 False
@@ -211,14 +197,14 @@ class ObjectGenerator:
         return f"""{base}default: break;\n\t}}\n\t""" \
                f"""/* --------------- Code_cpp block 7 end --------------- */\n}}"""
 
-    def get_content_userOperationNotifier(self, param_1, param_2):
+    def get_content_userOperationNotifier(self):
         cases = ["READ", "WRITE", "DELETE"]
         prefix = \
-            f"""void __CLASS_NAME__::userOperationNotifier({param_1} type, {param_2} &resId) {{\n""" \
+            f"""void __CLASS_NAME__::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) {{\n""" \
             f"""\t/* --------------- Code_cpp block 8 start --------------- */\n""" \
             f"""\tswitch (type) {{\n\t"""
         for case in cases:
-            prefix += f"""case {TYPE_OPERATION}::{case}:\n\t\t{self.create_log_string(
+            prefix += f"""case {const.TYPE_OPERATION}::{case}:\n\t\t{self.create_log_string(
                 f"User {case} -> resId: %d, resInstId: %d",
                 ["resId.resId", "resId.resInstId"],
                 False
@@ -228,7 +214,7 @@ class ObjectGenerator:
         return prefix + postfix
 
     def generate_content_header(self):
-        data_str_h = self.read_file(FILE_IMPL_H)
+        data_str_h = func.get_file_content(const.FILE_TMPLT_IMPL_H)[1]
         resources_enum, resources_map = self.get_map_of_resources(self.meta_resources)
         data_str_h = data_str_h.replace("__DATETIME__", DATETIME)
         data_str_h = data_str_h.replace("__IF_NOT_DEFINED_DEFINE__", self.object_names["obj_name_folder"].upper())
@@ -240,13 +226,13 @@ class ObjectGenerator:
         return data_str_h
 
     def generate_content_cpp(self):
-        data_str_cpp = self.read_file(FILE_IMPL_CPP)
+        data_str_cpp = func.get_file_content(const.FILE_TMPLT_IMPL_CPP)[1]
         data_str_cpp = data_str_cpp.replace("__DATETIME__", DATETIME)
         data_str_cpp = data_str_cpp.replace("__OBJ_FOLDER__", self.object_names["obj_name_folder"])
         data_str_cpp = data_str_cpp.replace("__F_SERVER_OPERATION_NOTIFIER__",
-                                            self.get_content_serverOperationNotifier(TYPE_1, TYPE_2))
+                                            self.get_content_serverOperationNotifier())
         data_str_cpp = data_str_cpp.replace("__F_USER_OPERATION_NOTIFIER__",
-                                            self.get_content_userOperationNotifier(TYPE_1, TYPE_2))
+                                            self.get_content_userOperationNotifier())
         data_str_cpp = data_str_cpp.replace("__F_RESOURCE_INIT__",
                                             self.get_content_resourcesInit_f(self.meta_resources))
         data_str_cpp = data_str_cpp.replace("__CLASS_NAME__", self.object_names["obj_name_class"])
@@ -254,7 +240,7 @@ class ObjectGenerator:
         return data_str_cpp
 
     def generate_content_cmake_list(self):
-        content = self.read_file(FILE_CMAKE)
+        content = func.get_file_content(const.FILE_TMPLT_CMAKE)[1]
         content = content.replace("__DATETIME__", DATETIME)
         content = content.replace("__OBJ_DEFINE__", self.object_names["obj_name_define"])
         content = content.replace("__CLASS_NAME__", self.object_names["obj_name_class"])
@@ -265,10 +251,9 @@ class ObjectGenerator:
         is_multiple = "MULTIPLE" if self.meta_object["is_multiple"] else "SINGLE"
         is_mandatory = "MANDATORY" if self.meta_object["is_mandatory"] else "OPTIONAL"
 
-        content = self.read_file(FILE_INFO)
+        content = func.get_file_content(const.FILE_TMPLT_INFO)[1]
         content = content.replace("__DATETIME__", DATETIME)
         content = content.replace("<<IF_DEF_DIRECTIVE>>", self.object_names["obj_name_up_underline"])
-        content = content.replace("__OBJ_DEFINE__", self.object_names["obj_name_define"])
         content = content.replace("__UPNAME__", self.object_names["obj_name_up_underline"])
         content = content.replace("__OBJ_DEFINE__", self.object_names["obj_name_define"])
         content = content.replace("__NAME__", self.meta_object["object_name"])
@@ -289,7 +274,7 @@ class ObjectGenerator:
             if resource["Mandatory"] == "OPTIONAL":
                 defines += f"""#define {resource['Define']} 0\n"""
 
-        content = self.read_file(FILE_CONFIG)
+        content = func.get_file_content(const.FILE_TMPLT_CONFIG)[1]
         content = content.replace("__DATETIME__", DATETIME)
         content = content.replace("<<IF_DEF_DIRECTIVE>>", self.object_names["obj_name_up_underline"])
         content = content.replace("__OBJ_DEFINE__", self.object_names["obj_name_define"])
@@ -300,26 +285,26 @@ class ObjectGenerator:
     def generate_obj_integration_data(self):
         dictionary = {}
 
-        obj_dict = {"is_mandatory": "True" if self.meta_object["is_mandatory"] else "False",
-                    "name": self.meta_object["object_name"],
-                    "id": self.meta_object["object_id"],
-                    "lwm2m_version": self.meta_object["object_lwm2m_version"],
-                    "version": self.meta_object["object_version"]}
+        obj_dict = {const.KEY_DICT_OBJ_META_MANDAT: "True" if self.meta_object["is_mandatory"] else "False",
+                    const.KEY_DICT_OBJ_META_NAME: self.meta_object["object_name"],
+                    const.KEY_DICT_OBJ_META_ID: self.meta_object["object_id"],
+                    const.KEY_DICT_OBJ_META_VER_LWM2M: self.meta_object["object_lwm2m_version"],
+                    const.KEY_DICT_OBJ_META_VER: self.meta_object["object_version"]}
 
-        obj_names = {"class": self.object_names["obj_name_class"],
-                     "camelcase": self.object_names["obj_name_camelcase"],
-                     "define": self.object_names["obj_name_define"],
-                     "up_underline": self.object_names["obj_name_up_underline"]}
+        obj_names = {const.KEY_DICT_OBJ_NAMES_CLASS: self.object_names["obj_name_class"],
+                     const.KEY_DICT_OBJ_NAMES_CAMELC: self.object_names["obj_name_camelcase"],
+                     const.KEY_DICT_OBJ_NAMES_DEFINE: self.object_names["obj_name_define"],
+                     const.KEY_DICT_OBJ_NAMES_UNDERL: self.object_names["obj_name_up_underline"]}
 
-        obj_files = {"impl_h": f"{self.object_names['obj_name_class']}.h",
-                     "impl_cpp": f"{self.object_names['obj_name_class']}.cpp",
-                     "config": f"{self.object_names['obj_name_class']}Config.h",
-                     "info": f"{self.object_names['obj_name_class']}Info.h",
-                     "cmake": f"CMakeLists.txt"}
+        obj_files = {const.KEY_FILE_IMPL_H: f"{self.object_names['obj_name_class']}.h",
+                     const.KEY_FILE_IMPL_CPP: f"{self.object_names['obj_name_class']}.cpp",
+                     const.KEY_FILE_IMPL_CONFIG: f"{self.object_names['obj_name_class']}Config.h",
+                     const.KEY_FILE_IMPL_INFO: f"{self.object_names['obj_name_class']}Info.h",
+                     const.KEY_FILE_IMPL_CMAKE: f"CMakeLists.txt"}
 
-        dictionary["object_data"] = obj_dict
-        dictionary["object_names"] = obj_names
-        dictionary["object_files"] = obj_files
+        dictionary[const.KEY_DICT_OBJ_META] = obj_dict
+        dictionary[const.KEY_DICT_OBJ_NAMES] = obj_names
+        dictionary[const.KEY_DICT_OBJ_FILES] = obj_files
 
         return json.dumps(dictionary, indent=4)
 
@@ -328,10 +313,6 @@ class ObjectGenerator:
             os.mkdir(self.object_names['obj_name_folder'])
         except FileExistsError:
             pass
-
-    def read_file(self, file):
-        with open(file, 'r') as f:
-            return f.read()
 
     def create_file(self, filename, filetype, content):
         f = open(f"./{self.object_names['obj_name_folder']}/{filename}.{filetype}", "w+")
@@ -356,7 +337,7 @@ class ObjectGenerator:
         self.create_file(f"{name_class}",       "cpp",  generated_cpp_file)
         self.create_file(f"CMakeLists",         "txt",  generated_cmake_list)
 
-        self.create_file(f"object_metadata",    "json", generated_obj_integration_data)
+        self.create_file(const.FILE_OBJ_METADATA, "", generated_obj_integration_data)
 
 
 if __name__ == "__main__":

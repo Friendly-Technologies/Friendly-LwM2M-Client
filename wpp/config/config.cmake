@@ -11,17 +11,15 @@ endif()
 
 # The option of the mandatory object ends with the letter M.
 # The start of the options of the mandatory objects.
-
-
 option(OBJ_M_3_DEVICE_V12 "Include mandatory Device object in the build" ON)
 if (OBJ_M_3_DEVICE_V12)
 	set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_M_3_DEVICE_V12=1)
 endif()
-option(OBJ_M_0_LWM2M_SECURITY_V12 "Include mandatory LWM2MSecurity object in the build" ON)
-if (OBJ_M_0_LWM2M_SECURITY_V12)
-	set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_M_0_LWM2M_SECURITY_V12=1)
+option(OBJ_M_0_LWM2M_SECURITY_V11 "Include mandatory Lwm2mSecurity object in the build" ON)
+if (OBJ_M_0_LWM2M_SECURITY_V11)
+	set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_M_0_LWM2M_SECURITY_V11=1)
 endif()
-option(OBJ_M_1_LWM2M_SERVER_V11 "Include mandatory LwM2MServer object in the build" ON)
+option(OBJ_M_1_LWM2M_SERVER_V11 "Include mandatory Lwm2mServer object in the build" ON)
 if (OBJ_M_1_LWM2M_SERVER_V11)
 	set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_M_1_LWM2M_SERVER_V11=1)
 endif()

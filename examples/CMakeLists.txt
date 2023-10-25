@@ -39,7 +39,7 @@ set(INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/)
 set(COMPILE_DEFINITIONS "")
 
 # General options
-option(WITH_UDP_DTLS "Enable UDP DTLS" ON)
+option(WITH_UDP_DTLS "Enable UDP DTLS" OFF)
 if (WITH_UDP_DTLS)
     set(COMPILE_DEFINITIONS ${COMPILE_DEFINITIONS} WITH_UDP_DTLS)
     # set(COMPILE_DEFINITIONS ${COMPILE_DEFINITIONS} DTLS_WITH_PSK)
@@ -63,7 +63,7 @@ target_include_directories(WakaamaPlusTest PUBLIC ${INCLUDES})
 target_compile_definitions(WakaamaPlusTest PUBLIC ${COMPILE_DEFINITIONS})
 
 # Link with Wpp library
-target_link_libraries(WakaamaPlusTest Wpp)
+target_link_libraries(WakaamaPlusTest Wpp pthread)
 # Add tiny dtls src
 if (WITH_UDP_DTLS)
     include(../2305-Wakaama/examples/shared/tinydtls.cmake)

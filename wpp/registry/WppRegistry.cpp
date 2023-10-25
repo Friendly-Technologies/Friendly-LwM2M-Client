@@ -30,16 +30,16 @@ Object <Device> & WppRegistry::device() {
 	return *Object <Device>::object();
 }
 # endif
-# if OBJ_M_0_LWM2M_SECURITY_V12
-Object <LWM2MSecurity> & WppRegistry::lWM2MSecurity() {
-	if (!Object <LWM2MSecurity>::isCreated()) Object <LWM2MSecurity>::create(_context, LWM2M_SECURITY_OBJ_INFO);
-	return *Object <LWM2MSecurity>::object();
+# if OBJ_M_0_LWM2M_SECURITY_V11
+Object <Lwm2mSecurity> & WppRegistry::lwm2mSecurity() {
+	if (!Object <Lwm2mSecurity>::isCreated()) Object <Lwm2mSecurity>::create(_context, LWM2M_SECURITY_OBJ_INFO);
+	return *Object <Lwm2mSecurity>::object();
 }
 # endif
 # if OBJ_M_1_LWM2M_SERVER_V11
-Object <LwM2MServer> & WppRegistry::lwM2MServer() {
-	if (!Object <LwM2MServer>::isCreated()) Object <LwM2MServer>::create(_context, LWM2M_SERVER_OBJ_INFO);
-	return *Object <LwM2MServer>::object();
+Object <Lwm2mServer> & WppRegistry::lwm2mServer() {
+	if (!Object <Lwm2mServer>::isCreated()) Object <Lwm2mServer>::create(_context, LWM2M_SERVER_OBJ_INFO);
+	return *Object <Lwm2mServer>::object();
 }
 # endif
 /* The end of the prototypes of the mandatory objects. */

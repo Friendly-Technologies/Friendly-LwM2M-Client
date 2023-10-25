@@ -16,11 +16,11 @@
 #if OBJ_M_3_DEVICE_V12
 #include "m_3_device_v12/Device.h"
 #endif
-#if OBJ_M_0_LWM2M_SECURITY_V12
-#include "m_0_lwm2m_security_v12/LWM2MSecurity.h"
+#if OBJ_M_0_LWM2M_SECURITY_V11
+#include "m_0_lwm2m_security_v11/Lwm2mSecurity.h"
 #endif
 #if OBJ_M_1_LWM2M_SERVER_V11
-#include "m_1_lwm2m_server_v11/LwM2MServer.h"
+#include "m_1_lwm2m_server_v11/Lwm2mServer.h"
 #endif
 /* The end of the includes of the mandatory objects. */
 /* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
@@ -62,11 +62,11 @@ public:
 	#if OBJ_M_3_DEVICE_V12
 	Object <Device> & device();
 	#endif
-	#if OBJ_M_0_LWM2M_SECURITY_V12
-	Object <LWM2MSecurity> & lWM2MSecurity();
+	#if OBJ_M_0_LWM2M_SECURITY_V11
+	Object <Lwm2mSecurity> & lwm2mSecurity();
 	#endif
 	#if OBJ_M_1_LWM2M_SERVER_V11
-	Object <LwM2MServer> & lwM2MServer();
+	Object <Lwm2mServer> & lwm2mServer();
 	#endif
 	/* The end of the prototypes of the mandatory objects. */
 	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */

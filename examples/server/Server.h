@@ -9,48 +9,48 @@
 using namespace wpp;
 using namespace std;
 
-class ServerImpl: public ObjObserver<WppLwM2MServer>, public InstObserver<WppLwM2MServer> {
+class ServerImpl: public ObjObserver<Lwm2mServer>, public InstObserver<Lwm2mServer> {
 	public:
-    void init(Object<WppLwM2MServer> &serverObj) {
+    void init(Object<Lwm2mServer> &serverObj) {
         serverObj.subscribe(this);
-        wpp::WppLwM2MServer *server = serverObj.createInstance();
+        wpp::Lwm2mServer *server = serverObj.createInstance();
         server->subscribe(this);
 
-        server->set(WppLwM2MServer::SHORT_SERVER_ID_0, (INT_T)123);
-        server->set(WppLwM2MServer::BINDING_7, WPP_BINDING_UDP);
-        server->set(WppLwM2MServer::LIFETIME_1, (INT_T)25);
-        server->set(WppLwM2MServer::NOTIFICATION_STORING_WHEN_DISABLED_OR_OFFLINE_6, false);
+        server->set(Lwm2mServer::SHORT_SERVER_ID_0, (INT_T)123);
+        server->set(Lwm2mServer::BINDING_7, WPP_BINDING_UDP);
+        server->set(Lwm2mServer::LIFETIME_1, (INT_T)25);
+        server->set(Lwm2mServer::NOTIFICATION_STORING_WHEN_DISABLED_OR_OFFLINE_6, false);
     }
 
-	void objectRestore(Object<WppLwM2MServer> &object) override {
-		cout << "WppLwM2MServer: objectRestore: " << (ID_T)object.getObjectID() << endl;
+	void objectRestore(Object<Lwm2mServer> &object) override {
+		cout << "Lwm2mServer: objectRestore: " << (ID_T)object.getObjectID() << endl;
 		object.clear();
         init(object);
 	}
 
-    void instanceCreated(Object<WppLwM2MServer> &object, ID_T instanceId) override {
-        cout << "WppLwM2MServer: instanceCreated: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
+    void instanceCreated(Object<Lwm2mServer> &object, ID_T instanceId) override {
+        cout << "Lwm2mServer: instanceCreated: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
         object.instance(instanceId)->subscribe(this);
     }
 
-    void instanceDeleting(Object<WppLwM2MServer> &object, ID_T instanceId) override {
-		cout << "WppLwM2MServer: instanceDeleting: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
+    void instanceDeleting(Object<Lwm2mServer> &object, ID_T instanceId) override {
+		cout << "Lwm2mServer: instanceDeleting: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
 	}
 
-	void resourceRead(WppLwM2MServer &inst, const ResLink &resId) override {
-        cout << "WppLwM2MServer: resourceRead: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
+	void resourceRead(Lwm2mServer &inst, const ResLink &resId) override {
+        cout << "Lwm2mServer: resourceRead: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
     }
 
-    void resourceWrite(WppLwM2MServer &inst, const ResLink &resId) override {
-        cout << "WppLwM2MServer: resourceWrite: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
+    void resourceWrite(Lwm2mServer &inst, const ResLink &resId) override {
+        cout << "Lwm2mServer: resourceWrite: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
     }
 
-    void resourceExecute(WppLwM2MServer &inst, const ResLink &resId) override {
-        cout << "WppLwM2MServer: resourceExecute: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
+    void resourceExecute(Lwm2mServer &inst, const ResLink &resId) override {
+        cout << "Lwm2mServer: resourceExecute: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
     }
 
-    void resourcesReplaced(WppLwM2MServer &inst) override {
-        cout << "WppLwM2MServer: resourcesReplaced: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << endl;
+    void resourcesReplaced(Lwm2mServer &inst) override {
+        cout << "Lwm2mServer: resourcesReplaced: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << endl;
     }
 };
 

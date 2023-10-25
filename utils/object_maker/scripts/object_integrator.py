@@ -1,3 +1,5 @@
+import sys
+
 import constants as const
 import functions as func
 
@@ -104,6 +106,7 @@ class ObjectIntegrator:
         if not self.copy_main_files():
             return False
         self.insert_additional_data()
+        return True
 
 
 if __name__ == "__main__":
@@ -112,8 +115,9 @@ if __name__ == "__main__":
 
     options, args = parser.parse_args()
 
-    if options.obj_folder:
-        oi = ObjectIntegrator(options.obj_folder)
-        oi.update_files()
-    else:
+    if not options.obj_folder:
         parser.error("the folder of the Object is not provided")
+
+    oi = ObjectIntegrator(options.obj_folder)
+    if not oi.update_files():
+        sys.exit(1)

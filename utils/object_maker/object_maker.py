@@ -10,28 +10,16 @@ GENERATOR_CHOICES = ['file', 'link', 'meta']
 
 
 def arguments_init(parser):
-    parser.add_option("-g", "--generate",
-                      type="choice",
-                      dest="generate",
-                      choices=GENERATOR_CHOICES,
+    parser.add_option("-g", "--generate", type="choice", dest="generate", choices=GENERATOR_CHOICES,
                       help="generate code for Object")
 
-    parser.add_option("-i", "--integrate",
-                      dest="integrate",
-                      action="store_true",
-                      default=False,
+    parser.add_option("-i", "--integrate", dest="integrate", action="store_true", default=False,
                       help="file of the Object")
 
-    parser.add_option("-r", "--remove",
-                      dest="remove",
-                      action="store_true",
-                      default=False,
+    parser.add_option("-r", "--remove", dest="remove", action="store_true", default=False,
                       help="file of the Object")
 
-    parser.add_option("-c", "--change",
-                      dest="change",
-                      action="store_true",
-                      default=False,
+    parser.add_option("-c", "--change", dest="change", action="store_true", default=False,
                       help="file of the Object")
 
     options, args = parser.parse_args()
@@ -75,8 +63,8 @@ def main():
 
         if options.integrate:
             crated_obj_folder = og.get_folder_path()
-            integrate_object(crated_obj_folder)
-        return
+            if not integrate_object(crated_obj_folder):
+                sys.exit(1)
 
     # ============================== integration ==============================
     if options.integrate:
@@ -96,9 +84,10 @@ def main():
     if options.remove:
         if len(args) != 1:
             parser.error("please, provide path to folder of the Object")
-        OR.ObjectRemover(args[0]).remove_object()
-        return
+        if not OR.ObjectRemover(args[0]).remove_object():
+            sys.exit(1)
 
+    sys.exit(0)
 
 if __name__ == '__main__':
     main()

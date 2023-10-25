@@ -43,6 +43,7 @@ class ObjectRemover:
             return False
         for file in [const.FILE_OBJECT_ID, const.FILE_REGISTRY_H, const.FILE_REGISTRY_CPP, const.FILE_CONFIG_CMAKE]:
             self.update_file(file)
+        return True
 
     def extract_define(self):
         errcode, data_str = func.get_file_content(f"{self.object_folder_path}/{const.FILE_OBJ_METADATA}")
@@ -61,8 +62,9 @@ class ObjectRemover:
 
     def remove_object(self):
         if not self.update_files():
-            sys.exit(1)
+            return False
         self.remove_object_folder()
+        return True
 
 
 if __name__ == "__main__":
@@ -70,8 +72,9 @@ if __name__ == "__main__":
     parser.add_option("-f", "--folder", dest="folder_path", help="The path to the folder of the Object")
     options, args = parser.parse_args()
 
-    if options.folder_path is not None:
-        object_remover = ObjectRemover(options.folder_path)
-        object_remover.remove_object()
-    else:
+    if not options.folder_path:
         parser.error("The path to the folder of the Object is not provided")
+
+    object_remover = ObjectRemover(options.folder_path)
+    if not object_remover.remove_object():
+        sys.exit(1)

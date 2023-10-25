@@ -49,7 +49,7 @@ class ObjectChanger:
             return True
 
         except KeyError:
-            print(f'There is no "{const.KEY_DICT_OBJ_FILES}" key on dictionaries')
+            # print(f'There is no "{const.KEY_DICT_OBJ_FILES}" key on dictionaries')
             return False
 
     def get_info(self, path_to_file):
@@ -105,7 +105,7 @@ class ObjectChanger:
             file_type = self.get_file_type_by_name("old", file)
             print(file_path, "->", file_type)
             if not file_type:
-                print(f"Incorrect file type in '{file}'")
+                # print(f"Incorrect file type in '{file}'")
                 continue
             user_codes = self.get_info(file_path)
             datas[file_type] = user_codes
@@ -117,7 +117,7 @@ class ObjectChanger:
             file_path = f"{folder_path}/{file}"
             file_type = self.get_file_type_by_name("new", file)
             if not file_type:
-                print(f"Incorrect file type in '{file_path}'")
+                # print(f"Incorrect file type in '{file_path}'")
                 continue
             self.put_info(file_path, datas[file_type])
 

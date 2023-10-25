@@ -145,17 +145,25 @@ class ObjectGenerator:
 
     def get_content_resourcesInit_f(self, resources_list_xml):
         content = f"""void __CLASS_NAME__::resourcesInit() {{\n""" \
-                  f"""\t/* --------------- Code_cpp block 9 start --------------- */\n"""
+                  f"""\t/* --------------- Code_cpp block 9 start --------------- */\n""" \
+                  f"""// TODO: The most part of the server resources logic must be implemented\n""" \
+                  f"""// on wakaama core level, because the Server is only a state holder and\n""" \
+                  f"""// at this level, it does not have the required information for doing\n""" \
+                  f"""// sings described in the documentation.\n\n"""
         for resource in resources_list_xml:
             if resource["Mandatory"] == "MANDATORY":
                 # content += f"""\t\t#if {resource["Name"]}_{resource["Mandatory"]}\n\t"""
-                content += f"\t_resources[{resource['Name']}_{resource['ID']}].set( /* TODO */ );\n"
-                content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n\n"
+                # content += f"\t_resources[{resource['Name']}_{resource['ID']}].set( /* TODO */ );\n"
+                # content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n\n"
+                content += f"\t+getResIter({resource['Name']}_{resource['ID']})->set( /* TODO */ );\n"
+                content += f"\t+getResIter({resource['Name']}_{resource['ID']})->setDataVerifier( /* TODO */ );\n\n"
                 # content += f"\t\t#endif\n\n"
             if resource["Mandatory"] == "OPTIONAL":
                 content += f"""\t#if {resource["Define"]}\n"""
-                content += f"\t_resources[{resource['Name']}_{resource['ID']}].set( /* TODO */ );\n"
-                content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n"
+                # content += f"\t_resources[{resource['Name']}_{resource['ID']}].set( /* TODO */ );\n"
+                # content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n"
+                content += f"\t-getResIter({resource['Name']}_{resource['ID']})->set( /* TODO */ );\n"
+                content += f"\t-getResIter({resource['Name']}_{resource['ID']})->setDataVerifier( /* TODO */ );\n"
                 content += f"\t#endif\n\n"
         content += f"""\t/* --------------- Code_cpp block 9 end --------------- */\n}}"""
 
@@ -213,19 +221,17 @@ class ObjectGenerator:
                   f"""\t/* --------------- Code_cpp block 8 end --------------- */\n}}"""
         return prefix + postfix
 
-    def generate_content_header(self):
+    def generate_content_header(self, resources_enum):
         data_str_h = func.get_file_content(const.FILE_TMPLT_IMPL_H)[1]
-        resources_enum, resources_map = self.get_map_of_resources(self.meta_resources)
         data_str_h = data_str_h.replace("__DATETIME__", DATETIME)
         data_str_h = data_str_h.replace("__IF_NOT_DEFINED_DEFINE__", self.object_names["obj_name_folder"].upper())
         data_str_h = data_str_h.replace("__CLASS_NAME__", self.object_names["obj_name_class"])
         data_str_h = data_str_h.replace("__ID_ENUM__", resources_enum)
-        data_str_h = data_str_h.replace("__RESOURCES_MAP__", resources_map)
         data_str_h = data_str_h.replace("<<IF_DEF_DIRECTIVE>>", self.object_names["obj_name_folder"].upper())
 
         return data_str_h
 
-    def generate_content_cpp(self):
+    def generate_content_cpp(self, resources_map):
         data_str_cpp = func.get_file_content(const.FILE_TMPLT_IMPL_CPP)[1]
         data_str_cpp = data_str_cpp.replace("__DATETIME__", DATETIME)
         data_str_cpp = data_str_cpp.replace("__OBJ_FOLDER__", self.object_names["obj_name_folder"])
@@ -236,6 +242,7 @@ class ObjectGenerator:
         data_str_cpp = data_str_cpp.replace("__F_RESOURCE_INIT__",
                                             self.get_content_resourcesInit_f(self.meta_resources))
         data_str_cpp = data_str_cpp.replace("__CLASS_NAME__", self.object_names["obj_name_class"])
+        data_str_cpp = data_str_cpp.replace("__RESOURCES_TABLE__", resources_map)
 
         return data_str_cpp
 
@@ -319,8 +326,9 @@ class ObjectGenerator:
         func.create_file(f"./{self.object_names['obj_name_folder']}/{file}", content)
 
     def object_code_generate(self):
-        generated_header = self.generate_content_header()
-        generated_cpp_file = self.generate_content_cpp()
+        resources_enum, resources_map = self.get_map_of_resources(self.meta_resources)
+        generated_header = self.generate_content_header(resources_enum)
+        generated_cpp_file = self.generate_content_cpp(resources_map)
         generated_cmake_list = self.generate_content_cmake_list()
         generated_info_header = self.generate_content_info_header()
         generated_config = self.generate_content_config()

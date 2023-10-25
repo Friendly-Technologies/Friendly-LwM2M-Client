@@ -53,11 +53,12 @@ public:
 	void restore() override;
 
 	T* instance(ID_T instanceID = 0);
-	const std::unordered_map<ID_T, T*> & getInstances();
+	const std::vector<T*> & getInstances();
 	size_t instanceCnt() override;
 	bool isInstanceExist(ID_T instanceID) override;
 
 private:
+	std::vector<Instance*>::iterator getInstIter(ID_T instanceID);
 	ID_T getFirstAvailableInstanceID();
 
 /* ------------- Lwm2m core callback ------------- */
@@ -77,7 +78,7 @@ private:
 	static Object<T> *_object;
 	
 	lwm2m_context_t &_context;
-	std::unordered_map<ID_T, Instance*> _instances; // TODO: maybe here is better to use share_ptr instead simple Instance*
+	std::vector<Instance*> _instances;
 };
 
 
@@ -169,14 +170,16 @@ T* Object<T>::createInstance(ID_T instanceId) {
 	// TODO: Use lwm2m_object_t.instanceList and its elements lwm2m_list_t * for save instances instead std:: conatainer
 	// TODO: Add check to each new or malloc operation
 	// Creating new instance
-	_instances[instanceId] = new T(_context, {(ID_T)_objInfo.objID, instanceId});
-	return static_cast<T*>(_instances[instanceId]);
+	T *inst = new T(_context, {(ID_T)_objInfo.objID, instanceId});
+	_instances.push_back(inst);
+	return static_cast<T*>(inst);
 }
 
 template<typename T>
 bool Object<T>::removeInstance(ID_T instanceId) {
 	// If user want to delete instance with ID that does not exist, then we can not do it
-	if (!isInstanceExist(instanceId)) return false;
+	auto inst = getInstIter(instanceId);
+	if (inst == _instances.end()) return false;
 
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "Removing instance %d:%d", getObjectID(), instanceId);
 	// Deleting registered instance from core object
@@ -184,8 +187,8 @@ bool Object<T>::removeInstance(ID_T instanceId) {
 	 _lwm2m_object.instanceList = LWM2M_LIST_RM(_lwm2m_object.instanceList, instanceId, (lwm2m_list_t **)&element);
 	 if (NULL != element) delete element;
 
-	delete _instances[instanceId];
-	_instances.erase(instanceId);
+	delete *inst;
+	_instances.erase(inst);
 	return true;
 }
 
@@ -200,8 +203,11 @@ void Object<T>::clear() {
 		_lwm2m_object.instanceList = _lwm2m_object.instanceList->next;
 		delete instance;
 
-		delete _instances[id];
-		_instances.erase(id);
+		auto inst = getInstIter(id);
+		if (inst == _instances.end()) continue;
+
+		delete *inst;
+		_instances.erase(inst);
 	}
 }
 
@@ -214,12 +220,12 @@ void Object<T>::restore() {
 template<typename T>
 T* Object<T>::instance(ID_T instanceID) {
 	// If user want to access instance with ID that does not exist, then we can not do it
-	if (!isInstanceExist(instanceID)) return NULL;
-	return static_cast<T*>(_instances[instanceID]);
+	auto inst = getInstIter(instanceID);
+	return inst != _instances.end()? static_cast<T*>(*inst) : NULL;
 }
 
 template<typename T>
-const std::unordered_map<ID_T, T*> & Object<T>::getInstances() {
+const std::vector<T*> & Object<T>::getInstances() {
 	return _instances;
 }
 
@@ -229,8 +235,14 @@ size_t Object<T>::instanceCnt() {
 }
 
 template<typename T>
-bool  Object<T>::isInstanceExist(ID_T instanceID) {
-	return _instances.find(instanceID) != _instances.end();
+bool Object<T>::isInstanceExist(ID_T instanceID) {
+	return getInstIter(instanceID) != _instances.end();
+}
+
+template<typename T>
+std::vector<Instance*>::iterator Object<T>::getInstIter(ID_T instanceID) {
+	auto finder = [&instanceID](const Instance *inst) -> bool { return inst->getInstanceID() == instanceID; };
+	return std::find_if(_instances.begin(), _instances.end(), finder);
 }
 
 template<typename T>
@@ -255,28 +267,28 @@ template<typename T>
 uint8_t Object<T>::read_clb(lwm2m_context_t * contextP, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP) {
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama read %d:%d", object()->getObjectID(), instanceId);
 	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
-	return object()->_instances[instanceId]->read(numDataP, dataArrayP);
+	return object()->instance(instanceId)->read(numDataP, dataArrayP);
 }
 
 template<typename T>
 uint8_t Object<T>::write_clb(lwm2m_context_t * contextP, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP, lwm2m_write_type_t writeType) {
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama write %d:%d", object()->getObjectID(), instanceId);
 	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
-	return object()->_instances[instanceId]->write(numData, dataArray, writeType);
+	return object()->instance(instanceId)->write(numData, dataArray, writeType);
 }
 
 template<typename T>
 uint8_t Object<T>::execute_clb(lwm2m_context_t * contextP, ID_T instanceId, ID_T resId, uint8_t * buffer, int length, lwm2m_object_t * objectP) {
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama execute %d:%d", object()->getObjectID(), instanceId);
 	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
-	return object()->_instances[instanceId]->execute(resId, buffer, length);
+	return object()->instance(instanceId)->execute(resId, buffer, length);
 }
 
 template<typename T>
 uint8_t Object<T>::discover_clb(lwm2m_context_t * contextP, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP) {
 	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama discover %d:%d", object()->getObjectID(), instanceId);
 	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
-	return object()->_instances[instanceId]->discover(numDataP, dataArrayP);
+	return object()->instance(instanceId)->discover(numDataP, dataArrayP);
 }
 
 template<typename T>

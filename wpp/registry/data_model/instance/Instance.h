@@ -46,9 +46,9 @@ public: /* Interface that can be used by user */
 	Instance& operator=(const Instance&) = delete;
 	Instance& operator=(Instance&&) = delete;
 
-	OBJ_LINK_T getLink() { return _id; }
-	OBJ_ID getObjectID() { return (OBJ_ID)_id.objId; }
-	ID_T getInstanceID() { return _id.objInstId; }
+	OBJ_LINK_T getLink() const { return _id; }
+	OBJ_ID getObjectID() const { return (OBJ_ID)_id.objId; }
+	ID_T getInstanceID() const { return _id.objInstId; }
 
 	/*
 	 * Sets resource value
@@ -81,29 +81,23 @@ public: /* Interface that can be used by user */
 	bool remove(const ResLink &resId);
 
 protected: /* Interface that can be used by derived class */
+	/*
+	 * Notify core about resource value change.
+	 */
 	void notifyValueChanged(const DataLink &data);
+	/*
+	 * This method return list with resources that has been instantiated.
+	 * If resources does not exist then return empty list.
+	 */
+	std::vector<Resource *> getInstantiatedResList();
+	std::vector<Resource *> getInstantiatedResList(const ResOp& filter);
+	/*
+	 * This method return iterator for resource if it exists.
+	 * If resources does not exist then return empty list.
+	 */
+	std::vector<Resource>::iterator getResIter(ID_T resId);
 
-protected: /* Interface implemented by Instance derived class */
-	/*
-	 * This method must be implemented by derived class,
-	 * and return resource if it is exists.
-	 * If resource does not exist then return NULL.
-	 */
-	virtual Resource * getResource(ID_T resId) = 0;
-	/*
-	 * This method must be implemented by derived class,
-	 * and return list with all resources.
-	 * If resources does not exist then return empty list.
-	 */
-	virtual std::vector<Resource *> getResourcesList() = 0;
-	virtual std::vector<Resource *> getResourcesList(const ResOp& filter) = 0;
-	/*
-	 * This method must be implemented by derived class,
-	 * and return list with resources that has been instantiated.
-	 * If resources does not exist then return empty list.
-	 */
-	virtual std::vector<Resource *> getInstantiatedResourcesList() = 0;
-	virtual std::vector<Resource *> getInstantiatedResourcesList(const ResOp& filter) = 0;
+protected: /* Interface that must be implemented by derived class */
 	/*
 	 * This method must be implemented by derived class.
 	 * Reset all resources values and internal state to default.
@@ -152,6 +146,8 @@ private: /* Interface used by Object<T> or Instance class */
 protected:
 	lwm2m_context_t &_context;
 	OBJ_LINK_T _id;
+
+	std::vector<Resource> _resources;
 };
 
 /* ---------- Implementation of template methods ----------*/
@@ -160,8 +156,8 @@ protected:
  */
 template<typename T>
 bool Instance::userSet(const ResLink &resId, const T &value) {
-	Resource *const resource = getResource(resId.resId);
-	if (!resource) return false;
+	auto resource = getResIter(resId.resId);
+	if (resource == _resources.end()) return false;
 
 	bool result = resource->set(value, resId.resInstId);
 	if (result) {
@@ -177,8 +173,8 @@ bool Instance::userSet(const ResLink &resId, const T &value) {
  */
 template<typename T>
 bool Instance::userGet(const ResLink &resId, T &value) {
-	Resource *const resource = getResource(resId.resId);
-	if (!resource) return false;
+	auto resource = getResIter(resId.resId);
+	if (resource == _resources.end()) return false;
 
 	bool result = resource->get(value, resId.resInstId);
 	if (result) {

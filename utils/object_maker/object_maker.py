@@ -10,17 +10,17 @@ GENERATOR_CHOICES = ['file', 'link', 'meta']
 
 
 def arguments_init(parser):
-    parser.add_option("-g", "--generate", type="choice", dest="generate", choices=GENERATOR_CHOICES,
-                      help="generate code for Object")
+    parser.add_option("-g", "--generate", dest="generate", type="choice", choices=GENERATOR_CHOICES,
+                      help="generate main files of the Object and store in the current folder")
 
     parser.add_option("-i", "--integrate", dest="integrate", action="store_true", default=False,
-                      help="file of the Object")
+                      help="integrate indicated main files of the Object to Wpp")
 
     parser.add_option("-r", "--remove", dest="remove", action="store_true", default=False,
-                      help="file of the Object")
+                      help="remove the exist Object from Wpp")
 
     parser.add_option("-c", "--change", dest="change", action="store_true", default=False,
-                      help="file of the Object")
+                      help="change the exist Object in Wpp")
 
     options, args = parser.parse_args()
     return options, args
@@ -48,15 +48,20 @@ def main():
                 parser.error("please, provide path to XML-file of the Object")
             obj_file = args[0]
         elif options.generate == GENERATOR_CHOICES[2]:    # meta
-            if len(args) != 2:
-                parser.error("please, provide Object's name and version to generate Object by meta info")
             # TODO: implement Object generation by name and version
-            obj_name = args[0]
-            obj_ver = args[1]
+            print("Not implemented yet")
+            sys.exit(1)
+            # if len(args) != 2:
+            #     parser.error("please, provide Object's name and version to generate Object by meta info")
+            # obj_name = args[0]
+            # obj_ver = args[1]
         elif options.generate == GENERATOR_CHOICES[1]:    # link
-            if len(args) != 1:
-                parser.error("please, provide link to Object")
-            obj_link = args[1]
+            # TODO: implement Object generation by link
+            print("Not implemented yet")
+            sys.exit(1)
+            # if len(args) != 1:
+            #     parser.error("please, provide link to Object")
+            # obj_link = args[1]
 
         og = OG.ObjectGenerator(obj_file, obj_link)
         og.object_code_generate()

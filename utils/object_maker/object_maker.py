@@ -44,10 +44,22 @@ def main():
         obj_link = None
 
         if options.generate == GENERATOR_CHOICES[0]:    # file
+            # print(GENERATOR_CHOICES[0])
             if len(args) != 1:
                 parser.error("please, provide path to XML-file of the Object")
             obj_file = args[0]
+
+        elif options.generate == GENERATOR_CHOICES[1]:    # link
+            # print(GENERATOR_CHOICES[1])
+            # TODO: implement Object generation by link
+            # print("Not implemented yet")
+            # sys.exit(1)
+            if len(args) != 1:
+                parser.error("please, provide link to Object")
+            obj_link = args[0]
+
         elif options.generate == GENERATOR_CHOICES[2]:    # meta
+            # print(GENERATOR_CHOICES[2])
             # TODO: implement Object generation by name and version
             print("Not implemented yet")
             sys.exit(1)
@@ -55,13 +67,6 @@ def main():
             #     parser.error("please, provide Object's name and version to generate Object by meta info")
             # obj_name = args[0]
             # obj_ver = args[1]
-        elif options.generate == GENERATOR_CHOICES[1]:    # link
-            # TODO: implement Object generation by link
-            print("Not implemented yet")
-            sys.exit(1)
-            # if len(args) != 1:
-            #     parser.error("please, provide link to Object")
-            # obj_link = args[1]
 
         og = OG.ObjectGenerator(obj_file, obj_link)
         og.object_code_generate()
@@ -93,6 +98,7 @@ def main():
             sys.exit(1)
 
     sys.exit(0)
+
 
 if __name__ == '__main__':
     main()

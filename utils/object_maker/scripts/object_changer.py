@@ -182,7 +182,7 @@ class ObjectChanger:
     def get_resource_names_new(self, obj_gen):
         print(self.get_resource_names_new.__name__)
         names = dict()
-        for res in obj_gen.meta_resources:
+        for res in obj_gen.resources_data:
             names[int(res['ID'])] = f"{res['Name']}_{res['ID']}"
         return names
 

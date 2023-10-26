@@ -50,3 +50,15 @@ KEY_DICT_OBJ_META_VER = "version"
 
 TYPE_OPERATION = "ResOp"
 TYPE_OBJECT = "Object"
+
+KEYS_OBJ_DATA = {"name":          "Name",
+                 "description":   "Description1",
+                 "id":            "ObjectID",
+                 "urn":           "ObjectURN",
+                 "lwm2m_version": "LWM2MVersion",
+                 "version":       "ObjectVersion",
+                 "is_multiple":   "MultipleInstances",
+                 "is_mandatory":  "Mandatory",
+}
+
+LWM2M_WEB_RESOUCES = ["raw.githubusercontent.com", "github.com"]

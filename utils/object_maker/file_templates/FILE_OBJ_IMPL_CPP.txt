@@ -55,7 +55,7 @@ __F_SERVER_OPERATION_NOTIFIER__
 
 __F_USER_OPERATION_NOTIFIER__
 
-void __CLASS_NAME__::resourcesCreate()  {
+void __CLASS_NAME__::resourcesCreate() {
 	std::vector<Resource> resources = {
 		// KEY VALUE
 __RESOURCES_TABLE__

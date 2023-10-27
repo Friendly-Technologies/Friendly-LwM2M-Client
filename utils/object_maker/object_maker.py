@@ -36,7 +36,7 @@ def main():
     if not options.generate and not options.integrate and not options.remove and not options.change:
         parser.error("no options selected")
 
-    # ============================== generation ==============================
+    # ============================= generation =============================
     if options.generate:
         obj_file = None
         obj_name = None
@@ -76,7 +76,7 @@ def main():
             if not integrate_object(crated_obj_folder):
                 sys.exit(1)
 
-    # ============================== integration ==============================
+    # ============================= integration ============================
     elif options.integrate:
         if len(args) != 1:
             parser.error("please, provide the folder's path of the Object to integrate")

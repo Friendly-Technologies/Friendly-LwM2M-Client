@@ -117,6 +117,7 @@ class ObjectIntegrator:
             return False
         if not self.insert_additional_data():
             return False
+        func.remove_folder(self.folder_name)
         return True
 
 

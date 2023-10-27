@@ -6,7 +6,6 @@ import object_integrator
 
 import os
 import re
-import shutil
 from optparse import OptionParser
 
 RES_DEF_PATTERN = r'#define RES_\d+_\d+_'
@@ -232,10 +231,7 @@ class ObjectChanger:
 
         # 2. check if there is possible and set the relations of user-code blocks (old_object -> updated_object):
         if not self.set_relations([self.obj_folder_to_change, path_to_new_object]):     # don't change order in list
-            try:
-                shutil.rmtree(path_to_new_object)
-            except FileNotFoundError:
-                pass
+            func.remove_folder(path_to_new_object)
             return False
 
         # 3. update the code of the new Object by user-code block of the old Object:

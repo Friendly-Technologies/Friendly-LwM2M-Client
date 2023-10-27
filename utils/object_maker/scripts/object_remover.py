@@ -2,7 +2,6 @@ import constants as const
 import functions as func
 
 import sys
-import shutil
 from optparse import OptionParser
 
 
@@ -55,16 +54,10 @@ class ObjectRemover:
         dict_obj_meta = data_dict["object_names"]["define"]
         return dict_obj_meta
 
-    def remove_object_folder(self):
-        try:
-            shutil.rmtree(self.object_folder_path)
-        except FileNotFoundError:
-            print(f"{self.log_tag} There is no folder/files to remove")
-
     def remove_object(self):
         if not self.update_files():
             return False
-        self.remove_object_folder()
+        func.remove_folder(self.object_folder_path)
         return True
 
 

@@ -31,9 +31,9 @@ Object <Device> & WppRegistry::device() {
 }
 # endif
 # if OBJ_M_0_LWM2M_SECURITY_V11
-Object <Lwm2mSecurity> & WppRegistry::lwm2mSecurity() {
-	if (!Object <Lwm2mSecurity>::isCreated()) Object <Lwm2mSecurity>::create(_context, LWM2M_SECURITY_OBJ_INFO);
-	return *Object <Lwm2mSecurity>::object();
+Object<Lwm2mSecurity> & WppRegistry::lwm2mSecurity() {
+	if (!Object<Lwm2mSecurity>::isCreated()) Object<Lwm2mSecurity>::create(_context, LWM2M_SECURITY_OBJ_INFO);
+	return *Object<Lwm2mSecurity>::object();
 }
 # endif
 # if OBJ_M_1_LWM2M_SERVER_V11

@@ -62,7 +62,7 @@ public:
 	Object <Device> & device();
 	#endif
 	#if OBJ_M_0_LWM2M_SECURITY_V11
-	Object <Lwm2mSecurity> & lwm2mSecurity();
+	Object<Lwm2mSecurity> & lwm2mSecurity();
 	#endif
 	#if OBJ_M_1_LWM2M_SERVER_V11
 	Object <Lwm2mServer> & lwm2mServer();

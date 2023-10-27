@@ -46,7 +46,7 @@ def main():
         if options.generate == GENERATOR_CHOICES[0]:    # file
             # print(GENERATOR_CHOICES[0])
             if len(args) != 1:
-                parser.error("please, provide path to XML-file of the Object")
+                parser.error("please, provide the XML-file's path of the Object to generate")
             obj_file = args[0]
 
         elif options.generate == GENERATOR_CHOICES[1]:    # link
@@ -55,7 +55,7 @@ def main():
             # print("Not implemented yet")
             # sys.exit(1)
             if len(args) != 1:
-                parser.error("please, provide link to Object")
+                parser.error("please, provide the link of the Object to generate")
             obj_link = args[0]
 
         elif options.generate == GENERATOR_CHOICES[2]:    # meta
@@ -79,21 +79,21 @@ def main():
     # ============================== integration ==============================
     if options.integrate:
         if len(args) != 1:
-            parser.error("please, provide path to folder of the Object")
+            parser.error("please, provide the folder's path of the Object to integrate")
         if not integrate_object(args[0]):
             sys.exit(1)
 
     # ============================== changing ==============================
     if options.change:
         if len(args) != 2:
-            parser.error("please, provide the folder's path of the exists Object and path to the new data")
+            parser.error("please, provide the folder's path to the existing Object and path to the new Object's data")
         if not OC.ObjectChanger(args[0], args[1]).change():
             sys.exit(1)
 
     # ============================== removing ==============================
     if options.remove:
         if len(args) != 1:
-            parser.error("please, provide path to folder of the Object")
+            parser.error("please, provide the folder's path to the existing Object to remove")
         if not OR.ObjectRemover(args[0]).remove_object():
             sys.exit(1)
 

@@ -11,6 +11,7 @@ class ObjectIntegrator:
     """Add some comments here"""
 
     def __init__(self, folder_name):
+        self.log_tag = f"[{self.__class__.__name__}]:"
         self.folder_name = folder_name
 
     def update_file(self, stop_string, content, path_to_file):
@@ -19,7 +20,7 @@ class ObjectIntegrator:
         errcode, old_content = func.get_file_content(path_to_file)
 
         if old_content.find(content) != -1:
-            # print(f"File {path_to_file} is already updated")
+            print(f'{self.log_tag} The file "{path_to_file}" is already updated')
             return
 
         for line in old_content.split("\n"):
@@ -29,7 +30,7 @@ class ObjectIntegrator:
             new_content += line + "\n"
 
         if not is_stop_string_present:
-            # print(f"The {path_to_file} was not updated!")
+            print(f'{self.log_tag} The "{path_to_file}" file was not updated')
             return
 
         func.write_to_file(path_to_file, new_content[:-1])
@@ -37,6 +38,8 @@ class ObjectIntegrator:
     def insert_additional_data(self):
         errcode, data_str = func.get_file_content(f"{self.folder_name}/{const.FILE_OBJ_METADATA}")
         if not errcode:
+            print(f'{self.log_tag} There is no file with the metadata of the Object'
+                  f'"{file_path}". Operation interrupted.')
             return False
 
         type_obj = const.TYPE_OBJECT
@@ -99,7 +102,7 @@ class ObjectIntegrator:
             shutil.copytree(self.folder_name, f"{const.FOLDER_OBJECTS}/{self.folder_name}")
             return True
         except FileExistsError:
-            print(f"The folder \"{const.FOLDER_OBJECTS}/{self.folder_name}\" is already exists")
+            print(f'{self.log_tag} The folder "{file_path}" already exists. Operation interrupted.')
             return False
 
     def update_files(self):

@@ -10,6 +10,7 @@ class ObjectRemover:
     """Add some comments here"""
 
     def __init__(self, object_folder_path):
+        self.log_tag = f"[{self.__class__.__name__}]:"
         self.object_folder_path = object_folder_path
         self.object_define = self.extract_define()
 
@@ -18,7 +19,7 @@ class ObjectRemover:
         new_content = ''
 
         if old_content.find(self.object_define) == -1:
-            print(f"The file {path_to_file} is not contain Object that must be removed")
+            print(f'{self.log_tag} The file "{path_to_file}" is not contain the Object\'s info that must be removed')
             return
 
         add_line = True     # the flag indicates whether leave the line
@@ -39,7 +40,7 @@ class ObjectRemover:
 
     def update_files(self):
         if not self.extract_define():
-            print("The define of Object must be removed not extracted")
+            print(f'{self.log_tag} The define of the deleted Object not extracted')
             return False
         for file in [const.FILE_OBJECT_ID, const.FILE_REGISTRY_H, const.FILE_REGISTRY_CPP, const.FILE_CONFIG_CMAKE]:
             self.update_file(file)
@@ -58,7 +59,7 @@ class ObjectRemover:
         try:
             shutil.rmtree(self.object_folder_path)
         except FileNotFoundError:
-            print("There is no folder/files to remove")
+            print(f"{self.log_tag} There is no folder/files to remove")
 
     def remove_object(self):
         if not self.update_files():

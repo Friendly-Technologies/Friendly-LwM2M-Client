@@ -24,6 +24,7 @@ class ObjectChanger:
     """Add some comments here"""
 
     def __init__(self, obj_folder_to_change, obj_metadata_to_use):
+        self.log_tag = f"[{self.__class__.__name__}]:"
         self.user_codes_relations = None
         self.obj_folder_to_change = obj_folder_to_change
         self.obj_metadata_to_use = obj_metadata_to_use
@@ -38,6 +39,7 @@ class ObjectChanger:
             # just read and save data to list:
             errcode, content = func.get_file_content(f"{folder}/{const.FILE_OBJ_METADATA}")
             if not errcode:
+                print(f'{self.log_tag} The "{file_path}" file not found. Interrupted')
                 return False
             datas.append(content)
 

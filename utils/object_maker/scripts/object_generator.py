@@ -17,6 +17,7 @@ class ObjectGenerator:
     """Add some comments here"""
 
     def __init__(self, xml_file, xml_url):
+        self.log_tag = f"[{self.__class__.__name__}]:"
         xp = object_xml_parser.ObjectXmlParser(xml_file=xml_file, xml_url=xml_url)
         self.object_data = xp.object_data
         self.resources_data = xp.resources_data

@@ -17,6 +17,7 @@ class ObjectXmlParser:
     """
 
     def __init__(self, xml_file=None, xml_url=None):
+        self.log_tag = f"[{self.__class__.__name__}]:"
         self.xml_file = xml_file
         self.xml_url = xml_url
         self.xml_file = None

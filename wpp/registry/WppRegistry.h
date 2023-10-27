@@ -59,7 +59,7 @@ public:
 
 	/* ------------- Mandatory objects prototype start ------------- */
 	#if OBJ_M_3_DEVICE_V12
-	Object <Device> & device();
+	Object<Device> & device();
 	#endif
 	#if OBJ_M_0_LWM2M_SECURITY_V11
 	Object<Lwm2mSecurity> & lwm2mSecurity();

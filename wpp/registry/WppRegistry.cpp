@@ -25,9 +25,9 @@ bool WppRegistry::isObjRegistered(Lwm2mObject &object) {
 
 /* The start of the prototypes of the mandatory objects. */
 # if OBJ_M_3_DEVICE_V12
-Object <Device> & WppRegistry::device() {
-	if (!Object <Device>::isCreated()) Object <Device>::create(_context, DEVICE_OBJ_INFO);
-	return *Object <Device>::object();
+Object<Device> & WppRegistry::device() {
+	if (!Object<Device>::isCreated()) Object<Device>::create(_context, DEVICE_OBJ_INFO);
+	return *Object<Device>::object();
 }
 # endif
 # if OBJ_M_0_LWM2M_SECURITY_V11

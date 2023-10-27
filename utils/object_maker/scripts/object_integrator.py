@@ -105,7 +105,6 @@ class ObjectIntegrator:
 
     def copy_main_files(self):
         file_path = f"{const.FOLDER_OBJECTS}/{self.folder_name}"
-        print(f'{self.log_tag} copy_main_files() file_path={file_path}')
         try:
             shutil.copytree(self.folder_name, file_path)
             return True

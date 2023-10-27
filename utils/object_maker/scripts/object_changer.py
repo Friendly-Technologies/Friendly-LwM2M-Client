@@ -36,8 +36,9 @@ class ObjectChanger:
         datas = []
 
         for folder in folders:
+            file_path = f"{folder}/{const.FILE_OBJ_METADATA}"
             # just read and save data to list:
-            errcode, content = func.get_file_content(f"{folder}/{const.FILE_OBJ_METADATA}")
+            errcode, content = func.get_file_content(file_path)
             if not errcode:
                 print(f'{self.log_tag} The "{file_path}" file not found. Interrupted')
                 return False

@@ -19,6 +19,10 @@ class ObjectIntegrator:
         new_content = ''
         errcode, old_content = func.get_file_content(path_to_file)
 
+        if not errcode:
+            print(f'{self.log_tag} The file "{path_to_file}" not found')
+            return 
+
         if old_content.find(content) != -1:
             print(f'{self.log_tag} The file "{path_to_file}" is already updated')
             return
@@ -36,7 +40,8 @@ class ObjectIntegrator:
         func.write_to_file(path_to_file, new_content[:-1])
 
     def insert_additional_data(self):
-        errcode, data_str = func.get_file_content(f"{self.folder_name}/{const.FILE_OBJ_METADATA}")
+        file_path = f"{self.folder_name}/{const.FILE_OBJ_METADATA}"
+        errcode, data_str = func.get_file_content(file_path)
         if not errcode:
             print(f'{self.log_tag} There is no file with the metadata of the Object'
                   f'"{file_path}". Operation interrupted.')
@@ -99,8 +104,10 @@ class ObjectIntegrator:
         return True
 
     def copy_main_files(self):
+        file_path = f"{const.FOLDER_OBJECTS}/{self.folder_name}"
+        print(f'{self.log_tag} copy_main_files() file_path={file_path}')
         try:
-            shutil.copytree(self.folder_name, f"{const.FOLDER_OBJECTS}/{self.folder_name}")
+            shutil.copytree(self.folder_name, file_path)
             return True
         except FileExistsError:
             print(f'{self.log_tag} The folder "{file_path}" already exists. Operation interrupted.')
@@ -109,7 +116,8 @@ class ObjectIntegrator:
     def update_files(self):
         if not self.copy_main_files():
             return False
-        self.insert_additional_data()
+        if not self.insert_additional_data():
+            return False
         return True
 
 

@@ -77,21 +77,21 @@ def main():
                 sys.exit(1)
 
     # ============================== integration ==============================
-    if options.integrate:
+    elif options.integrate:
         if len(args) != 1:
             parser.error("please, provide the folder's path of the Object to integrate")
         if not integrate_object(args[0]):
             sys.exit(1)
 
     # ============================== changing ==============================
-    if options.change:
+    elif options.change:
         if len(args) != 2:
             parser.error("please, provide the folder's path to the existing Object and path to the new Object's data")
         if not OC.ObjectChanger(args[0], args[1]).change():
             sys.exit(1)
 
     # ============================== removing ==============================
-    if options.remove:
+    elif options.remove:
         if len(args) != 1:
             parser.error("please, provide the folder's path to the existing Object to remove")
         if not OR.ObjectRemover(args[0]).remove_object():

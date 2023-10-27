@@ -96,6 +96,7 @@ class ObjectIntegrator:
         self.update_file(stop_string_reg_cpp, content_reg_cpp, const.FILE_REGISTRY_CPP)
         self.update_file(stop_string_reg_incl, content_reg_h_include, const.FILE_REGISTRY_H)
         self.update_file(stop_string_reg_prot, content_reg_h_prototype, const.FILE_REGISTRY_H)
+        return True
 
     def copy_main_files(self):
         try:

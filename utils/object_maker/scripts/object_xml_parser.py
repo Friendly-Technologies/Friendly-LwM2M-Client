@@ -20,7 +20,6 @@ class ObjectXmlParser:
         self.log_tag = f"[{self.__class__.__name__}]:"
         self.xml_file = xml_file
         self.xml_url = xml_url
-        self.xml_file = None
         self.object_data = None
         self.resources_data = None
 

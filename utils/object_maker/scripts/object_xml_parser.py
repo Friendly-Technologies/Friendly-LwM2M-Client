@@ -60,10 +60,10 @@ class ObjectXmlParser:
             for i in root[0]:
                 if i.tag == key:
                     object_data[key] = i.text
-        if (const.KEYS_OBJ_DATA["lwm2m_version"] not in object_data.keys() or       # TODO: get consultation what to do if True
+        if (const.KEYS_OBJ_DATA["lwm2m_version"] not in object_data.keys() or
                 const.KEYS_OBJ_DATA["version"] not in object_data.keys()):
-            object_data[const.KEYS_OBJ_DATA["lwm2m_version"]] = "0"
-            object_data[const.KEYS_OBJ_DATA["version"]] = "0"
+            object_data[const.KEYS_OBJ_DATA["lwm2m_version"]] = "1.0"
+            object_data[const.KEYS_OBJ_DATA["version"]] = "1.0"
         self.object_data = object_data
         # ===============================================================================
         # ====== extract data of each of the resources, and pack it to dictionary =======

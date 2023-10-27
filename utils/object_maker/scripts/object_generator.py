@@ -156,23 +156,22 @@ class ObjectGenerator:
             if resource_xml['Mandatory'] != "MANDATORY":
                 resources_enum += f"\t\t#endif\n"
 
-            # fill the unordered_map<ID_T, Resource> table:
+            # fill the vector <ID_T, Resource> table:
             if resource_xml['Mandatory'] != "MANDATORY":
-                x.add_row([f"*TAB*#if {resource_define}", "", "", "", "", ""])
+                x.add_row([f"*TAB*#if {resource_define}", "", "", "", ""])
 
             x.add_row([f"*TAB*{{{resource},",
-                       f"{{{resource},",
                        self.parse_operation(resource_xml['Operations']),
                        f"IS_SINGLE::{resource_xml['MultipleInstances']},",
                        f"IS_MANDATORY::{resource_xml['Mandatory']},",
-                       f"{self.parse_resource_data_type(resource_xml['Type'])} }}}},"])
+                       f"{self.parse_resource_data_type(resource_xml['Type'])} }},"])
 
             if resource_xml['Mandatory'] != "MANDATORY":
-                x.add_row([f"*TAB*#endif", "", "", "", "", ""])
+                x.add_row([f"*TAB*#endif", "", "", "", ""])
 
         resources_map = str(x).replace("*TAB*", "\t\t")
         # TODO: fix next line by PrettyTable features!
-        resources_map = resources_map.replace(",        ", ",  ")
+        resources_map = resources_map.replace(",        ", ", ")
 
         return resources_enum, resources_map
 
@@ -298,7 +297,7 @@ class ObjectGenerator:
         content = content.replace("__OBJ_DEFINE__", self.object_names["obj_name_define"])
         content = content.replace("__NAME__", self.object_data[const.KEYS_OBJ_DATA["name"]])
         content = content.replace("__OBJ_ID__", self.object_names["obj_name_up_underline"])
-        content = content.replace("__URN__", self.object_data[const.KEYS_OBJ_DATA["urn"]])
+        content = content.replace("__URN__", f'"{self.object_data[const.KEYS_OBJ_DATA["urn"]]}"')
         content = content.replace("__VERSION__",
                                   f"{{{self.object_data[const.KEYS_OBJ_DATA['version']].replace('.', ',')}}}")
         content = content.replace("__LWM2M_VERSION__",

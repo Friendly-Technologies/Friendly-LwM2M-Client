@@ -39,7 +39,7 @@ class ObjectChanger:
             # just read and save data to list:
             errcode, content = func.get_file_content(file_path)
             if not errcode:
-                print(f'{self.log_tag} The "{file_path}" file not found. Interrupted')
+                print(f'{self.log_tag} The "{file_path}" file not found. Operation interrupted')
                 return False
             datas.append(content)
 
@@ -241,7 +241,7 @@ class ObjectChanger:
         # 4. remove old Object code:
         obj_r = object_remover.ObjectRemover(self.obj_folder_to_change)
         if not obj_r.remove_object():
-            print(f"{self.log_tag} Unable to remove old data. Interrupted.")
+            print(f"{self.log_tag} Unable to remove old data. Operation interrupted.")
             return False
 
         # 5. integrate new code of the Object:

@@ -91,10 +91,10 @@ class ObjectIntegrator:
 
         content_reg_cpp = \
             f"""# if {obj_name_define}\n""" \
-            f"""{type_obj} <{obj_name_class}> & WppRegistry::{obj_name_camelcase}() {{\n\t""" \
-            f"""if (!{type_obj} <{obj_name_class}>::isCreated()) {type_obj} <{obj_name_class}>::""" \
+            f"""{type_obj}<{obj_name_class}> & WppRegistry::{obj_name_camelcase}() {{\n\t""" \
+            f"""if (!{type_obj}<{obj_name_class}>::isCreated()) {type_obj}<{obj_name_class}>::""" \
             f"""create(_context, {obj_name_underline}_OBJ_INFO);\n\t""" \
-            f"""return *{type_obj} <{obj_name_class}>::object();\n}}\n# endif\n"""
+            f"""return *{type_obj}<{obj_name_class}>::object();\n}}\n# endif\n"""
 
         self.update_file(stop_string_obj_id, content_obj_id, const.FILE_OBJECT_ID)
         self.update_file(stop_string_cfg_cmk, content_cfg_cmake, const.FILE_CONFIG_CMAKE)

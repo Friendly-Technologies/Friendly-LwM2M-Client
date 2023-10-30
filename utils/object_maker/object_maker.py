@@ -36,7 +36,7 @@ def main():
     if not options.generate and not options.integrate and not options.remove and not options.change:
         parser.error("no options selected")
 
-    # ============================== generation ==============================
+    # ============================= generation =============================
     if options.generate:
         obj_file = None
         obj_name = None
@@ -44,10 +44,22 @@ def main():
         obj_link = None
 
         if options.generate == GENERATOR_CHOICES[0]:    # file
+            # print(GENERATOR_CHOICES[0])
             if len(args) != 1:
-                parser.error("please, provide path to XML-file of the Object")
+                parser.error("please, provide the XML-file's path of the Object to generate")
             obj_file = args[0]
+
+        elif options.generate == GENERATOR_CHOICES[1]:    # link
+            # print(GENERATOR_CHOICES[1])
+            # TODO: implement Object generation by link
+            # print("Not implemented yet")
+            # sys.exit(1)
+            if len(args) != 1:
+                parser.error("please, provide the link of the Object to generate")
+            obj_link = args[0]
+
         elif options.generate == GENERATOR_CHOICES[2]:    # meta
+            # print(GENERATOR_CHOICES[2])
             # TODO: implement Object generation by name and version
             print("Not implemented yet")
             sys.exit(1)
@@ -55,13 +67,6 @@ def main():
             #     parser.error("please, provide Object's name and version to generate Object by meta info")
             # obj_name = args[0]
             # obj_ver = args[1]
-        elif options.generate == GENERATOR_CHOICES[1]:    # link
-            # TODO: implement Object generation by link
-            print("Not implemented yet")
-            sys.exit(1)
-            # if len(args) != 1:
-            #     parser.error("please, provide link to Object")
-            # obj_link = args[1]
 
         og = OG.ObjectGenerator(obj_file, obj_link)
         og.object_code_generate()
@@ -71,28 +76,29 @@ def main():
             if not integrate_object(crated_obj_folder):
                 sys.exit(1)
 
-    # ============================== integration ==============================
-    if options.integrate:
+    # ============================= integration ============================
+    elif options.integrate:
         if len(args) != 1:
-            parser.error("please, provide path to folder of the Object")
+            parser.error("please, provide the folder's path of the Object to integrate")
         if not integrate_object(args[0]):
             sys.exit(1)
 
     # ============================== changing ==============================
-    if options.change:
+    elif options.change:
         if len(args) != 2:
-            parser.error("please, provide the folder's path of the exists Object and path to the new data")
+            parser.error("please, provide the folder's path to the existing Object and path to the new Object's data")
         if not OC.ObjectChanger(args[0], args[1]).change():
             sys.exit(1)
 
     # ============================== removing ==============================
-    if options.remove:
+    elif options.remove:
         if len(args) != 1:
-            parser.error("please, provide path to folder of the Object")
+            parser.error("please, provide the folder's path to the existing Object to remove")
         if not OR.ObjectRemover(args[0]).remove_object():
             sys.exit(1)
 
     sys.exit(0)
+
 
 if __name__ == '__main__':
     main()

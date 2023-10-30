@@ -27,6 +27,7 @@ __CLASS_NAME__::__CLASS_NAME__(lwm2m_context_t &context, const OBJ_LINK_T &id): 
 	/* --------------- Code_cpp block 1 start --------------- */
 	/* --------------- Code_cpp block 1 end --------------- */
 
+	resourcesCreate();
 	resourcesInit();
 
 	/* --------------- Code_cpp block 2 start --------------- */
@@ -38,49 +39,12 @@ __CLASS_NAME__::~__CLASS_NAME__() {
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
-Resource * __CLASS_NAME__::getResource(ID_T id) {
-	// Check if resource ID is valid
-	if (_resources.find(id) == _resources.end()) return NULL;
-	return &_resources[id];
-}
-
-std::vector<Resource *> __CLASS_NAME__::getResourcesList() {
-	std::vector<Resource *> list;
-	for (auto &pair : _resources) {
-		list.push_back(&pair.second);
-	}
-	return list;
-}
-
-std::vector<Resource *> __CLASS_NAME__::getResourcesList(const ResOp& filter) {
-	std::vector<Resource *> list;
-	for (auto &pair : _resources) {
-		if (filter.isCompatible(pair.second.getOperation())) list.push_back(&pair.second);
-	}
-	return list;
-}
-
-std::vector<Resource *> __CLASS_NAME__::getInstantiatedResourcesList() {
-	std::vector<Resource *> list;
-	for (auto &pair : _resources) {
-		if (!pair.second.isEmpty()) list.push_back(&pair.second);
-	}
-	return list;
-}
-
-std::vector<Resource *> __CLASS_NAME__::getInstantiatedResourcesList(const ResOp& filter) {
-	std::vector<Resource *> list;
-	for (auto &pair : _resources) {
-		if (!pair.second.isEmpty() && filter.isCompatible(pair.second.getOperation())) list.push_back(&pair.second);
-	}
-	return list;
-}
-
 void __CLASS_NAME__::setDefaultState() {
 	/* --------------- Code_cpp block 4 start --------------- */
 	/* --------------- Code_cpp block 4 end --------------- */
 
-	for (auto &pair : _resources) pair.second.clear();
+	_resources.clear();
+	resourcesCreate();
 	resourcesInit();
 
 	/* --------------- Code_cpp block 5 start --------------- */
@@ -91,7 +55,14 @@ __F_SERVER_OPERATION_NOTIFIER__
 
 __F_USER_OPERATION_NOTIFIER__
 
-	/* --------------- Class private methods --------------- */
+void __CLASS_NAME__::resourcesCreate() {
+	std::vector<Resource> resources = {
+		// KEY VALUE
+__RESOURCES_TABLE__
+	};
+	_resources = std::move(resources);
+}
+
 __F_RESOURCE_INIT__
 
 /* --------------- Code_cpp block 10 start --------------- */

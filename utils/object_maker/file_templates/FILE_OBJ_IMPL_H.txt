@@ -21,35 +21,20 @@ namespace wpp {
 class __CLASS_NAME__ : public Instance, public InstSubject<__CLASS_NAME__> {
 public:
 	enum ID: ID_T {
-__ID_ENUM__
-	};
+__ID_ENUM__	};
 
-	/* --------------- Сode_h block 1 start --------------- */
-	/* --------------- Сode_h block 1 end --------------- */
+	/* --------------- Code_h block 1 start --------------- */
+	/* --------------- Code_h block 1 end --------------- */
 
 public:
 	__CLASS_NAME__(lwm2m_context_t &context, const OBJ_LINK_T &id);
 	~__CLASS_NAME__();
 
-	/* --------------- Сode_h block 2 start --------------- */
-	/* --------------- Сode_h block 2 end --------------- */
+	/* --------------- Code_h block 2 start --------------- */
+	/* --------------- Code_h block 2 end --------------- */
 
 protected:
 	/* --------------- Instance implementation part --------------- */
-	/* 
-	 * Returns Resource object if it is exist
-	 */
-	Resource * getResource(ID_T id) override;
-	/*
-	 * Returns list with available resources
-	 */
-	std::vector<Resource *> getResourcesList() override;
-	std::vector<Resource *> getResourcesList(const ResOp& filter) override;
-	/*
-	 * Returns list with available instantiated resources
-	 */
-	std::vector<Resource *> getInstantiatedResourcesList() override;
-	std::vector<Resource *> getInstantiatedResourcesList(const ResOp& filter) override;
 	/*
 	 * Reset all resources values and internal state to default.
 	 */
@@ -66,6 +51,10 @@ protected:
 private:
 	/* --------------- Class private methods --------------- */
 	/*
+	 * Creates resources without initializing.
+	 */
+	void resourcesCreate();
+	/*
 	 * Initialize resources with default values
 	 * Resource always must have at least one instance.
 	 * Note: From server side, empty resource == undefined resource.
@@ -76,10 +65,6 @@ private:
 	/* --------------- Code_h block 3 end --------------- */
 
 private:
-	std::unordered_map<ID_T, Resource> _resources = {
-__RESOURCES_MAP__
-	};
-
 	/* --------------- Code_h block 4 start --------------- */
 	/* --------------- Code_h block 4 end --------------- */
 };

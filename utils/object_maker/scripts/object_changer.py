@@ -6,7 +6,6 @@ import object_integrator
 
 import os
 import re
-import shutil
 from optparse import OptionParser
 
 RES_DEF_PATTERN = r'#define RES_\d+_\d+_'
@@ -24,6 +23,7 @@ class ObjectChanger:
     """Add some comments here"""
 
     def __init__(self, obj_folder_to_change, obj_metadata_to_use):
+        self.log_tag = f"[{self.__class__.__name__}]:"
         self.user_codes_relations = None
         self.obj_folder_to_change = obj_folder_to_change
         self.obj_metadata_to_use = obj_metadata_to_use
@@ -35,9 +35,11 @@ class ObjectChanger:
         datas = []
 
         for folder in folders:
+            file_path = f"{folder}/{const.FILE_OBJ_METADATA}"
             # just read and save data to list:
-            errcode, content = func.get_file_content(f"{folder}/{const.FILE_OBJ_METADATA}")
+            errcode, content = func.get_file_content(file_path)
             if not errcode:
+                print(f'{self.log_tag} The "{file_path}" file not found. Operation interrupted')
                 return False
             datas.append(content)
 
@@ -97,15 +99,15 @@ class ObjectChanger:
         func.write_to_file(path_to_file, new_content[:-1])
 
     def read_files(self):
-        print(self.read_files.__name__)
+        # print(f"{self.log_tag} {self.read_files.__name__}")
         datas = {}
         dir_list = os.listdir(self.obj_folder_to_change)
         for file in dir_list:
             file_path = f"{self.obj_folder_to_change}/{file}"
             file_type = self.get_file_type_by_name("old", file)
-            print(file_path, "->", file_type)
+            # print(file_path, "->", file_type)
             if not file_type:
-                # print(f"Incorrect file type in '{file}'")
+                # print(f'{self.log_tag} Incorrect file type in "{file}"')
                 continue
             user_codes = self.get_info(file_path)
             datas[file_type] = user_codes
@@ -136,7 +138,7 @@ class ObjectChanger:
     def get_obj_res_enum_content_from_file(self, obj_path):
         impl_file = self.get_file_name_by_type("old", const.KEY_FILE_IMPL_H)
         if not impl_file:
-            print(f"File with type '{const.KEY_FILE_IMPL_H}' not found in the path '{obj_path}'")
+            print(f'{self.log_tag} File with type "{const.KEY_FILE_IMPL_H}" not found in the path "{obj_path}"')
             return ""
 
         with open(obj_path + "/" + impl_file, 'r') as file:
@@ -161,11 +163,11 @@ class ObjectChanger:
         return block
 
     def get_resource_names_old(self):
-        print(self.get_resource_names_old.__name__)
+        # print(f"{self.log_tag} {self.get_resource_names_old.__name__}")
         # Return ["line0", "line1", ...]
         res_enum = self.get_obj_res_enum_content_from_file(self.obj_folder_to_change)
         if not res_enum:
-            print("Enum with resources definitions not found")
+            print(f"{self.log_tag} Enum with resources definitions not found")
             return dict()
 
         names = dict()
@@ -174,15 +176,15 @@ class ObjectChanger:
                 continue
             field_parts = line.replace(" ", "").strip("\t,\n").split("=")
             if len(field_parts) != ENUM_FIELD_PARTS_CNT or not field_parts[1].isnumeric():
-                print(f"Incorrect enum field format '{line}'")
+                print(f"{self.log_tag} Incorrect enum field format '{line}'")
                 continue
             names[int(field_parts[1])] = field_parts[0]
         return names
 
     def get_resource_names_new(self, obj_gen):
-        print(self.get_resource_names_new.__name__)
+        # print(f"{self.log_tag} {self.get_resource_names_new.__name__}")
         names = dict()
-        for res in obj_gen.meta_resources:
+        for res in obj_gen.resources_data:
             names[int(res['ID'])] = f"{res['Name']}_{res['ID']}"
         return names
 
@@ -194,7 +196,7 @@ class ObjectChanger:
         return result_map
 
     def get_updated_user_code(self, object_generator_obj):
-        print(self.get_updated_user_code.__name__)
+        # print(f"{self.log_tag} {self.get_updated_user_code.__name__}")
         # Returns {ID: [<str>, <int>]}
         old_res_names = self.get_resource_names_old()
         new_res_names = self.get_resource_names_new(object_generator_obj)
@@ -213,18 +215,23 @@ class ObjectChanger:
                 new_user_code_blocks[type][id] = new_block
         return new_user_code_blocks
 
+    def is_metadata_is_link(self):
+        for resource in const.LWM2M_WEB_RESOUCES:
+            if re.search(resource, self.obj_metadata_to_use):
+                return True
+        return False
+
     def change(self):
         # 1. generate new code from file/link/meta in current folder:
-        obj_g = object_generator.ObjectGenerator(self.obj_metadata_to_use, None)  # TODO: implement cr-n by link
+        param_file = self.obj_metadata_to_use if not self.is_metadata_is_link() else None
+        param_link = self.obj_metadata_to_use if self.is_metadata_is_link() else None
+        obj_g = object_generator.ObjectGenerator(param_file, param_link)
         obj_g.object_code_generate()
         path_to_new_object = obj_g.get_folder_path()
 
         # 2. check if there is possible and set the relations of user-code blocks (old_object -> updated_object):
         if not self.set_relations([self.obj_folder_to_change, path_to_new_object]):     # don't change order in list
-            try:
-                shutil.rmtree(path_to_new_object)
-            except FileNotFoundError:
-                pass
+            func.remove_folder(path_to_new_object)
             return False
 
         # 3. update the code of the new Object by user-code block of the old Object:
@@ -233,12 +240,16 @@ class ObjectChanger:
 
         # 4. remove old Object code:
         obj_r = object_remover.ObjectRemover(self.obj_folder_to_change)
-        obj_r.remove_object()
+        if not obj_r.remove_object():
+            print(f"{self.log_tag} Unable to remove old data. Operation interrupted.")
+            return False
 
         # 5. integrate new code of the Object:
         obj_i = object_integrator.ObjectIntegrator(path_to_new_object)
         if not obj_i.update_files():
-            print("Please, Check the destination of the Object folder and try again")
+            print(f"{self.log_tag} Please, check the existing Object and try again")
+            return False
+        return True
 
 
 def main():

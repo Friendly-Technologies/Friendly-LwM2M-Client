@@ -10,7 +10,7 @@ FILE_OBJ_METADATA = "object_metadata.json"
 FILE_OBJECT_ID = f"{FOLDER_WPP}/registry/ObjectID.h"
 FILE_REGISTRY_H = f"{FOLDER_WPP}/registry/WppRegistry.h"
 FILE_REGISTRY_CPP = f"{FOLDER_WPP}/registry/WppRegistry.cpp"
-FILE_CONFIG_CMAKE = f"{FOLDER_WPP}/config/config.cmake"
+FILE_CONFIG_CMAKE = f"{FOLDER_WPP}/config/objects_config.cmake"
 
 FILE_TMPLT_IMPL_H = f"{FOLDER_TEMPLATES}/FILE_OBJ_IMPL_H.txt"
 FILE_TMPLT_IMPL_CPP = f"{FOLDER_TEMPLATES}/FILE_OBJ_IMPL_CPP.txt"
@@ -50,3 +50,15 @@ KEY_DICT_OBJ_META_VER = "version"
 
 TYPE_OPERATION = "ResOp"
 TYPE_OBJECT = "Object"
+
+KEYS_OBJ_DATA = {"name":          "Name",
+                 "description":   "Description1",
+                 "id":            "ObjectID",
+                 "urn":           "ObjectURN",
+                 "lwm2m_version": "LWM2MVersion",
+                 "version":       "ObjectVersion",
+                 "is_multiple":   "MultipleInstances",
+                 "is_mandatory":  "Mandatory",
+}
+
+LWM2M_WEB_RESOUCES = ["raw.githubusercontent.com", "github.com"]

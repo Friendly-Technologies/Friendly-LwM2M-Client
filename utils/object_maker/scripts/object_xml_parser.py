@@ -1,7 +1,7 @@
 import functions as func
+import constants as const
 
 import json
-import string
 import requests
 import xml.etree.ElementTree as ElementTree
 
@@ -15,32 +15,59 @@ class ObjectXmlParser:
     Also Class generated the dictionary that contain the different names and defines
     that will be useful at code generation to integrate Object to Wpp project structure.
     """
-    
-    def __init__(self, xml_file=None, xml_url=None):
-        self.xml_file_path = self.download_xml(xml_url) if xml_url is not None else xml_file
 
-    def download_xml(self, xml_url):
-        filename = xml_url.split("/")[-1]
-        object_description = json.loads(requests.get(xml_url).content.decode('utf-8'))["payload"]["blob"]["rawLines"]
-        func.write_to_file_line_by_line(f"./{filename}", object_description)
+    def __init__(self, xml_file=None, xml_url=None):
+        self.log_tag = f"[{self.__class__.__name__}]:"
+        self.xml_file = xml_file
+        self.xml_url = xml_url
+        self.object_data = None
+        self.resources_data = None
+
+        if xml_file and xml_url:
+            print(self.__class__.__name__, "only one source should be provided to create the the Object (file or url")
+
+        self.set_xml_file()
+        self.set_parsed_data()  # sets self.object_data and self.resources_data
+
+    def set_xml_file(self):
+        if self.xml_file:
+            return
+        self.xml_file = self.download_xml_file()
+
+    def download_xml_file(self):
+        """Downloads data from provided link, extract xml-representation of the LwM2M Object and save path to field"""
+        filename = self.xml_url.split("/")[-1]
+        web_page = self.xml_url.split("/")[2]
+
+        raw_data = requests.get(self.xml_url).content.decode('utf-8')
+        if web_page == const.LWM2M_WEB_RESOUCES[0]:                     # raw.githubusercontent.com
+            func.write_to_file(f"./{filename}", raw_data)
+            return filename
+
+        if web_page == const.LWM2M_WEB_RESOUCES[1]:                     # github.com
+            json_data = json.loads(raw_data)
+            object_description = json_data["payload"]["blob"]["rawLines"]
+            func.write_to_file_line_by_line(f"./{filename}", object_description)
         return filename
 
-    def parse_xml(self):
-        tree = ElementTree.parse(self.xml_file_path)
+    def set_parsed_data(self):
+        # ============================= parse the xml data ==============================
+        tree = ElementTree.parse(self.xml_file)
         root = tree.getroot()
-
-        # pack the dictionary of the object:
-        object_data = {"object_name": root[0][0].text,
-                       "object_description": root[0][1].text,
-                       "object_id": root[0][2].text,
-                       "object_urn": root[0][3].text,
-                       "object_lwm2m_version": root[0][4].text,
-                       "object_version": root[0][5].text,
-                       "is_multiple": root[0][6].text == "Multiple",
-                       "is_mandatory": root[0][7].text == "Mandatory",
-                       }
-        # pack the list of the dictionary of the resources:
-        resources_list = []
+        # ========================= extract data of the Object ==========================
+        object_data = {}
+        for key in const.KEYS_OBJ_DATA.values():
+            for i in root[0]:
+                if i.tag == key:
+                    object_data[key] = i.text
+        if (const.KEYS_OBJ_DATA["lwm2m_version"] not in object_data.keys() or
+                const.KEYS_OBJ_DATA["version"] not in object_data.keys()):
+            object_data[const.KEYS_OBJ_DATA["lwm2m_version"]] = "1.0"
+            object_data[const.KEYS_OBJ_DATA["version"]] = "1.0"
+        self.object_data = object_data
+        # ===============================================================================
+        # ====== extract data of each of the resources, and pack it to dictionary =======
+        resources_data = []
         for resources in root.findall('./Object/Resources/Item'):
             # get already existing dictionary (with ID) and fill it by another data in loop:
             resource_dict = resources.attrib
@@ -53,45 +80,11 @@ class ObjectXmlParser:
                 # print(resource_name.upper())
             # generate define of the resource:
             name_res = resource_dict['Name']
-            id_obj = object_data['object_id']
+            id_obj = object_data[const.KEYS_OBJ_DATA['id']]
             id_res = resource_dict['ID']
             resource_dict['Define'] = f"RES_{id_obj}_{id_res}"
-            # add prepared resource dictionary to the list:
-            resources_list.append(resource_dict)
-
-        return object_data, resources_list
-
-    def create_metadata(self):
-        object_data, resources_data = self.parse_xml()
-
-        object_metadata = {}
-
-        obj_name_plain = object_data["object_name"]                                 # 'LWM2M Server'
-        obj_name_lower = obj_name_plain.lower()                                     # 'lwm2m server'
-        obj_name_capwords = string.capwords(obj_name_lower)                         # 'Lwm2m Server'
-        obj_name_class = obj_name_capwords.replace(' ', '')                         # 'Lwm2mServer'
-        obj_name_camelcase = obj_name_class[0].lower() + obj_name_class[1:]         # 'lwm2mServer'
-        obj_name_underline = obj_name_plain.replace(' ', '_')                       # 'LWM2M_Server'
-        obj_name_underline_up = obj_name_underline.upper()                          # 'LWM2M_SERVER'
-        obj_name_underline_lw = obj_name_underline.lower()                          # 'lwm2m_server'
-        obj_requirement_short = "M" if object_data["is_mandatory"] else "O"         # 'M' | 'O'
-        obj_version = object_data["object_version"].replace(".", "")                # 13
-        obj_id = object_data['object_id']                                           # 1
-        obj_name_folder = f"{obj_requirement_short.lower()}_" \
-                          f"{obj_id}_" \
-                          f"{obj_name_underline_lw}_"\
-                          f"v{obj_version}"                                         # 'm_1_lwm2m_server_v13'
-        obj_name_path_to_folder = f"../../wpp/registry/objects/"                    # '../../wpp/registry/objects/'
-        obj_name_define = f"OBJ_{obj_requirement_short}_" \
-                          f"{obj_id}_" \
-                          f"{obj_name_underline_up}_" \
-                          f"V{obj_version}"                                         # 'OBJ_M_1_LWM2M_SERVER_V13'
-
-        object_metadata["obj_name_class"] = obj_name_class                          # 'Lwm2mServer'
-        object_metadata["obj_name_camelcase"] = obj_name_camelcase                  # 'lwm2mServer'
-        object_metadata["obj_name_define"] = obj_name_define                        # 'OBJ_M_1_LWM2M_SERVER_V13'
-        object_metadata["obj_name_folder"] = obj_name_folder                        # 'm_1_lwm2m_server_v13'
-        object_metadata["obj_name_path_to_folder"] = obj_name_path_to_folder        # '../../wpp/registry/objects/'
-        object_metadata["obj_name_up_underline"] = obj_name_underline_up            # 'LWM2M_SERVER'
-
-        return object_metadata
+            # ============ add prepared resource's dictionaries to the list =============
+            resources_data.append(resource_dict)
+            # ===========================================================================
+        self.resources_data = resources_data
+        # ===============================================================================

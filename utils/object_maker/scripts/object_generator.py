@@ -3,11 +3,12 @@ import constants as const
 import functions as func
 
 import os
+import json
+import string
 from datetime import datetime
 from prettytable import PrettyTable
 from prettytable import PLAIN_COLUMNS
 from optparse import OptionParser
-import json
 
 DATETIME = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
@@ -16,14 +17,46 @@ class ObjectGenerator:
     """Add some comments here"""
 
     def __init__(self, xml_file, xml_url):
-
+        self.log_tag = f"[{self.__class__.__name__}]:"
         xp = object_xml_parser.ObjectXmlParser(xml_file=xml_file, xml_url=xml_url)
-        obj_dict, res_list = xp.parse_xml()
-        obj_names = xp.create_metadata()
+        self.object_data = xp.object_data
+        self.resources_data = xp.resources_data
+        self.object_names = None
+        self.set_object_names()
 
-        self.meta_object = obj_dict
-        self.meta_resources = res_list
-        self.object_names = obj_names
+    def set_object_names(self):
+        """The goal is to create the container of the Object's names of different format beforehand"""
+        object_names = {}
+
+        obj_name_plain = self.object_data[const.KEYS_OBJ_DATA["name"]]          # 'LWM2M Server'
+        obj_name_lower = obj_name_plain.lower()                                     # 'lwm2m server'
+        obj_name_capwords = string.capwords(obj_name_lower)                         # 'Lwm2m Server'
+        obj_name_class = obj_name_capwords.replace(' ', '')                         # 'Lwm2mServer'
+        obj_name_camelcase = obj_name_class[0].lower() + obj_name_class[1:]         # 'lwm2mServer'
+        obj_name_underline = obj_name_plain.replace(' ', '_')                       # 'LWM2M_Server'
+        obj_name_underline_up = obj_name_underline.upper()                          # 'LWM2M_SERVER'
+        obj_name_underline_lw = obj_name_underline.lower()                          # 'lwm2m_server'
+        obj_requirement_short = "M" if self.object_data[const.KEYS_OBJ_DATA["is_mandatory"]] else "O"    # 'M' | 'O'
+        obj_version = self.object_data[const.KEYS_OBJ_DATA["version"]].replace(".", "")           # 13
+        obj_id = self.object_data[const.KEYS_OBJ_DATA['id']]                                      # 1
+        obj_name_folder = f"{obj_requirement_short.lower()}_" \
+                          f"{obj_id}_" \
+                          f"{obj_name_underline_lw}_"\
+                          f"v{obj_version}"                                         # 'm_1_lwm2m_server_v13'
+        obj_name_path_to_folder = f"../../wpp/registry/objects/"                    # '../../wpp/registry/objects/'
+        obj_name_define = f"OBJ_{obj_requirement_short}_" \
+                          f"{obj_id}_" \
+                          f"{obj_name_underline_up}_" \
+                          f"V{obj_version}"                                         # 'OBJ_M_1_LWM2M_SERVER_V13'
+
+        object_names["obj_name_class"] = obj_name_class                             # 'Lwm2mServer'
+        object_names["obj_name_camelcase"] = obj_name_camelcase                     # 'lwm2mServer'
+        object_names["obj_name_define"] = obj_name_define                           # 'OBJ_M_1_LWM2M_SERVER_V13'
+        object_names["obj_name_folder"] = obj_name_folder                           # 'm_1_lwm2m_server_v13'
+        object_names["obj_name_path_to_folder"] = obj_name_path_to_folder           # '../../wpp/registry/objects/'
+        object_names["obj_name_up_underline"] = obj_name_underline_up               # 'LWM2M_SERVER'
+
+        self.object_names = object_names
 
     def get_folder_path(self):
         return self.object_names["obj_name_folder"]
@@ -123,39 +156,46 @@ class ObjectGenerator:
             if resource_xml['Mandatory'] != "MANDATORY":
                 resources_enum += f"\t\t#endif\n"
 
-            # fill the unordered_map<ID_T, Resource> table:
+            # fill the vector <ID_T, Resource> table:
             if resource_xml['Mandatory'] != "MANDATORY":
-                x.add_row([f"*TAB*#if {resource_define}", "", "", "", "", ""])
+                x.add_row([f"*TAB*#if {resource_define}", "", "", "", ""])
 
             x.add_row([f"*TAB*{{{resource},",
-                       f"{{{resource},",
                        self.parse_operation(resource_xml['Operations']),
                        f"IS_SINGLE::{resource_xml['MultipleInstances']},",
                        f"IS_MANDATORY::{resource_xml['Mandatory']},",
-                       f"{self.parse_resource_data_type(resource_xml['Type'])} }}}},"])
+                       f"{self.parse_resource_data_type(resource_xml['Type'])} }},"])
 
             if resource_xml['Mandatory'] != "MANDATORY":
-                x.add_row([f"*TAB*#endif", "", "", "", "", ""])
+                x.add_row([f"*TAB*#endif", "", "", "", ""])
 
         resources_map = str(x).replace("*TAB*", "\t\t")
         # TODO: fix next line by PrettyTable features!
-        resources_map = resources_map.replace(",        ", ",  ")
+        resources_map = resources_map.replace(",        ", ", ")
 
         return resources_enum, resources_map
 
     def get_content_resourcesInit_f(self, resources_list_xml):
         content = f"""void __CLASS_NAME__::resourcesInit() {{\n""" \
-                  f"""\t/* --------------- Code_cpp block 9 start --------------- */\n"""
+                  f"""\t/* --------------- Code_cpp block 9 start --------------- */\n""" \
+                  f"""// TODO: The most part of the server resources logic must be implemented\n""" \
+                  f"""// on wakaama core level, because the Server is only a state holder and\n""" \
+                  f"""// at this level, it does not have the required information for doing\n""" \
+                  f"""// sings described in the documentation.\n\n"""
         for resource in resources_list_xml:
             if resource["Mandatory"] == "MANDATORY":
                 # content += f"""\t\t#if {resource["Name"]}_{resource["Mandatory"]}\n\t"""
-                content += f"\t_resources[{resource['Name']}_{resource['ID']}].set( /* TODO */ );\n"
-                content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n\n"
+                # content += f"\t_resources[{resource['Name']}_{resource['ID']}].set( /* TODO */ );\n"
+                # content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n\n"
+                content += f"\t+getResIter({resource['Name']}_{resource['ID']})->set( /* TODO */ );\n"
+                content += f"\t+getResIter({resource['Name']}_{resource['ID']})->setDataVerifier( /* TODO */ );\n\n"
                 # content += f"\t\t#endif\n\n"
             if resource["Mandatory"] == "OPTIONAL":
                 content += f"""\t#if {resource["Define"]}\n"""
-                content += f"\t_resources[{resource['Name']}_{resource['ID']}].set( /* TODO */ );\n"
-                content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n"
+                # content += f"\t_resources[{resource['Name']}_{resource['ID']}].set( /* TODO */ );\n"
+                # content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n"
+                content += f"\t-getResIter({resource['Name']}_{resource['ID']})->set( /* TODO */ );\n"
+                content += f"\t-getResIter({resource['Name']}_{resource['ID']})->setDataVerifier( /* TODO */ );\n"
                 content += f"\t#endif\n\n"
         content += f"""\t/* --------------- Code_cpp block 9 end --------------- */\n}}"""
 
@@ -213,19 +253,17 @@ class ObjectGenerator:
                   f"""\t/* --------------- Code_cpp block 8 end --------------- */\n}}"""
         return prefix + postfix
 
-    def generate_content_header(self):
+    def generate_content_header(self, resources_enum):
         data_str_h = func.get_file_content(const.FILE_TMPLT_IMPL_H)[1]
-        resources_enum, resources_map = self.get_map_of_resources(self.meta_resources)
         data_str_h = data_str_h.replace("__DATETIME__", DATETIME)
         data_str_h = data_str_h.replace("__IF_NOT_DEFINED_DEFINE__", self.object_names["obj_name_folder"].upper())
         data_str_h = data_str_h.replace("__CLASS_NAME__", self.object_names["obj_name_class"])
         data_str_h = data_str_h.replace("__ID_ENUM__", resources_enum)
-        data_str_h = data_str_h.replace("__RESOURCES_MAP__", resources_map)
         data_str_h = data_str_h.replace("<<IF_DEF_DIRECTIVE>>", self.object_names["obj_name_folder"].upper())
 
         return data_str_h
 
-    def generate_content_cpp(self):
+    def generate_content_cpp(self, resources_map):
         data_str_cpp = func.get_file_content(const.FILE_TMPLT_IMPL_CPP)[1]
         data_str_cpp = data_str_cpp.replace("__DATETIME__", DATETIME)
         data_str_cpp = data_str_cpp.replace("__OBJ_FOLDER__", self.object_names["obj_name_folder"])
@@ -234,8 +272,9 @@ class ObjectGenerator:
         data_str_cpp = data_str_cpp.replace("__F_USER_OPERATION_NOTIFIER__",
                                             self.get_content_userOperationNotifier())
         data_str_cpp = data_str_cpp.replace("__F_RESOURCE_INIT__",
-                                            self.get_content_resourcesInit_f(self.meta_resources))
+                                            self.get_content_resourcesInit_f(self.resources_data))
         data_str_cpp = data_str_cpp.replace("__CLASS_NAME__", self.object_names["obj_name_class"])
+        data_str_cpp = data_str_cpp.replace("__RESOURCES_TABLE__", resources_map)
 
         return data_str_cpp
 
@@ -248,21 +287,21 @@ class ObjectGenerator:
         return content
 
     def generate_content_info_header(self):
-        is_multiple = "MULTIPLE" if self.meta_object["is_multiple"] else "SINGLE"
-        is_mandatory = "MANDATORY" if self.meta_object["is_mandatory"] else "OPTIONAL"
+        is_multiple = "MULTIPLE" if self.object_data[const.KEYS_OBJ_DATA["is_multiple"]] else "SINGLE"
+        is_mandatory = "MANDATORY" if self.object_data[const.KEYS_OBJ_DATA["is_mandatory"]] else "OPTIONAL"
 
         content = func.get_file_content(const.FILE_TMPLT_INFO)[1]
         content = content.replace("__DATETIME__", DATETIME)
         content = content.replace("<<IF_DEF_DIRECTIVE>>", self.object_names["obj_name_up_underline"])
         content = content.replace("__UPNAME__", self.object_names["obj_name_up_underline"])
         content = content.replace("__OBJ_DEFINE__", self.object_names["obj_name_define"])
-        content = content.replace("__NAME__", self.meta_object["object_name"])
+        content = content.replace("__NAME__", self.object_data[const.KEYS_OBJ_DATA["name"]])
         content = content.replace("__OBJ_ID__", self.object_names["obj_name_up_underline"])
-        content = content.replace("__URN__", self.meta_object["object_urn"])
+        content = content.replace("__URN__", f'"{self.object_data[const.KEYS_OBJ_DATA["urn"]]}"')
         content = content.replace("__VERSION__",
-                                  f"{{{self.meta_object['object_version'].replace('.', ',')}}}")
+                                  f"{{{self.object_data[const.KEYS_OBJ_DATA['version']].replace('.', ',')}}}")
         content = content.replace("__LWM2M_VERSION__",
-                                  f"{{{self.meta_object['object_lwm2m_version'].replace('.', ',')}}}")
+                                  f"{{{self.object_data[const.KEYS_OBJ_DATA['lwm2m_version']].replace('.', ',')}}}")
         content = content.replace("__MULTIPLE__", is_multiple)
         content = content.replace("__MANDATORY__", is_mandatory)
 
@@ -270,7 +309,7 @@ class ObjectGenerator:
 
     def generate_content_config(self):
         defines = ""
-        for resource in self.meta_resources:
+        for resource in self.resources_data:
             if resource["Mandatory"] == "OPTIONAL":
                 defines += f"""#define {resource['Define']} 0\n"""
 
@@ -285,11 +324,11 @@ class ObjectGenerator:
     def generate_obj_integration_data(self):
         dictionary = {}
 
-        obj_dict = {const.KEY_DICT_OBJ_META_MANDAT: "True" if self.meta_object["is_mandatory"] else "False",
-                    const.KEY_DICT_OBJ_META_NAME: self.meta_object["object_name"],
-                    const.KEY_DICT_OBJ_META_ID: self.meta_object["object_id"],
-                    const.KEY_DICT_OBJ_META_VER_LWM2M: self.meta_object["object_lwm2m_version"],
-                    const.KEY_DICT_OBJ_META_VER: self.meta_object["object_version"]}
+        obj_dict = {const.KEY_DICT_OBJ_META_MANDAT: "True" if self.object_data[const.KEYS_OBJ_DATA["is_mandatory"]] else "False",
+                    const.KEY_DICT_OBJ_META_NAME: self.object_data[const.KEYS_OBJ_DATA["name"]],
+                    const.KEY_DICT_OBJ_META_ID: self.object_data[const.KEYS_OBJ_DATA["id"]],
+                    const.KEY_DICT_OBJ_META_VER_LWM2M: self.object_data[const.KEYS_OBJ_DATA["lwm2m_version"]],
+                    const.KEY_DICT_OBJ_META_VER: self.object_data[const.KEYS_OBJ_DATA["version"]]}
 
         obj_names = {const.KEY_DICT_OBJ_NAMES_CLASS: self.object_names["obj_name_class"],
                      const.KEY_DICT_OBJ_NAMES_CAMELC: self.object_names["obj_name_camelcase"],
@@ -319,8 +358,9 @@ class ObjectGenerator:
         func.create_file(f"./{self.object_names['obj_name_folder']}/{file}", content)
 
     def object_code_generate(self):
-        generated_header = self.generate_content_header()
-        generated_cpp_file = self.generate_content_cpp()
+        resources_enum, resources_map = self.get_map_of_resources(self.resources_data)
+        generated_header = self.generate_content_header(resources_enum)
+        generated_cpp_file = self.generate_content_cpp(resources_map)
         generated_cmake_list = self.generate_content_cmake_list()
         generated_info_header = self.generate_content_info_header()
         generated_config = self.generate_content_config()

@@ -91,8 +91,8 @@ public:
 	#if RES_3_6
 	enum PwrSrcs: uint8_t {
 		DC = 0,
-		INTERN_BUTT = 1,
-		EXTERN_BUTT = 2,
+		INTERN_BAT = 1,
+		EXTERN_BAT = 2,
 		FUEL_CELL = 3,
 		PWR_OVER_ETHERNET = 4,
 		USB = 5,
@@ -104,7 +104,7 @@ public:
 
 	enum ErrCode: uint8_t {
 		NO_ERROR = 0,
-		LOW_BUTT = 1,
+		LOW_BAT = 1,
 		EXT_PWR_SUPP_OFF = 2,
 		GPS_FAIL = 3,
 		LOW_SIG_STRENGTH = 4,
@@ -116,7 +116,7 @@ public:
 	};
 
 	#if RES_3_20
-	enum ButtStatus {
+	enum BatStatus {
 		NORMAL = 0,
 		CHARGING = 1,
 		CHARGED = 2,
@@ -124,7 +124,7 @@ public:
 		LOW_BATTERY = 4,
 		NOT_INSTALLED = 5,
 		UNKNOWN = 6,
-		BUTT_STATUS_MAX
+		BAT_STATUS_MAX
 	};
 	#endif
 	/* --------------- Code_h block 1 end --------------- */

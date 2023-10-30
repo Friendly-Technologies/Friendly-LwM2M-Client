@@ -16,6 +16,9 @@ enum class OBJ_ID: ID_T {
 #ifdef OBJ_M_1_LWM2M_SERVER_V11
 	LWM2M_SERVER = 1,
 #endif /* OBJ_M_1_LWM2M_SERVER_V11 */
+#ifdef OBJ_O_4_CONNECTIVITY_MONITORING_V13
+	CONNECTIVITY_MONITORING = 4,
+#endif /* OBJ_O_4_CONNECTIVITY_MONITORING_V13 */
 	/* The end of the IDs of the mandatory objects. */
 	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 

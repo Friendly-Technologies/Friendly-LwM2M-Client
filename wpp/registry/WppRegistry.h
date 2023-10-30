@@ -22,6 +22,9 @@
 #if OBJ_M_1_LWM2M_SERVER_V11
 #include "m_1_lwm2m_server_v11/Lwm2mServer.h"
 #endif
+#if OBJ_O_4_CONNECTIVITY_MONITORING_V13
+#include "o_4_connectivity_monitoring_v13/ConnectivityMonitoring.h"
+#endif
 /* The end of the includes of the mandatory objects. */
 /* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 
@@ -67,6 +70,9 @@ public:
 	#endif
 	#if OBJ_M_1_LWM2M_SERVER_V11
 	Object<Lwm2mServer> & lwm2mServer();
+	#endif
+	#if OBJ_O_4_CONNECTIVITY_MONITORING_V13
+	Object<ConnectivityMonitoring> & connectivityMonitoring();
 	#endif
 	/* The end of the prototypes of the mandatory objects. */
 	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */

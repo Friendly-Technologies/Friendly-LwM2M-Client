@@ -57,7 +57,8 @@ public:
 	bool deregisterObj(Lwm2mObject &object);
 	bool isObjRegistered(Lwm2mObject &object);
 
-	/* ------------- Mandatory objects prototype start ------------- */
+	/* The start of the prototypes of the mandatory objects. */
+	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 	#if OBJ_M_3_DEVICE_V12
 	Object<Device> & device();
 	#endif

@@ -25,7 +25,7 @@ static const ObjectInfo DEVICE_OBJ_INFO = {
 	/* Lwm2m version */
 	{1,1},
 	/* Is single */
-	IS_SINGLE::MULTIPLE,
+	IS_SINGLE::SINGLE,
 	/* Is Mandatory */
 	IS_MANDATORY::MANDATORY,
 	/* Object supported operations */

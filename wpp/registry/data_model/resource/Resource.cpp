@@ -35,7 +35,7 @@ Resource::Resource(Resource&& resource) {
 	_isSingle = resource._isSingle;
 	_isMandatory = resource._isMandatory;
 	_typeID = resource._typeID;
-	_instances.insert(std::make_move_iterator(resource._instances.begin()), std::make_move_iterator(resource._instances.end()));
+	_instances = std::move(resource._instances);
 	_dataVerifier = resource._dataVerifier;
 	resource.clear();
 }
@@ -63,14 +63,14 @@ Resource& Resource::operator=(Resource&& resource) {
     _isMandatory = resource._isMandatory;
     _typeID = resource._typeID;
     _instances.clear();
-    _instances.insert(std::make_move_iterator(resource._instances.begin()), std::make_move_iterator(resource._instances.end()));
+	_instances = std::move(resource._instances);
     _dataVerifier = resource._dataVerifier;
 	resource.clear();
 
     return *this;
 }
 
-ID_T Resource::getID() const {
+ID_T Resource::getId() const {
 	return _id;
 }
 
@@ -107,7 +107,7 @@ bool Resource::isInstanceIdPossible(ID_T resInstId) const {
 }
 
 bool Resource::isInstanceExist(ID_T resInstId) const {
-	return _instances.find(resInstId) != _instances.end();
+	return getResInstIter(resInstId) != _instances.end();
 }
 
 bool Resource::isTypeIdCompatible(TYPE_ID type) const {
@@ -135,7 +135,7 @@ size_t Resource::instanceCnt() const {
 
 
 /* ---------- Extended abilities for access directly to resource data for avoid coping ----------*/
-const std::unordered_map<ID_T, Resource::DATA_T>& Resource::getInstances() {
+const std::vector<Resource::ResInst>& Resource::getInstances() {
 	return _instances;
 }
 
@@ -206,7 +206,9 @@ bool Resource::get(EXECUTE_T &value, ID_T resInstId) const {
 
 bool Resource::remove(ID_T resInstId) {
 	if (!isInstanceExist(resInstId) || isSingle()) return false;
-	_instances.erase(resInstId);
+	auto instForRemove = getResInstIter(resInstId);
+	_instances.erase(instForRemove);
+
 	return true;
 }
 
@@ -231,6 +233,11 @@ bool Resource::isDataVerifierValid(const DATA_VERIFIER_T &verifier) const {
 	else if (std::holds_alternative<VERIFY_STRING_T>(verifier) && std::get<VERIFY_STRING_T>(verifier)) return _typeID == TYPE_ID::STRING;
 	else if (std::holds_alternative<VERIFY_EXECUTE_T>(verifier) && std::get<VERIFY_EXECUTE_T>(verifier)) return _typeID == TYPE_ID::EXECUTE;
 	else return false;
+}
+
+std::vector<Resource::ResInst>::iterator Resource::getResInstIter(ID_T resInstId) const {
+	auto finder = [&resInstId](const ResInst &inst) -> bool { return inst.id == resInstId; };
+	return std::find_if(_instances.begin(), _instances.end(), finder);
 }
 
 } //namespace wpp

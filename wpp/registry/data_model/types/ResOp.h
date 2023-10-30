@@ -24,7 +24,7 @@ public:
 	};
 
 public:
-	ResOp(uint8_t flags = TYPE::NONE): _flags(flags) {}
+	ResOp(uint16_t flags = TYPE::NONE): _flags(flags) {}
     inline bool isSupported(TYPE type) const { return _flags & type; };
     inline bool isCompatible(const ResOp& operation) const { return (_flags & operation._flags) == _flags; };
     inline bool isRead() const { return _flags & READ; }
@@ -36,16 +36,16 @@ public:
     inline bool isBlock1Execute() const { return _flags & BLOCK1_EXECUTE; }
     inline uint16_t getFlags() const { return _flags; }
     inline std::vector<TYPE> asVector() const {
-    	uint8_t flags = _flags;
+    	uint32_t flags = _flags;
     	std::vector<TYPE> operations;
-    	for (size_t i = 1; i != 0x80; i <<= 1) {
+    	for (size_t i = 1; i != 0x1000; i <<= 1) {
     		if (flags & i) operations.push_back((TYPE)i);
     	}
     	return operations;
     }
 
 private:
-    uint8_t _flags;
+    uint16_t _flags;
 };
 
 } // namespace wpp

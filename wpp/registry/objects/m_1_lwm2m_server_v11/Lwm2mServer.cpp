@@ -31,6 +31,7 @@ Lwm2mServer::Lwm2mServer(lwm2m_context_t &context, const OBJ_LINK_T &id): Instan
 	/* --------------- Code_cpp block 1 start --------------- */
 	/* --------------- Code_cpp block 1 end --------------- */
 
+	resourcesCreate();
 	resourcesInit();
 
 	/* --------------- Code_cpp block 2 start --------------- */
@@ -42,49 +43,12 @@ Lwm2mServer::~Lwm2mServer() {
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
-Resource * Lwm2mServer::getResource(ID_T id) {
-	// Check if resource ID is valid
-	if (_resources.find(id) == _resources.end()) return NULL;
-	return &_resources[id];
-}
-
-std::vector<Resource *> Lwm2mServer::getResourcesList() {
-	std::vector<Resource *> list;
-	for (auto &pair : _resources) {
-		list.push_back(&pair.second);
-	}
-	return list;
-}
-
-std::vector<Resource *> Lwm2mServer::getResourcesList(const ResOp& filter) {
-	std::vector<Resource *> list;
-	for (auto &pair : _resources) {
-		if (filter.isCompatible(pair.second.getOperation())) list.push_back(&pair.second);
-	}
-	return list;
-}
-
-std::vector<Resource *> Lwm2mServer::getInstantiatedResourcesList() {
-	std::vector<Resource *> list;
-	for (auto &pair : _resources) {
-		if (!pair.second.isEmpty()) list.push_back(&pair.second);
-	}
-	return list;
-}
-
-std::vector<Resource *> Lwm2mServer::getInstantiatedResourcesList(const ResOp& filter) {
-	std::vector<Resource *> list;
-	for (auto &pair : _resources) {
-		if (!pair.second.isEmpty() && filter.isCompatible(pair.second.getOperation())) list.push_back(&pair.second);
-	}
-	return list;
-}
-
 void Lwm2mServer::setDefaultState() {
 	/* --------------- Code_cpp block 4 start --------------- */
 	/* --------------- Code_cpp block 4 end --------------- */
 
-	for (auto &pair : _resources) pair.second.clear();
+	_resources.clear();
+	resourcesCreate();
 	resourcesInit();
 
 	/* --------------- Code_cpp block 5 start --------------- */
@@ -136,6 +100,75 @@ void Lwm2mServer::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) 
 	/* --------------- Code_cpp block 8 end --------------- */
 }
 
+void Lwm2mServer::resourcesCreate() {
+	std::vector<Resource> resources = {
+		// KEY   VALUE
+		{SHORT_SERVER_ID_0,                                      ResOp(ResOp::READ),                     IS_SINGLE::SINGLE,        IS_MANDATORY::MANDATORY,        TYPE_ID::INT },             
+		{LIFETIME_1,                                             ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::MANDATORY,        TYPE_ID::INT },             
+		#if RES_1_2                                                                                                                                                                                                                                      
+		{DEFAULT_MINIMUM_PERIOD_2,                               {DEFAULT_MINIMUM_PERIOD_2,                               ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::INT }},             
+		#endif                                                                                                                                                                                                                                           
+		#if RES_1_3                                                                                                                                                                                                                                      
+		{DEFAULT_MAXIMUM_PERIOD_3,                               {DEFAULT_MAXIMUM_PERIOD_3,                               ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::INT }},             
+		#endif                                                                                                                                                                                                                                           
+		#if RES_1_4                                                                                                                                                                                                                                      
+		{DISABLE_4,                                              {DISABLE_4,                                              ResOp(ResOp::EXECUTE),                  IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::EXECUTE }},         
+		#endif                                                                                                                                                                                                                                           
+		#if RES_1_5                                                                                                                                                                                                                                      
+		{DISABLE_TIMEOUT_5,                                      {DISABLE_TIMEOUT_5,                                      ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::INT }},             
+		#endif                                                                                                                                                                                                                                           
+		{NOTIFICATION_STORING_WHEN_DISABLED_OR_OFFLINE_6,        ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::MANDATORY,        TYPE_ID::BOOL },            
+		{BINDING_7,                                              ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::MANDATORY,        TYPE_ID::STRING },          
+		{REGISTRATION_UPDATE_TRIGGER_8,                          ResOp(ResOp::EXECUTE),                  IS_SINGLE::SINGLE,        IS_MANDATORY::MANDATORY,        TYPE_ID::EXECUTE },         
+		#if RES_1_9                                                                                                                                                                                                                                      
+		{BOOTSTRAP_REQUEST_TRIGGER_9,                            {BOOTSTRAP_REQUEST_TRIGGER_9,                            ResOp(ResOp::EXECUTE),                  IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::EXECUTE }},         
+		#endif                                                                                                                                                                                                                                           
+		#if RES_1_10                                                                                                                                                                                                                                     
+		{APN_LINK_10,                                            {APN_LINK_10,                                            ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::OBJ_LINK }},        
+		#endif                                                                                                                                                                                                                                           
+		#if RES_1_11                                                                                                                                                                                                                                     
+		{TLS_DTLS_ALERT_CODE_11,                                 {TLS_DTLS_ALERT_CODE_11,                                 ResOp(ResOp::READ),                     IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::UINT }},            
+		#endif                                                                                                                                                                                                                                           
+		#if RES_1_12                                                                                                                                                                                                                                     
+		{LAST_BOOTSTRAPPED_12,                                   {LAST_BOOTSTRAPPED_12,                                   ResOp(ResOp::READ),                     IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::TIME }},            
+		#endif                                                                                                                                                                                                                                           
+		#if RES_1_13                                                                                                                                                                                                                                     
+		{REGISTRATION_PRIORITY_ORDER_13,                         {REGISTRATION_PRIORITY_ORDER_13,                         ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::UINT }},            
+		#endif                                                                                                                                                                                                                                           
+		#if RES_1_14                                                                                                                                                                                                                                     
+		{INITIAL_REGISTRATION_DELAY_TIMER_14,                    {INITIAL_REGISTRATION_DELAY_TIMER_14,                    ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::UINT }},            
+		#endif                                                                                                                                                                                                                                           
+		#if RES_1_15                                                                                                                                                                                                                                     
+		{REGISTRATION_FAILURE_BLOCK_15,                          {REGISTRATION_FAILURE_BLOCK_15,                          ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::BOOL }},            
+		#endif                                                                                                                                                                                                                                           
+		#if RES_1_16                                                                                                                                                                                                                                     
+		{BOOTSTRAP_ON_REGISTRATION_FAILURE_16,                   {BOOTSTRAP_ON_REGISTRATION_FAILURE_16,                   ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::BOOL }},            
+		#endif                                                                                                                                                                                                                                           
+		#if RES_1_17                                                                                                                                                                                                                                     
+		{COMMUNICATION_RETRY_COUNT_17,                           {COMMUNICATION_RETRY_COUNT_17,                           ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::UINT }},            
+		#endif                                                                                                                                                                                                                                           
+		#if RES_1_18                                                                                                                                                                                                                                     
+		{COMMUNICATION_RETRY_TIMER_18,                           {COMMUNICATION_RETRY_TIMER_18,                           ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::UINT }},            
+		#endif                                                                                                                                                                                                                                           
+		#if RES_1_19                                                                                                                                                                                                                                     
+		{COMMUNICATION_SEQUENCE_DELAY_TIMER_19,                  {COMMUNICATION_SEQUENCE_DELAY_TIMER_19,                  ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::UINT }},            
+		#endif                                                                                                                                                                                                                                           
+		#if RES_1_20                                                                                                                                                                                                                                     
+		{COMMUNICATION_SEQUENCE_RETRY_COUNT_20,                  {COMMUNICATION_SEQUENCE_RETRY_COUNT_20,                  ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::UINT }},            
+		#endif                                                                                                                                                                                                                                           
+		#if RES_1_21                                                                                                                                                                                                                                     
+		{TRIGGER_21,                                             {TRIGGER_21,                                             ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::BOOL }},            
+		#endif                                                                                                                                                                                                                                           
+		#if RES_1_22                                                                                                                                                                                                                                     
+		{PREFERRED_TRANSPORT_22,                                 {PREFERRED_TRANSPORT_22,                                 ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::STRING }},          
+		#endif                                                                                                                                                                                                                                           
+		#if RES_1_23                                                                                                                                                                                                                                     
+		{MUTE_SEND_23,                                           {MUTE_SEND_23,                                           ResOp(ResOp::READ|ResOp::WRITE),        IS_SINGLE::SINGLE,        IS_MANDATORY::OPTIONAL,         TYPE_ID::BOOL }},            
+		#endif                                                                                                                                                                                                                                           
+	};
+	_resources = std::move(resources);
+}
+
 void Lwm2mServer::resourcesInit() {
 	/* --------------- Code_cpp block 9 start --------------- */
 	// TODO: The most part of the server resources logic must be implemented
@@ -143,90 +176,90 @@ void Lwm2mServer::resourcesInit() {
 	// at this level, it does not have the required information for doing
 	// sings described in the documentation.
 
-	_resources[SHORT_SERVER_ID_0].set(INT_T(0));
-	_resources[SHORT_SERVER_ID_0].setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return SINGLE_INSTANCE_ID < value && value < ID_T_MAX_VAL; });
+	getResIter(SHORT_SERVER_ID_0)->set(INT_T(0));
+	getResIter(SHORT_SERVER_ID_0)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return SINGLE_INSTANCE_ID < value && value < ID_T_MAX_VAL; });
 
-	_resources[LIFETIME_1].set(INT_T(0));
+	getResIter(LIFETIME_1)->set(INT_T(0));
 
 	#if RES_1_2    
-	_resources[DEFAULT_MINIMUM_PERIOD_2].set(INT_T(0));                                                                                                                                                                                                             
+	getResIter(DEFAULT_MINIMUM_PERIOD_2)->set(INT_T(0));                                                                                                                                                                                                             
 	#endif    
 
 	#if RES_1_3       
-	_resources[DEFAULT_MAXIMUM_PERIOD_3].set(INT_T(0));                                                                                                                                                                                                          
+	getResIter(DEFAULT_MAXIMUM_PERIOD_3)->set(INT_T(0));                                                                                                                                                                                                          
 	#endif                       
 
 	// TODO: Disable (Res id 4) must be implemented by wakaama core or WppClient
 
 	#if RES_1_5                                                                                                                                                                                                                        
-	_resources[DISABLE_TIMEOUT_5].set(INT_T(0));
+	getResIter(DISABLE_TIMEOUT_5)->set(INT_T(0));
 	#endif 
 
 	// TODO: Notification Storing (Res id 6) must be implemented by wakaama core
-	_resources[NOTIFICATION_STORING_WHEN_DISABLED_OR_OFFLINE_6].set(false);
+	getResIter(NOTIFICATION_STORING_WHEN_DISABLED_OR_OFFLINE_6)->set(false);
 	
-	_resources[BINDING_7].set(STRING_T(""));
-	_resources[BINDING_7].setDataVerifier((VERIFY_STRING_T)[](const STRING_T& value) { return wppBindingValidate(value); });
+	getResIter(BINDING_7)->set(STRING_T(""));
+	getResIter(BINDING_7)->setDataVerifier((VERIFY_STRING_T)[](const STRING_T& value) { return wppBindingValidate(value); });
 
 	// TODO: Registration Update (Res id 8) must be implemented by wakaama core or WppClient
 
 	// TODO: Bootstrap Request (Res id 9) must be implemented by wakaama core or WppClient
 
 	#if RES_1_10    
-	_resources[APN_LINK_10].set(OBJ_LINK_T());                                                                                                                                                                                                                          
+	getResIter(APN_LINK_10)->set(OBJ_LINK_T());                                                                                                                                                                                                                          
 	#endif 
 
 	#if RES_1_11
-	_resources[TLS_DTLS_ALERT_CODE_11].set(UINT_T(TLS_DTLS_ALERT_CODE_MIN));
-	_resources[TLS_DTLS_ALERT_CODE_11].setDataVerifier((VERIFY_UINT_T)[](const UINT_T& value) { return TLS_DTLS_ALERT_CODE_MIN <= value && value <= TLS_DTLS_ALERT_CODE_MAX; });
+	getResIter(TLS_DTLS_ALERT_CODE_11)->set(UINT_T(TLS_DTLS_ALERT_CODE_MIN));
+	getResIter(TLS_DTLS_ALERT_CODE_11)->setDataVerifier((VERIFY_UINT_T)[](const UINT_T& value) { return TLS_DTLS_ALERT_CODE_MIN <= value && value <= TLS_DTLS_ALERT_CODE_MAX; });
 	#endif
 	                                                                                                                                                                                                                                       
 	#if RES_1_12
-	_resources[LAST_BOOTSTRAPPED_12].set(TIME_T(0));                                                                                                                                                                                                                    
+	getResIter(LAST_BOOTSTRAPPED_12)->set(TIME_T(0));                                                                                                                                                                                                                    
 	#endif                                                                                                                                                                                                                                             
 	
 	#if RES_1_13
-	_resources[REGISTRATION_PRIORITY_ORDER_13].set(UINT_T(0));                                                                                                                                                                                                           
+	getResIter(REGISTRATION_PRIORITY_ORDER_13)->set(UINT_T(0));                                                                                                                                                                                                           
 	#endif                                                                                                                                                                                                                                             
 	
 	#if RES_1_14
-	_resources[INITIAL_REGISTRATION_DELAY_TIMER_14].set(UINT_T(0));                                                                                                                                                                                                      
+	getResIter(INITIAL_REGISTRATION_DELAY_TIMER_14)->set(UINT_T(0));                                                                                                                                                                                                      
 	#endif                                                                                                                                                                                                                                             
 	
 	#if RES_1_15  
-	_resources[REGISTRATION_FAILURE_BLOCK_15].set(false);                                                                                                                                                                                                             
+	getResIter(REGISTRATION_FAILURE_BLOCK_15)->set(false);                                                                                                                                                                                                             
 	#endif                                                                                                                                                                                                                                             
 	
 	#if RES_1_16
-	_resources[BOOTSTRAP_ON_REGISTRATION_FAILURE_16].set(false);                                                                                                                                                                                                    
+	getResIter(BOOTSTRAP_ON_REGISTRATION_FAILURE_16)->set(false);                                                                                                                                                                                                    
 	#endif                                                                                                                                                                                                                                             
 	
 	#if RES_1_17                                                                                                                                                                                                             
-	_resources[COMMUNICATION_RETRY_COUNT_17].set(UINT_T(0));
+	getResIter(COMMUNICATION_RETRY_COUNT_17)->set(UINT_T(0));
 	#endif                                                                                                                                                                                                                                             
 	
 	#if RES_1_18                                                                                                                                                                                                             
-	_resources[COMMUNICATION_RETRY_TIMER_18].set(UINT_T(0));
+	getResIter(COMMUNICATION_RETRY_TIMER_18)->set(UINT_T(0));
 	#endif                                                                                                                                                                                                                                             
 	
 	#if RES_1_19                                                                                                                                                                                                    
-	_resources[COMMUNICATION_SEQUENCE_DELAY_TIMER_19].set(UINT_T(0));
+	getResIter(COMMUNICATION_SEQUENCE_DELAY_TIMER_19)->set(UINT_T(0));
 	#endif                                                                                                                                                                                                                                             
 	
 	#if RES_1_20                                                                                                                                                                                                    
-	_resources[COMMUNICATION_SEQUENCE_RETRY_COUNT_20].set(UINT_T(0));
+	getResIter(COMMUNICATION_SEQUENCE_RETRY_COUNT_20)->set(UINT_T(0));
 	#endif                                                                                                                                                                                                                                             
 	
 	#if RES_1_21
-	_resources[TRIGGER_21].set(false);                                                                                                                                                                                                                               
+	getResIter(TRIGGER_21)->set(false);                                                                                                                                                                                                                               
 	#endif 
 
 	#if RES_1_22
-	_resources[PREFERRED_TRANSPORT_22].set(STRING_T(""));
+	getResIter(PREFERRED_TRANSPORT_22)->set(STRING_T(""));
 	#endif
 
 	#if RES_1_23                                                                                                                                                                                                                             
-	resources[MUTE_SEND_23].set(false);
+	getResIter(MUTE_SEND_23)->set(false);
 	#endif 
 	/* --------------- Code_cpp block 9 end --------------- */
 }

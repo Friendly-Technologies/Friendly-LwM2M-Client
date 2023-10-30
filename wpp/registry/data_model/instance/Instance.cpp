@@ -8,13 +8,14 @@
 #include "Instance.h"
 #include "WppLogs.h"
 
-#define IS_RES_EXISTS(res) (res && !res->isEmpty())
+#define IS_PTR_VALID_AND_RES_EXISTS(resPtr) (resPtr && !resPtr->isEmpty())
+#define IS_ITER_VALID_AND_RES_EXISTS(iter) (iter != _resources.end() && !iter->isEmpty())
 
 namespace wpp {
 
 bool Instance::clear(ID_T resId) {
-	Resource *const resource = getResource(resId);
-	if (!resource) return false;
+	auto resource = getResIter(resId);
+	if (resource == _resources.end()) return false;
 
 	bool result = resource->clear();
 	if (result) {
@@ -26,8 +27,8 @@ bool Instance::clear(ID_T resId) {
 }
 
 bool Instance::remove(const ResLink &resId) {
-	Resource *const resource = getResource(resId.resInstId);
-	if (!resource) return false;
+	auto resource = getResIter(resId.resInstId);
+	if (resource == _resources.end()) return false;
 
 	bool result = resource->remove(resId.resInstId);
 	if (result) {
@@ -42,6 +43,27 @@ void Instance::notifyValueChanged(const DataLink &data) {
 	WPP_LOGD_ARG(TAG_WPP_INST, "Notify value changed: objID=%d, instID=%d, resID=%d, resInstID=%d", data.instance.objId, data.instance.objInstId, data.resource.resId, data.resource.resInstId);	
 	lwm2m_uri_t uri = {data.instance.objId, data.instance.objInstId, data.resource.resId, data.resource.resInstId};
 	lwm2m_resource_value_changed(&_context, &uri);
+}
+
+std::vector<Resource *> Instance::getInstantiatedResList() {
+	std::vector<Resource *> list;
+	for (auto &res : _resources) {
+		if (!res.isEmpty()) list.push_back(&res);
+	}
+	return list;
+}
+
+std::vector<Resource *> Instance::getInstantiatedResList(const ResOp& filter) {
+	std::vector<Resource *> list;
+	for (auto &res : _resources) {
+		if (!res.isEmpty() && filter.isCompatible(res.getOperation())) list.push_back(&res);
+	}
+	return list;
+}
+
+std::vector<Resource>::iterator Instance::getResIter(ID_T resId) {
+	auto finder = [&resId](const Resource &res) -> bool { return res.getId() == resId; };
+	return std::find_if(_resources.begin(), _resources.end(), finder);
 }
 
 bool Instance::resourceToLwm2mData(Resource &resource, ID_T instanceId, lwm2m_data_t &data) {
@@ -157,8 +179,8 @@ Resource* Instance::getValidatedResForWrite(const lwm2m_data_t &data, lwm2m_writ
 	// find the necessary description in the documentation, so this question
 	// needs to be investigated in detail.
 
-	Resource *resource = getResource(data.id);
-	if (!IS_RES_EXISTS(resource)) {
+	auto resource = getResIter(data.id);
+	if (!IS_ITER_VALID_AND_RES_EXISTS(resource)) {
 		WPP_LOGW_ARG(TAG_WPP_INST, "Resource does not exist: %d:%d:%d", _id.objId, _id.objInstId, data.id);
 		errCode = COAP_404_NOT_FOUND;
 		return NULL;
@@ -181,7 +203,7 @@ Resource* Instance::getValidatedResForWrite(const lwm2m_data_t &data, lwm2m_writ
 		return NULL;
 	}
 
-	return resource;
+	return &(*resource);
 }
 
 uint8_t Instance::resourceWrite(Resource &res, const lwm2m_data_t &data, lwm2m_write_type_t writeType) {
@@ -213,17 +235,17 @@ uint8_t Instance::resourceWrite(Resource &res, const lwm2m_data_t &data, lwm2m_w
 			return COAP_400_BAD_REQUEST;
 		}
 		// Notify implementation about update operation
-		if (writeType == LWM2M_WRITE_PARTIAL_UPDATE) serverOperationNotifier(ResOp::WRITE_UPD, {res.getID(), (res.isSingle()? ID_T_MAX_VAL : resInstId)});
+		if (writeType == LWM2M_WRITE_PARTIAL_UPDATE) serverOperationNotifier(ResOp::WRITE_UPD, {res.getId(), (res.isSingle()? ID_T_MAX_VAL : resInstId)});
 	}
 	// Notify implementation about replace resource operation
-	if (writeType == LWM2M_WRITE_REPLACE_RESOURCES) serverOperationNotifier(ResOp::WRITE_REPLACE_RES, {res.getID(), ID_T_MAX_VAL});
+	if (writeType == LWM2M_WRITE_REPLACE_RESOURCES) serverOperationNotifier(ResOp::WRITE_REPLACE_RES, {res.getId(), ID_T_MAX_VAL});
 
 	return COAP_NO_ERROR;
 }
 
 Resource* Instance::getValidatedResForRead(const lwm2m_data_t &data, uint8_t &errCode) {
-	Resource *resource = getResource(data.id);
-	if (!IS_RES_EXISTS(resource)) {
+	auto resource = getResIter(data.id);
+	if (!IS_ITER_VALID_AND_RES_EXISTS(resource)) {
 		WPP_LOGW_ARG(TAG_WPP_INST, "Resource does not exist: %d:%d:%d", _id.objId, _id.objInstId, data.id);
 		errCode = COAP_404_NOT_FOUND;
 		return NULL;
@@ -241,7 +263,7 @@ Resource* Instance::getValidatedResForRead(const lwm2m_data_t &data, uint8_t &er
 		return NULL;
 	}
 
-	return resource;
+	return &(*resource);
 }
 
 uint8_t Instance::resourceRead(lwm2m_data_t &data, Resource &res) {
@@ -250,7 +272,7 @@ uint8_t Instance::resourceRead(lwm2m_data_t &data, Resource &res) {
 	if (res.isMultiple() && data.type != LWM2M_TYPE_MULTIPLE_RESOURCE) {
 		lwm2m_data_t *subData = lwm2m_data_new(res.instanceCnt());
 		lwm2m_data_t *dataCnt = subData;
-		for (const auto& pair : res.getInstances()) (dataCnt++)->id = pair.first;
+		for (const auto& inst : res.getInstances()) (dataCnt++)->id = inst.id;
 		lwm2m_data_encode_instances(subData, res.instanceCnt(), &data);
 	}
 
@@ -270,15 +292,15 @@ uint8_t Instance::resourceRead(lwm2m_data_t &data, Resource &res) {
 			return COAP_400_BAD_REQUEST;
 		}
 		// Notify implementation about read resource operation
-		serverOperationNotifier(ResOp::READ, {res.getID(), (res.isSingle()? ID_T_MAX_VAL : resInstId)});
+		serverOperationNotifier(ResOp::READ, {res.getId(), (res.isSingle()? ID_T_MAX_VAL : resInstId)});
 	}
 
 	return COAP_NO_ERROR;
 }
 
 Resource* Instance::getValidatedResForExecute(ID_T resId, uint8_t &errCode) {
-	Resource *resource = getResource(resId);
-	if (!IS_RES_EXISTS(resource)) {
+	auto resource = getResIter(resId);
+	if (!IS_ITER_VALID_AND_RES_EXISTS(resource)) {
 		WPP_LOGW_ARG(TAG_WPP_INST, "Resource does not exist: %d:%d:%d", _id.objId, _id.objInstId, resId);
 		errCode = COAP_404_NOT_FOUND;
 		return NULL;
@@ -289,7 +311,7 @@ Resource* Instance::getValidatedResForExecute(ID_T resId, uint8_t &errCode) {
 		errCode = COAP_405_METHOD_NOT_ALLOWED;
 		return NULL;
 	}
-	return resource;
+	return &(*resource);
 }
 
 uint8_t Instance::createEmptyLwm2mDataArray(std::vector<Resource*> resources, lwm2m_data_t **dataArray, int *numData) {
@@ -297,7 +319,7 @@ uint8_t Instance::createEmptyLwm2mDataArray(std::vector<Resource*> resources, lw
 	if (!arr) return COAP_500_INTERNAL_SERVER_ERROR;
 
 	lwm2m_data_t *arrCnt = arr;
-	for (auto &resource : resources) (arrCnt++)->id = resource->getID();
+	for (auto &resource : resources) (arrCnt++)->id = resource->getId();
 	*dataArray = arr;
 	*numData = resources.size();
 
@@ -309,7 +331,7 @@ uint8_t Instance::read(int *numData, lwm2m_data_t **dataArray) {
 	bool readAllAvailableRes = *numData == 0;
 	WPP_LOGD_ARG(TAG_WPP_INST, "Read %d:%d, readAllAvailableRes: %d, numData: %d", _id.objId, _id.objInstId, readAllAvailableRes, *numData);
 	if (readAllAvailableRes) {
-		std::vector<Resource *> readResources = getInstantiatedResourcesList(ResOp(ResOp::READ));
+		std::vector<Resource *> readResources = getInstantiatedResList(ResOp(ResOp::READ));
 		uint8_t errCode = createEmptyLwm2mDataArray(readResources, dataArray, numData);
 		if (errCode != COAP_NO_ERROR) {
 			WPP_LOGE_ARG(TAG_WPP_INST, "Error during creating lwm2m_data_t for read instance %d:%d", _id.objId, _id.objInstId);
@@ -407,7 +429,7 @@ uint8_t Instance::execute(ID_T resId, uint8_t * buffer, int length) {
 	WPP_LOGD_ARG(TAG_WPP_INST, "Resource execute: %d:%d:%d, buffer length: %d", _id.objId, _id.objInstId, resId, length);
 	execute(resId, OPAQUE_T(buffer, buffer + length));
 	// Notify implementation about execute resource operation
-	serverOperationNotifier(ResOp::EXECUTE, {resource->getID(), ID_T_MAX_VAL});
+	serverOperationNotifier(ResOp::EXECUTE, {resource->getId(), ID_T_MAX_VAL});
 
 	return COAP_204_CHANGED;
 }
@@ -416,7 +438,7 @@ uint8_t Instance::discover(int * numData, lwm2m_data_t ** dataArray) {
 	bool discoverAllAvailableRes = *numData == 0;
 	WPP_LOGD_ARG(TAG_WPP_INST, "Discover %d:%d, discoverAllAvailableRes: %d, numData: %d", _id.objId, _id.objInstId, discoverAllAvailableRes, *numData);
 	if (discoverAllAvailableRes) {
-		std::vector<Resource *> resources = getInstantiatedResourcesList();
+		std::vector<Resource *> resources = getInstantiatedResList();
 		uint8_t errCode = createEmptyLwm2mDataArray(resources, dataArray, numData);
 		if (errCode != COAP_NO_ERROR) {
 			WPP_LOGE_ARG(TAG_WPP_INST, "Error during creating lwm2m_data_t for discover instance %d:%d", _id.objId, _id.objInstId);
@@ -426,8 +448,8 @@ uint8_t Instance::discover(int * numData, lwm2m_data_t ** dataArray) {
 
 	for (int i = 0; i < *numData; i++) {
 		lwm2m_data_t *data = (*dataArray) + i;
-		Resource *resource = getResource(data->id);
-		if (!IS_RES_EXISTS(resource)) {
+		auto resource = getResIter(data->id);
+		if (!IS_ITER_VALID_AND_RES_EXISTS(resource)) {
 			WPP_LOGE_ARG(TAG_WPP_INST, "Resource does not exist: %d:%d:%d", _id.objId, _id.objInstId, data->id);
 			return COAP_404_NOT_FOUND;
 		}
@@ -437,17 +459,17 @@ uint8_t Instance::discover(int * numData, lwm2m_data_t ** dataArray) {
 		if (resource->isMultiple() && data->type != LWM2M_TYPE_MULTIPLE_RESOURCE) {
 			lwm2m_data_t *subData = lwm2m_data_new(resource->instanceCnt());
 			lwm2m_data_t *dataCnt = subData;
-			for (const auto& pair : resource->getInstances()) {
-				(dataCnt++)->id = pair.first;
-				WPP_LOGD_ARG(TAG_WPP_INST, "Resource instance discover: %d:%d:%d:%d", _id.objId, _id.objInstId, data->id, pair.first);
+			for (const auto& inst : resource->getInstances()) {
+				(dataCnt++)->id = inst.id;
+				WPP_LOGD_ARG(TAG_WPP_INST, "Resource instance discover: %d:%d:%d:%d", _id.objId, _id.objInstId, data->id, inst.id);
 				// Notify implementation about discover resource instance operation
-				serverOperationNotifier(ResOp::DISCOVER, {resource->getID(), pair.first});
+				serverOperationNotifier(ResOp::DISCOVER, {resource->getId(), inst.id});
 			}
 			lwm2m_data_encode_instances(subData, resource->instanceCnt(), data);
 		} else {
 			WPP_LOGD_ARG(TAG_WPP_INST, "Resource discover: %d:%d:%d", _id.objId, _id.objInstId, data->id);
 			// Notify implementation about discover resource operation
-			serverOperationNotifier(ResOp::DISCOVER, {resource->getID(), ID_T_MAX_VAL});
+			serverOperationNotifier(ResOp::DISCOVER, {resource->getId(), ID_T_MAX_VAL});
 		}
 	}
 	return COAP_205_CONTENT;

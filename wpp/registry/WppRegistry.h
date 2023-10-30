@@ -60,13 +60,13 @@ public:
 	/* The start of the prototypes of the mandatory objects. */
 	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 	#if OBJ_M_3_DEVICE_V12
-	Object <Device> & device();
+	Object<Device> & device();
 	#endif
 	#if OBJ_M_0_LWM2M_SECURITY_V11
-	Object <Lwm2mSecurity> & lwm2mSecurity();
+	Object<Lwm2mSecurity> & lwm2mSecurity();
 	#endif
 	#if OBJ_M_1_LWM2M_SERVER_V11
-	Object <Lwm2mServer> & lwm2mServer();
+	Object<Lwm2mServer> & lwm2mServer();
 	#endif
 	/* The end of the prototypes of the mandatory objects. */
 	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */

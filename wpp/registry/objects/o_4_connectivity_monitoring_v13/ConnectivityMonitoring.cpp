@@ -16,6 +16,28 @@
 #include "WppLogs.h"
 
 /* --------------- Code_cpp block 0 start --------------- */
+
+#define NTWRK_BRR_MIN 0
+#define NTWRK_BRR_MAX 50
+
+#define AVLB_NTWRK_BRR_MIN 0
+#define AVLB_NTWRK_BRR_MAX 50
+
+#if RES_4_6
+#define LINK_UTLZTN_MIN 0
+#define LINK_UTLZTN_MAX 100
+#endif
+
+#if RES_4_9
+#define SMNC_MIN 0
+#define SMNC_MAX 999
+#endif
+
+#if RES_4_10
+#define SMCC_MIN 0
+#define SMCC_MAX 999
+#endif
+
 /* --------------- Code_cpp block 0 end --------------- */
 
 #define TAG "ConnectivityMonitoring"
@@ -148,66 +170,50 @@ void ConnectivityMonitoring::resourcesInit() {
 // at this level, it does not have the required information for doing
 // sings described in the documentation.
 
-	+getResIter(NETWORK_BEARER_0)->set( /* TODO */ );
-	+getResIter(NETWORK_BEARER_0)->setDataVerifier( /* TODO */ );
-
-	+getResIter(AVAILABLE_NETWORK_BEARER_1)->set( /* TODO */ );
-	+getResIter(AVAILABLE_NETWORK_BEARER_1)->setDataVerifier( /* TODO */ );
-
-	+getResIter(RADIO_SIGNAL_STRENGTH_2)->set( /* TODO */ );
-	+getResIter(RADIO_SIGNAL_STRENGTH_2)->setDataVerifier( /* TODO */ );
-
 	#if RES_4_3
 	-getResIter(LINK_QUALITY_3)->set( /* TODO */ );
-	-getResIter(LINK_QUALITY_3)->setDataVerifier( /* TODO */ );
+	-getResIter(LINK_QUALITY_3)->setDataVerifier( /* TODO */ );				// TODO: not complete discovered
 	#endif
 
-	+getResIter(IP_ADDRESSES_4)->set( /* TODO */ );
-	+getResIter(IP_ADDRESSES_4)->setDataVerifier( /* TODO */ );
-
 	#if RES_4_5
-	-getResIter(ROUTER_IP_ADDRESSES_5)->set( /* TODO */ );
-	-getResIter(ROUTER_IP_ADDRESSES_5)->setDataVerifier( /* TODO */ );
+	-getResIter(ROUTER_IP_ADDRESSES_5)->set(STRING_T(""));					// ok
 	#endif
 
 	#if RES_4_6
-	-getResIter(LINK_UTILIZATION_6)->set( /* TODO */ );
-	-getResIter(LINK_UTILIZATION_6)->setDataVerifier( /* TODO */ );
+	-getResIter(LINK_UTILIZATION_6)->set(INT_T(LINK_UTLZTN_MIN));
+	-getResIter(LINK_UTILIZATION_6)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return LINK_UTLZTN_MIN <= value && value <= LINK_UTLZTN_MAX; });	// ok
 	#endif
 
 	#if RES_4_7
-	-getResIter(APN_7)->set( /* TODO */ );
-	-getResIter(APN_7)->setDataVerifier( /* TODO */ );
+	-getResIter(APN_7)->set(STRING_T(""));									// ok
 	#endif
 
 	#if RES_4_8
 	-getResIter(CELL_ID_8)->set( /* TODO */ );
-	-getResIter(CELL_ID_8)->setDataVerifier( /* TODO */ );
+	-getResIter(CELL_ID_8)->setDataVerifier( /* TODO */ );					// TODO: not complete discovered
 	#endif
 
 	#if RES_4_9
-	-getResIter(SMNC_9)->set( /* TODO */ );
-	-getResIter(SMNC_9)->setDataVerifier( /* TODO */ );
+	-getResIter(SMNC_9)->set(INT_T(SMNC_MAX));
+	-getResIter(SMNC_9)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return SMNC_MIN <= value && value <= SMNC_MAX; });		// ok
 	#endif
 
 	#if RES_4_10
-	-getResIter(SMCC_10)->set( /* TODO */ );
-	-getResIter(SMCC_10)->setDataVerifier( /* TODO */ );
+	-getResIter(SMCC_10)->set(INT_T(SMCC_MAX));
+	-getResIter(SMCC_10)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return SMCC_MIN <= value && value <= SMCC_MAX; });		// ok
 	#endif
 
 	#if RES_4_11
-	-getResIter(SIGNALSNR_11)->set( /* TODO */ );
-	-getResIter(SIGNALSNR_11)->setDataVerifier( /* TODO */ );
+	-getResIter(SIGNALSNR_11)->set(INT_T(0));								// ok
 	#endif
 
 	#if RES_4_12
-	-getResIter(LAC_12)->set( /* TODO */ );
-	-getResIter(LAC_12)->setDataVerifier( /* TODO */ );
+	-getResIter(LAC_12)->set(INT_T(0));										// ok
 	#endif
 
 	#if RES_4_13
-	-getResIter(COVERAGE_ENHANCEMENT_LEVEL_13)->set( /* TODO */ );
-	-getResIter(COVERAGE_ENHANCEMENT_LEVEL_13)->setDataVerifier( /* TODO */ );
+	-getResIter(COVERAGE_ENHANCEMENT_LEVEL_13)->set(INT_T(CVRG_ENHNCMNT_LVL_MAX));
+	-getResIter(COVERAGE_ENHANCEMENT_LEVEL_13)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return MISSING <= value && value < CVRG_ENHNCMNT_LVL_MAX; });	// ok
 	#endif
 
 	/* --------------- Code_cpp block 9 end --------------- */

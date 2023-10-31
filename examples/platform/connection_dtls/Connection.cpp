@@ -8,6 +8,7 @@
 
 /* --------------- General DTLS handler callbacks--------------- */
 
+#if DTLS_WITH_PSK
 /* This function is the "key store" for tinyDTLS. It is called to
  * retrieve a key for the given identity within this particular
  * session. */
@@ -52,6 +53,32 @@ int get_psk_info(dtls_context_t *ctx, const session_t *session, dtls_credentials
 
     return dtls_alert_fatal_create(DTLS_ALERT_INTERNAL_ERROR);
 }
+#elif DTLS_WITH_RPK
+int get_ecdsa_key(struct dtls_context_t *ctx, const session_t *session, const dtls_ecdsa_key_t **result) {
+    cout << "Connection: get_ecdsa_key()" << endl;
+
+    Connection *appContext = (Connection *)ctx->app;
+    // find connection
+    Connection::dtls_connection_t* conn = appContext->connFind(&(session->addr.st),session->size);
+    if (!conn) {
+        cout << "Connection: GET RPK session not found" << endl;
+        return dtls_alert_fatal_create(DTLS_ALERT_INTERNAL_ERROR);
+    }
+
+    *result = &appContext->getEcdsaKey(conn);
+    return 0;
+}
+
+int verify_ecdsa_key(struct dtls_context_t *ctx, const session_t *session, const unsigned char *other_pub_x, const unsigned char *other_pub_y, size_t key_size) {
+    cout << "Connection: verify_ecdsa_key()" << endl;
+    (void)ctx;
+    (void)session;
+    (void)other_pub_x;
+    (void)other_pub_y;
+    (void)key_size;
+    return 0;
+}
+#endif
 
 /* The callback function must return the number of bytes
  * that were sent, or a value less than zero to indicate an
@@ -82,10 +109,15 @@ int read_from_peer(dtls_context_t *ctx, session_t *session, uint8 *data, size_t 
 }
 
 static dtls_handler_t _dtlsClb = {
-  .write = send_to_peer,
-  .read  = read_from_peer,
-  .event = NULL,
-  .get_psk_info = get_psk_info,
+    .write = send_to_peer,
+    .read  = read_from_peer,
+    .event = NULL,
+    #if DTLS_WITH_PSK
+    .get_psk_info = get_psk_info,
+    #elif DTLS_WITH_RPK
+    .get_ecdsa_key = get_ecdsa_key,
+    .verify_ecdsa_key = verify_ecdsa_key
+    #endif
 };
 
 /* --------------- Connection implementation--------------- */
@@ -138,26 +170,25 @@ Connection::SESSION_T Connection::connect(Lwm2mSecurity& security) {
             }
         }
     }
+
+    if (NULL != servinfo) free(servinfo);
+    
     if (s >= 0) {
         conn = createNewConn(sa, sl);
         close(s);
+        if (conn == NULL) return conn;
 
-        // do we need to start tinydtls?
-        if (conn != NULL) {
-            security.get(Lwm2mSecurity::PUBLIC_KEY_OR_IDENTITY_3, conn->pubKey);
-            security.get(Lwm2mSecurity::SECRET_KEY_5, conn->privKey);
-            INT_T mode;
-            security.get(Lwm2mSecurity::SECURITY_MODE_2, mode);
-            if (mode != LWM2M_SECURITY_MODE_NONE) {
-                conn->dtlsContext = _dtlsContext;
-            } else if (conn->dtlsSession) {
-                delete conn->dtlsSession;
-                conn->dtlsSession = NULL;
-            }
+        setupSecurityKeys(security, conn);
+
+        INT_T mode;
+        security.get(Lwm2mSecurity::SECURITY_MODE_2, mode);
+        if (mode != LWM2M_SECURITY_MODE_NONE) {
+            conn->dtlsContext = _dtlsContext;
+        } else if (conn->dtlsSession) {
+            delete conn->dtlsSession;
+            conn->dtlsSession = NULL;
         }
     }
-
-    if (NULL != servinfo) free(servinfo);
 
     return conn;
 }
@@ -168,6 +199,11 @@ void Connection::disconnect(SESSION_T session) {
     if (conn == _connections) {
         _connections = conn->next;
         if (conn->dtlsSession) delete conn->dtlsSession;
+        #if DTLS_WITH_RPK
+        if (conn->ecdsa_key.priv_key) delete conn->ecdsa_key.priv_key;
+        if (conn->ecdsa_key.pub_key_x) delete conn->ecdsa_key.pub_key_x;
+        if (conn->ecdsa_key.pub_key_y) delete conn->ecdsa_key.pub_key_y;
+        #endif
         delete conn;
     } else {
         dtls_connection_t * parent = _connections;
@@ -175,6 +211,11 @@ void Connection::disconnect(SESSION_T session) {
         if (parent != NULL) {
             parent->next = conn->next;
             if (conn->dtlsSession) delete conn->dtlsSession;
+            #if DTLS_WITH_RPK
+            if (conn->ecdsa_key.priv_key) delete conn->ecdsa_key.priv_key;
+            if (conn->ecdsa_key.pub_key_x) delete conn->ecdsa_key.pub_key_x;
+            if (conn->ecdsa_key.pub_key_y) delete conn->ecdsa_key.pub_key_y;
+            #endif
             delete conn;
         }
     }
@@ -287,6 +328,12 @@ Connection::dtls_connection_t * Connection::createNewConn(sockaddr * addr, size_
         conn->dtlsSession->size = conn->addrLen;
         conn->lastSend = time(NULL);
 
+        #if DTLS_WITH_RPK
+        conn->ecdsa_key.priv_key = NULL;
+        conn->ecdsa_key.pub_key_x = NULL;
+        conn->ecdsa_key.pub_key_y = NULL;
+        #endif
+
         // Update connection list head
         _connections = conn;
     }
@@ -379,12 +426,56 @@ int Connection::getPort(sockaddr *x) {
     }
 }
 
-OPAQUE_T Connection::getPublicKey(dtls_connection_t *conn) {
+#if DTLS_WITH_PSK
+const OPAQUE_T & Connection::getPublicKey(dtls_connection_t *conn) {
     return conn->pubKey;
 }
 
-OPAQUE_T Connection::getSecretKey(dtls_connection_t *conn) {
+const OPAQUE_T &  Connection::getSecretKey(dtls_connection_t *conn) {
     return conn->privKey;
+}
+#elif DTLS_WITH_RPK
+    const dtls_ecdsa_key_t & Connection::getEcdsaKey(dtls_connection_t *conn) {
+        return conn->ecdsa_key;
+    }
+#endif
+
+bool Connection::setupSecurityKeys(Lwm2mSecurity& security, dtls_connection_t *conn) {
+    #if DTLS_WITH_PSK
+    security.get(Lwm2mSecurity::PUBLIC_KEY_OR_IDENTITY_3, conn->pubKey);
+    security.get(Lwm2mSecurity::SECRET_KEY_5, conn->privKey);
+    #elif DTLS_WITH_RPK
+    OPAQUE_T pubKey;
+    OPAQUE_T privKey;
+
+    security.get(Lwm2mSecurity::PUBLIC_KEY_OR_IDENTITY_3, pubKey);
+    security.get(Lwm2mSecurity::SECRET_KEY_5, privKey);
+    if (privKey.size() != DTLS_EC_KEY_SIZE) {
+        cout << "Connection: private key size is incorrect and equals: " << privKey.size() << endl;
+        return false;
+    } 
+    // prefix(1 byte) + x coordinate (32 bytes) + y coordinate (32 bytes)
+    if (pubKey.size() != (1+DTLS_EC_KEY_SIZE*2)) {
+        cout << "Connection: public key size is incorrect and equals: " << pubKey.size() << endl;
+        return false;
+    }
+    
+    conn->ecdsa_key.curve = DTLS_ECDH_CURVE_SECP256R1;
+
+    uint8_t *priv = new uint8_t[DTLS_EC_KEY_SIZE];
+    memcpy(priv, privKey.data(), DTLS_EC_KEY_SIZE);
+    conn->ecdsa_key.priv_key = priv;
+    
+    uint8_t *pub_y = new uint8_t[DTLS_EC_KEY_SIZE];
+    memcpy(pub_y, pubKey.data()+1, DTLS_EC_KEY_SIZE);
+    conn->ecdsa_key.pub_key_x = pub_y;
+
+    uint8_t *pub_x = new uint8_t[DTLS_EC_KEY_SIZE];
+    memcpy(pub_x, pubKey.data()+1+DTLS_EC_KEY_SIZE, DTLS_EC_KEY_SIZE);
+    conn->ecdsa_key.pub_key_y = pub_x;
+    #endif
+
+    return true;
 }
 
 string Connection::uriToPort(string uri) {

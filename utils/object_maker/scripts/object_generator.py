@@ -175,15 +175,15 @@ class ObjectGenerator:
 
         return resources_enum, resources_map
 
-    def get_content_resourcesInit_f(self, resources_list_xml):
+    def get_content_resourcesInit_f(self):
         content = f"""void __CLASS_NAME__::resourcesInit() {{\n""" \
                   f"""\t/* --------------- Code_cpp block 9 start --------------- */\n""" \
                   f"""// TODO: The most part of the server resources logic must be implemented\n""" \
                   f"""// on wakaama core level, because the Server is only a state holder and\n""" \
                   f"""// at this level, it does not have the required information for doing\n""" \
                   f"""// sings described in the documentation.\n\n"""
-        for resource in resources_list_xml:
-            if resource["Mandatory"] == "MANDATORY":
+        for resource in self.resources_data:
+            if resource[ "Mandatory"] == "MANDATORY":
                 # content += f"""\t\t#if {resource["Name"]}_{resource["Mandatory"]}\n\t"""
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].set( /* TODO */ );\n"
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n\n"
@@ -272,7 +272,7 @@ class ObjectGenerator:
         data_str_cpp = data_str_cpp.replace("__F_USER_OPERATION_NOTIFIER__",
                                             self.get_content_userOperationNotifier())
         data_str_cpp = data_str_cpp.replace("__F_RESOURCE_INIT__",
-                                            self.get_content_resourcesInit_f(self.resources_data))
+                                            self.get_content_resourcesInit_f())
         data_str_cpp = data_str_cpp.replace("__CLASS_NAME__", self.object_names["obj_name_class"])
         data_str_cpp = data_str_cpp.replace("__RESOURCES_TABLE__", resources_map)
 

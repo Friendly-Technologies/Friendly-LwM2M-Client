@@ -51,14 +51,21 @@ KEY_DICT_OBJ_META_VER = "version"
 TYPE_OPERATION = "ResOp"
 TYPE_OBJECT = "Object"
 
-KEYS_OBJ_DATA = {"name":          "Name",
-                 "description":   "Description1",
-                 "id":            "ObjectID",
-                 "urn":           "ObjectURN",
+KEYS_OBJ_DATA = {"name": "Name",
+                 "description": "Description1",
+                 "id": "ObjectID",
+                 "urn": "ObjectURN",
                  "lwm2m_version": "LWM2MVersion",
-                 "version":       "ObjectVersion",
-                 "is_multiple":   "MultipleInstances",
-                 "is_mandatory":  "Mandatory",
-}
+                 "version": "ObjectVersion",
+                 "is_multiple": "MultipleInstances",
+                 "is_mandatory": "Mandatory",
+                 "operations": "Operations",
+                 "type": "Type",
+                 "res_id": "ID",
+                 "res_define": "Define",
+                 }
 
 LWM2M_WEB_RESOURCES = ["raw.githubusercontent.com", "github.com"]
+
+OPTIONS_MANDATORY = ["Mandatory", "Optional"]
+OPTIONS_VARIETY = ["Multiple", "Single"]

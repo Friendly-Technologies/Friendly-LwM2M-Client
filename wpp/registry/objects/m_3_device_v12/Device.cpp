@@ -186,7 +186,13 @@ void Device::resourcesInit() {
 	
 	#if RES_3_3                                                                                                                                                                                        
 	getResIter(FIRMWARE_VERSION_3)->set(STRING_T("")); 
-	#endif                                                                                                                                                                                                                                     
+	#endif     
+ 
+	getResIter(REBOOT_4)->set((EXECUTE_T)[](ID_T id, const OPAQUE_T& data) {});
+                                                                                                                                                                                                                            
+	#if RES_3_5
+	getResIter(FACTORY_RESET_5)->set((EXECUTE_T)[](ID_T id, const OPAQUE_T& data) {});
+	#endif
 
 	#if RES_3_6
 	getResIter(AVAILABLE_POWER_SOURCES_6)->set(INT_T(PWR_SRC_MAX));

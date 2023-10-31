@@ -190,6 +190,9 @@ void Lwm2mServer::resourcesInit() {
 	#endif                       
 
 	// TODO: Disable (Res id 4) must be implemented by wakaama core or WppClient
+	#if RES_1_4
+	getResIter(DISABLE_4)->set((EXECUTE_T)[](ID_T id, const OPAQUE_T& data) {});
+	#endif
 
 	#if RES_1_5                                                                                                                                                                                                                        
 	getResIter(DISABLE_TIMEOUT_5)->set(INT_T(0));
@@ -202,8 +205,12 @@ void Lwm2mServer::resourcesInit() {
 	getResIter(BINDING_7)->setDataVerifier((VERIFY_STRING_T)[](const STRING_T& value) { return wppBindingValidate(value); });
 
 	// TODO: Registration Update (Res id 8) must be implemented by wakaama core or WppClient
+	getResIter(REGISTRATION_UPDATE_TRIGGER_8)->set((EXECUTE_T)[](ID_T id, const OPAQUE_T& data) {});
 
 	// TODO: Bootstrap Request (Res id 9) must be implemented by wakaama core or WppClient
+	#if RES_1_9
+	getResIter(BOOTSTRAP_REQUEST_TRIGGER_9)->set((EXECUTE_T)[](ID_T id, const OPAQUE_T& data) {});
+	#endif
 
 	#if RES_1_10    
 	getResIter(APN_LINK_10)->set(OBJ_LINK_T());                                                                                                                                                                                                                          

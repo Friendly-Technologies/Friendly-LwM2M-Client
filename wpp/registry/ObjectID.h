@@ -23,6 +23,9 @@ enum class OBJ_ID: ID_T {
 	ACL = 2,
 	CONN_MONITORING = 4,
 	FIRMWARE_UPD = 5,
+#ifdef OBJ_O_4_CONNECTIVITY_MONITORING_V13
+	CONNECTIVITY_MONITORING = 4,
+#endif /* OBJ_O_4_CONNECTIVITY_MONITORING_V13 */
 	/* The end of the IDs of the optional objects. */
 	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 

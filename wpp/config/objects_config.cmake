@@ -31,6 +31,10 @@ option(OPTIONAL_FIRMWARE_UPD_OBJ "Include optional Firmware update in the build"
 if (OPTIONAL_FIRMWARE_UPD_OBJ)
     set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OPTIONAL_FIRMWARE_UPD_OBJ=1)
 endif()
+option(OBJ_O_4_CONNECTIVITY_MONITORING_V13 "Include optional ConnectivityMonitoring object in the build" OFF)
+if (OBJ_O_4_CONNECTIVITY_MONITORING_V13)
+	set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_O_4_CONNECTIVITY_MONITORING_V13=1)
+endif()
 # The end of the options of the optional objects.
 # !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!!
 

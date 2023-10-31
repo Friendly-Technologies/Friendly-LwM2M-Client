@@ -17,8 +17,8 @@
 
 /* --------------- Code_cpp block 0 start --------------- */
 #if RES_3_9
-#define BUTT_LVL_MIN	0
-#define BUTT_LVL_MAX	100
+#define BAT_LVL_MIN	0
+#define BAT_LVL_MAX	100
 #endif
 /* --------------- Code_cpp block 0 end --------------- */
 
@@ -186,7 +186,13 @@ void Device::resourcesInit() {
 	
 	#if RES_3_3                                                                                                                                                                                        
 	getResIter(FIRMWARE_VERSION_3)->set(STRING_T("")); 
-	#endif                                                                                                                                                                                                                                     
+	#endif     
+ 
+	getResIter(REBOOT_4)->set((EXECUTE_T)[](ID_T id, const OPAQUE_T& data) {});
+                                                                                                                                                                                                                            
+	#if RES_3_5
+	getResIter(FACTORY_RESET_5)->set((EXECUTE_T)[](ID_T id, const OPAQUE_T& data) {});
+	#endif
 
 	#if RES_3_6
 	getResIter(AVAILABLE_POWER_SOURCES_6)->set(INT_T(PWR_SRC_MAX));
@@ -202,8 +208,8 @@ void Device::resourcesInit() {
 	#endif 
 	
 	#if RES_3_9
-	getResIter(BATTERY_LEVEL_9)->set(INT_T(BUTT_LVL_MIN));
-	getResIter(BATTERY_LEVEL_9)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return BUTT_LVL_MIN <= value && value <= BUTT_LVL_MAX; });
+	getResIter(BATTERY_LEVEL_9)->set(INT_T(BAT_LVL_MIN));
+	getResIter(BATTERY_LEVEL_9)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return BAT_LVL_MIN <= value && value <= BAT_LVL_MAX; });
 	#endif
 
 	#if RES_3_10
@@ -248,8 +254,8 @@ void Device::resourcesInit() {
 	#endif                 
 
 	#if RES_3_20
-	getResIter(BATTERY_STATUS_20)->set(INT_T(BUTT_STATUS_MAX));
-	getResIter(BATTERY_STATUS_20)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return NORMAL <= value && value < BUTT_STATUS_MAX; });
+	getResIter(BATTERY_STATUS_20)->set(INT_T(BAT_STATUS_MAX));
+	getResIter(BATTERY_STATUS_20)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return NORMAL <= value && value < BAT_STATUS_MAX; });
 	#endif
 
 	#if RES_3_21                                                                                                                                                                                          

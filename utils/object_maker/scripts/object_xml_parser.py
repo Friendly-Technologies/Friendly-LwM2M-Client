@@ -40,11 +40,11 @@ class ObjectXmlParser:
         web_page = self.xml_url.split("/")[2]
 
         raw_data = requests.get(self.xml_url).content.decode('utf-8')
-        if web_page == const.LWM2M_WEB_RESOUCES[0]:                     # raw.githubusercontent.com
+        if web_page == const.LWM2M_WEB_RESOURCES[0]:                     # raw.githubusercontent.com
             func.write_to_file(f"./{filename}", raw_data)
             return filename
 
-        if web_page == const.LWM2M_WEB_RESOUCES[1]:                     # github.com
+        if web_page == const.LWM2M_WEB_RESOURCES[1]:                     # github.com
             json_data = json.loads(raw_data)
             object_description = json_data["payload"]["blob"]["rawLines"]
             func.write_to_file_line_by_line(f"./{filename}", object_description)

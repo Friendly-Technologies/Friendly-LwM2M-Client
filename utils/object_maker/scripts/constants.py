@@ -61,4 +61,4 @@ KEYS_OBJ_DATA = {"name":          "Name",
                  "is_mandatory":  "Mandatory",
 }
 
-LWM2M_WEB_RESOUCES = ["raw.githubusercontent.com", "github.com"]
+LWM2M_WEB_RESOURCES = ["raw.githubusercontent.com", "github.com"]

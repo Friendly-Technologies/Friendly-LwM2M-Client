@@ -216,7 +216,7 @@ class ObjectChanger:
         return new_user_code_blocks
 
     def is_metadata_is_link(self):
-        for resource in const.LWM2M_WEB_RESOUCES:
+        for resource in const.LWM2M_WEB_RESOURCES:
             if re.search(resource, self.obj_metadata_to_use):
                 return True
         return False

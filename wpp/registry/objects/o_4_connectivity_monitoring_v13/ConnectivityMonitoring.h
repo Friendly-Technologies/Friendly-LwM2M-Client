@@ -58,6 +58,44 @@ public:
 	};
 
 	/* --------------- Code_h block 1 start --------------- */
+
+	enum NtwrkBrr: uint8_t {
+		GSM = 0,
+		TD_SCDMA = 1,
+		WCDMA = 2,
+		CDMA2000 = 3,
+		WIMAX = 4,
+		LTE_TDD = 5,
+		LTE_FDD = 6,
+		NB_IOT = 7,
+		NR_TDD_5G = 8,
+		NR_FDD_5G = 9,
+		CLLR_OTHER_BEGIN = 10,
+		CLLR_OTHER_END = 20,
+		WLAN = 21,
+		BLUETOOTH = 22,
+		IEEE_802_15_4 = 23,
+		WRLSS_OTHER_BEGIN = 24,
+		WRLSS_OTHER_END = 40,
+		ETHERNET = 41,
+		DSL = 42,
+		PLC = 43,
+		WRLN_OTHER_BEGIN = 44,
+		WRLN_OTHER_END = 50,
+		NTWRK_BRR_MAX
+	};
+
+	#if RES_4_13
+	enum CvrgEnhncmntLvl: uint8_t {
+		MISSING = 0,
+		LEVEL_0 = 1,
+		LEVEL_1 = 2,
+		LEVEL_2 = 3,
+		LEVEL_3 = 4,
+		CVRG_ENHNCMNT_LVL_MAX
+	};
+	#endif
+
 	/* --------------- Code_h block 1 end --------------- */
 
 public:

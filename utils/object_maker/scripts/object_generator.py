@@ -142,32 +142,30 @@ class ObjectGenerator:
         x.align = "l"
 
         for resource_xml in resources_list_xml:
-            resource_name = resource_xml['Name']
-            resource_id = resource_xml['ID']
+            resource_name = resource_xml[const.KEYS_OBJ_DATA['name']]
+            resource_id = resource_xml[const.KEYS_OBJ_DATA['res_id']]
             # postfix = "M" if resource_xml['Mandatory'] == "MANDATORY" else "O"
 
             # fill the Resources' enum:
-            resource_define = resource_xml['Define']
+            resource_define = resource_xml[const.KEYS_OBJ_DATA['res_define']]
             resource = f"{resource_name}_{resource_id}"
 
-            if resource_xml['Mandatory'] != "MANDATORY":
-                resources_enum += f"\t\t#if {resource_define}\n"
-            resources_enum += f"\t\t{resource} = {resource_xml['ID']},\n"
-            if resource_xml['Mandatory'] != "MANDATORY":
-                resources_enum += f"\t\t#endif\n"
+            resource_enum = f"\t\t{resource} = {resource_xml[ const.KEYS_OBJ_DATA['res_id']]},\n"
+            resource_map = [f"*TAB*{{{resource},",
+                            self.parse_operation(resource_xml[const.KEYS_OBJ_DATA['operations']]),
+                            f"IS_SINGLE::{resource_xml[const.KEYS_OBJ_DATA['is_multiple']]},",
+                            f"IS_MANDATORY::{resource_xml[const.KEYS_OBJ_DATA['is_mandatory']]},",
+                            f"{self.parse_resource_data_type(resource_xml[const.KEYS_OBJ_DATA['type']])} }},"]
 
-            # fill the vector <ID_T, Resource> table:
-            if resource_xml['Mandatory'] != "MANDATORY":
+            # wrap into "#if-directive" if the resource is not mandatory:
+            if resource_xml[const.KEYS_OBJ_DATA['is_mandatory']] != "MANDATORY":
+                resources_enum += f"\t\t#if {resource_define}\n{resource_enum}\t\t#endif\n"
                 x.add_row([f"*TAB*#if {resource_define}", "", "", "", ""])
-
-            x.add_row([f"*TAB*{{{resource},",
-                       self.parse_operation(resource_xml['Operations']),
-                       f"IS_SINGLE::{resource_xml['MultipleInstances']},",
-                       f"IS_MANDATORY::{resource_xml['Mandatory']},",
-                       f"{self.parse_resource_data_type(resource_xml['Type'])} }},"])
-
-            if resource_xml['Mandatory'] != "MANDATORY":
+                x.add_row(resource_map)
                 x.add_row([f"*TAB*#endif", "", "", "", ""])
+            else:
+                resources_enum += resource_enum
+                x.add_row(resource_map)
 
         resources_map = str(x).replace("*TAB*", "\t\t")
         # TODO: fix next line by PrettyTable features!

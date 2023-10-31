@@ -49,9 +49,6 @@ Object<Lwm2mServer> & WppRegistry::lwm2mServer() {
 #if OPTIONAL_ACL_OBJ
 #endif
 
-#if OPTIONAL_CONN_MONITORING_OBJ
-#endif
-
 #if OPTIONAL_FIRMWARE_UPD_OBJ
 #endif
 # if OBJ_O_4_CONNECTIVITY_MONITORING_V13

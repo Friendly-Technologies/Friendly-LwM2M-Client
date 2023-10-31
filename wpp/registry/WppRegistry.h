@@ -29,9 +29,6 @@
 #if OPTIONAL_ACL_OBJ
 #include "acl/Acl.h"
 #endif
-#if OPTIONAL_CONN_MONITORING_OBJ
-#include "conn_monitoring/ConnMonitoring.h"
-#endif
 #if OPTIONAL_FIRMWARE_UPD_OBJ
 #include "firmware_upd/FirmwareUpd.h"
 #endif
@@ -78,11 +75,8 @@ public:
 	#if OPTIONAL_ACL_OBJ
 	Object<Acl>& acl();
 	#endif
-	#if OPTIONAL_CONN_MONITORING_OBJ
-	Object<ConnMonitoring>& connMonitoring();
-	#endif
 	#if OPTIONAL_FIRMWARE_UPD_OBJ
-		Object<FirmwareUpd>& firmwareUpd();
+	Object<FirmwareUpd>& firmwareUpd();
 	#endif
 	#if OBJ_O_4_CONNECTIVITY_MONITORING_V13
 	Object<ConnectivityMonitoring> & connectivityMonitoring();

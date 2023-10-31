@@ -1,8 +1,8 @@
-import sys
-
 import constants as const
 import functions as func
 
+import sys
+import json
 import shutil
 from optparse import OptionParser
 
@@ -49,7 +49,7 @@ class ObjectIntegrator:
 
         type_obj = const.TYPE_OBJECT
 
-        data_dict = eval(data_str)
+        data_dict = json.loads(data_str)
         dict_obj_meta = data_dict[const.KEY_DICT_OBJ_META]
         dict_obj_names = data_dict[const.KEY_DICT_OBJ_NAMES]
 

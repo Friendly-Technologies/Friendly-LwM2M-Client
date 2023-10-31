@@ -324,7 +324,7 @@ class ObjectGenerator:
     def generate_obj_integration_data(self):
         dictionary = {}
 
-        obj_dict = {const.KEY_DICT_OBJ_META_MANDAT: "True" if self.object_data[const.KEYS_OBJ_DATA["is_mandatory"]] else "False",
+        obj_dict = {const.KEY_DICT_OBJ_META_MANDAT: self.object_data[const.KEYS_OBJ_DATA["is_mandatory"]],
                     const.KEY_DICT_OBJ_META_NAME: self.object_data[const.KEYS_OBJ_DATA["name"]],
                     const.KEY_DICT_OBJ_META_ID: self.object_data[const.KEYS_OBJ_DATA["id"]],
                     const.KEY_DICT_OBJ_META_VER_LWM2M: self.object_data[const.KEYS_OBJ_DATA["lwm2m_version"]],

@@ -60,6 +60,18 @@ class ObjectXmlParser:
             for i in root[0]:
                 if i.tag == key:
                     object_data[key] = i.text
+
+        # convert the "is_mandatory" to bool
+        if object_data[const.KEYS_OBJ_DATA["is_mandatory"]] not in const.OPTIONS_MANDATORY:
+            print(f"{self.log_tag} The critical error is possible! Check the <Mandatory> field of the Object.")
+        object_data[const.KEYS_OBJ_DATA["is_mandatory"]] = object_data[const.KEYS_OBJ_DATA["is_mandatory"]] == "Mandatory"
+
+        # convert the "is_multiple" value to bool
+        if object_data[const.KEYS_OBJ_DATA["is_multiple"]] not in const.OPTIONS_VARIETY:
+            print(f"{self.log_tag} The critical error is possible! Check the <MultipleInstances> field of the Object.")
+        object_data[const.KEYS_OBJ_DATA["is_multiple"]] = object_data[const.KEYS_OBJ_DATA["is_multiple"]] == "Multiple"
+
+        # check and set the "versions" fields if not defined:
         if (const.KEYS_OBJ_DATA["lwm2m_version"] not in object_data.keys() or
                 const.KEYS_OBJ_DATA["version"] not in object_data.keys()):
             object_data[const.KEYS_OBJ_DATA["lwm2m_version"]] = "1.0"
@@ -79,7 +91,6 @@ class ObjectXmlParser:
                 resource_dict[resource.tag] = resource_name.upper()
                 # print(resource_name.upper())
             # generate define of the resource:
-            name_res = resource_dict['Name']
             id_obj = object_data[const.KEYS_OBJ_DATA['id']]
             id_res = resource_dict['ID']
             resource_dict['Define'] = f"RES_{id_obj}_{id_res}"

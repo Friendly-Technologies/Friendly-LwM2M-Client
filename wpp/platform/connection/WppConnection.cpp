@@ -104,7 +104,9 @@ extern "C" {
 	uint8_t lwm2m_buffer_send(void * sessionH, uint8_t * buffer, size_t length, void * userData) {
 		wpp::WppClient *client = (wpp::WppClient *)userData;
 		WPP_LOGD_ARG(TAG_WPP_CONN, "Sending buffer to server: session -> 0x%x, size -> %d", sessionH, length);
-		return client->connection().sendPacket({sessionH, length, buffer})? COAP_NO_ERROR : COAP_500_INTERNAL_SERVER_ERROR;
+		bool result = client->connection().sendPacket({sessionH, length, buffer});
+		WPP_LOGD_ARG(TAG_WPP_CONN, "Sending buffer to server: session -> 0x%x, result -> %d", sessionH, result);
+		return result? COAP_NO_ERROR : COAP_500_INTERNAL_SERVER_ERROR;
 	}
 
 	bool lwm2m_session_is_equal(void * session1, void * session2, void * userData) {

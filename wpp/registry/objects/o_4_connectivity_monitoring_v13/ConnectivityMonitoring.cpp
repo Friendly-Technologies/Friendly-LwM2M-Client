@@ -19,37 +19,28 @@
 
 #define NTWRK_BRR_MIN 0
 #define NTWRK_BRR_MAX 50
-
 #define AVLB_NTWRK_BRR_MIN 0
 #define AVLB_NTWRK_BRR_MAX 50
-
 #define LINK_QUALITY_IEEE_802_15_4_MIN 0
 #define LINK_QUALITY_IEEE_802_15_4_MAX 255
-
 #define LINK_QUALITY_GSM_MIN 0
 #define LINK_QUALITY_GSM_MAX 7
-
 #if RES_4_6
 #define LINK_UTLZTN_MIN 0
 #define LINK_UTLZTN_MAX 100
 #endif
-
 #define CELL_ID_GSM_MIN	0
 #define CELL_ID_GSM_MAX	65535
-
 #define CELL_ID_WCDMA_MIN 0
 #define CELL_ID_WCDMA_MAX 268435455
-
 #if RES_4_9
 #define SMNC_MIN 0
 #define SMNC_MAX 999
 #endif
-
 #if RES_4_10
 #define SMCC_MIN 0
 #define SMCC_MAX 999
 #endif
-
 
 /* --------------- Code_cpp block 0 end --------------- */
 
@@ -93,41 +84,11 @@ void ConnectivityMonitoring::serverOperationNotifier(ResOp::TYPE type, const Res
 	observerNotify(*this, resId, type);
 
 	/* --------------- Code_cpp block 7 start --------------- */
-	switch (type) {
-	case ResOp::READ:
-		WPP_LOGD_ARG(TAG, "Server READ -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case ResOp::WRITE:
-		WPP_LOGD_ARG(TAG, "Server WRITE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case ResOp::EXECUTE:
-		WPP_LOGD_ARG(TAG, "Server EXECUTE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case ResOp::DISCOVER:
-		WPP_LOGD_ARG(TAG, "Server DISCOVER -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case ResOp::DELETE:
-		WPP_LOGD_ARG(TAG, "Server DELETE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	default: break;
-	}
 	/* --------------- Code_cpp block 7 end --------------- */
 }
 
 void ConnectivityMonitoring::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
 	/* --------------- Code_cpp block 8 start --------------- */
-	switch (type) {
-	case ResOp::READ:
-		WPP_LOGD_ARG(TAG, "User READ -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case ResOp::WRITE:
-		WPP_LOGD_ARG(TAG, "User WRITE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case ResOp::DELETE:
-		WPP_LOGD_ARG(TAG, "User DELETE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	default: break;
-	}
 	/* --------------- Code_cpp block 8 end --------------- */
 }
 
@@ -237,10 +198,9 @@ void ConnectivityMonitoring::resourcesInit() {
 /* --------------- Code_cpp block 10 start --------------- */
 
 bool ConnectivityMonitoring::checkLinkQuality(uint8_t linkQuality) {
-	INT_T network_bearer;
-	getResIter(NETWORK_BEARER_0)->get(network_bearer);
-    switch (network_bearer)
-    {
+	INT_T networkBearer;
+	getResIter(networkBearer_0)->get(networkBearer);
+    switch (networkBearer) {
         case GSM:
 			return LINK_QUALITY_GSM_MIN <= linkQuality && linkQuality <= LINK_QUALITY_GSM_MAX;
         case IEEE_802_15_4:
@@ -258,10 +218,9 @@ bool ConnectivityMonitoring::checkLinkQuality(uint8_t linkQuality) {
 }
 
 bool ConnectivityMonitoring::checkCellId(uint32_t cellId) {
-	INT_T network_bearer;
-	getResIter(NETWORK_BEARER_0)->get(network_bearer);
-    switch (network_bearer)
-    {
+	INT_T networkBearer;
+	getResIter(networkBearer_0)->get(networkBearer);
+    switch (networkBearer) {
         case GSM:
             return CELL_ID_GSM_MIN <= cellId && cellId <= CELL_ID_GSM_MAX;
         case WCDMA:

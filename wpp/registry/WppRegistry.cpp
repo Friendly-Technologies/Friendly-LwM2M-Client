@@ -49,11 +49,14 @@ Object<Lwm2mServer> & WppRegistry::lwm2mServer() {
 #if OPTIONAL_ACL_OBJ
 #endif
 
-#if OPTIONAL_CONN_MONITORING_OBJ
-#endif
-
 #if OPTIONAL_FIRMWARE_UPD_OBJ
 #endif
+# if OBJ_O_4_CONNECTIVITY_MONITORING_V13
+Object<ConnectivityMonitoring> & WppRegistry::connectivityMonitoring() {
+	if (!Object<ConnectivityMonitoring>::isCreated()) Object<ConnectivityMonitoring>::create(_context, CONNECTIVITY_MONITORING_OBJ_INFO);
+	return *Object<ConnectivityMonitoring>::object();
+}
+# endif
 /* The end of the prototypes of the optional objects. */
 /* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE! */
 

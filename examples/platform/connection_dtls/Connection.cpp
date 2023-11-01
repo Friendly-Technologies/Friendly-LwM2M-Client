@@ -171,13 +171,14 @@ Connection::SESSION_T Connection::connect(Lwm2mSecurity& security) {
         }
     }
 
-    if (NULL != servinfo) free(servinfo);
-    
     if (s >= 0) {
         conn = createNewConn(sa, sl);
         close(s);
-        if (conn == NULL) return conn;
-
+        if (conn == NULL) {
+            if (NULL != servinfo) free(servinfo);
+            return conn;
+        }
+        
         setupSecurityKeys(security, conn);
 
         INT_T mode;
@@ -189,6 +190,8 @@ Connection::SESSION_T Connection::connect(Lwm2mSecurity& security) {
             conn->dtlsSession = NULL;
         }
     }
+
+    if (NULL != servinfo) free(servinfo);
 
     return conn;
 }

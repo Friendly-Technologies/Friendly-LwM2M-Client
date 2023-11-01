@@ -29,11 +29,11 @@
 #if OPTIONAL_ACL_OBJ
 #include "acl/Acl.h"
 #endif
-#if OPTIONAL_CONN_MONITORING_OBJ
-#include "conn_monitoring/ConnMonitoring.h"
-#endif
 #if OPTIONAL_FIRMWARE_UPD_OBJ
 #include "firmware_upd/FirmwareUpd.h"
+#endif
+#if OBJ_O_4_CONNECTIVITY_MONITORING_V13
+#include "o_4_connectivity_monitoring_v13/ConnectivityMonitoring.h"
 #endif
 /* The end of the includes of the optional objects. */
 /* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
@@ -75,11 +75,11 @@ public:
 	#if OPTIONAL_ACL_OBJ
 	Object<Acl>& acl();
 	#endif
-	#if OPTIONAL_CONN_MONITORING_OBJ
-	Object<ConnMonitoring>& connMonitoring();
-	#endif
 	#if OPTIONAL_FIRMWARE_UPD_OBJ
-		Object<FirmwareUpd>& firmwareUpd();
+	Object<FirmwareUpd>& firmwareUpd();
+	#endif
+	#if OBJ_O_4_CONNECTIVITY_MONITORING_V13
+	Object<ConnectivityMonitoring> & connectivityMonitoring();
 	#endif
 	/* The end of the prototypes of the optional objects. */
 	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */

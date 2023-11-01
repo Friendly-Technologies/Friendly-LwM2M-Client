@@ -20,8 +20,6 @@
 
 namespace wpp {
 
-class WppClient;
-
 /*
  * Object<T> is class that implements manipulation with Instance interface class and his inheritors.
  * The main target of this class is to encapsulate operations like instance create and delete, binding

@@ -62,47 +62,16 @@ void Device::serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
 	observerNotify(*this, resId, type);
 
 	/* --------------- Code_cpp block 7 start --------------- */
-	switch (type) {
-	case ResOp::READ:
-		WPP_LOGD_ARG(TAG, "Server READ -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case ResOp::WRITE:
-		WPP_LOGD_ARG(TAG, "Server WRITE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case ResOp::EXECUTE:
-		WPP_LOGD_ARG(TAG, "Server EXECUTE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case ResOp::DISCOVER:
-		WPP_LOGD_ARG(TAG, "Server DISCOVER -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case ResOp::DELETE:
-		WPP_LOGD_ARG(TAG, "Server DELETE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	default: break;
-	}
 	/* --------------- Code_cpp block 7 end --------------- */
 }
 
 void Device::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
 	/* --------------- Code_cpp block 8 start --------------- */
-	switch (type) {
-	case ResOp::READ:
-		WPP_LOGD_ARG(TAG, "User READ -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case ResOp::WRITE:
-		WPP_LOGD_ARG(TAG, "User WRITE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case ResOp::DELETE:
-		WPP_LOGD_ARG(TAG, "User DELETE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	default: break;
-	}
 	/* --------------- Code_cpp block 8 end --------------- */
 }
 
 void Device::resourcesCreate() {
 	std::vector<Resource> resources = {
-		// KEY VALUE
 		#if RES_3_0                                                                                                                                                             
 		{MANUFACTURER_0,                 ResOp(ResOp::READ),              IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::STRING },   
 		#endif                                                                                                                                                                  
@@ -173,97 +142,97 @@ void Device::resourcesCreate() {
 void Device::resourcesInit() {
 	/* --------------- Code_cpp block 9 start --------------- */
 	#if RES_3_0                                                                                                                                                                                        
-	getResIter(MANUFACTURER_0)->set(STRING_T(""));
+	resource(MANUFACTURER_0)->set(STRING_T(""));
 	#endif          
 
 	#if RES_3_1  
-	getResIter(MODEL_NUMBER_1)->set(STRING_T(""));                                                                                                                                                                                        
+	resource(MODEL_NUMBER_1)->set(STRING_T(""));                                                                                                                                                                                        
 	#endif                                                                                                                                                                                                              
 	
 	#if RES_3_2                                                                                                                                                                                         
-	getResIter(SERIAL_NUMBER_2)->set(STRING_T("")); 
+	resource(SERIAL_NUMBER_2)->set(STRING_T("")); 
 	#endif                                                                                                                                                                                                              
 	
 	#if RES_3_3                                                                                                                                                                                        
-	getResIter(FIRMWARE_VERSION_3)->set(STRING_T("")); 
+	resource(FIRMWARE_VERSION_3)->set(STRING_T("")); 
 	#endif     
  
-	getResIter(REBOOT_4)->set((EXECUTE_T)[](ID_T id, const OPAQUE_T& data) {});
+	resource(REBOOT_4)->set((EXECUTE_T)[](ID_T id, const OPAQUE_T& data) {});
                                                                                                                                                                                                                             
 	#if RES_3_5
-	getResIter(FACTORY_RESET_5)->set((EXECUTE_T)[](ID_T id, const OPAQUE_T& data) {});
+	resource(FACTORY_RESET_5)->set((EXECUTE_T)[](ID_T id, const OPAQUE_T& data) {});
 	#endif
 
 	#if RES_3_6
-	getResIter(AVAILABLE_POWER_SOURCES_6)->set(INT_T(PWR_SRC_MAX));
-	getResIter(AVAILABLE_POWER_SOURCES_6)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return DC <= value && value < PWR_SRC_MAX; });
+	resource(AVAILABLE_POWER_SOURCES_6)->set(INT_T(PWR_SRC_MAX));
+	resource(AVAILABLE_POWER_SOURCES_6)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return DC <= value && value < PWR_SRC_MAX; });
 	#endif
 
 	#if RES_3_7
-	getResIter(POWER_SOURCE_VOLTAGE_7)->set(INT_T(0));                                                                                                                                                                                 
+	resource(POWER_SOURCE_VOLTAGE_7)->set(INT_T(0));                                                                                                                                                                                 
 	#endif                                                                                                                                                                                                              
 	
 	#if RES_3_8
-	getResIter(POWER_SOURCE_CURRENT_8)->set(INT_T(0));                                                                                                                                                                                  
+	resource(POWER_SOURCE_CURRENT_8)->set(INT_T(0));                                                                                                                                                                                  
 	#endif 
 	
 	#if RES_3_9
-	getResIter(BATTERY_LEVEL_9)->set(INT_T(BAT_LVL_MIN));
-	getResIter(BATTERY_LEVEL_9)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return BAT_LVL_MIN <= value && value <= BAT_LVL_MAX; });
+	resource(BATTERY_LEVEL_9)->set(INT_T(BAT_LVL_MIN));
+	resource(BATTERY_LEVEL_9)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return BAT_LVL_MIN <= value && value <= BAT_LVL_MAX; });
 	#endif
 
 	#if RES_3_10
-	getResIter(MEMORY_FREE_10)->set(INT_T(0));                                                                                                                                                                                         
+	resource(MEMORY_FREE_10)->set(INT_T(0));                                                                                                                                                                                         
 	#endif
 
-	getResIter(ERROR_CODE_11)->set((INT_T)NO_ERROR);
-	getResIter(ERROR_CODE_11)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return NO_ERROR <= value && value < ERR_CODE_MAX; });
+	resource(ERROR_CODE_11)->set((INT_T)NO_ERROR);
+	resource(ERROR_CODE_11)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return NO_ERROR <= value && value < ERR_CODE_MAX; });
 	
 	#if RES_3_12
-	getResIter(RESET_ERROR_CODE_12)->set((EXECUTE_T)[this](ID_T id, const OPAQUE_T& buff) { 
-		this->getResIter(ERROR_CODE_11)->clear();
-		getResIter(ERROR_CODE_11)->set((INT_T)NO_ERROR);
+	resource(RESET_ERROR_CODE_12)->set((EXECUTE_T)[this](ID_T id, const OPAQUE_T& buff) { 
+		resource(ERROR_CODE_11)->clear();
+		resource(ERROR_CODE_11)->set((INT_T)NO_ERROR);
 	});
 	#endif
 
 	#if RES_3_13
-	getResIter(CURRENT_TIME_13)->set(TIME_T(0));                                                                                                                                                                                       
+	resource(CURRENT_TIME_13)->set(TIME_T(0));                                                                                                                                                                                       
 	#endif                                                                                                                                                                                                              
 	
 	#if RES_3_14
-	getResIter(UTC_OFFSET_14)->set(STRING_T(""));                                                                                                                                                                                             
+	resource(UTC_OFFSET_14)->set(STRING_T(""));                                                                                                                                                                                             
 	#endif                                                                                                                                                                                                              
 	
 	#if RES_3_15
-	getResIter(TIMEZONE_15)->set(STRING_T(""));                                                                                                                                                                                     
+	resource(TIMEZONE_15)->set(STRING_T(""));                                                                                                                                                                                     
 	#endif
 
-	getResIter(SUPPORTED_BINDING_AND_MODES_16)->set(STRING_T(""));
-	getResIter(SUPPORTED_BINDING_AND_MODES_16)->setDataVerifier((VERIFY_STRING_T)([](const STRING_T& value) { return wppBindingValidate(value); }));
+	resource(SUPPORTED_BINDING_AND_MODES_16)->set(STRING_T(""));
+	resource(SUPPORTED_BINDING_AND_MODES_16)->setDataVerifier((VERIFY_STRING_T)([](const STRING_T& value) { return wppBindingValidate(value); }));
 
 	#if RES_3_17
-	getResIter(DEVICE_TYPE_17)->set(STRING_T(""));                                                                                                                                                                                           
+	resource(DEVICE_TYPE_17)->set(STRING_T(""));                                                                                                                                                                                           
 	#endif
 
 	#if RES_3_18
-	getResIter(HARDWARE_VERSION_18)->set(STRING_T(""));                                                                                                                                                                              
+	resource(HARDWARE_VERSION_18)->set(STRING_T(""));                                                                                                                                                                              
 	#endif                                                                                                                                                                                                              
 	
 	#if RES_3_19
-	getResIter(SOFTWARE_VERSION_19)->set(STRING_T(""));                                                                                                                                                                                    
+	resource(SOFTWARE_VERSION_19)->set(STRING_T(""));                                                                                                                                                                                    
 	#endif                 
 
 	#if RES_3_20
-	getResIter(BATTERY_STATUS_20)->set(INT_T(BAT_STATUS_MAX));
-	getResIter(BATTERY_STATUS_20)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return NORMAL <= value && value < BAT_STATUS_MAX; });
+	resource(BATTERY_STATUS_20)->set(INT_T(BAT_STATUS_MAX));
+	resource(BATTERY_STATUS_20)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return NORMAL <= value && value < BAT_STATUS_MAX; });
 	#endif
 
 	#if RES_3_21                                                                                                                                                                                          
-	getResIter(MEMORY_TOTAL_21)->set((INT_T)NO_ERROR);
+	resource(MEMORY_TOTAL_21)->set((INT_T)NO_ERROR);
 	#endif                                                                                                                                                                                                              
 	
 	#if RES_3_22                                                                                                                                                                                       
-	getResIter(EXTDEVINFO_22)->set(OBJ_LINK_T());
+	resource(EXTDEVINFO_22)->set(OBJ_LINK_T());
 	#endif     
 	/* --------------- Code_cpp block 9 end --------------- */
 }

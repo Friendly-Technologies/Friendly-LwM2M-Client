@@ -187,15 +187,15 @@ class ObjectGenerator:
                 # content += f"""\t\t#if {resource["Name"]}_{resource["Mandatory"]}\n\t"""
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].set( /* TODO */ );\n"
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n\n"
-                content += f"\t+getResIter({resource['Name']}_{resource['ID']})->set( /* TODO */ );\n"
-                content += f"\t+getResIter({resource['Name']}_{resource['ID']})->setDataVerifier( /* TODO */ );\n\n"
+                content += f"\t+resource({resource['Name']}_{resource['ID']})->set( /* TODO */ );\n"
+                content += f"\t+resource({resource['Name']}_{resource['ID']})->setDataVerifier( /* TODO */ );\n\n"
                 # content += f"\t\t#endif\n\n"
             if resource["Mandatory"] == "OPTIONAL":
                 content += f"""\t#if {resource["Define"]}\n"""
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].set( /* TODO */ );\n"
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n"
-                content += f"\t-getResIter({resource['Name']}_{resource['ID']})->set( /* TODO */ );\n"
-                content += f"\t-getResIter({resource['Name']}_{resource['ID']})->setDataVerifier( /* TODO */ );\n"
+                content += f"\t-resource({resource['Name']}_{resource['ID']})->set( /* TODO */ );\n"
+                content += f"\t-resource({resource['Name']}_{resource['ID']})->setDataVerifier( /* TODO */ );\n"
                 content += f"\t#endif\n\n"
         content += f"""\t/* --------------- Code_cpp block 9 end --------------- */\n}}"""
 
@@ -220,7 +220,7 @@ class ObjectGenerator:
             return f"""WPP_LOGD_ARG(TAG, {text});"""
 
     def get_content_serverOperationNotifier(self):
-        cases = ["READ", "WRITE", "EXECUTE", "DISCOVER", "DELETE"]
+        cases = ["READ", "WRITE_UPD", "WRITE_REPLACE_INST", "WRITE_REPLACE_RES", "EXECUTE", "DISCOVER", "DELETE"]
         base = \
             f"""void __CLASS_NAME__::serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) {{\n""" \
             f"""\t/* --------------- Code_cpp block 6 start --------------- */\n""" \
@@ -238,7 +238,7 @@ class ObjectGenerator:
                f"""/* --------------- Code_cpp block 7 end --------------- */\n}}"""
 
     def get_content_userOperationNotifier(self):
-        cases = ["READ", "WRITE", "DELETE"]
+        cases = ["READ", "WRITE_UPD", "DELETE"]
         prefix = \
             f"""void __CLASS_NAME__::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) {{\n""" \
             f"""\t/* --------------- Code_cpp block 8 start --------------- */\n""" \

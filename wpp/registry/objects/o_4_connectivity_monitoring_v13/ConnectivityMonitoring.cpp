@@ -23,26 +23,22 @@
 #define AVLB_NTWRK_BRR_MIN 0
 #define AVLB_NTWRK_BRR_MAX 50
 
-#if RES_4_3
 #define LINK_QUALITY_IEEE_802_15_4_MIN 0
 #define LINK_QUALITY_IEEE_802_15_4_MAX 255
 
 #define LINK_QUALITY_GSM_MIN 0
 #define LINK_QUALITY_GSM_MAX 7
-#endif
 
 #if RES_4_6
 #define LINK_UTLZTN_MIN 0
 #define LINK_UTLZTN_MAX 100
 #endif
 
-#if RES_4_8
 #define CELL_ID_GSM_MIN	0
 #define CELL_ID_GSM_MAX	65535
 
 #define CELL_ID_WCDMA_MIN 0
 #define CELL_ID_WCDMA_MAX 268435455
-#endif
 
 #if RES_4_9
 #define SMNC_MIN 0
@@ -189,7 +185,7 @@ void ConnectivityMonitoring::resourcesInit() {
 
 	#if RES_4_3
 	getResIter(LINK_QUALITY_3)->set(INT_T(0));
-	getResIter(LINK_QUALITY_3)->setDataVerifier((VERIFY_INT_T)[this](const INT_T& value) { return this.checkLinkQuality() });
+	getResIter(LINK_QUALITY_3)->setDataVerifier((VERIFY_INT_T)[this](const INT_T& value) { return this->checkLinkQuality(value); });
 	#endif
 
 	getResIter(IP_ADDRESSES_4)->set(STRING_T(""));
@@ -209,7 +205,7 @@ void ConnectivityMonitoring::resourcesInit() {
 
 	#if RES_4_8
 	getResIter(CELL_ID_8)->set(INT_T(0));
-	getResIter(CELL_ID_8)->setDataVerifier((VERIFY_INT_T)[this](const INT_T& value) { return this.checkCellId() });
+	getResIter(CELL_ID_8)->setDataVerifier((VERIFY_INT_T)[this](const INT_T& value) { return this->checkCellId(value); });
 	#endif
 
 	#if RES_4_9
@@ -241,18 +237,19 @@ void ConnectivityMonitoring::resourcesInit() {
 /* --------------- Code_cpp block 10 start --------------- */
 
 bool ConnectivityMonitoring::checkLinkQuality(uint8_t linkQuality) {
-	// get Network Bearer and case:
-    switch (getResIter(NETWORK_BEARER_0)->get())
+	INT_T network_bearer;
+	getResIter(NETWORK_BEARER_0)->get(network_bearer);
+    switch (network_bearer)
     {
-        case IEEE_802_15_4:
-            return LINK_QUALITY_IEEE_802_15_4_MIN <= linkQuality && linkQuality <= LINK_QUALITY_IEEE_802_15_4_MAX;
         case GSM:
 			return LINK_QUALITY_GSM_MIN <= linkQuality && linkQuality <= LINK_QUALITY_GSM_MAX;
+        case IEEE_802_15_4:
+            return LINK_QUALITY_IEEE_802_15_4_MIN <= linkQuality && linkQuality <= LINK_QUALITY_IEEE_802_15_4_MAX;
 		case LTE_TDD:
 		case LTE_FDD:
 		case NB_IOT:
 			// TODO: the RSRQ used in the first 2 cases and NRSRQ in third. But measures in dB
-			// TODO: implement it to dB
+			// TODO: not understund the range of available values
 			return true;
 		default:
 			// return true as for as resource not used in the another cases
@@ -261,7 +258,9 @@ bool ConnectivityMonitoring::checkLinkQuality(uint8_t linkQuality) {
 }
 
 bool ConnectivityMonitoring::checkCellId(uint32_t cellId) {
-    switch (getResIter(NETWORK_BEARER_0)->get())
+	INT_T network_bearer;
+	getResIter(NETWORK_BEARER_0)->get(network_bearer);
+    switch (network_bearer)
     {
         case GSM:
             return CELL_ID_GSM_MIN <= cellId && cellId <= CELL_ID_GSM_MAX;

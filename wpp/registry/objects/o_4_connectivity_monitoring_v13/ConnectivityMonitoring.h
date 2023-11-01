@@ -103,6 +103,10 @@ public:
 	~ConnectivityMonitoring();
 
 	/* --------------- Code_h block 2 start --------------- */
+
+	bool checkLinkQuality(uint8_t linkQuality);
+	bool checkCellId(uint32_t cellId);
+
 	/* --------------- Code_h block 2 end --------------- */
 
 protected:

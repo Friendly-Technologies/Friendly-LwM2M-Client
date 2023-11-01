@@ -9,7 +9,7 @@
 using namespace wpp;
 using namespace std;
 
-class SecurityImpl: public ObjObserver<Lwm2mSecurity>, public InstObserver<Lwm2mSecurity> {
+class SecurityImpl: public ObjObserver<Lwm2mSecurity>, public InstObserver {
 	public:
     void init(Object<Lwm2mSecurity> &securityObj) {
         securityObj.subscribe(this);
@@ -59,19 +59,19 @@ class SecurityImpl: public ObjObserver<Lwm2mSecurity>, public InstObserver<Lwm2m
 		cout << "Lwm2mSecurity: instanceDeleting: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
 	}
 
-	void resourceRead(Lwm2mSecurity &inst, const ResLink &resId) override {
+	void resourceRead(Instance &inst, const ResLink &resId) override {
         cout << "Lwm2mSecurity: resourceRead: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
     }
 
-    void resourceWrite(Lwm2mSecurity &inst, const ResLink &resId) override {
+    void resourceWrite(Instance &inst, const ResLink &resId) override {
         cout << "Lwm2mSecurity: resourceWrite: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
     }
 
-    void resourceExecute(Lwm2mSecurity &inst, const ResLink &resId) override {
+    void resourceExecute(Instance &inst, const ResLink &resId) override {
         cout << "Lwm2mSecurity: resourceExecute: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
     }
 
-    void resourcesReplaced(Lwm2mSecurity &inst) override {
+    void resourcesReplaced(Instance &inst) override {
         cout << "Lwm2mSecurity: resourcesReplaced: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << endl;
     }
 };

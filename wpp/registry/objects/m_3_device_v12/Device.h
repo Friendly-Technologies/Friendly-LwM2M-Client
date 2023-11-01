@@ -19,7 +19,7 @@
 
 namespace wpp {
 
-class Device : public Instance, public InstSubject<Device> {
+class Device : public Instance {
 public:
 	enum ID: ID_T {
 		#if RES_3_0

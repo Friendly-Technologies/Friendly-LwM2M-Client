@@ -14,6 +14,7 @@
 #include "Resource.h"
 #include "ResOp.h"
 #include "types.h"
+#include "InstSubject.h"
 
 namespace wpp {
 /*
@@ -33,7 +34,7 @@ namespace wpp {
  * 
  * Note: From server side, empty resource == undefined resource.
  */
-class Instance {
+class Instance: public InstSubject {
 template <typename T>
 friend class Object;
 

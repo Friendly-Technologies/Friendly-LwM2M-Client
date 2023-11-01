@@ -18,7 +18,7 @@
 
 namespace wpp {
 
-class __CLASS_NAME__ : public Instance, public InstSubject<__CLASS_NAME__> {
+class __CLASS_NAME__ : public Instance {
 public:
 	enum ID: ID_T {
 __ID_ENUM__	};

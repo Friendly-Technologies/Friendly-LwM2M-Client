@@ -9,7 +9,7 @@
 using namespace wpp;
 using namespace std;
 
-class ServerImpl: public ObjObserver<Lwm2mServer>, public InstObserver<Lwm2mServer> {
+class ServerImpl: public ObjObserver<Lwm2mServer>, public InstObserver {
 	public:
     void init(Object<Lwm2mServer> &serverObj) {
         serverObj.subscribe(this);
@@ -37,19 +37,19 @@ class ServerImpl: public ObjObserver<Lwm2mServer>, public InstObserver<Lwm2mServ
 		cout << "Lwm2mServer: instanceDeleting: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
 	}
 
-	void resourceRead(Lwm2mServer &inst, const ResLink &resId) override {
+	void resourceRead(Instance &inst, const ResLink &resId) override {
         cout << "Lwm2mServer: resourceRead: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
     }
 
-    void resourceWrite(Lwm2mServer &inst, const ResLink &resId) override {
+    void resourceWrite(Instance &inst, const ResLink &resId) override {
         cout << "Lwm2mServer: resourceWrite: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
     }
 
-    void resourceExecute(Lwm2mServer &inst, const ResLink &resId) override {
+    void resourceExecute(Instance &inst, const ResLink &resId) override {
         cout << "Lwm2mServer: resourceExecute: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
     }
 
-    void resourcesReplaced(Lwm2mServer &inst) override {
+    void resourcesReplaced(Instance &inst) override {
         cout << "Lwm2mServer: resourcesReplaced: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << endl;
     }
 };

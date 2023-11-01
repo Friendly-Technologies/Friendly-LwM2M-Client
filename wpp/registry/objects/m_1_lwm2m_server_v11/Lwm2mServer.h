@@ -19,7 +19,7 @@
 
 namespace wpp {
 
-class Lwm2mServer : public Instance, public InstSubject<Lwm2mServer> {
+class Lwm2mServer : public Instance {
 public:
 	enum ID: ID_T {
 		SHORT_SERVER_ID_0 = 0,

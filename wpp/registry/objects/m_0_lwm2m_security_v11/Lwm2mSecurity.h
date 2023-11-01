@@ -18,7 +18,7 @@
 
 namespace wpp {
 
-class Lwm2mSecurity : public Instance, public InstSubject<Lwm2mSecurity> {
+class Lwm2mSecurity : public Instance {
 public:
 	enum ID: ID_T {
 		LWM2M_SERVER_URI_0 = 0,

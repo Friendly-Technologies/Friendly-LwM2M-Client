@@ -10,12 +10,12 @@ WppRegistry::WppRegistry(lwm2m_context_t &context): _context(context) {
 	/* ---------- Mandatory objects init blok begin ---------- */
 	# if OBJ_M_3_DEVICE_V12
 	_objects.push_back(new ObjectImpl<Device>(_context, DEVICE_OBJ_INFO));
-	# endif
-	# if OBJ_M_0_LWM2M_SECURITY_V11
-	_objects.push_back(new ObjectImpl<Lwm2mSecurity>(_context, LWM2M_SECURITY_OBJ_INFO));
-	# endif
+	#endif
 	# if OBJ_M_1_LWM2M_SERVER_V11
 	_objects.push_back(new ObjectImpl<Lwm2mServer>(_context, LWM2M_SERVER_OBJ_INFO));
+	#endif
+	# if OBJ_M_0_LWM2M_SECURITY_V11
+	_objects.push_back(new ObjectImpl<Lwm2mSecurity>(_context, LWM2M_SECURITY_OBJ_INFO));
 	#endif
 	/* ---------- Mandatory objects init blok end ---------- */
 
@@ -63,17 +63,17 @@ Object * WppRegistry::object(OBJ_ID objId) {
 ObjectImpl<Device> & WppRegistry::device() {
 	return *static_cast<ObjectImpl<Device>*>(object(OBJ_ID::DEVICE));
 }
-# endif
-# if OBJ_M_0_LWM2M_SECURITY_V11
-ObjectImpl<Lwm2mSecurity> & WppRegistry::lwm2mSecurity() {
-	return *static_cast<ObjectImpl<Lwm2mSecurity>*>(object(OBJ_ID::LWM2M_SECURITY));
-}
-# endif
+#endif
 # if OBJ_M_1_LWM2M_SERVER_V11
 ObjectImpl<Lwm2mServer> & WppRegistry::lwm2mServer() {
 	return *static_cast<ObjectImpl<Lwm2mServer>*>(object(OBJ_ID::LWM2M_SERVER));
 }
-# endif
+#endif
+# if OBJ_M_0_LWM2M_SECURITY_V11
+ObjectImpl<Lwm2mSecurity> & WppRegistry::lwm2mSecurity() {
+	return *static_cast<ObjectImpl<Lwm2mSecurity>*>(object(OBJ_ID::LWM2M_SECURITY));
+}
+#endif
 /* ---------- Mandatory objects method blok end ---------- */
 
 /* ---------- Optional objects method blok begin ---------- */
@@ -86,7 +86,7 @@ ObjectImpl<Lwm2mServer> & WppRegistry::lwm2mServer() {
 ObjectImpl<ConnectivityMonitoring> & WppRegistry::connectivityMonitoring() {
 	return *static_cast<ObjectImpl<ConnectivityMonitoring>*>(object(OBJ_ID::CONNECTIVITY_MONITORING));
 }
-# endif
+#endif
 /* ---------- Optional objects method blok end ---------- */
 
 

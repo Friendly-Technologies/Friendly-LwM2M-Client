@@ -12,10 +12,13 @@ import json
 RES_DEF_PATTERN = r'#define RES_\d+_\d+_'
 RES_DEF_PARTS_CNT = 3
 
-ENUM_FIELD_PATTERN = r" = \d"
+ENUM_FIELD_PATTERN = r" = \d+"
 ENUM_START_PATTERN = "enum ID: ID_T {"
 ENUM_END_PATTERN = "};"
 ENUM_FIELD_PARTS_CNT = 2
+
+USER_CODE_BLOCK_START = r'block \d+ start'
+USER_CODE_BLOCK_END = r'block \d+ end'
 
 FILE_TYPE_COMPONENTS_CNT = 2
 
@@ -62,11 +65,11 @@ class ObjectChanger:
         user_code_blocks = {}
         with open(path_to_file, 'r') as f:
             for line in f:
-                if re.search("block \d start", line):
+                if re.search(USER_CODE_BLOCK_START, line):
                     add_line = True
                     continue
 
-                if re.search("block \d end", line):
+                if re.search(USER_CODE_BLOCK_END, line):
                     add_line = False
                     user_code_blocks[counter] = user_code_block
                     user_code_block = ""
@@ -85,7 +88,7 @@ class ObjectChanger:
         add_flag = True
         
         for line in old_content.split("\n"):
-            if re.search("block \d start", line):
+            if re.search(USER_CODE_BLOCK_START, line):
                 new_content += line + "\n"
                 add_flag = False
                 if file_user_code_dict[counter] == "":
@@ -93,7 +96,7 @@ class ObjectChanger:
                     continue
                 new_content += file_user_code_dict[counter]
                 counter += 1
-            if re.search("block \d end", line):
+            if re.search(USER_CODE_BLOCK_END, line):
                 add_flag = True
             if add_flag:
                 new_content += line + "\n"

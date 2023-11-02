@@ -73,3 +73,11 @@ LWM2M_WEB_RESOURCES = ["raw.githubusercontent.com", "github.com"]
 
 OPTIONS_MANDATORY = ["Mandatory", "Optional"]
 OPTIONS_VARIETY = ["Multiple", "Single"]
+
+ENUM_FIELD_PATTERN = r" = \d+"
+ENUM_START_PATTERN = "enum ID: ID_T {"
+ENUM_END_PATTERN = "};"
+ENUM_FIELD_PARTS_CNT = 2
+
+USER_CODE_BLOCK_START = r'block \d+ start'
+USER_CODE_BLOCK_END = r'block \d+ end'

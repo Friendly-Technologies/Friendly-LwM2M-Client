@@ -9,19 +9,6 @@ import re
 from optparse import OptionParser
 import json
 
-RES_DEF_PATTERN = r'#define RES_\d+_\d+_'
-RES_DEF_PARTS_CNT = 3
-
-ENUM_FIELD_PATTERN = r" = \d+"
-ENUM_START_PATTERN = "enum ID: ID_T {"
-ENUM_END_PATTERN = "};"
-ENUM_FIELD_PARTS_CNT = 2
-
-USER_CODE_BLOCK_START = r'block \d+ start'
-USER_CODE_BLOCK_END = r'block \d+ end'
-
-FILE_TYPE_COMPONENTS_CNT = 2
-
 
 class ObjectChanger:
     """Add some comments here"""
@@ -65,11 +52,11 @@ class ObjectChanger:
         user_code_blocks = {}
         with open(path_to_file, 'r') as f:
             for line in f:
-                if re.search(USER_CODE_BLOCK_START, line):
+                if re.search(const.USER_CODE_BLOCK_START, line):
                     add_line = True
                     continue
 
-                if re.search(USER_CODE_BLOCK_END, line):
+                if re.search(const.USER_CODE_BLOCK_END, line):
                     add_line = False
                     user_code_blocks[counter] = user_code_block
                     user_code_block = ""
@@ -88,7 +75,7 @@ class ObjectChanger:
         add_flag = True
         
         for line in old_content.split("\n"):
-            if re.search(USER_CODE_BLOCK_START, line):
+            if re.search(const.USER_CODE_BLOCK_START, line):
                 new_content += line + "\n"
                 add_flag = False
                 if file_user_code_dict[counter] == "":
@@ -96,7 +83,7 @@ class ObjectChanger:
                     continue
                 new_content += file_user_code_dict[counter]
                 counter += 1
-            if re.search(USER_CODE_BLOCK_END, line):
+            if re.search(const.USER_CODE_BLOCK_END, line):
                 add_flag = True
             if add_flag:
                 new_content += line + "\n"
@@ -152,13 +139,13 @@ class ObjectChanger:
             block = list()
 
             for id in range(len(lines)):
-                if re.search(ENUM_START_PATTERN, lines[id]):
+                if re.search(const.ENUM_START_PATTERN, lines[id]):
                     enum_start_id = id
                     break
             if enum_start_id == -1:
                 return list()
             for id in range(id, len(lines)):
-                if re.search(ENUM_END_PATTERN, lines[id]):
+                if re.search(const.ENUM_END_PATTERN, lines[id]):
                     enum_end_id = id
                     break
                 block.append(lines[id])
@@ -176,10 +163,10 @@ class ObjectChanger:
 
         names = dict()
         for line in res_enum:
-            if not re.search(ENUM_FIELD_PATTERN, line):
+            if not re.search(const.ENUM_FIELD_PATTERN, line):
                 continue
             field_parts = line.replace(" ", "").strip("\t,\n").split("=")
-            if len(field_parts) != ENUM_FIELD_PARTS_CNT or not field_parts[1].isnumeric():
+            if len(field_parts) != const.ENUM_FIELD_PARTS_CNT or not field_parts[1].isnumeric():
                 print(f"{self.log_tag} Incorrect enum field format '{line}'")
                 continue
             names[int(field_parts[1])] = field_parts[0]

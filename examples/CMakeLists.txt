@@ -38,6 +38,7 @@ add_subdirectory(platform)
 add_subdirectory(server)
 add_subdirectory(security)
 add_subdirectory(device)
+add_subdirectory(connectivity_monitoring)
 
 # message(STATUS "WakaamaPlusTest:INCLUDES: ${INCLUDES}")
 # message(STATUS "WakaamaPlusTest:SOURCES: ${SOURCES}")

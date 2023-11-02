@@ -12,6 +12,7 @@
 #include "Security.h"
 #include "Device.h"
 #include "Connection.h"
+#include "ConnectivityMonitoring.h"
 
 #include "WppClient.h"
 #include "WppRegistry.h"
@@ -32,6 +33,9 @@ int main() {
 	ServerImpl server;
 	SecurityImpl security;
 	DeviceImpl device;
+	#if OBJ_O_4_CONNECTIVITY_MONITORING_V13
+	ConnectivityMonitoringImpl conn_monitoring;
+	#endif
 
 	// Client initialization
 	cout << endl << "---- Creating WppClient ----" << endl;
@@ -53,6 +57,12 @@ int main() {
 	security.init(registry.lwm2mSecurity());
 	cout << endl << "---- Initialization wpp Device ----" << endl;
 	device.init(registry.device());
+	#if OBJ_O_4_CONNECTIVITY_MONITORING_V13
+	cout << endl << "---- Initialization wpp ConnectivityMonitoring ----" << endl;
+	conn_monitoring.init(registry.connectivityMonitoring());
+	#endif
+
+	return 0;
 	
 	// Giving ownership to registry
 	client->giveOwnership();

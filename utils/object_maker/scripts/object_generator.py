@@ -175,26 +175,22 @@ class ObjectGenerator:
 
     def get_content_resourcesInit_f(self):
         content = f"""void __CLASS_NAME__::resourcesInit() {{\n""" \
-                  f"""\t/* --------------- Code_cpp block 9 start --------------- */\n""" \
-                  f"""// TODO: The most part of the server resources logic must be implemented\n""" \
-                  f"""// on wakaama core level, because the Server is only a state holder and\n""" \
-                  f"""// at this level, it does not have the required information for doing\n""" \
-                  f"""// sings described in the documentation.\n\n"""
+                  f"""\t/* --------------- Code_cpp block 9 start --------------- */\n"""
         for resource in self.resources_data:
             if resource[ "Mandatory"] == "MANDATORY":
                 # content += f"""\t\t#if {resource["Name"]}_{resource["Mandatory"]}\n\t"""
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].set( /* TODO */ );\n"
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n\n"
-                content += f"\tgetResIter({resource['Name']}_{resource['ID']})->set( /* TODO */ );\n"
-                content += f"\tgetResIter({resource['Name']}_{resource['ID']})->setDataVerifier( /* TODO */ );\n\n"
+                content += f"\tresource({resource['Name']}_{resource['ID']})->set( /* TODO */ );\n"
+                content += f"\tresource({resource['Name']}_{resource['ID']})->setDataVerifier( /* TODO */ );\n"
                 # content += f"\t\t#endif\n\n"
             if resource["Mandatory"] == "OPTIONAL":
                 content += f"""\t#if {resource["Define"]}\n"""
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].set( /* TODO */ );\n"
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n"
-                content += f"\tgetResIter({resource['Name']}_{resource['ID']})->set( /* TODO */ );\n"
-                content += f"\tgetResIter({resource['Name']}_{resource['ID']})->setDataVerifier( /* TODO */ );\n"
-                content += f"\t#endif\n\n"
+                content += f"\tresource({resource['Name']}_{resource['ID']})->set( /* TODO */ );\n"
+                content += f"\tresource({resource['Name']}_{resource['ID']})->setDataVerifier( /* TODO */ );\n"
+                content += f"\t#endif\n"
         content += f"""\t/* --------------- Code_cpp block 9 end --------------- */\n}}"""
 
         return content
@@ -218,7 +214,7 @@ class ObjectGenerator:
             return f"""WPP_LOGD_ARG(TAG, {text});"""
 
     def get_content_serverOperationNotifier(self):
-        cases = ["READ", "WRITE", "EXECUTE", "DISCOVER", "DELETE"]
+        cases = ["READ", "WRITE_UPD", "WRITE_REPLACE_INST", "WRITE_REPLACE_RES", "EXECUTE", "DISCOVER", "DELETE"]
         base = \
             f"""void __CLASS_NAME__::serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) {{\n""" \
             f"""\t/* --------------- Code_cpp block 6 start --------------- */\n""" \
@@ -236,7 +232,7 @@ class ObjectGenerator:
                f"""/* --------------- Code_cpp block 7 end --------------- */\n}}"""
 
     def get_content_userOperationNotifier(self):
-        cases = ["READ", "WRITE", "DELETE"]
+        cases = ["READ", "WRITE_UPD", "DELETE"]
         prefix = \
             f"""void __CLASS_NAME__::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) {{\n""" \
             f"""\t/* --------------- Code_cpp block 8 start --------------- */\n""" \

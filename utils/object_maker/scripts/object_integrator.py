@@ -63,14 +63,15 @@ class ObjectIntegrator:
 
         stop_string_obj_id = const.STOP_STRING_OBJ_ID[0] if obj_is_mandatory else const.STOP_STRING_OBJ_ID[1]
         stop_string_cfg_cmk = const.STOP_STRING_CNFG_CMK[0] if obj_is_mandatory else const.STOP_STRING_CNFG_CMK[1]
-        stop_string_reg_cpp = const.STOP_STRING_REG_PRT[0] if obj_is_mandatory else const.STOP_STRING_REG_PRT[1]
+        stop_string_reg_cpp_init = const.STOP_STRING_REG_CPP_INIT[0] if obj_is_mandatory else const.STOP_STRING_REG_CPP_INIT[1]
+        stop_string_reg_cpp_method = const.STOP_STRING_REG_CPP_METHOD[0] if obj_is_mandatory else const.STOP_STRING_REG_CPP_METHOD[1]
         stop_string_reg_incl = const.STOP_STRING_REG_INCL[0] if obj_is_mandatory else const.STOP_STRING_REG_INCL[1]
         stop_string_reg_prot = const.STOP_STRING_REG_PRT[0] if obj_is_mandatory else const.STOP_STRING_REG_PRT[1]
 
         content_obj_id = \
-            f"#ifdef {obj_name_define}\n" \
+            f"\t#ifdef {obj_name_define}\n" \
             f"\t{obj_name_underline} = {obj_id},\n" \
-            f"#endif /* {obj_name_define} */\n"
+            f"\t#endif\n"
 
         content_cfg_cmake = \
             f"""option({obj_name_define} """ \
@@ -89,16 +90,20 @@ class ObjectIntegrator:
             f"""{type_obj}<{obj_name_class}> & {obj_name_camelcase}();\n\t""" \
             f"""#endif\n"""
 
-        content_reg_cpp = \
+        content_reg_cpp_init = \
+            f"""\t# if {obj_name_define}\n""" \
+            f"""\t_objects.push_back(new {type_obj}<{obj_name_class}>(_context, {obj_name_underline}_OBJ_INFO));\n""" \
+            f"""\t#endif\n"""
+
+        content_reg_cpp_method = \
             f"""# if {obj_name_define}\n""" \
             f"""{type_obj}<{obj_name_class}> & WppRegistry::{obj_name_camelcase}() {{\n\t""" \
-            f"""if (!{type_obj}<{obj_name_class}>::isCreated()) {type_obj}<{obj_name_class}>::""" \
-            f"""create(_context, {obj_name_underline}_OBJ_INFO);\n\t""" \
-            f"""return *{type_obj}<{obj_name_class}>::object();\n}}\n# endif\n"""
+            f"""return *static_cast<{type_obj}<{obj_name_class}>*>(object(OBJ_ID::{obj_name_underline}));\n}}\n#endif\n"""
 
         self.update_file(stop_string_obj_id, content_obj_id, const.FILE_OBJECT_ID)
         self.update_file(stop_string_cfg_cmk, content_cfg_cmake, const.FILE_CONFIG_CMAKE)
-        self.update_file(stop_string_reg_cpp, content_reg_cpp, const.FILE_REGISTRY_CPP)
+        self.update_file(stop_string_reg_cpp_init, content_reg_cpp_init, const.FILE_REGISTRY_CPP)
+        self.update_file(stop_string_reg_cpp_method, content_reg_cpp_method, const.FILE_REGISTRY_CPP)
         self.update_file(stop_string_reg_incl, content_reg_h_include, const.FILE_REGISTRY_H)
         self.update_file(stop_string_reg_prot, content_reg_h_prototype, const.FILE_REGISTRY_H)
         return True

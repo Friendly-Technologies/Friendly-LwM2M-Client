@@ -6,19 +6,20 @@
 
 namespace wpp {
 
-template <typename T>
+class Instance;
+
 class InstSubject {
 public:
     /*
 	 * Subscribers will be notified about the write, delete
 	 * and execute of instance resources initiated by server.
 	 */
-	void subscribe(InstObserver<T> *observer) {
+	void subscribe(InstObserver *observer) {
     if (!observer) return;
     if (std::find(_observers.begin(), _observers.end(), observer) == _observers.end()) 
         _observers.push_back(observer);
     }
-	void unsubscribe(InstObserver<T> *observer) {
+	void unsubscribe(InstObserver *observer) {
         _observers.erase(std::find(_observers.begin(), _observers.end(), observer));
     }
 
@@ -26,8 +27,8 @@ protected:
     /*
 	 * Notify observers about operation
 	 */
-	void observerNotify(T &inst, const ResLink &resId, ResOp::TYPE type) {
-        for(InstObserver<T>* observer : _observers) {
+	void observerNotify(Instance &inst, const ResLink &resId, ResOp::TYPE type) {
+        for(InstObserver *observer : _observers) {
             switch (type) {
             case ResOp::READ: 
                 observer->resourceRead(inst, resId);
@@ -48,7 +49,7 @@ protected:
     }
 
 private:
-    std::vector<InstObserver<T> *> _observers;
+    std::vector<InstObserver*> _observers;
 };
 
 }

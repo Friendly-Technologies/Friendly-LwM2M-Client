@@ -24,14 +24,18 @@ KEY_FILE_IMPL_CONFIG = "config"
 KEY_FILE_IMPL_INFO = "info"
 KEY_FILE_IMPL_CMAKE = "cmake"
 
-STOP_STRING_CNFG_CMK = ["# The end of the options of the mandatory objects.",
-                        "# The end of the options of the optional objects."]
-STOP_STRING_OBJ_ID = ["/* The end of the IDs of the mandatory objects. */",
-                      "/* The end of the IDs of the optional objects. */"]
-STOP_STRING_REG_PRT = ["/* The end of the prototypes of the mandatory objects. */",
-                       "/* The end of the prototypes of the optional objects. */"]
-STOP_STRING_REG_INCL = ["/* The end of the includes of the mandatory objects. */",
-                        "/* The end of the includes of the optional objects. */"]
+STOP_STRING_CNFG_CMK = ["# ---------- Mandatory objects config blok end ----------",
+                        "# ---------- Optional objects config blok end ----------"]
+STOP_STRING_OBJ_ID = ["/* ---------- Mandatory objects ID blok end ---------- */",
+                      "/* ---------- Optional objects ID blok end ---------- */"]
+STOP_STRING_REG_CPP_INIT = ["/* ---------- Mandatory objects init blok end ---------- */",
+                            "/* ---------- Optional objects init blok end ---------- */"]
+STOP_STRING_REG_CPP_METHOD = ["/* ---------- Mandatory objects method blok end ---------- */",
+                              "/* ---------- Optional objects method blok end ---------- */"]
+STOP_STRING_REG_PRT = ["/* ---------- Mandatory objects prototype blok end ---------- */",
+                       "/* ---------- Optional objects prototype blok end ---------- */"]
+STOP_STRING_REG_INCL = ["/* ---------- Mandatory objects include blok end ---------- */",
+                        "/* ---------- Optional objects include blok end ---------- */"]
 
 KEY_DICT_OBJ_META = "object_data"
 KEY_DICT_OBJ_NAMES = "object_names"
@@ -49,7 +53,7 @@ KEY_DICT_OBJ_META_VER_LWM2M = "lwm2m_version"
 KEY_DICT_OBJ_META_VER = "version"
 
 TYPE_OPERATION = "ResOp"
-TYPE_OBJECT = "Object"
+TYPE_OBJECT = "ObjectImpl"
 
 KEYS_OBJ_DATA = {"name": "Name",
                  "description": "Description1",
@@ -69,3 +73,11 @@ LWM2M_WEB_RESOURCES = ["raw.githubusercontent.com", "github.com"]
 
 OPTIONS_MANDATORY = ["Mandatory", "Optional"]
 OPTIONS_VARIETY = ["Multiple", "Single"]
+
+ENUM_FIELD_PATTERN = r" = \d+"
+ENUM_START_PATTERN = "enum ID: ID_T {"
+ENUM_END_PATTERN = "};"
+ENUM_FIELD_PARTS_CNT = 2
+
+USER_CODE_BLOCK_START = r'block \d+ start'
+USER_CODE_BLOCK_END = r'block \d+ end'

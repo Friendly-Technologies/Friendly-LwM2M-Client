@@ -9,13 +9,13 @@
 using namespace wpp;
 using namespace std;
 
-class DeviceImpl: public ObjObserver<Device>, public InstObserver<Device> {
+class DeviceImpl: public ObjObserver, public InstObserver {
 	public:
     DeviceImpl(): _reboot(false) {}
 
-    void init(Object<Device> &deviceObj) {
+    void init(Object &deviceObj) {
         deviceObj.subscribe(this);
-        wpp::Device *device = deviceObj.createInstance();
+        wpp::Instance *device = deviceObj.createInstance();
         device->subscribe(this);
 
         device->set(Device::REBOOT_4, (EXECUTE_T)[this](ID_T id, const OPAQUE_T& data) {
@@ -34,33 +34,33 @@ class DeviceImpl: public ObjObserver<Device>, public InstObserver<Device> {
     }
 
     private:
-	void objectRestore(Object<Device> &object) override {
+	void objectRestore(Object &object) override {
 		cout << "Device: objectRestore: " << (ID_T)object.getObjectID() << endl;
 		object.clear();
         init(object);
 	}
 
-    void instanceCreated(Object<Device> &object, ID_T instanceId) override {
+    void instanceCreated(Object &object, ID_T instanceId) override {
         cout << "Device: instanceCreated: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
     }
 
-    void instanceDeleting(Object<Device> &object, ID_T instanceId) override {
+    void instanceDeleting(Object &object, ID_T instanceId) override {
 		cout << "Device: instanceDeleting: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
 	}
 
-	void resourceRead(Device &inst, const ResLink &resId) override {
+	void resourceRead(Instance &inst, const ResLink &resId) override {
         cout << "Device: resourceRead: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
     }
 
-    void resourceWrite(Device &inst, const ResLink &resId) override {
+    void resourceWrite(Instance &inst, const ResLink &resId) override {
         cout << "Device: resourceWrite: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
     }
 
-    void resourceExecute(Device &inst, const ResLink &resId) override {
+    void resourceExecute(Instance &inst, const ResLink &resId) override {
         cout << "Device: resourceExecute: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
     }
 
-    void resourcesReplaced(Device &inst) override {
+    void resourcesReplaced(Instance &inst) override {
         cout << "Device: resourcesReplaced: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << endl;
     }
 

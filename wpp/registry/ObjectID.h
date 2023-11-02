@@ -6,27 +6,25 @@
 namespace wpp {
 
 enum class OBJ_ID: ID_T {
-	/* The start of the IDs of the mandatory objects. */
-#ifdef OBJ_M_3_DEVICE_V12
+	/* ---------- Mandatory objects ID blok begin ---------- */
+	#ifdef OBJ_M_3_DEVICE_V12
 	DEVICE = 3,
-#endif /* OBJ_M_3_DEVICE_V12 */
-#ifdef OBJ_M_0_LWM2M_SECURITY_V11
-	LWM2M_SECURITY = 0,
-#endif /* OBJ_M_0_LWM2M_SECURITY_V11 */
-#ifdef OBJ_M_1_LWM2M_SERVER_V11
+	#endif
+	#ifdef OBJ_M_1_LWM2M_SERVER_V11
 	LWM2M_SERVER = 1,
-#endif /* OBJ_M_1_LWM2M_SERVER_V11 */
-	/* The end of the IDs of the mandatory objects. */
-	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
+	#endif
+	#ifdef OBJ_M_0_LWM2M_SECURITY_V11
+	LWM2M_SECURITY = 0,
+	#endif
+	/* ---------- Mandatory objects ID blok end ---------- */
 
-	/* The start of the IDs of the optional objects. */
+	/* ---------- Optional objects ID blok begin ---------- */
 	ACL = 2,
 	FIRMWARE_UPD = 5,
-#ifdef OBJ_O_4_CONNECTIVITY_MONITORING_V13
+	#ifdef OBJ_O_4_CONNECTIVITY_MONITORING_V13
 	CONNECTIVITY_MONITORING = 4,
-#endif /* OBJ_O_4_CONNECTIVITY_MONITORING_V13 */
-	/* The end of the IDs of the optional objects. */
-	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
+	#endif
+	/* ---------- Optional objects ID blok end ---------- */
 
 	MAX_ID = ID_T_MAX_VAL,
 };

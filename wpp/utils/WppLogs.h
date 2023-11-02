@@ -8,7 +8,7 @@
 #define TAG_WPP_CLIENT      "WppClient"
 #define TAG_WPP_CONN        "WppConnection"
 #define TAG_WPP_REG         "WppRegistry"
-#define TAG_WPP_OBJ         "Object<T>"
+#define TAG_WPP_OBJ         "Object"
 #define TAG_WPP_INST        "Instance"
 /* ---------- WPP components log TAGs end ---------- */
 

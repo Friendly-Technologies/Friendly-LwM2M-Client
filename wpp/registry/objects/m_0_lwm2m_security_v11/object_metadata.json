@@ -1,6 +1,6 @@
 {
     "object_data": {
-        "is_mandatory": "True",
+        "is_mandatory": true,
         "name": "LWM2M Security",
         "id": "0",
         "lwm2m_version": "1.1",

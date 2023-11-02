@@ -14,6 +14,7 @@
 #include "Resource.h"
 #include "ResOp.h"
 #include "types.h"
+#include "InstSubject.h"
 
 namespace wpp {
 /*
@@ -33,8 +34,7 @@ namespace wpp {
  * 
  * Note: From server side, empty resource == undefined resource.
  */
-class Instance {
-template <typename T>
+class Instance: public InstSubject {
 friend class Object;
 
 public: /* Interface that can be used by user */
@@ -54,16 +54,16 @@ public: /* Interface that can be used by user */
 	 * Sets resource value
 	 */
 	template<typename T>
-	bool set(ID_T resId, const T &value) { return userSet({resId, SINGLE_INSTANCE_ID}, value); }
+	bool set(ID_T resId, const T &value);
 	template<typename T>
-	bool set(const ResLink &resId, const T &value)  { return userSet({resId.resId, resId.resInstId}, value); }
+	bool set(const ResLink &resId, const T &value);
 	/*
 	 * Returns copy of resource value
 	 */
 	template<typename T>
-	bool get(ID_T resId, T &value) { return userGet({resId, SINGLE_INSTANCE_ID}, value); }
+	bool get(ID_T resId, T &value);
 	template<typename T>
-	bool get(const ResLink &resId, T &value) { return userGet({resId.resId, resId.resInstId}, value); }
+	bool get(const ResLink &resId, T &value);
 	/*
 	 * It is quite dangerous to leave a resource without instances,
 	 * because when the server tries to read its value, the server
@@ -95,7 +95,7 @@ protected: /* Interface that can be used by derived class */
 	 * This method return iterator for resource if it exists.
 	 * If resources does not exist then return empty list.
 	 */
-	std::vector<Resource>::iterator getResIter(ID_T resId);
+	std::vector<Resource>::iterator resource(ID_T resId);
 
 protected: /* Interface that must be implemented by derived class */
 	/*
@@ -118,18 +118,13 @@ protected: /* Interface that must be implemented by derived class */
 	virtual void userOperationNotifier(ResOp::TYPE type, const ResLink &resId) = 0;
 
 private: /* Interface used by Object<T> or Instance class */
-	/* ------------- Implementation of user set/get methods ------------- */
-	template<typename T>
-	bool userSet(const ResLink &resId, const T &value);
-	template<typename T>
-	bool userGet(const ResLink &resId, T &value);
 	/* ------------- Compatibility with core data structure ------------- */
 	/*
 	 * This methods can be used for convert resource to lwm2m_data_t
 	 * structure representation, or fill resource with lwm2m_data_t data.
 	 */
-	bool resourceToLwm2mData(Resource &resource, ID_T instanceId, lwm2m_data_t &data);
-	bool lwm2mDataToResource(const lwm2m_data_t &data, Resource &resource, ID_T instanceId);
+	bool resourceToLwm2mData(Resource &res, ID_T instanceId, lwm2m_data_t &data);
+	bool lwm2mDataToResource(const lwm2m_data_t &data, Resource &res, ID_T instanceId);
 	/* ------------- Helpful methods for server callbacks ------------- */
 	Resource* getValidatedResForWrite(const lwm2m_data_t &data, lwm2m_write_type_t writeType, uint8_t &errCode);
 	uint8_t resourceWrite(Resource &res, const lwm2m_data_t &data, lwm2m_write_type_t writeType);
@@ -155,11 +150,16 @@ protected:
  * Sets resource value
  */
 template<typename T>
-bool Instance::userSet(const ResLink &resId, const T &value) {
-	auto resource = getResIter(resId.resId);
-	if (resource == _resources.end()) return false;
+bool Instance::set(ID_T resId, const T &value) { 
+	return set({resId, SINGLE_INSTANCE_ID}, value); 
+}
 
-	bool result = resource->set(value, resId.resInstId);
+template<typename T>
+bool Instance::set(const ResLink &resId, const T &value)  {
+	auto res = resource(resId.resId);
+	if (res == _resources.end()) return false;
+
+	bool result = res->set(value, resId.resInstId);
 	if (result) {
 		notifyValueChanged({_id, {resId.resId, resId.resInstId}});
 		userOperationNotifier(ResOp::WRITE_UPD, resId);
@@ -172,11 +172,16 @@ bool Instance::userSet(const ResLink &resId, const T &value) {
  * Returns copy of resource value
  */
 template<typename T>
-bool Instance::userGet(const ResLink &resId, T &value) {
-	auto resource = getResIter(resId.resId);
-	if (resource == _resources.end()) return false;
+bool Instance::get(ID_T resId, T &value) {
+	return get({resId, SINGLE_INSTANCE_ID}, value);
+}
 
-	bool result = resource->get(value, resId.resInstId);
+template<typename T>
+bool Instance::get(const ResLink &resId, T &value) {
+	auto res = resource(resId.resId);
+	if (res == _resources.end()) return false;
+
+	bool result = res->get(value, resId.resInstId);
 	if (result) {
 		userOperationNotifier(ResOp::READ, resId);
 	}

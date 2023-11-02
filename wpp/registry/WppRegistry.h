@@ -13,7 +13,7 @@
 
 #include "ObjectImpl.h"
 
-/* The start of the includes of the mandatory objects. */
+/* ---------- Mandatory objects include blok begin ---------- */
 #if OBJ_M_3_DEVICE_V12
 #include "m_3_device_v12/Device.h"
 #endif
@@ -23,10 +23,9 @@
 #if OBJ_M_1_LWM2M_SERVER_V11
 #include "m_1_lwm2m_server_v11/Lwm2mServer.h"
 #endif
-/* The end of the includes of the mandatory objects. */
-/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
+/* ---------- Mandatory objects include blok end ---------- */
 
-/* The start of the includes of the optional objects. */
+/* ---------- Optional objects include blok begin ---------- */
 #if OPTIONAL_ACL_OBJ
 #include "acl/Acl.h"
 #endif
@@ -36,8 +35,7 @@
 #if OBJ_O_4_CONNECTIVITY_MONITORING_V13
 #include "o_4_connectivity_monitoring_v13/ConnectivityMonitoring.h"
 #endif
-/* The end of the includes of the optional objects. */
-/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
+/* ---------- Optional objects include blok end ---------- */
 
 namespace wpp {
 // TODO: Split mandatory and optional registers
@@ -58,8 +56,7 @@ public:
 
 	Object *object(OBJ_ID objId);
 
-	/* The start of the prototypes of the mandatory objects. */
-	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
+	/* ---------- Mandatory objects prototype blok begin ---------- */
 	#if OBJ_M_3_DEVICE_V12
 	ObjectImpl<Device> & device();
 	#endif
@@ -69,10 +66,9 @@ public:
 	#if OBJ_M_1_LWM2M_SERVER_V11
 	ObjectImpl<Lwm2mServer> & lwm2mServer();
 	#endif
-	/* The end of the prototypes of the mandatory objects. */
-	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
+	/* ---------- Mandatory objects prototype blok end ---------- */
 
-	/* The start of the prototypes of the optional objects. */
+	/* ---------- Optional objects prototype blok begin ---------- */
 	#if OPTIONAL_ACL_OBJ
 	ObjectImpl<Acl>& acl();
 	#endif
@@ -82,8 +78,7 @@ public:
 	#if OBJ_O_4_CONNECTIVITY_MONITORING_V13
 	ObjectImpl<ConnectivityMonitoring> & connectivityMonitoring();
 	#endif
-	/* The end of the prototypes of the optional objects. */
-	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
+	/* ---------- Optional objects prototype blok end ---------- */
 
 private:
 	lwm2m_context_t &_context;

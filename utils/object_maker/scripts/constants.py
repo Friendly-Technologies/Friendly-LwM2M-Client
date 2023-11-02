@@ -24,18 +24,18 @@ KEY_FILE_IMPL_CONFIG = "config"
 KEY_FILE_IMPL_INFO = "info"
 KEY_FILE_IMPL_CMAKE = "cmake"
 
-STOP_STRING_CNFG_CMK = ["# The end of the options of the mandatory objects.",
-                        "# The end of the options of the optional objects."]
-STOP_STRING_OBJ_ID = ["/* The end of the IDs of the mandatory objects. */",
-                      "/* The end of the IDs of the optional objects. */"]
-STOP_STRING_REG_CPP_INIT = ["/* ---------- Creating mandatory objects blok end ---------- */",
-                            "/* ---------- Creating optional objects blok end ---------- */"]
-STOP_STRING_REG_CPP_METHOD = ["/* The end of the prototypes of the mandatory objects. */",
-                              "/* The end of the prototypes of the optional objects. */"]
-STOP_STRING_REG_PRT = ["/* The end of the prototypes of the mandatory objects. */",
-                       "/* The end of the prototypes of the optional objects. */"]
-STOP_STRING_REG_INCL = ["/* The end of the includes of the mandatory objects. */",
-                        "/* The end of the includes of the optional objects. */"]
+STOP_STRING_CNFG_CMK = ["# ---------- Mandatory objects config blok end ----------",
+                        "# ---------- Optional objects config blok end ----------"]
+STOP_STRING_OBJ_ID = ["/* ---------- Mandatory objects ID blok end ---------- */",
+                      "/* ---------- Optional objects ID blok end ---------- */"]
+STOP_STRING_REG_CPP_INIT = ["/* ---------- Mandatory objects init blok end ---------- */",
+                            "/* ---------- Optional objects init blok end ---------- */"]
+STOP_STRING_REG_CPP_METHOD = ["/* ---------- Mandatory objects method blok end ---------- */",
+                              "/* ---------- Optional objects method blok end ---------- */"]
+STOP_STRING_REG_PRT = ["/* ---------- Mandatory objects prototype blok end ---------- */",
+                       "/* ---------- Optional objects prototype blok end ---------- */"]
+STOP_STRING_REG_INCL = ["/* ---------- Mandatory objects include blok end ---------- */",
+                        "/* ---------- Optional objects include blok end ---------- */"]
 
 KEY_DICT_OBJ_META = "object_data"
 KEY_DICT_OBJ_NAMES = "object_names"

@@ -7,7 +7,7 @@ namespace wpp {
 WppRegistry::WppRegistry(lwm2m_context_t &context): _context(context) {
     WPP_LOGD(TAG_WPP_REG, "Creating registry instance");
 	
-	/* ---------- Creating mandatory objects blok begin ---------- */
+	/* ---------- Mandatory objects init blok begin ---------- */
 	# if OBJ_M_3_DEVICE_V12
 	_objects.push_back(new ObjectImpl<Device>(_context, DEVICE_OBJ_INFO));
 	# endif
@@ -17,13 +17,13 @@ WppRegistry::WppRegistry(lwm2m_context_t &context): _context(context) {
 	# if OBJ_M_1_LWM2M_SERVER_V11
 	_objects.push_back(new ObjectImpl<Lwm2mServer>(_context, LWM2M_SERVER_OBJ_INFO));
 	#endif
-	/* ---------- Creating mandatory objects blok end ---------- */
+	/* ---------- Mandatory objects init blok end ---------- */
 
-	/* ---------- Creating optional objects blok begin ---------- */
+	/* ---------- Optional objects init blok begin ---------- */
 	# if OBJ_O_4_CONNECTIVITY_MONITORING_V13
 	_objects.push_back(new ObjectImpl<ConnectivityMonitoring>(_context, CONNECTIVITY_MONITORING_OBJ_INFO));
 	#endif
-	/* ---------- Creating optional objects blok end ---------- */
+	/* ---------- Optional objects init blok end ---------- */
 }
 
 WppRegistry::~WppRegistry() {
@@ -58,7 +58,7 @@ Object * WppRegistry::object(OBJ_ID objId) {
 	return objIter != _objects.end()? *objIter : NULL;
 }
 
-/* The start of the prototypes of the mandatory objects. */
+/* ---------- Mandatory objects method blok begin ---------- */
 # if OBJ_M_3_DEVICE_V12
 ObjectImpl<Device> & WppRegistry::device() {
 	return *static_cast<ObjectImpl<Device>*>(object(OBJ_ID::DEVICE));
@@ -74,10 +74,9 @@ ObjectImpl<Lwm2mServer> & WppRegistry::lwm2mServer() {
 	return *static_cast<ObjectImpl<Lwm2mServer>*>(object(OBJ_ID::LWM2M_SERVER));
 }
 # endif
-/* The end of the prototypes of the mandatory objects. */
-/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE! */
+/* ---------- Mandatory objects method blok end ---------- */
 
-/* The start of the prototypes of the optional objects. */
+/* ---------- Optional objects method blok begin ---------- */
 #if OPTIONAL_ACL_OBJ
 #endif
 
@@ -88,8 +87,7 @@ ObjectImpl<ConnectivityMonitoring> & WppRegistry::connectivityMonitoring() {
 	return *static_cast<ObjectImpl<ConnectivityMonitoring>*>(object(OBJ_ID::CONNECTIVITY_MONITORING));
 }
 # endif
-/* The end of the prototypes of the optional objects. */
-/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE! */
+/* ---------- Optional objects method blok end ---------- */
 
 
 } //wpp

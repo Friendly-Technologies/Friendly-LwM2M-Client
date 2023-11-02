@@ -7,11 +7,8 @@
 
 namespace wpp {
 
-
-template <typename T>
 class Object;
 
-template <typename T>
 class ObjSubject {
 public:
     enum Action : uint8_t {
@@ -23,12 +20,12 @@ public:
 	 * Subscribers will be notified about the creation
 	 * and deletion of object instances initiated by server.
 	 */
-	void subscribe(ObjObserver<T> *observer) {
+	void subscribe(ObjObserver *observer) {
     if (!observer) return;
     if (std::find(_observers.begin(), _observers.end(), observer) == _observers.end()) 
         _observers.push_back(observer);
     }
-	void unsubscribe(ObjObserver<T> *observer) {
+	void unsubscribe(ObjObserver *observer) {
         _observers.erase(std::find(_observers.begin(), _observers.end(), observer));
     }
     
@@ -36,8 +33,8 @@ protected:
     /*
 	 * Notify observers about operation
 	 */
-	void observerNotify(Object<T> &obj, ID_T instanceId, InstOp::TYPE type) {
-        for(ObjObserver<T>* observer : _observers) {
+	void observerNotify(Object &obj, ID_T instanceId, InstOp::TYPE type) {
+        for(ObjObserver* observer : _observers) {
             if (type == InstOp::CREATE) {
                 observer->instanceCreated(obj, instanceId);
             } else if (type == InstOp::DELETE) {
@@ -48,8 +45,8 @@ protected:
     /*
      * Requests observer to do action
      */
-    void observerDoAction(Object<T> &obj, Action action) {
-        for(ObjObserver<T>* observer : _observers) {
+    void observerDoAction(Object &obj, Action action) {
+        for(ObjObserver* observer : _observers) {
             if (action == Action::RESTORE) {
                 observer->objectRestore(obj);
             }
@@ -57,7 +54,7 @@ protected:
     }
 
 private:
-    std::vector<ObjObserver<T> *> _observers;
+    std::vector<ObjObserver *> _observers;
 };
 
 }

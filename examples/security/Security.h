@@ -9,11 +9,11 @@
 using namespace wpp;
 using namespace std;
 
-class SecurityImpl: public ObjObserver<Lwm2mSecurity>, public InstObserver {
+class SecurityImpl: public ObjObserver, public InstObserver {
 	public:
-    void init(Object<Lwm2mSecurity> &securityObj) {
+    void init(Object &securityObj) {
         securityObj.subscribe(this);
-        Lwm2mSecurity *security = securityObj.createInstance();
+        Instance *security = securityObj.createInstance();
         security->subscribe(this);
         
         #if LWM2M_BOOTSTRAP
@@ -44,18 +44,18 @@ class SecurityImpl: public ObjObserver<Lwm2mSecurity>, public InstObserver {
         security->set(Lwm2mSecurity::SHORT_SERVER_ID_10, (INT_T)123);
     }
 
-	void objectRestore(Object<Lwm2mSecurity> &object) override {
+	void objectRestore(Object &object) override {
 		cout << "Lwm2mSecurity: objectRestore: " << (ID_T)object.getObjectID() << endl;
 		object.clear();
         init(object);
 	}
 
-    void instanceCreated(Object<Lwm2mSecurity> &object, ID_T instanceId) override {
+    void instanceCreated(Object &object, ID_T instanceId) override {
         cout << "Lwm2mSecurity: instanceCreated: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
         object.instance(instanceId)->subscribe(this);
     }
 
-    void instanceDeleting(Object<Lwm2mSecurity> &object, ID_T instanceId) override {
+    void instanceDeleting(Object &object, ID_T instanceId) override {
 		cout << "Lwm2mSecurity: instanceDeleting: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
 	}
 

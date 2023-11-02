@@ -35,7 +35,6 @@ namespace wpp {
  * Note: From server side, empty resource == undefined resource.
  */
 class Instance: public InstSubject {
-template <typename T>
 friend class Object;
 
 public: /* Interface that can be used by user */

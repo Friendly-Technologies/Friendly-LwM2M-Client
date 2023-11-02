@@ -9,8 +9,9 @@
 #define WPP_REGISTRY_H_
 
 #include <mutex>
+#include <vector>
 
-#include "Object.h"
+#include "ObjectImpl.h"
 
 /* The start of the includes of the mandatory objects. */
 #if OBJ_M_3_DEVICE_V12
@@ -40,52 +41,53 @@
 
 namespace wpp {
 // TODO: Split mandatory and optional registers
-// TODO: Add ability to check whether some object id is exist
-// TODO: Add ability to get Lwm2mObject by ID
-// TODO: Try to redesign the registry and objects to simplify access
 class WppRegistry {
 public:
 	WppRegistry(lwm2m_context_t &context);
-	~WppRegistry() {}
+	~WppRegistry();
 
 	WppRegistry(const WppRegistry&) = delete;
 	WppRegistry(WppRegistry&&) = delete;
 	WppRegistry& operator=(const WppRegistry&) = delete;
 	WppRegistry& operator=(WppRegistry&&) = delete;
 
-	bool registerObj(Lwm2mObject &object);
-	bool deregisterObj(Lwm2mObject &object);
-	bool isObjRegistered(Lwm2mObject &object);
+	bool registerObj(Object &object);
+	bool deregisterObj(Object &object);
+	bool isObjRegistered(Object &object);
+	bool isObjExist(OBJ_ID objId);
+
+	Object *object(OBJ_ID objId);
 
 	/* The start of the prototypes of the mandatory objects. */
 	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 	#if OBJ_M_3_DEVICE_V12
-	Object<Device> & device();
+	ObjectImpl<Device> & device();
 	#endif
 	#if OBJ_M_0_LWM2M_SECURITY_V11
-	Object<Lwm2mSecurity> & lwm2mSecurity();
+	ObjectImpl<Lwm2mSecurity> & lwm2mSecurity();
 	#endif
 	#if OBJ_M_1_LWM2M_SERVER_V11
-	Object<Lwm2mServer> & lwm2mServer();
+	ObjectImpl<Lwm2mServer> & lwm2mServer();
 	#endif
 	/* The end of the prototypes of the mandatory objects. */
 	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 
 	/* The start of the prototypes of the optional objects. */
 	#if OPTIONAL_ACL_OBJ
-	Object<Acl>& acl();
+	ObjectImpl<Acl>& acl();
 	#endif
 	#if OPTIONAL_FIRMWARE_UPD_OBJ
-	Object<FirmwareUpd>& firmwareUpd();
+	ObjectImpl<FirmwareUpd>& firmwareUpd();
 	#endif
 	#if OBJ_O_4_CONNECTIVITY_MONITORING_V13
-	Object<ConnectivityMonitoring> & connectivityMonitoring();
+	ObjectImpl<ConnectivityMonitoring> & connectivityMonitoring();
 	#endif
 	/* The end of the prototypes of the optional objects. */
 	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 
 private:
 	lwm2m_context_t &_context;
+	std::vector<Object *> _objects;
 };
 
 } // namespace wpp

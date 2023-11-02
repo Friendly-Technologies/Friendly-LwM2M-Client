@@ -15,7 +15,6 @@
 #include "liblwm2m.h"
 #include "types.h"
 #include "WppRegistry.h"
-#include "Lwm2mObject.h"
 #include "WppConnection.h"
 
 #define WPP_CLIENT_MAX_SLEEP_TIME_S	30

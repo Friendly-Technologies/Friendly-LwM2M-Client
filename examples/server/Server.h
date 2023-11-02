@@ -9,11 +9,11 @@
 using namespace wpp;
 using namespace std;
 
-class ServerImpl: public ObjObserver<Lwm2mServer>, public InstObserver {
+class ServerImpl: public ObjObserver, public InstObserver {
 	public:
-    void init(Object<Lwm2mServer> &serverObj) {
+    void init(Object &serverObj) {
         serverObj.subscribe(this);
-        wpp::Lwm2mServer *server = serverObj.createInstance();
+        wpp::Instance *server = serverObj.createInstance();
         server->subscribe(this);
 
         server->set(Lwm2mServer::SHORT_SERVER_ID_0, (INT_T)123);
@@ -22,18 +22,18 @@ class ServerImpl: public ObjObserver<Lwm2mServer>, public InstObserver {
         server->set(Lwm2mServer::NOTIFICATION_STORING_WHEN_DISABLED_OR_OFFLINE_6, false);
     }
 
-	void objectRestore(Object<Lwm2mServer> &object) override {
+	void objectRestore(Object &object) override {
 		cout << "Lwm2mServer: objectRestore: " << (ID_T)object.getObjectID() << endl;
 		object.clear();
         init(object);
 	}
 
-    void instanceCreated(Object<Lwm2mServer> &object, ID_T instanceId) override {
+    void instanceCreated(Object &object, ID_T instanceId) override {
         cout << "Lwm2mServer: instanceCreated: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
         object.instance(instanceId)->subscribe(this);
     }
 
-    void instanceDeleting(Object<Lwm2mServer> &object, ID_T instanceId) override {
+    void instanceDeleting(Object &object, ID_T instanceId) override {
 		cout << "Lwm2mServer: instanceDeleting: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
 	}
 

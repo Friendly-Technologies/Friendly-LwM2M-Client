@@ -9,13 +9,13 @@
 using namespace wpp;
 using namespace std;
 
-class DeviceImpl: public ObjObserver<Device>, public InstObserver {
+class DeviceImpl: public ObjObserver, public InstObserver {
 	public:
     DeviceImpl(): _reboot(false) {}
 
-    void init(Object<Device> &deviceObj) {
+    void init(Object &deviceObj) {
         deviceObj.subscribe(this);
-        wpp::Device *device = deviceObj.createInstance();
+        wpp::Instance *device = deviceObj.createInstance();
         device->subscribe(this);
 
         device->set(Device::REBOOT_4, (EXECUTE_T)[this](ID_T id, const OPAQUE_T& data) {
@@ -34,17 +34,17 @@ class DeviceImpl: public ObjObserver<Device>, public InstObserver {
     }
 
     private:
-	void objectRestore(Object<Device> &object) override {
+	void objectRestore(Object &object) override {
 		cout << "Device: objectRestore: " << (ID_T)object.getObjectID() << endl;
 		object.clear();
         init(object);
 	}
 
-    void instanceCreated(Object<Device> &object, ID_T instanceId) override {
+    void instanceCreated(Object &object, ID_T instanceId) override {
         cout << "Device: instanceCreated: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
     }
 
-    void instanceDeleting(Object<Device> &object, ID_T instanceId) override {
+    void instanceDeleting(Object &object, ID_T instanceId) override {
 		cout << "Device: instanceDeleting: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
 	}
 

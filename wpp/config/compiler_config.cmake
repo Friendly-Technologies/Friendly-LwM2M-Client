@@ -43,10 +43,10 @@ endif()
 
 # Exceptions comiler options
 if (BUILD_WITH_EXCEPTIONS)
-    message(STATUS "Exceptions is supported")
+    message(STATUS "Exceptions are supported")
     add_compile_options(-fexceptions)
 else()
-    message(STATUS "Exceptions is not supported")
+    message(STATUS "Exceptions are not supported")
     add_compile_options(-fno-exceptions)
 endif()
 

@@ -25,21 +25,21 @@ bool WppRegistry::isObjRegistered(Lwm2mObject &object) {
 
 /* The start of the prototypes of the mandatory objects. */
 # if OBJ_M_3_DEVICE_V12
-Object <Device> & WppRegistry::device() {
-	if (!Object <Device>::isCreated()) Object <Device>::create(_context, DEVICE_OBJ_INFO);
-	return *Object <Device>::object();
+Object<Device> & WppRegistry::device() {
+	if (!Object<Device>::isCreated()) Object<Device>::create(_context, DEVICE_OBJ_INFO);
+	return *Object<Device>::object();
 }
 # endif
 # if OBJ_M_0_LWM2M_SECURITY_V11
-Object <Lwm2mSecurity> & WppRegistry::lwm2mSecurity() {
-	if (!Object <Lwm2mSecurity>::isCreated()) Object <Lwm2mSecurity>::create(_context, LWM2M_SECURITY_OBJ_INFO);
-	return *Object <Lwm2mSecurity>::object();
+Object<Lwm2mSecurity> & WppRegistry::lwm2mSecurity() {
+	if (!Object<Lwm2mSecurity>::isCreated()) Object<Lwm2mSecurity>::create(_context, LWM2M_SECURITY_OBJ_INFO);
+	return *Object<Lwm2mSecurity>::object();
 }
 # endif
 # if OBJ_M_1_LWM2M_SERVER_V11
-Object <Lwm2mServer> & WppRegistry::lwm2mServer() {
-	if (!Object <Lwm2mServer>::isCreated()) Object <Lwm2mServer>::create(_context, LWM2M_SERVER_OBJ_INFO);
-	return *Object <Lwm2mServer>::object();
+Object<Lwm2mServer> & WppRegistry::lwm2mServer() {
+	if (!Object<Lwm2mServer>::isCreated()) Object<Lwm2mServer>::create(_context, LWM2M_SERVER_OBJ_INFO);
+	return *Object<Lwm2mServer>::object();
 }
 # endif
 /* The end of the prototypes of the mandatory objects. */
@@ -49,11 +49,14 @@ Object <Lwm2mServer> & WppRegistry::lwm2mServer() {
 #if OPTIONAL_ACL_OBJ
 #endif
 
-#if OPTIONAL_CONN_MONITORING_OBJ
-#endif
-
 #if OPTIONAL_FIRMWARE_UPD_OBJ
 #endif
+# if OBJ_O_4_CONNECTIVITY_MONITORING_V13
+Object<ConnectivityMonitoring> & WppRegistry::connectivityMonitoring() {
+	if (!Object<ConnectivityMonitoring>::isCreated()) Object<ConnectivityMonitoring>::create(_context, CONNECTIVITY_MONITORING_OBJ_INFO);
+	return *Object<ConnectivityMonitoring>::object();
+}
+# endif
 /* The end of the prototypes of the optional objects. */
 /* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE! */
 

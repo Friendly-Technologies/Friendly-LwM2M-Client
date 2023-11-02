@@ -1,0 +1,22 @@
+{
+    "object_data": {
+        "is_mandatory": "True",
+        "name": "LwM2M Server",
+        "id": "1",
+        "lwm2m_version": "1.1",
+        "version": "1.1"
+    },
+    "object_names": {
+        "class": "Lwm2mServer",
+        "camelcase": "lwm2mServer",
+        "define": "OBJ_M_1_LWM2M_SERVER_V11",
+        "up_underline": "LWM2M_SERVER"
+    },
+    "object_files": {
+        "impl_h": "Lwm2mServer.h",
+        "impl_cpp": "Lwm2mServer.cpp",
+        "config": "Lwm2mServerConfig.h",
+        "info": "Lwm2mServerInfo.h",
+        "cmake": "CMakeLists.txt"
+    }
+}

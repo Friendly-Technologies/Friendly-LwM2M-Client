@@ -28,6 +28,10 @@ STOP_STRING_CNFG_CMK = ["# The end of the options of the mandatory objects.",
                         "# The end of the options of the optional objects."]
 STOP_STRING_OBJ_ID = ["/* The end of the IDs of the mandatory objects. */",
                       "/* The end of the IDs of the optional objects. */"]
+STOP_STRING_REG_CPP_INIT = ["/* ---------- Creating mandatory objects blok end ---------- */",
+                            "/* ---------- Creating optional objects blok end ---------- */"]
+STOP_STRING_REG_CPP_METHOD = ["/* The end of the prototypes of the mandatory objects. */",
+                              "/* The end of the prototypes of the optional objects. */"]
 STOP_STRING_REG_PRT = ["/* The end of the prototypes of the mandatory objects. */",
                        "/* The end of the prototypes of the optional objects. */"]
 STOP_STRING_REG_INCL = ["/* The end of the includes of the mandatory objects. */",
@@ -49,7 +53,7 @@ KEY_DICT_OBJ_META_VER_LWM2M = "lwm2m_version"
 KEY_DICT_OBJ_META_VER = "version"
 
 TYPE_OPERATION = "ResOp"
-TYPE_OBJECT = "Object"
+TYPE_OBJECT = "ObjectImpl"
 
 KEYS_OBJ_DATA = {"name": "Name",
                  "description": "Description1",

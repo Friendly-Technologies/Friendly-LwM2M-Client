@@ -3,6 +3,7 @@ import functions as func
 
 import sys
 from optparse import OptionParser
+import json
 
 
 class ObjectRemover:
@@ -30,7 +31,6 @@ class ObjectRemover:
 
             if add_line:
                 new_content += line + "\n"
-
             else:   # check if all that must be deleted is already deleted:
                 if line_to_check[:6] in ["#endif", "endif("]:
                     add_line = True
@@ -49,8 +49,7 @@ class ObjectRemover:
         errcode, data_str = func.get_file_content(f"{self.object_folder_path}/{const.FILE_OBJ_METADATA}")
         if not errcode:
             return False
-
-        data_dict = eval(data_str)
+        data_dict = json.loads(data_str)
         dict_obj_meta = data_dict["object_names"]["define"]
         return dict_obj_meta
 

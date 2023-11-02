@@ -6,6 +6,8 @@ namespace wpp {
 
 WppRegistry::WppRegistry(lwm2m_context_t &context): _context(context) {
     WPP_LOGD(TAG_WPP_REG, "Creating registry instance");
+	
+	/* ---------- Creating mandatory objects blok begin ---------- */
 	# if OBJ_M_3_DEVICE_V12
 	_objects.push_back(new ObjectImpl<Device>(_context, DEVICE_OBJ_INFO));
 	# endif
@@ -15,9 +17,13 @@ WppRegistry::WppRegistry(lwm2m_context_t &context): _context(context) {
 	# if OBJ_M_1_LWM2M_SERVER_V11
 	_objects.push_back(new ObjectImpl<Lwm2mServer>(_context, LWM2M_SERVER_OBJ_INFO));
 	#endif
+	/* ---------- Creating mandatory objects blok end ---------- */
+
+	/* ---------- Creating optional objects blok begin ---------- */
 	# if OBJ_O_4_CONNECTIVITY_MONITORING_V13
 	_objects.push_back(new ObjectImpl<ConnectivityMonitoring>(_context, CONNECTIVITY_MONITORING_OBJ_INFO));
 	#endif
+	/* ---------- Creating optional objects blok end ---------- */
 }
 
 WppRegistry::~WppRegistry() {

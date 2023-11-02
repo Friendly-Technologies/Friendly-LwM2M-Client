@@ -175,18 +175,14 @@ class ObjectGenerator:
 
     def get_content_resourcesInit_f(self):
         content = f"""void __CLASS_NAME__::resourcesInit() {{\n""" \
-                  f"""\t/* --------------- Code_cpp block 9 start --------------- */\n""" \
-                  f"""// TODO: The most part of the server resources logic must be implemented\n""" \
-                  f"""// on wakaama core level, because the Server is only a state holder and\n""" \
-                  f"""// at this level, it does not have the required information for doing\n""" \
-                  f"""// sings described in the documentation.\n\n"""
+                  f"""\t/* --------------- Code_cpp block 9 start --------------- */\n"""
         for resource in self.resources_data:
             if resource[ "Mandatory"] == "MANDATORY":
                 # content += f"""\t\t#if {resource["Name"]}_{resource["Mandatory"]}\n\t"""
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].set( /* TODO */ );\n"
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n\n"
                 content += f"\tresource({resource['Name']}_{resource['ID']})->set( /* TODO */ );\n"
-                content += f"\tresource({resource['Name']}_{resource['ID']})->setDataVerifier( /* TODO */ );\n\n"
+                content += f"\tresource({resource['Name']}_{resource['ID']})->setDataVerifier( /* TODO */ );\n"
                 # content += f"\t\t#endif\n\n"
             if resource["Mandatory"] == "OPTIONAL":
                 content += f"""\t#if {resource["Define"]}\n"""
@@ -194,7 +190,7 @@ class ObjectGenerator:
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n"
                 content += f"\tresource({resource['Name']}_{resource['ID']})->set( /* TODO */ );\n"
                 content += f"\tresource({resource['Name']}_{resource['ID']})->setDataVerifier( /* TODO */ );\n"
-                content += f"\t#endif\n\n"
+                content += f"\t#endif\n"
         content += f"""\t/* --------------- Code_cpp block 9 end --------------- */\n}}"""
 
         return content

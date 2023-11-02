@@ -7,6 +7,7 @@ import object_integrator
 import os
 import re
 from optparse import OptionParser
+import json
 
 RES_DEF_PATTERN = r'#define RES_\d+_\d+_'
 RES_DEF_PARTS_CNT = 3
@@ -41,12 +42,12 @@ class ObjectChanger:
             if not errcode:
                 print(f'{self.log_tag} The "{file_path}" file not found. Operation interrupted')
                 return False
-            datas.append(content)
-
+            datas.append(json.loads(content))
+            
         # parse, pack and save object_files-dict to Class-field:
         try:
-            relations["old"] = eval(datas[0])[const.KEY_DICT_OBJ_FILES]
-            relations["new"] = eval(datas[1])[const.KEY_DICT_OBJ_FILES]
+            relations["old"] = datas[0][const.KEY_DICT_OBJ_FILES]
+            relations["new"] = datas[1][const.KEY_DICT_OBJ_FILES]
             self.user_codes_relations = relations
             return True
 
@@ -86,10 +87,10 @@ class ObjectChanger:
         for line in old_content.split("\n"):
             if re.search("block \d start", line):
                 new_content += line + "\n"
+                add_flag = False
                 if file_user_code_dict[counter] == "":
                     counter += 1
                     continue
-                add_flag = False
                 new_content += file_user_code_dict[counter]
                 counter += 1
             if re.search("block \d end", line):

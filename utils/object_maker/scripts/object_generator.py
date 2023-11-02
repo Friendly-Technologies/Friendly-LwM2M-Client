@@ -142,32 +142,30 @@ class ObjectGenerator:
         x.align = "l"
 
         for resource_xml in resources_list_xml:
-            resource_name = resource_xml['Name']
-            resource_id = resource_xml['ID']
+            resource_name = resource_xml[const.KEYS_OBJ_DATA['name']]
+            resource_id = resource_xml[const.KEYS_OBJ_DATA['res_id']]
             # postfix = "M" if resource_xml['Mandatory'] == "MANDATORY" else "O"
 
             # fill the Resources' enum:
-            resource_define = resource_xml['Define']
+            resource_define = resource_xml[const.KEYS_OBJ_DATA['res_define']]
             resource = f"{resource_name}_{resource_id}"
 
-            if resource_xml['Mandatory'] != "MANDATORY":
-                resources_enum += f"\t\t#if {resource_define}\n"
-            resources_enum += f"\t\t{resource} = {resource_xml['ID']},\n"
-            if resource_xml['Mandatory'] != "MANDATORY":
-                resources_enum += f"\t\t#endif\n"
+            resource_enum = f"\t\t{resource} = {resource_xml[ const.KEYS_OBJ_DATA['res_id']]},\n"
+            resource_map = [f"*TAB*{{{resource},",
+                            self.parse_operation(resource_xml[const.KEYS_OBJ_DATA['operations']]),
+                            f"IS_SINGLE::{resource_xml[const.KEYS_OBJ_DATA['is_multiple']]},",
+                            f"IS_MANDATORY::{resource_xml[const.KEYS_OBJ_DATA['is_mandatory']]},",
+                            f"{self.parse_resource_data_type(resource_xml[const.KEYS_OBJ_DATA['type']])} }},"]
 
-            # fill the vector <ID_T, Resource> table:
-            if resource_xml['Mandatory'] != "MANDATORY":
+            # wrap into "#if-directive" if the resource is not mandatory:
+            if resource_xml[const.KEYS_OBJ_DATA['is_mandatory']] != "MANDATORY":
+                resources_enum += f"\t\t#if {resource_define}\n{resource_enum}\t\t#endif\n"
                 x.add_row([f"*TAB*#if {resource_define}", "", "", "", ""])
-
-            x.add_row([f"*TAB*{{{resource},",
-                       self.parse_operation(resource_xml['Operations']),
-                       f"IS_SINGLE::{resource_xml['MultipleInstances']},",
-                       f"IS_MANDATORY::{resource_xml['Mandatory']},",
-                       f"{self.parse_resource_data_type(resource_xml['Type'])} }},"])
-
-            if resource_xml['Mandatory'] != "MANDATORY":
+                x.add_row(resource_map)
                 x.add_row([f"*TAB*#endif", "", "", "", ""])
+            else:
+                resources_enum += resource_enum
+                x.add_row(resource_map)
 
         resources_map = str(x).replace("*TAB*", "\t\t")
         # TODO: fix next line by PrettyTable features!
@@ -175,27 +173,27 @@ class ObjectGenerator:
 
         return resources_enum, resources_map
 
-    def get_content_resourcesInit_f(self, resources_list_xml):
+    def get_content_resourcesInit_f(self):
         content = f"""void __CLASS_NAME__::resourcesInit() {{\n""" \
                   f"""\t/* --------------- Code_cpp block 9 start --------------- */\n""" \
                   f"""// TODO: The most part of the server resources logic must be implemented\n""" \
                   f"""// on wakaama core level, because the Server is only a state holder and\n""" \
                   f"""// at this level, it does not have the required information for doing\n""" \
                   f"""// sings described in the documentation.\n\n"""
-        for resource in resources_list_xml:
-            if resource["Mandatory"] == "MANDATORY":
+        for resource in self.resources_data:
+            if resource[ "Mandatory"] == "MANDATORY":
                 # content += f"""\t\t#if {resource["Name"]}_{resource["Mandatory"]}\n\t"""
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].set( /* TODO */ );\n"
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n\n"
-                content += f"\t+resource({resource['Name']}_{resource['ID']})->set( /* TODO */ );\n"
-                content += f"\t+resource({resource['Name']}_{resource['ID']})->setDataVerifier( /* TODO */ );\n\n"
+                content += f"\tresource({resource['Name']}_{resource['ID']})->set( /* TODO */ );\n"
+                content += f"\tresource({resource['Name']}_{resource['ID']})->setDataVerifier( /* TODO */ );\n\n"
                 # content += f"\t\t#endif\n\n"
             if resource["Mandatory"] == "OPTIONAL":
                 content += f"""\t#if {resource["Define"]}\n"""
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].set( /* TODO */ );\n"
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n"
-                content += f"\t-resource({resource['Name']}_{resource['ID']})->set( /* TODO */ );\n"
-                content += f"\t-resource({resource['Name']}_{resource['ID']})->setDataVerifier( /* TODO */ );\n"
+                content += f"\tresource({resource['Name']}_{resource['ID']})->set( /* TODO */ );\n"
+                content += f"\tresource({resource['Name']}_{resource['ID']})->setDataVerifier( /* TODO */ );\n"
                 content += f"\t#endif\n\n"
         content += f"""\t/* --------------- Code_cpp block 9 end --------------- */\n}}"""
 
@@ -272,7 +270,7 @@ class ObjectGenerator:
         data_str_cpp = data_str_cpp.replace("__F_USER_OPERATION_NOTIFIER__",
                                             self.get_content_userOperationNotifier())
         data_str_cpp = data_str_cpp.replace("__F_RESOURCE_INIT__",
-                                            self.get_content_resourcesInit_f(self.resources_data))
+                                            self.get_content_resourcesInit_f())
         data_str_cpp = data_str_cpp.replace("__CLASS_NAME__", self.object_names["obj_name_class"])
         data_str_cpp = data_str_cpp.replace("__RESOURCES_TABLE__", resources_map)
 
@@ -324,7 +322,7 @@ class ObjectGenerator:
     def generate_obj_integration_data(self):
         dictionary = {}
 
-        obj_dict = {const.KEY_DICT_OBJ_META_MANDAT: "True" if self.object_data[const.KEYS_OBJ_DATA["is_mandatory"]] else "False",
+        obj_dict = {const.KEY_DICT_OBJ_META_MANDAT: self.object_data[const.KEYS_OBJ_DATA["is_mandatory"]],
                     const.KEY_DICT_OBJ_META_NAME: self.object_data[const.KEYS_OBJ_DATA["name"]],
                     const.KEY_DICT_OBJ_META_ID: self.object_data[const.KEYS_OBJ_DATA["id"]],
                     const.KEY_DICT_OBJ_META_VER_LWM2M: self.object_data[const.KEYS_OBJ_DATA["lwm2m_version"]],

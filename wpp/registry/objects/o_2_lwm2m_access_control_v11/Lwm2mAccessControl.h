@@ -32,11 +32,13 @@ public:
 
 	#if RES_2_2
 	enum ACL: uint8_t {
-		LSB_READ = 0,		// Read, Observe, Write-Attributes
-		LSB_WRITE = 1,
-		LSB_EXEC = 2,
-		LSB_DELETE = 3,
-		LSB_CREATE = 4,
+		R_O_W_ATTR = 1,
+		WRITE = 2,
+		EXECUTE = 4,
+		DELETE = 8,
+		CREATE = 16,
+		ALL_RIGHTS = R_O_W_ATTR | WRITE | EXECUTE | DELETE | CREATE,
+		ACL_MAX,
 	};
 	#endif
 

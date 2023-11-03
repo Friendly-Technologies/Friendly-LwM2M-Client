@@ -19,7 +19,6 @@
 #define AC_OBJ_INST_ID_MAX ID_T_MAX_VAL
 #if RES_2_2
 #define ACL_MIN 0
-#define ACL_MAX 31
 #endif
 #define AC_OWNER_MIN 0
 #define AC_OWNER_MAX ID_T_MAX_VAL

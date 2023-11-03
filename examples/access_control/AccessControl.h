@@ -19,9 +19,9 @@ class AccessControl: public ObjObserver, public InstObserver {
         Instance *accssCtrl = accssCtrlObj.createInstance();
         accssCtrl->subscribe(this);
 
-        // accssCtrl->set();
-        // accssCtrl->set();
-        // accssCtrl->set();
+        accssCtrl->set(wpp::Lwm2mAccessControl::OBJECT_ID_0, INT_T(35464));
+        accssCtrl->set(wpp::Lwm2mAccessControl::OBJECT_INSTANCE_ID_1, INT_T(35464));
+        accssCtrl->set(wpp::Lwm2mAccessControl::ACCESS_CONTROL_OWNER_3, INT_T(35464));
 	}
 
 	void objectRestore(Object &object) override {

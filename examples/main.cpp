@@ -15,6 +15,9 @@
 #if OBJ_O_4_CONNECTIVITY_MONITORING_V13
 #include "ConnectivityMonitoring.h"
 #endif
+#if OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
+#include "AccessControl.h"
+#endif
 
 #include "WppClient.h"
 #include "WppRegistry.h"
@@ -37,6 +40,9 @@ int main() {
 	DeviceImpl device;
 	#if OBJ_O_4_CONNECTIVITY_MONITORING_V13
 	CnnctvtMonnImpl conn_mon;
+	#endif
+	#if OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
+	AccessControl accessCtrl;
 	#endif
 
 	// Client initialization
@@ -63,6 +69,11 @@ int main() {
 	cout << endl << "---- Initialization wpp ConnectivityMonitoring ----" << endl;
 	conn_mon.init(registry.connectivityMonitoring());
 	registry.registerObj(registry.connectivityMonitoring());
+	#endif
+	#if OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
+	cout << endl << "---- Initialization wpp AccessControl ----" << endl;
+	accessCtrl.init(registry.lwm2mAccessControl());
+	registry.registerObj(registry.lwm2mAccessControl());
 	#endif
 	
 	// Giving ownership to registry

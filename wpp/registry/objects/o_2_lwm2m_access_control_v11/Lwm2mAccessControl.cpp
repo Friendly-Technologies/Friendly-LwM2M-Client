@@ -15,6 +15,19 @@
 #include "WppLogs.h"
 
 /* --------------- Code_cpp block 0 start --------------- */
+
+#define AC_OBJ_ID_MIN 1
+#define AC_OBJ_ID_MAX 65534
+#define AC_OBJ_INST_ID_MIN 0
+#define AC_OBJ_INST_ID_MAX 65535
+#if RES_2_2
+#define ACL_MIN 0
+#define ACL_MAX 31
+#endif
+#define AC_OWNER_MIN 0
+#define AC_OWNER_MAX 65535
+
+
 /* --------------- Code_cpp block 0 end --------------- */
 
 #define TAG "Lwm2mAccessControl"
@@ -115,16 +128,21 @@ void Lwm2mAccessControl::resourcesCreate() {
 
 void Lwm2mAccessControl::resourcesInit() {
 	/* --------------- Code_cpp block 9 start --------------- */
-	resource(OBJECT_ID_0)->set( /* TODO */ );
-	resource(OBJECT_ID_0)->setDataVerifier( /* TODO */ );
-	resource(OBJECT_INSTANCE_ID_1)->set( /* TODO */ );
-	resource(OBJECT_INSTANCE_ID_1)->setDataVerifier( /* TODO */ );
+	
+	resource(OBJECT_ID_0)->set(INT_T(AC_OBJ_ID_MIN));
+	resource(OBJECT_ID_0)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return AC_OBJ_ID_MIN <= value && value <= AC_OBJ_ID_MAX; });
+
+	resource(OBJECT_INSTANCE_ID_1)->set(INT_T(AC_OBJ_INST_ID_MIN));
+	resource(OBJECT_INSTANCE_ID_1)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return AC_OBJ_INST_ID_MIN <= value && value <= AC_OBJ_INST_ID_MAX; });
+
 	#if RES_2_2
-	resource(ACL_2)->set( /* TODO */ );
-	resource(ACL_2)->setDataVerifier( /* TODO */ );
+	resource(ACL_2)->set(INT_T(ACL_MIN));
+	resource(ACL_2)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return ACL_MIN <= value && value < ACL_MAX; });
 	#endif
-	resource(ACCESS_CONTROL_OWNER_3)->set( /* TODO */ );
-	resource(ACCESS_CONTROL_OWNER_3)->setDataVerifier( /* TODO */ );
+
+	resource(ACCESS_CONTROL_OWNER_3)->set(INT_T(AC_OWNER_MIN));
+	resource(ACCESS_CONTROL_OWNER_3)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return AC_OWNER_MIN <= value && value <= AC_OWNER_MAX; });
+
 	/* --------------- Code_cpp block 9 end --------------- */
 }
 

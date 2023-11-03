@@ -35,6 +35,9 @@
 #if OBJ_O_4_CONNECTIVITY_MONITORING_V13
 #include "o_4_connectivity_monitoring_v13/ConnectivityMonitoring.h"
 #endif
+#if OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
+#include "o_2_lwm2m_access_control_v11/Lwm2mAccessControl.h"
+#endif
 /* ---------- Optional objects include blok end ---------- */
 
 namespace wpp {
@@ -77,6 +80,9 @@ public:
 	#endif
 	#if OBJ_O_4_CONNECTIVITY_MONITORING_V13
 	ObjectImpl<ConnectivityMonitoring> & connectivityMonitoring();
+	#endif
+	#if OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
+	ObjectImpl<Lwm2mAccessControl> & lwm2mAccessControl();
 	#endif
 	/* ---------- Optional objects prototype blok end ---------- */
 

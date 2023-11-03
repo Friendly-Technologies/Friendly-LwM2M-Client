@@ -15,9 +15,9 @@ public:
 	 * and execute of instance resources initiated by server.
 	 */
 	void subscribe(InstObserver *observer) {
-    if (!observer) return;
-    if (std::find(_observers.begin(), _observers.end(), observer) == _observers.end()) 
-        _observers.push_back(observer);
+        if (!observer) return;
+        if (std::find(_observers.begin(), _observers.end(), observer) == _observers.end()) 
+            _observers.push_back(observer);
     }
 	void unsubscribe(InstObserver *observer) {
         _observers.erase(std::find(_observers.begin(), _observers.end(), observer));

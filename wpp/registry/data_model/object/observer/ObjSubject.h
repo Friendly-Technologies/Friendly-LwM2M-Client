@@ -21,9 +21,9 @@ public:
 	 * and deletion of object instances initiated by server.
 	 */
 	void subscribe(ObjObserver *observer) {
-    if (!observer) return;
-    if (std::find(_observers.begin(), _observers.end(), observer) == _observers.end()) 
-        _observers.push_back(observer);
+        if (!observer) return;
+        if (std::find(_observers.begin(), _observers.end(), observer) == _observers.end()) 
+            _observers.push_back(observer);
     }
 	void unsubscribe(ObjObserver *observer) {
         _observers.erase(std::find(_observers.begin(), _observers.end(), observer));

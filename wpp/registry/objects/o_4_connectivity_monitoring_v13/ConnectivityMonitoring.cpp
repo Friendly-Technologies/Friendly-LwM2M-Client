@@ -6,9 +6,6 @@
 
 #include "o_4_connectivity_monitoring_v13/ConnectivityMonitoring.h"
 
-#include <unordered_map>
-#include <iostream>
-
 #include "Resource.h"
 #include "ResOp.h"
 #include "types.h"

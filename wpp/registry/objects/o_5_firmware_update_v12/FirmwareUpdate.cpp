@@ -6,9 +6,6 @@
 
 #include "o_5_firmware_update_v12/FirmwareUpdate.h"
 
-#include <unordered_map>
-#include <iostream>
-
 #include "Resource.h"
 #include "ResOp.h"
 #include "types.h"

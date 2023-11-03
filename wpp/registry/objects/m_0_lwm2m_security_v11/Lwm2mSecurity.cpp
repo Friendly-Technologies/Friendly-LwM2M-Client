@@ -6,9 +6,6 @@
 
 #include "m_0_lwm2m_security_v11/Lwm2mSecurity.h"
 
-#include <unordered_map>
-#include <iostream>
-
 #include "Resource.h"
 #include "ResOp.h"
 #include "types.h"

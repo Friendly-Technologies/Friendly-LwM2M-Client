@@ -6,9 +6,6 @@
 
 #include "m_1_lwm2m_server_v11/Lwm2mServer.h"
 
-#include <unordered_map>
-#include <iostream>
-
 #include "Resource.h"
 #include "ResOp.h"
 #include "types.h"

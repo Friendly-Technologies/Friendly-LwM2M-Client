@@ -6,17 +6,24 @@
 #include "ObjObserver.h"
 #include "InstObserver.h"
 
+#include <ifaddrs.h>
+
 using namespace wpp;
 using namespace std;
 
 class ConnectivityMonitoringImpl: public ObjObserver, public InstObserver {
 	public:
-	void init(Object &connectivityMonitoringObj) {
-		connectivityMonitoringObj.subscribe(this);
-        Instance *connectivityMonitoring = connectivityMonitoringObj.createInstance();
-        connectivityMonitoring->subscribe(this);
+	void init(Object &connMonObj) {
+		connMonObj.subscribe(this);
+        Instance *connMon = connMonObj.createInstance();
+        connMon->subscribe(this);
 
-		cout << "ConnectivityMonitoringImpl: instance initialized" << endl;
+        STRING_T ip;
+        getIpAddress(&ip);
+        connMon->set(wpp::ConnectivityMonitoring::NETWORK_BEARER_0,
+                     INT_T(wpp::ConnectivityMonitoring::NtwrkBrr::ETHERNET));
+        connMon->set(wpp::ConnectivityMonitoring::RADIO_SIGNAL_STRENGTH_2, INT_T(-20));
+        connMon->set(wpp::ConnectivityMonitoring::IP_ADDRESSES_4, ip);
 	}
 
 	void objectRestore(Object &object) override {
@@ -47,6 +54,23 @@ class ConnectivityMonitoringImpl: public ObjObserver, public InstObserver {
 
     void resourcesReplaced(Instance &inst) override {
         cout << "Device: resourcesReplaced: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << endl;
+    }
+
+    void getIpAddress(string* ip) {
+        struct ifaddrs *interfaces = NULL;
+        struct ifaddrs *temp_addr = NULL;
+        // retrieve the current interfaces - returns 0 on success
+        if (getifaddrs(&interfaces) == 0) {
+            // Loop through linked list of interfaces
+            temp_addr = interfaces;
+            while (temp_addr != NULL) {
+                if (temp_addr->ifa_addr->sa_family == AF_INET && strcmp(temp_addr->ifa_name, "en0")) {
+                    *ip = inet_ntoa(((struct sockaddr_in*)temp_addr->ifa_addr)->sin_addr);
+                }
+                temp_addr = temp_addr->ifa_next;
+            }
+        }
+        freeifaddrs(interfaces);  // free memory
     }
 };
 

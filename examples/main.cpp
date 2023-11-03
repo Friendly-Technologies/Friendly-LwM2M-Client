@@ -34,7 +34,7 @@ int main() {
 	SecurityImpl security;
 	DeviceImpl device;
 	#if OBJ_O_4_CONNECTIVITY_MONITORING_V13
-	ConnectivityMonitoringImpl conn_monitoring;
+	ConnectivityMonitoringImpl conn_mon;
 	#endif
 
 	// Client initialization
@@ -59,10 +59,9 @@ int main() {
 	device.init(registry.device());
 	#if OBJ_O_4_CONNECTIVITY_MONITORING_V13
 	cout << endl << "---- Initialization wpp ConnectivityMonitoring ----" << endl;
-	conn_monitoring.init(registry.connectivityMonitoring());
+	conn_mon.init(registry.connectivityMonitoring());
+	registry.registerObj(registry.connectivityMonitoring());
 	#endif
-
-	return 0;
 	
 	// Giving ownership to registry
 	client->giveOwnership();

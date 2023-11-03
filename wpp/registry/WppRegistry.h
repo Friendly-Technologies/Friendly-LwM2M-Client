@@ -29,9 +29,6 @@
 #if OPTIONAL_ACL_OBJ
 #include "acl/Acl.h"
 #endif
-#if OPTIONAL_FIRMWARE_UPD_OBJ
-#include "firmware_upd/FirmwareUpd.h"
-#endif
 #if OBJ_O_4_CONNECTIVITY_MONITORING_V13
 #include "o_4_connectivity_monitoring_v13/ConnectivityMonitoring.h"
 #endif
@@ -74,9 +71,6 @@ public:
 	/* ---------- Optional objects prototype blok begin ---------- */
 	#if OPTIONAL_ACL_OBJ
 	ObjectImpl<Acl>& acl();
-	#endif
-	#if OPTIONAL_FIRMWARE_UPD_OBJ
-	ObjectImpl<FirmwareUpd>& firmwareUpd();
 	#endif
 	#if OBJ_O_4_CONNECTIVITY_MONITORING_V13
 	ObjectImpl<ConnectivityMonitoring> & connectivityMonitoring();

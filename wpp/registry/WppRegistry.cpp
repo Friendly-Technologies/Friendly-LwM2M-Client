@@ -82,9 +82,6 @@ ObjectImpl<Lwm2mSecurity> & WppRegistry::lwm2mSecurity() {
 /* ---------- Optional objects method blok begin ---------- */
 #if OPTIONAL_ACL_OBJ
 #endif
-
-#if OPTIONAL_FIRMWARE_UPD_OBJ
-#endif
 # if OBJ_O_4_CONNECTIVITY_MONITORING_V13
 ObjectImpl<ConnectivityMonitoring> & WppRegistry::connectivityMonitoring() {
 	return *static_cast<ObjectImpl<ConnectivityMonitoring>*>(object(OBJ_ID::CONNECTIVITY_MONITORING));

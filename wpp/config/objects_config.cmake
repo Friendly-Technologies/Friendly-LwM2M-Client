@@ -26,6 +26,10 @@ option(OBJ_O_4_CONNECTIVITY_MONITORING_V13 "Include optional ConnectivityMonitor
 if (OBJ_O_4_CONNECTIVITY_MONITORING_V13)
 	set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_O_4_CONNECTIVITY_MONITORING_V13=1)
 endif()
+option(OBJ_O_2_LWM2M_ACCESS_CONTROL_V11 "Include optional Lwm2mAccessControl object in the build" OFF)
+if (OBJ_O_2_LWM2M_ACCESS_CONTROL_V11)
+	set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_O_2_LWM2M_ACCESS_CONTROL_V11=1)
+endif()
 # ---------- Optional objects config blok end ----------
 
 # Share defines with target

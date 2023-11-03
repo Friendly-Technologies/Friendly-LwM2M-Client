@@ -12,7 +12,9 @@
 #include "Security.h"
 #include "Device.h"
 #include "Connection.h"
+#if OBJ_O_4_CONNECTIVITY_MONITORING_V13
 #include "ConnectivityMonitoring.h"
+#endif
 
 #include "WppClient.h"
 #include "WppRegistry.h"
@@ -34,7 +36,7 @@ int main() {
 	SecurityImpl security;
 	DeviceImpl device;
 	#if OBJ_O_4_CONNECTIVITY_MONITORING_V13
-	ConnectivityMonitoringImpl conn_mon;
+	CnnctvtMonnImpl conn_mon;
 	#endif
 
 	// Client initialization

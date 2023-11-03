@@ -11,7 +11,7 @@
 using namespace wpp;
 using namespace std;
 
-class ConnectivityMonitoringImpl: public ObjObserver, public InstObserver {
+class CnnctvtMonnImpl: public ObjObserver, public InstObserver {
 	public:
 	void init(Object &connMonObj) {
 		connMonObj.subscribe(this);
@@ -27,33 +27,33 @@ class ConnectivityMonitoringImpl: public ObjObserver, public InstObserver {
 	}
 
 	void objectRestore(Object &object) override {
-		cout << "Device: objectRestore: " << (ID_T)object.getObjectID() << endl;
+		cout << "CnnctvtMonnImpl: objectRestore: " << (ID_T)object.getObjectID() << endl;
 		object.clear();
         init(object);
 	}
 
     void instanceCreated(Object &object, ID_T instanceId) override {
-        cout << "Device: instanceCreated: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
+        cout << "CnnctvtMonnImpl: instanceCreated: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
     }
 
     void instanceDeleting(Object &object, ID_T instanceId) override {
-		cout << "Device: instanceDeleting: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
+		cout << "CnnctvtMonnImpl: instanceDeleting: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
 	}
 
 	void resourceRead(Instance &inst, const ResLink &resId) override {
-        cout << "Device: resourceRead: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
+        cout << "CnnctvtMonnImpl: resourceRead: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
     }
 
     void resourceWrite(Instance &inst, const ResLink &resId) override {
-        cout << "Device: resourceWrite: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
+        cout << "CnnctvtMonnImpl: resourceWrite: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
     }
 
     void resourceExecute(Instance &inst, const ResLink &resId) override {
-        cout << "Device: resourceExecute: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
+        cout << "CnnctvtMonnImpl: resourceExecute: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
     }
 
     void resourcesReplaced(Instance &inst) override {
-        cout << "Device: resourcesReplaced: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << endl;
+        cout << "CnnctvtMonnImpl: resourcesReplaced: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << endl;
     }
 
     void getIpAddress(string* ip) {

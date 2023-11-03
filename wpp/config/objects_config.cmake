@@ -14,13 +14,13 @@ endif()
 # ---------- Mandatory objects config blok end ----------
 
 # ---------- Optional objects config blok begin ----------
-option(OPTIONAL_ACL_OBJ "Include optional ACL object in the build" OFF)
-if (ACL_OBJ)
-    set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OPTIONAL_ACL_OBJ=1)
-endif()
 option(OBJ_O_4_CONNECTIVITY_MONITORING_V13 "Include optional ConnectivityMonitoring object in the build" ON)
 if (OBJ_O_4_CONNECTIVITY_MONITORING_V13)
 	set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_O_4_CONNECTIVITY_MONITORING_V13=1)
+endif()
+option(OBJ_O_2_LWM2M_ACCESS_CONTROL_V11 "Include optional Lwm2mAccessControl object in the build" ON)
+if (OBJ_O_2_LWM2M_ACCESS_CONTROL_V11)
+	set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_O_2_LWM2M_ACCESS_CONTROL_V11=1)
 endif()
 option(OBJ_O_5_FIRMWARE_UPDATE_V12 "Include optional FirmwareUpdate object in the build" ON)
 if (OBJ_O_5_FIRMWARE_UPDATE_V12)

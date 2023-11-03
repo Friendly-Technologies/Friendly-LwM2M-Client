@@ -35,6 +35,9 @@
 #if OBJ_O_4_CONNECTIVITY_MONITORING_V13
 #include "o_4_connectivity_monitoring_v13/ConnectivityMonitoring.h"
 #endif
+#if OBJ_O_5_FIRMWARE_UPDATE_V12
+#include "o_5_firmware_update_v12/FirmwareUpdate.h"
+#endif
 /* ---------- Optional objects include blok end ---------- */
 
 namespace wpp {
@@ -77,6 +80,9 @@ public:
 	#endif
 	#if OBJ_O_4_CONNECTIVITY_MONITORING_V13
 	ObjectImpl<ConnectivityMonitoring> & connectivityMonitoring();
+	#endif
+	#if OBJ_O_5_FIRMWARE_UPDATE_V12
+	ObjectImpl<FirmwareUpdate> & firmwareUpdate();
 	#endif
 	/* ---------- Optional objects prototype blok end ---------- */
 

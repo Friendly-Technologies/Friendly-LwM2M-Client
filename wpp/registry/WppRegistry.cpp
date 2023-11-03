@@ -23,6 +23,9 @@ WppRegistry::WppRegistry(lwm2m_context_t &context): _context(context) {
 	# if OBJ_O_4_CONNECTIVITY_MONITORING_V13
 	_objects.push_back(new ObjectImpl<ConnectivityMonitoring>(_context, CONNECTIVITY_MONITORING_OBJ_INFO));
 	#endif
+	# if OBJ_O_5_FIRMWARE_UPDATE_V12
+	_objects.push_back(new ObjectImpl<FirmwareUpdate>(_context, FIRMWARE_UPDATE_OBJ_INFO));
+	#endif
 	/* ---------- Optional objects init blok end ---------- */
 }
 
@@ -85,6 +88,11 @@ ObjectImpl<Lwm2mSecurity> & WppRegistry::lwm2mSecurity() {
 # if OBJ_O_4_CONNECTIVITY_MONITORING_V13
 ObjectImpl<ConnectivityMonitoring> & WppRegistry::connectivityMonitoring() {
 	return *static_cast<ObjectImpl<ConnectivityMonitoring>*>(object(OBJ_ID::CONNECTIVITY_MONITORING));
+}
+#endif
+# if OBJ_O_5_FIRMWARE_UPDATE_V12
+ObjectImpl<FirmwareUpdate> & WppRegistry::firmwareUpdate() {
+	return *static_cast<ObjectImpl<FirmwareUpdate>*>(object(OBJ_ID::FIRMWARE_UPDATE));
 }
 #endif
 /* ---------- Optional objects method blok end ---------- */

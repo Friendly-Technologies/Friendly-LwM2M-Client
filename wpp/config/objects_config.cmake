@@ -22,9 +22,13 @@ option(OPTIONAL_FIRMWARE_UPD_OBJ "Include optional Firmware update in the build"
 if (OPTIONAL_FIRMWARE_UPD_OBJ)
     set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OPTIONAL_FIRMWARE_UPD_OBJ=1)
 endif()
-option(OBJ_O_4_CONNECTIVITY_MONITORING_V13 "Include optional ConnectivityMonitoring object in the build" OFF)
+option(OBJ_O_4_CONNECTIVITY_MONITORING_V13 "Include optional ConnectivityMonitoring object in the build" ON)
 if (OBJ_O_4_CONNECTIVITY_MONITORING_V13)
 	set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_O_4_CONNECTIVITY_MONITORING_V13=1)
+endif()
+option(OBJ_O_5_FIRMWARE_UPDATE_V12 "Include optional FirmwareUpdate object in the build" ON)
+if (OBJ_O_5_FIRMWARE_UPDATE_V12)
+	set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_O_5_FIRMWARE_UPDATE_V12=1)
 endif()
 # ---------- Optional objects config blok end ----------
 

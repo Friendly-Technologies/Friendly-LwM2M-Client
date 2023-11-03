@@ -29,6 +29,17 @@ public:
 	};
 
 	/* --------------- Code_h block 1 start --------------- */
+
+	#if RES_2_2
+	enum ACL: uint8_t {
+		LSB_READ = 0,		// Read, Observe, Write-Attributes
+		LSB_WRITE = 1,
+		LSB_EXEC = 2,
+		LSB_DELETE = 3,
+		LSB_CREATE = 4,
+	};
+	#endif
+
 	/* --------------- Code_h block 1 end --------------- */
 
 public:

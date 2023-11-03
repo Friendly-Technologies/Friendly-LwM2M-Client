@@ -22,6 +22,14 @@ class AccessControl: public ObjObserver, public InstObserver {
         accssCtrl->set(wpp::Lwm2mAccessControl::OBJECT_ID_0, INT_T(35464));
         accssCtrl->set(wpp::Lwm2mAccessControl::OBJECT_INSTANCE_ID_1, INT_T(35464));
         accssCtrl->set(wpp::Lwm2mAccessControl::ACCESS_CONTROL_OWNER_3, INT_T(35464));
+
+        #if RES_2_2
+        uint8_t acl = 0;
+        acl |= (1 << wpp::Lwm2mAccessControl::ACL::LSB_READ);
+        acl |= (1 << wpp::Lwm2mAccessControl::ACL::LSB_WRITE);
+        acl |= (1 << wpp::Lwm2mAccessControl::ACL::LSB_EXEC);
+        accssCtrl->set(wpp::Lwm2mAccessControl::ACL_2, INT_T(acl));
+        #endif
 	}
 
 	void objectRestore(Object &object) override {

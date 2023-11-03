@@ -6,9 +6,6 @@
 
 #include "o_2_lwm2m_access_control_v11/Lwm2mAccessControl.h"
 
-#include <unordered_map>
-#include <iostream>
-
 #include "Resource.h"
 #include "ResOp.h"
 #include "types.h"
@@ -17,15 +14,15 @@
 /* --------------- Code_cpp block 0 start --------------- */
 
 #define AC_OBJ_ID_MIN 1
-#define AC_OBJ_ID_MAX 65534
+#define AC_OBJ_ID_MAX (ID_T_MAX_VAL-1)
 #define AC_OBJ_INST_ID_MIN 0
-#define AC_OBJ_INST_ID_MAX 65535
+#define AC_OBJ_INST_ID_MAX ID_T_MAX_VAL
 #if RES_2_2
 #define ACL_MIN 0
 #define ACL_MAX 31
 #endif
 #define AC_OWNER_MIN 0
-#define AC_OWNER_MAX 65535
+#define AC_OWNER_MAX ID_T_MAX_VAL
 
 
 /* --------------- Code_cpp block 0 end --------------- */
@@ -70,47 +67,11 @@ void Lwm2mAccessControl::serverOperationNotifier(ResOp::TYPE type, const ResLink
 	observerNotify(*this, resId, type);
 
 	/* --------------- Code_cpp block 7 start --------------- */
-	switch (type) {
-	case ResOp::READ:
-		WPP_LOGD_ARG(TAG, "Server READ -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case ResOp::WRITE_UPD:
-		WPP_LOGD_ARG(TAG, "Server WRITE_UPD -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case ResOp::WRITE_REPLACE_INST:
-		WPP_LOGD_ARG(TAG, "Server WRITE_REPLACE_INST -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case ResOp::WRITE_REPLACE_RES:
-		WPP_LOGD_ARG(TAG, "Server WRITE_REPLACE_RES -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case ResOp::EXECUTE:
-		WPP_LOGD_ARG(TAG, "Server EXECUTE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case ResOp::DISCOVER:
-		WPP_LOGD_ARG(TAG, "Server DISCOVER -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case ResOp::DELETE:
-		WPP_LOGD_ARG(TAG, "Server DELETE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	default: break;
-	}
 	/* --------------- Code_cpp block 7 end --------------- */
 }
 
 void Lwm2mAccessControl::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
 	/* --------------- Code_cpp block 8 start --------------- */
-	switch (type) {
-	case ResOp::READ:
-		WPP_LOGD_ARG(TAG, "User READ -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case ResOp::WRITE_UPD:
-		WPP_LOGD_ARG(TAG, "User WRITE_UPD -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case ResOp::DELETE:
-		WPP_LOGD_ARG(TAG, "User DELETE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	default: break;
-	}
 	/* --------------- Code_cpp block 8 end --------------- */
 }
 

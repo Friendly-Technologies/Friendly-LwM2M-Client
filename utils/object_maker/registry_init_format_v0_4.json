@@ -1,62 +1,64 @@
-objects: [
-	{  
-		id: 0, 					<object id>
-		version: 1.2			<version of the object>
-		inst_create_clb: true, 	<generate callback for notify about creating instance>
-		inst_delete_clb: false, <generate callback for notify about deleteing instance>
-		instances: [			<list of instances that must be created>
-			{
-				id: 0,					<instnace id>
-				res_read_clb: true, 	<generate callback for notify about reading resource>
-				res_write_clb: false, 	<generate callback for notify about writing resource>
-				res_execute_clb: false, <generate callback for notify about executing resource>
-				res_replace_clb: true,	<generate callback for notify about replacing all resource>
-				resources: [			<list of resources that must be created>
-					{					
-						id: 0,			<single resource with type BOOL_T>
-						value: true
-					},
-					{					
-						id: 1,			<single resource with type INT_T/UINT_T/FLOAT_T/TIME_T>
-						value: 123
-					},
-					{					
-						id: 2,			<single resource with type STRING_T>
-						value: "test string"
-					},
-					{					
-						id: 3,			<single resource with type OPAQUE_T>
-						value: "010f55ff"
-					},
-					{					
-						id: 4,			<single resource with type OBJ_LINK_T>
-						value: {
-							obj_id: 2,
-							obj_inst_id:0
-						}
-					},
-					{					
-						id: 5,			<single resource with type CORE_LINK_T>
-						value: "</5>,</4>,</55>;ver=1.9,</55/0>"
-					},
-					{					
-						id: 6,			<single resource with type EXECUTE_T>
-					},
-					{					
-						id: 7,			<multiple resource with any type>
-						value: [		<list of resource instances that must be created>
-							{
-								id: 2, 	<resource instnce id>
-								value: 4223
-							},
-							{...}
-						]
-					},
-					{...}
-				]
-			},
-			{...}
-		]
-	},
-	{...}
-]
+{
+	"objects": [
+		{  
+			"id": 0,
+			"version": 1.2,
+			"inst_create_clb": true,
+			"inst_delete_clb": false,
+			"instances": [
+				{
+					"id": 0,
+					"res_read_clb": true,
+					"res_write_clb": false,
+					"res_execute_clb": false,
+					"res_replace_clb": true,
+					"resources": [
+						{
+							"id": 0,
+							"value": true
+						},
+						{					
+							"id": 1,
+							"value": 123
+						},
+						{					
+							"id": 2,
+							"value": "test string"
+						},
+						{
+							"id": 3,
+							"value": "010f55ff"
+						},
+						{
+							"id": 4,
+							"value": {
+								"obj_id": 2,
+								"obj_inst_id":0
+							}
+						},
+						{					
+							"id": 5,
+							"value": "</5>,</4>,</55>;ver=1.9,</55/0>"
+						},
+						{					
+							"id": 6
+						},
+						{					
+							"id": 7,
+							"value": [
+								{
+									"id": 2,
+									"value": 4223
+								},
+								{}
+							]
+						},
+						{}
+					]
+				},
+				{}
+			]
+		},
+		{}
+	]
+}

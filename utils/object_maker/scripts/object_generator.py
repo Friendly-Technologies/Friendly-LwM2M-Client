@@ -143,7 +143,6 @@ class ObjectGenerator:
         x.align = "l"
 
         for resource_xml in resources_list_xml:
-            print(resource_xml)
             resource_name = resource_xml[const.DATA_KEYS[const.KEY_NAME]]
             resource_id = resource_xml[const.DATA_KEYS[const.KEY_ID_RES]]
             # postfix = "M" if resource_xml['Mandatory'] == "MANDATORY" else "O"

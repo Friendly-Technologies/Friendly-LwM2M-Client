@@ -6,7 +6,7 @@
 namespace wpp {
 
 enum class OBJ_ID: ID_T {
-	/* ---------- Mandatory objects ID blok begin ---------- */
+	/* ---------- Mandatory objects ID block begin ---------- */
 	#ifdef OBJ_M_3_DEVICE_V12
 	DEVICE = 3,
 	#endif
@@ -16,9 +16,9 @@ enum class OBJ_ID: ID_T {
 	#ifdef OBJ_M_0_LWM2M_SECURITY_V11
 	LWM2M_SECURITY = 0,
 	#endif
-	/* ---------- Mandatory objects ID blok end ---------- */
+	/* ---------- Mandatory objects ID block end ---------- */
 
-	/* ---------- Optional objects ID blok begin ---------- */
+	/* ---------- Optional objects ID block begin ---------- */
 	ACL = 2,
 	FIRMWARE_UPD = 5,
 	#ifdef OBJ_O_4_CONNECTIVITY_MONITORING_V13
@@ -30,7 +30,7 @@ enum class OBJ_ID: ID_T {
 	#ifdef OBJ_O_5_FIRMWARE_UPDATE_V12
 	FIRMWARE_UPDATE = 5,
 	#endif
-	/* ---------- Optional objects ID blok end ---------- */
+	/* ---------- Optional objects ID bloсk end ---------- */
 
 	MAX_ID = ID_T_MAX_VAL,
 };

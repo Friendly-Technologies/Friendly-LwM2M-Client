@@ -53,13 +53,13 @@ class ObjectIntegrator:
         dict_obj_meta = data_dict[const.KEY_DICT_OBJ_META]
         dict_obj_names = data_dict[const.KEY_DICT_OBJ_NAMES]
 
-        obj_is_mandatory = dict_obj_meta[const.KEY_DICT_OBJ_META_MANDAT]
-        obj_id = dict_obj_meta[const.KEY_DICT_OBJ_META_ID]
+        obj_is_mandatory = dict_obj_meta[const.KEY_IS_MANDATORY]
+        obj_id = dict_obj_meta[const.KEY_ID_OBJ]
 
-        obj_name_class = dict_obj_names[const.KEY_DICT_OBJ_NAMES_CLASS]
-        obj_name_define = dict_obj_names[const.KEY_DICT_OBJ_NAMES_DEFINE]
-        obj_name_camelcase = dict_obj_names[const.KEY_DICT_OBJ_NAMES_CAMELC]
-        obj_name_underline = dict_obj_names[const.KEY_DICT_OBJ_NAMES_UNDERL]
+        obj_name_class = dict_obj_names[const.KEY_NAME_CLASS]
+        obj_name_define = dict_obj_names[const.KEY_NAME_DEFINE]
+        obj_name_camelcase = dict_obj_names[const.KEY_NAME_CAMELCASE]
+        obj_name_underline = dict_obj_names[const.KEY_NAME_UNDERLINE]
 
         stop_string_obj_id = const.STOP_STRING_OBJ_ID[0] if obj_is_mandatory else const.STOP_STRING_OBJ_ID[1]
         stop_string_cfg_cmk = const.STOP_STRING_CNFG_CMK[0] if obj_is_mandatory else const.STOP_STRING_CNFG_CMK[1]

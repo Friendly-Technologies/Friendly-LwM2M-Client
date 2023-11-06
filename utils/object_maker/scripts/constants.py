@@ -24,50 +24,74 @@ KEY_FILE_IMPL_CONFIG = "config"
 KEY_FILE_IMPL_INFO = "info"
 KEY_FILE_IMPL_CMAKE = "cmake"
 
-STOP_STRING_CNFG_CMK = ["# ---------- Mandatory objects config blok end ----------",
-                        "# ---------- Optional objects config blok end ----------"]
-STOP_STRING_OBJ_ID = ["/* ---------- Mandatory objects ID blok end ---------- */",
-                      "/* ---------- Optional objects ID blok end ---------- */"]
-STOP_STRING_REG_CPP_INIT = ["/* ---------- Mandatory objects init blok end ---------- */",
-                            "/* ---------- Optional objects init blok end ---------- */"]
-STOP_STRING_REG_CPP_METHOD = ["/* ---------- Mandatory objects method blok end ---------- */",
-                              "/* ---------- Optional objects method blok end ---------- */"]
-STOP_STRING_REG_PRT = ["/* ---------- Mandatory objects prototype blok end ---------- */",
-                       "/* ---------- Optional objects prototype blok end ---------- */"]
-STOP_STRING_REG_INCL = ["/* ---------- Mandatory objects include blok end ---------- */",
-                        "/* ---------- Optional objects include blok end ---------- */"]
+STOP_STRING_CNFG_CMK = ["# ---------- Mandatory objects config block end ----------",
+                        "# ---------- Optional objects config block end ----------"]
+STOP_STRING_OBJ_ID = ["/* ---------- Mandatory objects ID block end ---------- */",
+                      "/* ---------- Optional objects ID block end ---------- */"]
+STOP_STRING_REG_CPP_INIT = ["/* ---------- Mandatory objects init block end ---------- */",
+                            "/* ---------- Optional objects init block end ---------- */"]
+STOP_STRING_REG_CPP_METHOD = ["/* ---------- Mandatory objects method block end ---------- */",
+                              "/* ---------- Optional objects method block end ---------- */"]
+STOP_STRING_REG_PRT = ["/* ---------- Mandatory objects prototype block end ---------- */",
+                       "/* ---------- Optional objects prototype block end ---------- */"]
+STOP_STRING_REG_INCL = ["/* ---------- Mandatory objects include block end ---------- */",
+                        "/* ---------- Optional objects include block end ---------- */"]
 
 KEY_DICT_OBJ_META = "object_data"
 KEY_DICT_OBJ_NAMES = "object_names"
 KEY_DICT_OBJ_FILES = "object_files"
 
-KEY_DICT_OBJ_NAMES_CLASS = "class"
-KEY_DICT_OBJ_NAMES_CAMELC = "camelcase"
-KEY_DICT_OBJ_NAMES_DEFINE = "define"
-KEY_DICT_OBJ_NAMES_UNDERL = "up_underline"
+#  old
+# KEY_DICT_OBJ_NAMES_CLASS = "class"
+# KEY_DICT_OBJ_NAMES_CAMELC = "camelcase"
+# KEY_DICT_OBJ_NAMES_DEFINE = "define"
+# KEY_DICT_OBJ_NAMES_UNDERL = "up_underline"
+#
 
-KEY_DICT_OBJ_META_MANDAT = "is_mandatory"
-KEY_DICT_OBJ_META_NAME = "name"
-KEY_DICT_OBJ_META_ID = "id"
-KEY_DICT_OBJ_META_VER_LWM2M = "lwm2m_version"
-KEY_DICT_OBJ_META_VER = "version"
+KEY_NAME_CLASS = "name"
+KEY_NAME_CAMELCASE = "camelcase"
+KEY_NAME_DEFINE = "define"
+KEY_NAME_UNDERLINE = "up_underline"
+KEY_PATH_TO_FOLDER = "name_path_to_folder"
+KEY_NAME_OF_FOLDER = "name_of_folder"
+
+# old
+# KEY_DICT_OBJ_META_MANDAT = "is_mandatory"
+# KEY_DICT_OBJ_META_NAME = "name"
+# KEY_DICT_OBJ_META_ID = "id"
+# KEY_DICT_OBJ_META_VER_LWM2M = "lwm2m_version"
+# KEY_DICT_OBJ_META_VER = "version"
+#
+
+KEY_NAME = "name"
+KEY_DESCRIPTION = "description"
+KEY_ID_OBJ = "obj_id"
+KEY_ID_RES = "res_id"
+KEY_URN = "urn"
+KEY_VER_LWM2M = "lwm2m_version"
+KEY_VER = "version"
+KEY_IS_MULTIPLE = "is_multiple"
+KEY_IS_MANDATORY = "is_mandatory"
+KEY_OPERATIONS = "operations"
+KEY_TYPE = "type"
+KEY_DEFINE_RES = "res_define"
 
 TYPE_OPERATION = "ResOp"
 TYPE_OBJECT = "ObjectImpl"
 
-KEYS_OBJ_DATA = {"name": "Name",
-                 "description": "Description1",
-                 "id": "ObjectID",
-                 "urn": "ObjectURN",
-                 "lwm2m_version": "LWM2MVersion",
-                 "version": "ObjectVersion",
-                 "is_multiple": "MultipleInstances",
-                 "is_mandatory": "Mandatory",
-                 "operations": "Operations",
-                 "type": "Type",
-                 "res_id": "ID",
-                 "res_define": "Define",
-                 }
+DATA_KEYS = {KEY_NAME:          "Name",
+             KEY_DESCRIPTION:   "Description1",
+             KEY_ID_OBJ:        "ObjectID",
+             KEY_URN:           "ObjectURN",
+             KEY_VER_LWM2M:     "LWM2MVersion",
+             KEY_VER:           "ObjectVersion",
+             KEY_IS_MULTIPLE:   "MultipleInstances",
+             KEY_IS_MANDATORY:  "Mandatory",
+             KEY_OPERATIONS:    "Operations",
+             KEY_TYPE:          "Type",
+             KEY_ID_RES:        "ID",
+             KEY_DEFINE_RES:    "Define",
+             }
 
 LWM2M_WEB_RESOURCES = ["raw.githubusercontent.com", "github.com"]
 

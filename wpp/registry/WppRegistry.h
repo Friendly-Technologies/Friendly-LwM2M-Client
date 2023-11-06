@@ -13,7 +13,7 @@
 
 #include "ObjectImpl.h"
 
-/* ---------- Mandatory objects include blok begin ---------- */
+/* ---------- Mandatory objects include block begin ---------- */
 #if OBJ_M_3_DEVICE_V12
 #include "m_3_device_v12/Device.h"
 #endif
@@ -23,9 +23,9 @@
 #if OBJ_M_0_LWM2M_SECURITY_V11
 #include "m_0_lwm2m_security_v11/Lwm2mSecurity.h"
 #endif
-/* ---------- Mandatory objects include blok end ---------- */
+/* ---------- Mandatory objects include block end ---------- */
 
-/* ---------- Optional objects include blok begin ---------- */
+/* ---------- Optional objects include block begin ---------- */
 #if OBJ_O_4_CONNECTIVITY_MONITORING_V13
 #include "o_4_connectivity_monitoring_v13/ConnectivityMonitoring.h"
 #endif
@@ -35,7 +35,7 @@
 #if OBJ_O_5_FIRMWARE_UPDATE_V12
 #include "o_5_firmware_update_v12/FirmwareUpdate.h"
 #endif
-/* ---------- Optional objects include blok end ---------- */
+/* ---------- Optional objects include block end ---------- */
 
 namespace wpp {
 // TODO: Split mandatory and optional registers
@@ -56,7 +56,7 @@ public:
 
 	Object *object(OBJ_ID objId);
 
-	/* ---------- Mandatory objects prototype blok begin ---------- */
+	/* ---------- Mandatory objects prototype block begin ---------- */
 	#if OBJ_M_3_DEVICE_V12
 	ObjectImpl<Device> & device();
 	#endif
@@ -66,9 +66,9 @@ public:
 	#if OBJ_M_0_LWM2M_SECURITY_V11
 	ObjectImpl<Lwm2mSecurity> & lwm2mSecurity();
 	#endif
-	/* ---------- Mandatory objects prototype blok end ---------- */
+	/* ---------- Mandatory objects prototype block end ---------- */
 
-	/* ---------- Optional objects prototype blok begin ---------- */
+	/* ---------- Optional objects prototype block begin ---------- */
 	#if OBJ_O_4_CONNECTIVITY_MONITORING_V13
 	ObjectImpl<ConnectivityMonitoring> & connectivityMonitoring();
 	#endif
@@ -78,7 +78,7 @@ public:
 	#if OBJ_O_5_FIRMWARE_UPDATE_V12
 	ObjectImpl<FirmwareUpdate> & firmwareUpdate();
 	#endif
-	/* ---------- Optional objects prototype blok end ---------- */
+	/* ---------- Optional objects prototype block end ---------- */
 
 private:
 	lwm2m_context_t &_context;

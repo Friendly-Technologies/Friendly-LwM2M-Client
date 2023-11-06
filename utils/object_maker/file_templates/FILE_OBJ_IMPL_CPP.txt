@@ -6,9 +6,6 @@
 
 #include "__OBJ_FOLDER__/__CLASS_NAME__.h"
 
-#include <unordered_map>
-#include <iostream>
-
 #include "Resource.h"
 #include "ResOp.h"
 #include "types.h"

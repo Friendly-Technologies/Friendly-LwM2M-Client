@@ -48,10 +48,10 @@ KEY_DICT_OBJ_FILES = "object_files"
 # KEY_DICT_OBJ_NAMES_UNDERL = "up_underline"
 #
 
-KEY_NAME_CLASS = "name_class"
-KEY_NAME_CAMELCASE = "name_camelcase"
-KEY_NAME_DEFINE = "name_obj_define"
-KEY_NAME_UNDERLINE = "name_up_underline"
+KEY_NAME_CLASS = "name"
+KEY_NAME_CAMELCASE = "camelcase"
+KEY_NAME_DEFINE = "define"
+KEY_NAME_UNDERLINE = "up_underline"
 KEY_PATH_TO_FOLDER = "name_path_to_folder"
 KEY_NAME_OF_FOLDER = "name_of_folder"
 

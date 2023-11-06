@@ -136,49 +136,40 @@ void FirmwareUpdate::resourcesCreate() {
 
 void FirmwareUpdate::resourcesInit() {
 	/* --------------- Code_cpp block 9 start --------------- */
-	resource(PACKAGE_0)->set( /* TODO */ );
-	resource(PACKAGE_0)->setDataVerifier( /* TODO */ );
-	resource(PACKAGE_URI_1)->set( /* TODO */ );
-	resource(PACKAGE_URI_1)->setDataVerifier( /* TODO */ );
-	resource(UPDATE_2)->set( /* TODO */ );
-	resource(UPDATE_2)->setDataVerifier( /* TODO */ );
-	resource(STATE_3)->set( /* TODO */ );
-	resource(STATE_3)->setDataVerifier( /* TODO */ );
-	resource(UPDATE_RESULT_5)->set( /* TODO */ );
-	resource(UPDATE_RESULT_5)->setDataVerifier( /* TODO */ );
+	resource(PACKAGE_0)->set(OPAQUE_T());
+	resource(PACKAGE_URI_1)->set(STRING_T(""));
+	resource(UPDATE_2)->set((EXECUTE_T)[](ID_T id, const OPAQUE_T& data) {});
+	resource(STATE_3)->set(INT_T(IDLE));
+	resource(STATE_3)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return IDLE <= value && value < STATE_MAX; });
+	resource(UPDATE_RESULT_5)->set(INT_T(INITIAL));
+	resource(UPDATE_RESULT_5)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return INITIAL <= value && value < UPD_RES_MAX; });
 	#if RES_5_6
-	resource(PKGNAME_6)->set( /* TODO */ );
-	resource(PKGNAME_6)->setDataVerifier( /* TODO */ );
+	resource(PKGNAME_6)->set(STRING_T(""));
 	#endif
 	#if RES_5_7
-	resource(PKGVERSION_7)->set( /* TODO */ );
-	resource(PKGVERSION_7)->setDataVerifier( /* TODO */ );
+	resource(PKGVERSION_7)->set(STRING_T(""));
 	#endif
 	#if RES_5_8
-	resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->set( /* TODO */ );
-	resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->setDataVerifier( /* TODO */ );
+	resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->set(INT_T(COAP));
+	resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return COAP <= value && value < FW_UPD_PROTOCOL_MAX; });
 	#endif
-	resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set( /* TODO */ );
-	resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->setDataVerifier( /* TODO */ );
+	resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set(INT_T(PUSH));
+	resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return PULL <= value && value < FW_UPD_DELIVERY_MAX; });
 	#if RES_5_10
-	resource(CANCEL_10)->set( /* TODO */ );
-	resource(CANCEL_10)->setDataVerifier( /* TODO */ );
+	resource(CANCEL_10)->set((EXECUTE_T)[](ID_T id, const OPAQUE_T& data) {});
 	#endif
 	#if RES_5_11
-	resource(SEVERITY_11)->set( /* TODO */ );
-	resource(SEVERITY_11)->setDataVerifier( /* TODO */ );
+	resource(SEVERITY_11)->set(INT_T(MANDATORY));
+	resource(SEVERITY_11)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return CRITICAL <= value && value < SEVERITY_MAX; });
 	#endif
 	#if RES_5_12
-	resource(LAST_STATE_CHANGE_TIME_12)->set( /* TODO */ );
-	resource(LAST_STATE_CHANGE_TIME_12)->setDataVerifier( /* TODO */ );
+	resource(LAST_STATE_CHANGE_TIME_12)->set(TIME_T(0));
 	#endif
 	#if RES_5_13
-	resource(MAXIMUM_DEFER_PERIOD_13)->set( /* TODO */ );
-	resource(MAXIMUM_DEFER_PERIOD_13)->setDataVerifier( /* TODO */ );
+	resource(MAXIMUM_DEFER_PERIOD_13)->set(UINT_T(0));
 	#endif
 	#if RES_5_14
-	resource(AUTOMATIC_UPGRADE_AT_DOWNLOAD_14)->set( /* TODO */ );
-	resource(AUTOMATIC_UPGRADE_AT_DOWNLOAD_14)->setDataVerifier( /* TODO */ );
+	resource(AUTOMATIC_UPGRADE_AT_DOWNLOAD_14)->set(BOOL_T(false));
 	#endif
 	/* --------------- Code_cpp block 9 end --------------- */
 }

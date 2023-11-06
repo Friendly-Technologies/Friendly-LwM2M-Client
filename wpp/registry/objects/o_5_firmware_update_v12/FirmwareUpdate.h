@@ -53,6 +53,57 @@ public:
 	};
 
 	/* --------------- Code_h block 1 start --------------- */
+	enum State: uint8_t {
+		IDLE = 0,
+		DOWNLOADING = 1,
+		DOWNLOADED = 2,
+		UPDATING = 3,
+		STATE_MAX
+	};
+
+	enum UpdRes: uint8_t {
+		INITIAL = 0,
+		FW_UPD_SUCCESS = 1,
+		NOT_ENOUGH_FLASH = 2,
+		OUT_OF_RAM = 3,
+		CONN_LOST = 4,
+		INTEGRITY_CHECK_FAIL = 5,
+		UNSUPPORTED_PKG_TYPE = 6,
+		INVALID_URI = 7,
+		FW_UPD_FAIL = 8,
+		UNSUPPORTED_PROTOCOL = 9,
+		FW_UPD_CANCELLED = 10,
+		FW_UPD_DEFERRED = 11,
+		UPD_RES_MAX
+	};
+
+	#if RES_5_8
+	enum FwUpdProtocol: uint8_t {
+		COAP = 0,
+		COAPS = 1,
+		HTTP = 2,
+		HTTPS = 3,
+		COAP_TCP = 4,
+		COAP_TLS = 5,
+		FW_UPD_PROTOCOL_MAX
+	};
+	#endif
+
+	enum FwUpdDelivery: uint8_t {
+		PULL = 0,
+		PUSH = 1,
+		BOTH = 2,
+		FW_UPD_DELIVERY_MAX
+	};
+
+	#if RES_5_11
+	enum Severity: uint8_t {
+		CRITICAL = 0,
+		MANDATORY = 1,
+		OPTIONAL = 2,
+		SEVERITY_MAX
+	};
+	#endif
 	/* --------------- Code_h block 1 end --------------- */
 
 public:

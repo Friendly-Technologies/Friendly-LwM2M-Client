@@ -50,7 +50,7 @@ class ObjectRemover:
         if not errcode:
             return False
         data_dict = json.loads(data_str)
-        dict_obj_meta = data_dict["object_names"]["define"]
+        dict_obj_meta = data_dict[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_DEFINE]
         return dict_obj_meta
 
     def remove_object(self):

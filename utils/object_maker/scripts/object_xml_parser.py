@@ -56,26 +56,26 @@ class ObjectXmlParser:
         root = tree.getroot()
         # ========================= extract data of the Object ==========================
         object_data = {}
-        for key in const.KEYS_OBJ_DATA.values():
+        for key in const.DATA_KEYS.values():
             for i in root[0]:
                 if i.tag == key:
                     object_data[key] = i.text
 
         # convert the "is_mandatory" to bool
-        if object_data[const.KEYS_OBJ_DATA["is_mandatory"]] not in const.OPTIONS_MANDATORY:
+        if object_data[const.DATA_KEYS[const.KEY_IS_MANDATORY]] not in const.OPTIONS_MANDATORY:
             print(f"{self.log_tag} The critical error is possible! Check the <Mandatory> field of the Object.")
-        object_data[const.KEYS_OBJ_DATA["is_mandatory"]] = object_data[const.KEYS_OBJ_DATA["is_mandatory"]] == "Mandatory"
+        object_data[const.DATA_KEYS[const.KEY_IS_MANDATORY]] = object_data[const.DATA_KEYS[const.KEY_IS_MANDATORY]] == "Mandatory"
 
         # convert the "is_multiple" value to bool
-        if object_data[const.KEYS_OBJ_DATA["is_multiple"]] not in const.OPTIONS_VARIETY:
+        if object_data[const.DATA_KEYS[const.KEY_IS_MULTIPLE]] not in const.OPTIONS_VARIETY:
             print(f"{self.log_tag} The critical error is possible! Check the <MultipleInstances> field of the Object.")
-        object_data[const.KEYS_OBJ_DATA["is_multiple"]] = object_data[const.KEYS_OBJ_DATA["is_multiple"]] == "Multiple"
+        object_data[const.DATA_KEYS[const.KEY_IS_MULTIPLE]] = object_data[const.DATA_KEYS[const.KEY_IS_MULTIPLE]] == "Multiple"
 
         # check and set the "versions" fields if not defined:
-        if (const.KEYS_OBJ_DATA["lwm2m_version"] not in object_data.keys() or
-                const.KEYS_OBJ_DATA["version"] not in object_data.keys()):
-            object_data[const.KEYS_OBJ_DATA["lwm2m_version"]] = "1.0"
-            object_data[const.KEYS_OBJ_DATA["version"]] = "1.0"
+        if (const.DATA_KEYS[const.KEY_VER_LWM2M] not in object_data.keys() or
+                const.DATA_KEYS[const.KEY_VER] not in object_data.keys()):
+            object_data[const.DATA_KEYS[const.KEY_VER_LWM2M]] = "1.0"
+            object_data[const.DATA_KEYS[const.KEY_VER]] = "1.0"
         self.object_data = object_data
         # ===============================================================================
         # ====== extract data of each of the resources, and pack it to dictionary =======
@@ -91,9 +91,9 @@ class ObjectXmlParser:
                 resource_dict[resource.tag] = resource_name.upper()
                 # print(resource_name.upper())
             # generate define of the resource:
-            id_obj = object_data[const.KEYS_OBJ_DATA['id']]
-            id_res = resource_dict['ID']
-            resource_dict['Define'] = f"RES_{id_obj}_{id_res}"
+            id_obj = object_data[const.DATA_KEYS[const.KEY_ID_OBJ]]
+            id_res = resource_dict[const.DATA_KEYS[const.KEY_ID_RES]]
+            resource_dict[const.DATA_KEYS[const.KEY_DEFINE_RES]] = f"RES_{id_obj}_{id_res}"
             # ============ add prepared resource's dictionaries to the list =============
             resources_data.append(resource_dict)
             # ===========================================================================

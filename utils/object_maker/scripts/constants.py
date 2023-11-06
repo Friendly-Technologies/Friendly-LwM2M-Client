@@ -41,33 +41,57 @@ KEY_DICT_OBJ_META = "object_data"
 KEY_DICT_OBJ_NAMES = "object_names"
 KEY_DICT_OBJ_FILES = "object_files"
 
-KEY_DICT_OBJ_NAMES_CLASS = "class"
-KEY_DICT_OBJ_NAMES_CAMELC = "camelcase"
-KEY_DICT_OBJ_NAMES_DEFINE = "define"
-KEY_DICT_OBJ_NAMES_UNDERL = "up_underline"
+#  old
+# KEY_DICT_OBJ_NAMES_CLASS = "class"
+# KEY_DICT_OBJ_NAMES_CAMELC = "camelcase"
+# KEY_DICT_OBJ_NAMES_DEFINE = "define"
+# KEY_DICT_OBJ_NAMES_UNDERL = "up_underline"
+#
 
-KEY_DICT_OBJ_META_MANDAT = "is_mandatory"
-KEY_DICT_OBJ_META_NAME = "name"
-KEY_DICT_OBJ_META_ID = "id"
-KEY_DICT_OBJ_META_VER_LWM2M = "lwm2m_version"
-KEY_DICT_OBJ_META_VER = "version"
+KEY_NAME_CLASS = "name_class"
+KEY_NAME_CAMELCASE = "name_camelcase"
+KEY_NAME_DEFINE = "name_obj_define"
+KEY_NAME_UNDERLINE = "name_up_underline"
+KEY_PATH_TO_FOLDER = "name_path_to_folder"
+KEY_NAME_OF_FOLDER = "name_of_folder"
+
+# old
+# KEY_DICT_OBJ_META_MANDAT = "is_mandatory"
+# KEY_DICT_OBJ_META_NAME = "name"
+# KEY_DICT_OBJ_META_ID = "id"
+# KEY_DICT_OBJ_META_VER_LWM2M = "lwm2m_version"
+# KEY_DICT_OBJ_META_VER = "version"
+#
+
+KEY_NAME = "name"
+KEY_DESCRIPTION = "description"
+KEY_ID_OBJ = "obj_id"
+KEY_ID_RES = "res_id"
+KEY_URN = "urn"
+KEY_VER_LWM2M = "lwm2m_version"
+KEY_VER = "version"
+KEY_IS_MULTIPLE = "is_multiple"
+KEY_IS_MANDATORY = "is_mandatory"
+KEY_OPERATIONS = "operations"
+KEY_TYPE = "type"
+KEY_DEFINE_RES = "res_define"
 
 TYPE_OPERATION = "ResOp"
 TYPE_OBJECT = "ObjectImpl"
 
-KEYS_OBJ_DATA = {"name": "Name",
-                 "description": "Description1",
-                 "id": "ObjectID",
-                 "urn": "ObjectURN",
-                 "lwm2m_version": "LWM2MVersion",
-                 "version": "ObjectVersion",
-                 "is_multiple": "MultipleInstances",
-                 "is_mandatory": "Mandatory",
-                 "operations": "Operations",
-                 "type": "Type",
-                 "res_id": "ID",
-                 "res_define": "Define",
-                 }
+DATA_KEYS = {KEY_NAME:          "Name",
+             KEY_DESCRIPTION:   "Description1",
+             KEY_ID_OBJ:        "ObjectID",
+             KEY_URN:           "ObjectURN",
+             KEY_VER_LWM2M:     "LWM2MVersion",
+             KEY_VER:           "ObjectVersion",
+             KEY_IS_MULTIPLE:   "MultipleInstances",
+             KEY_IS_MANDATORY:  "Mandatory",
+             KEY_OPERATIONS:    "Operations",
+             KEY_TYPE:          "Type",
+             KEY_ID_RES:        "ID",
+             KEY_DEFINE_RES:    "Define",
+             }
 
 LWM2M_WEB_RESOURCES = ["raw.githubusercontent.com", "github.com"]
 

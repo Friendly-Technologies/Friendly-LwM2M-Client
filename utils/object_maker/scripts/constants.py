@@ -24,18 +24,18 @@ KEY_FILE_IMPL_CONFIG = "config"
 KEY_FILE_IMPL_INFO = "info"
 KEY_FILE_IMPL_CMAKE = "cmake"
 
-STOP_STRING_CNFG_CMK = ["# ---------- Mandatory objects config blok end ----------",
-                        "# ---------- Optional objects config blok end ----------"]
-STOP_STRING_OBJ_ID = ["/* ---------- Mandatory objects ID blok end ---------- */",
-                      "/* ---------- Optional objects ID blok end ---------- */"]
-STOP_STRING_REG_CPP_INIT = ["/* ---------- Mandatory objects init blok end ---------- */",
-                            "/* ---------- Optional objects init blok end ---------- */"]
-STOP_STRING_REG_CPP_METHOD = ["/* ---------- Mandatory objects method blok end ---------- */",
-                              "/* ---------- Optional objects method blok end ---------- */"]
-STOP_STRING_REG_PRT = ["/* ---------- Mandatory objects prototype blok end ---------- */",
-                       "/* ---------- Optional objects prototype blok end ---------- */"]
-STOP_STRING_REG_INCL = ["/* ---------- Mandatory objects include blok end ---------- */",
-                        "/* ---------- Optional objects include blok end ---------- */"]
+STOP_STRING_CNFG_CMK = ["# ---------- Mandatory objects config block end ----------",
+                        "# ---------- Optional objects config block end ----------"]
+STOP_STRING_OBJ_ID = ["/* ---------- Mandatory objects ID block end ---------- */",
+                      "/* ---------- Optional objects ID block end ---------- */"]
+STOP_STRING_REG_CPP_INIT = ["/* ---------- Mandatory objects init block end ---------- */",
+                            "/* ---------- Optional objects init block end ---------- */"]
+STOP_STRING_REG_CPP_METHOD = ["/* ---------- Mandatory objects method block end ---------- */",
+                              "/* ---------- Optional objects method block end ---------- */"]
+STOP_STRING_REG_PRT = ["/* ---------- Mandatory objects prototype block end ---------- */",
+                       "/* ---------- Optional objects prototype block end ---------- */"]
+STOP_STRING_REG_INCL = ["/* ---------- Mandatory objects include block end ---------- */",
+                        "/* ---------- Optional objects include block end ---------- */"]
 
 KEY_DICT_OBJ_META = "object_data"
 KEY_DICT_OBJ_NAMES = "object_names"

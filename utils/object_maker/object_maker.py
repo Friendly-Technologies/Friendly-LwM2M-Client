@@ -8,6 +8,7 @@ import scripts.object_generator as OG
 import scripts.object_integrator as OI
 import scripts.object_changer as OC
 import scripts.object_remover as OR
+import scripts.object_initializer as OZ
 
 GENERATOR_CHOICES = ['file', 'link', 'meta']
 
@@ -25,6 +26,9 @@ def arguments_init(parser):
     parser.add_option("-c", "--change", dest="change", action="store_true", default=False,
                       help="change the exist Object in Wpp")
 
+    parser.add_option("-z", "--initialize", dest="initialize", action="store_true", default=False,
+                      help="initialize the exist Object")
+
     options, args = parser.parse_args()
     return options, args
 
@@ -36,7 +40,11 @@ def integrate_object(path_to_folder):
 def main():
     parser = OptionParser()
     options, args = arguments_init(parser)
-    if not options.generate and not options.integrate and not options.remove and not options.change:
+    if (not options.generate
+            and not options.integrate
+            and not options.remove
+            and not options.change
+            and not options.initialize):
         parser.error("no options selected")
 
     # ============================= generation =============================
@@ -98,6 +106,16 @@ def main():
         if len(args) != 1:
             parser.error("please, provide the folder's path to the existing Object to remove")
         if not OR.ObjectRemover(os.path.normpath(args[0])).remove_object():
+            sys.exit(1)
+
+    # ============================== initializing ==============================
+    elif options.initialize:
+        # if len(args) != 2:
+        if len(args) != 1:
+            # parser.error("please, provide the path to the json-file and folder's path to the Wpp registers")
+            parser.error("please, provide the path to the json-file")
+        # if not OZ.ObjectInitializer(os.path.normpath(args[0]), os.path.normpath(args[1])).initialize():
+        if not OZ.ObjectInitializer(os.path.normpath(args[0])).initialize():
             sys.exit(1)
 
     sys.exit(0)

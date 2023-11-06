@@ -5,6 +5,7 @@ import json
 
 class ObjectInitializer:
     def __init__(self, path_json_file):
+        self.objects = None
         self.log_tag = f"[{self.__class__.__name__}]:"
         self.path_json_file = path_json_file
         # self.path_registers_folder = path_registers_folder
@@ -18,18 +19,19 @@ class ObjectInitializer:
             print(f'{self.log_tag} There is no file with the metadata of the Object'
                   f'"{self.path_json_file}". Operation interrupted.')
             return False
-        # try:
-        data_dict = json.loads(data_str)
-        # except json.decoder.JSONDecodeError:
-        #     print(f'{self.log_tag} Unable to pars provided json-file. Operation interrupted.')
-        #     return False
-        print(data_dict[])
+        try:
+            data_dict = json.loads(data_str)
+        except json.decoder.JSONDecodeError:
+            print(f'{self.log_tag} Unable to pars provided json-file. Operation interrupted.')
+            return False
+        self.objects = [obj for obj in data_dict["objects"] if obj != {}]
         return True
 
     def initialize(self):
         """
         Returns True if initialized example is created successful.
         """
-        return self.get_init_data()
-        # if error:
-        #     return False
+        if not self.get_init_data():
+            return False
+        print(len(self.objects))
+        return True

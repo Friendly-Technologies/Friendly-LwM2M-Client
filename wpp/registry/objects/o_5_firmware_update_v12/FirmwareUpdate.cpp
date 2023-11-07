@@ -50,6 +50,7 @@ void FirmwareUpdate::setDefaultState() {
 
 void FirmwareUpdate::serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
 	/* --------------- Code_cpp block 6 start --------------- */
+	eventNotify(*this, 0);
 	switch (type) {
 	case ResOp::WRITE_UPD:
 	case ResOp::WRITE_REPLACE_RES: {
@@ -113,7 +114,7 @@ void FirmwareUpdate::serverOperationNotifier(ResOp::TYPE type, const ResLink &re
 	}
 	/* --------------- Code_cpp block 6 end --------------- */
 
-	observerNotify(*this, resId, type);
+	operationNotify(*this, resId, type);
 
 	/* --------------- Code_cpp block 7 start --------------- */
 	/* --------------- Code_cpp block 7 end --------------- */

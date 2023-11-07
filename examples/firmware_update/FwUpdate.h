@@ -53,6 +53,10 @@ class FwUpdateImpl: public ObjObserver, public InstObserver {
     void resourcesReplaced(Instance &inst) override {
         cout << "FwUpdateImpl: resourcesReplaced: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << endl;
     }
+
+    void event(Instance &inst, EVENT_ID_T eventId) override {
+        cout << "FwUpdateImpl: event: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ", eventId: " << eventId << endl;
+    }
 };
 
 #endif // FIRMWARE_UPDATE_H

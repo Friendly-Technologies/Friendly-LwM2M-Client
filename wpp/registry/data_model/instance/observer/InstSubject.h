@@ -27,7 +27,7 @@ protected:
     /*
 	 * Notify observers about operation
 	 */
-	void observerNotify(Instance &inst, const ResLink &resId, ResOp::TYPE type) {
+	void operationNotify(Instance &inst, const ResLink &resId, ResOp::TYPE type) {
         for(InstObserver *observer : _observers) {
             switch (type) {
             case ResOp::READ: 
@@ -46,6 +46,10 @@ protected:
             default: break;
             }
         }
+    }
+
+    void eventNotify(Instance &inst, EVENT_ID_T eventId) {
+        for(InstObserver *observer : _observers) observer->event(inst, eventId);
     }
 
 private:

@@ -15,6 +15,8 @@ namespace wpp {
 using ID_T = uint16_t;
 #define ID_T_MAX_VAL (LWM2M_MAX_ID)
 
+using EVENT_ID_T = uint8_t;
+
 /*
  * Wpp data types ID
  */

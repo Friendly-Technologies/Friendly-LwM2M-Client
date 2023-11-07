@@ -10,6 +10,10 @@
 #include "ResOp.h"
 #include "types.h"
 
+#define RES_METHODS_PROT_SET_FOR(_TYPE_) bool set(const _TYPE_ &value, ID_T resInstId = SINGLE_INSTANCE_ID); \
+								   		 bool get(_TYPE_ &value, ID_T resInstId = SINGLE_INSTANCE_ID) const; \
+								   		 bool ptr(_TYPE_ **value, ID_T resInstId = SINGLE_INSTANCE_ID)
+
 namespace wpp {
 
 /*
@@ -65,28 +69,21 @@ public: /* ---------- Public methods for common usage ----------*/
 	bool isTypeIdCompatible(TYPE_ID type) const;
 	bool isEmpty() const;
 	size_t instanceCnt() const;
-
-	/* ---------- Extended abilities for access directly to resource data for avoid coping ----------*/
-	const std::vector<ResInst>& getInstances();
+	/*
+	 * Returns vector with available ids of resource instances 
+	 */
+	const std::vector<ID_T> getInstIds() const;
 
 	/* ---------- Methods for manage resource data ----------*/
-    bool set(const BOOL_T &value, ID_T resInstId = SINGLE_INSTANCE_ID);
-    bool set(const INT_T &value, ID_T resInstId = SINGLE_INSTANCE_ID);
-    bool set(const UINT_T &value, ID_T resInstId = SINGLE_INSTANCE_ID);
-    bool set(const FLOAT_T &value, ID_T resInstId = SINGLE_INSTANCE_ID);
-    bool set(const OPAQUE_T &value, ID_T resInstId = SINGLE_INSTANCE_ID);
-    bool set(const OBJ_LINK_T &value, ID_T resInstId = SINGLE_INSTANCE_ID);
-    bool set(const STRING_T &value, ID_T resInstId = SINGLE_INSTANCE_ID);
-	bool set(const EXECUTE_T &value, ID_T resInstId = SINGLE_INSTANCE_ID);
-
-    bool get(BOOL_T &value, ID_T resInstId = SINGLE_INSTANCE_ID) const;
-	bool get(INT_T &value, ID_T resInstId = SINGLE_INSTANCE_ID) const;
-	bool get(UINT_T &value, ID_T resInstId = SINGLE_INSTANCE_ID) const;
-	bool get(FLOAT_T &value, ID_T resInstId = SINGLE_INSTANCE_ID) const;
-	bool get(OPAQUE_T &value, ID_T resInstId = SINGLE_INSTANCE_ID) const;
-	bool get(OBJ_LINK_T &value, ID_T resInstId = SINGLE_INSTANCE_ID) const;
-	bool get(STRING_T &value, ID_T resInstId = SINGLE_INSTANCE_ID) const;
-	bool get(EXECUTE_T &value, ID_T resInstId = SINGLE_INSTANCE_ID) const;
+	// Generating prototypes of get/set/ptr for each supported type
+	RES_METHODS_PROT_SET_FOR(BOOL_T);
+	RES_METHODS_PROT_SET_FOR(INT_T);
+	RES_METHODS_PROT_SET_FOR(UINT_T);
+	RES_METHODS_PROT_SET_FOR(FLOAT_T);
+	RES_METHODS_PROT_SET_FOR(OPAQUE_T);
+	RES_METHODS_PROT_SET_FOR(OBJ_LINK_T);
+	RES_METHODS_PROT_SET_FOR(STRING_T);
+	RES_METHODS_PROT_SET_FOR(EXECUTE_T);
 
     /*
      * Disabling implicit conversions
@@ -95,6 +92,8 @@ public: /* ---------- Public methods for common usage ----------*/
     bool set(const T &value, ID_T resInstId = SINGLE_INSTANCE_ID) = delete;
 	template<typename T>
 	bool get(T &value, ID_T resInstId = SINGLE_INSTANCE_ID) const  = delete;
+	template<typename T>
+	bool ptr(T **value, ID_T resInstId = SINGLE_INSTANCE_ID) const  = delete;
 
 	/*
 	 * Remove resource instance if resource is multiple and instance exists,
@@ -119,6 +118,9 @@ private:
 
 	template<typename T>
 	bool _get(T &value, ID_T resInstId) const;
+
+	template<typename T>
+	bool _ptr(T **value, ID_T resInstId);
 
 private: /* ---------- Private properties ----------*/
     ID_T _id;
@@ -160,6 +162,18 @@ bool Resource::_get(T &value, ID_T resInstId) const {
 
 	auto instIter = getResInstIter(resInstId);
 	value = std::get<T>(instIter->data);
+
+	return true;
+}
+
+template<typename T>
+bool Resource::_ptr(T **value, ID_T resInstId) {
+	if (value == NULL) return false;
+	if (!isDataTypeValid<T>()) return false;
+	if (!isInstanceExist(resInstId)) return false;
+
+	auto instIter = getResInstIter(resInstId);
+	*value = &std::get<T>(instIter->data);
 
 	return true;
 }

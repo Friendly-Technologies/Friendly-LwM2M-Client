@@ -148,16 +148,22 @@ bool Instance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &res, ID_T
 		if (data.type != LWM2M_TYPE_OPAQUE && data.type != LWM2M_TYPE_STRING) return false;
 		size_t len = data.value.asBuffer.length;
 		uint8_t *buffer =  data.value.asBuffer.buffer;
-		// TODO: Find the way to optimize RAM usage, for now in this place we have 3 copy of the same buffer
-		if (!res.set(OPAQUE_T(buffer, buffer + len), instanceId)) return false;
+		OPAQUE_T *dataPtr = NULL;
+		if (!res.set(OPAQUE_T(), instanceId) || !res.ptr(&dataPtr, instanceId) || !dataPtr) return false;
+		OPAQUE_T tmpData(buffer, buffer+len);
+		if (!res.isDataValueValid(tmpData)) return false;
+		*dataPtr = std::move(tmpData);
 		break;
 	}
 	case TYPE_ID::STRING: {
 		if (data.type != LWM2M_TYPE_OPAQUE && data.type != LWM2M_TYPE_STRING) return false;
 		size_t len = data.value.asBuffer.length;
 		uint8_t *buffer =  data.value.asBuffer.buffer;
-		// TODO: Find the way to optimize RAM usage, for now in this place we have 3 copy of the same buffer
-		if (!res.set(STRING_T(buffer, buffer + len), instanceId)) return false;
+		STRING_T *dataPtr = NULL;
+		if (!res.set(STRING_T(""), instanceId) || !res.ptr(&dataPtr, instanceId) || !dataPtr) return false;
+		STRING_T tmpData(buffer, buffer+len);
+		if (!res.isDataValueValid(tmpData)) return false;
+		*dataPtr = std::move(tmpData);
 		break;
 	}
 	case TYPE_ID::CORE_LINK: {
@@ -274,7 +280,7 @@ uint8_t Instance::resourceRead(lwm2m_data_t &data, Resource &res) {
 	if (res.isMultiple() && data.type != LWM2M_TYPE_MULTIPLE_RESOURCE) {
 		lwm2m_data_t *subData = lwm2m_data_new(res.instanceCnt());
 		lwm2m_data_t *dataCnt = subData;
-		for (const auto& inst : res.getInstances()) (dataCnt++)->id = inst.id;
+		for (auto id : res.getInstIds()) (dataCnt++)->id = id;
 		lwm2m_data_encode_instances(subData, res.instanceCnt(), &data);
 	}
 
@@ -462,11 +468,11 @@ uint8_t Instance::discover(int * numData, lwm2m_data_t ** dataArray) {
 		if (res->isMultiple() && data->type != LWM2M_TYPE_MULTIPLE_RESOURCE) {
 			lwm2m_data_t *subData = lwm2m_data_new(res->instanceCnt());
 			lwm2m_data_t *dataCnt = subData;
-			for (const auto& inst : res->getInstances()) {
-				(dataCnt++)->id = inst.id;
-				WPP_LOGD_ARG(TAG_WPP_INST, "Resource instance discover: %d:%d:%d:%d", _id.objId, _id.objInstId, data->id, inst.id);
+			for (auto id : res->getInstIds()) {
+				(dataCnt++)->id = id;
+				WPP_LOGD_ARG(TAG_WPP_INST, "Resource instance discover: %d:%d:%d:%d", _id.objId, _id.objInstId, data->id, id);
 				// Notify implementation about discover resource instance operation
-				serverOperationNotifier(ResOp::DISCOVER, {res->getId(), inst.id});
+				serverOperationNotifier(ResOp::DISCOVER, {res->getId(), id});
 			}
 			lwm2m_data_encode_instances(subData, res->instanceCnt(), data);
 		} else {

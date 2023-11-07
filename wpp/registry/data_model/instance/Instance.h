@@ -104,16 +104,18 @@ protected: /* Interface that must be implemented by derived class */
 	 */
 	virtual void setDefaultState() = 0;
 	/*
-	 * This method must be implemented by derived class, and handle
-     * information about resource operation (READ, WRITE_UPD, 
-	 * WRITE_REPLACE_INST, WRITE_REPLACE_RES, EXECUTE, DISCOVER).
-	 * Called by Instance after resource operation performed by SERVER.
+	 * This method must be implemented by the derived class, and handle
+	 * information about resource operation (READ, WRITE_UPD, WRITE_REPLACE_INST,
+	 * WRITE_REPLACE_RES, EXECUTE, DISCOVER). Called by Instance after 
+	 * resource operation performed by SERVER if the operation is  
+	 * READ/WRITE_UPD/WRITE_REPLACE_INST/WRITE_REPLACE_RES/DISCOVER, 
+	 * if the operation is EXECUTE then called before this operation.
 	 */
 	virtual void serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) = 0;
 	/*
-	 * This method must be implemented by derived class, and handle
+	 * This method must be implemented by the derived class, and handle
      * information about resource operation (READ, WRITE_UPD, DELETE).
-	 * Called by Instance after resource operation performed by USER.
+	 * Called by Instance after resource operation performed by the USER.
 	 */
 	virtual void userOperationNotifier(ResOp::TYPE type, const ResLink &resId) = 0;
 

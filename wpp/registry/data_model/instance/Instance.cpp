@@ -426,10 +426,11 @@ uint8_t Instance::execute(ID_T resId, uint8_t * buffer, int length) {
 		return COAP_404_NOT_FOUND;
 	}
 
-	WPP_LOGD_ARG(TAG_WPP_INST, "Resource execute: %d:%d:%d, buffer length: %d", _id.objId, _id.objInstId, resId, length);
-	execute(resId, OPAQUE_T(buffer, buffer + length));
 	// Notify implementation about execute resource operation
 	serverOperationNotifier(ResOp::EXECUTE, {res->getId(), ID_T_MAX_VAL});
+
+	WPP_LOGD_ARG(TAG_WPP_INST, "Resource execute: %d:%d:%d, buffer length: %d", _id.objId, _id.objInstId, resId, length);
+	execute(resId, OPAQUE_T(buffer, buffer + length));
 
 	return COAP_204_CHANGED;
 }

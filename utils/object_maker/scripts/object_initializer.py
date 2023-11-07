@@ -1,14 +1,17 @@
-import functions as func
-
+import os
 import json
+import sys
+
+import functions as func
+import constants as const
 
 
 class ObjectInitializer:
     def __init__(self, path_json_file):
         self.objects = None
-        self.log_tag = f"[{self.__class__.__name__}]:"
+        self.register_data = None
+        self.log_tag = self.__class__.__name__
         self.path_json_file = path_json_file
-        # self.path_registers_folder = path_registers_folder
 
     def get_init_data(self):
         """

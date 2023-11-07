@@ -148,6 +148,7 @@ bool Instance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &res, ID_T
 		if (data.type != LWM2M_TYPE_OPAQUE && data.type != LWM2M_TYPE_STRING) return false;
 		size_t len = data.value.asBuffer.length;
 		uint8_t *buffer =  data.value.asBuffer.buffer;
+		// TODO: Find the way to optimize RAM usage, for now in this place we have 3 copy of the same buffer
 		if (!res.set(OPAQUE_T(buffer, buffer + len), instanceId)) return false;
 		break;
 	}
@@ -155,6 +156,7 @@ bool Instance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &res, ID_T
 		if (data.type != LWM2M_TYPE_OPAQUE && data.type != LWM2M_TYPE_STRING) return false;
 		size_t len = data.value.asBuffer.length;
 		uint8_t *buffer =  data.value.asBuffer.buffer;
+		// TODO: Find the way to optimize RAM usage, for now in this place we have 3 copy of the same buffer
 		if (!res.set(STRING_T(buffer, buffer + len), instanceId)) return false;
 		break;
 	}

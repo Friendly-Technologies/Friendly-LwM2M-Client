@@ -111,6 +111,7 @@ public:
 	~FirmwareUpdate();
 
 	/* --------------- Code_h block 2 start --------------- */
+	void resetStateMachine();
 	/* --------------- Code_h block 2 end --------------- */
 
 protected:

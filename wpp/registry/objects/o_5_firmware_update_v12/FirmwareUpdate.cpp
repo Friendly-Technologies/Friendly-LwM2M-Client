@@ -12,6 +12,7 @@
 #include "WppLogs.h"
 
 /* --------------- Code_cpp block 0 start --------------- */
+#include "WppPlatform.h"
 /* --------------- Code_cpp block 0 end --------------- */
 
 #define TAG "FirmwareUpdate"
@@ -49,49 +50,85 @@ void FirmwareUpdate::setDefaultState() {
 
 void FirmwareUpdate::serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
 	/* --------------- Code_cpp block 6 start --------------- */
+	switch (type) {
+	case ResOp::WRITE_UPD:
+	case ResOp::WRITE_REPLACE_RES: {
+		switch (resId.resId) {
+		case PACKAGE_0: {
+			OPAQUE_T pkg;
+			// TODO avoid coping of big data package
+			resource(PACKAGE_0)->get(pkg);
+			if (pkg.empty()) {
+				WPP_LOGD_ARG(TAG, "Server reset state machine through PACKAGE_0", resId.resId, resId.resInstId);
+				resetStateMachine();
+			} else {
+				WPP_LOGD_ARG(TAG, "Server write package", resId.resId, resId.resInstId);
+				resource(STATE_3)->set(INT_T(DOWNLOADED));
+				#if RES_5_12
+				resource(LAST_STATE_CHANGE_TIME_12)->set((TIME_T)WppPlatform::getTime());
+				#endif
+			}
+			break;
+		}
+		case PACKAGE_URI_1: {
+			STRING_T pkgUri;
+			resource(PACKAGE_URI_1)->get(pkgUri);
+			if (pkgUri.empty()) {
+				WPP_LOGD_ARG(TAG, "Server reset state machine through PACKAGE_URI_1", resId.resId, resId.resInstId);
+				resetStateMachine();
+			} else {
+				resource(STATE_3)->set(INT_T(DOWNLOADING));
+				#if RES_5_12
+				resource(LAST_STATE_CHANGE_TIME_12)->set((TIME_T)WppPlatform::getTime());
+				#endif
+			}
+			break;
+		}
+		default: break;
+		}
+	}
+	case ResOp::EXECUTE: {
+		switch (resId.resId) {
+		case UPDATE_2: {
+			INT_T state;
+			resource(STATE_3)->get(state);
+			if (state == DOWNLOADED) {
+				resource(STATE_3)->set(INT_T(UPDATING));
+				#if RES_5_12
+				resource(LAST_STATE_CHANGE_TIME_12)->set((TIME_T)WppPlatform::getTime());
+				#endif
+			}
+			break;
+		}
+		#if RES_5_10
+		case CANCEL_10: 
+			resetStateMachine();
+			break;
+		#endif
+		default: break;
+		}
+		break;
+	}
+	default: break;
+	}
 	/* --------------- Code_cpp block 6 end --------------- */
 
 	observerNotify(*this, resId, type);
 
 	/* --------------- Code_cpp block 7 start --------------- */
-	switch (type) {
-	case ResOp::READ:
-		WPP_LOGD_ARG(TAG, "Server READ -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case ResOp::WRITE_UPD:
-		WPP_LOGD_ARG(TAG, "Server WRITE_UPD -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case ResOp::WRITE_REPLACE_INST:
-		WPP_LOGD_ARG(TAG, "Server WRITE_REPLACE_INST -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case ResOp::WRITE_REPLACE_RES:
-		WPP_LOGD_ARG(TAG, "Server WRITE_REPLACE_RES -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case ResOp::EXECUTE:
-		WPP_LOGD_ARG(TAG, "Server EXECUTE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case ResOp::DISCOVER:
-		WPP_LOGD_ARG(TAG, "Server DISCOVER -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case ResOp::DELETE:
-		WPP_LOGD_ARG(TAG, "Server DELETE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	default: break;
-	}
 	/* --------------- Code_cpp block 7 end --------------- */
 }
 
 void FirmwareUpdate::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
 	/* --------------- Code_cpp block 8 start --------------- */
 	switch (type) {
-	case ResOp::READ:
-		WPP_LOGD_ARG(TAG, "User READ -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
 	case ResOp::WRITE_UPD:
 		WPP_LOGD_ARG(TAG, "User WRITE_UPD -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case ResOp::DELETE:
-		WPP_LOGD_ARG(TAG, "User DELETE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
+		if (resId.resId == STATE_3) {
+			#if RES_5_12
+			resource(LAST_STATE_CHANGE_TIME_12)->set((TIME_T)WppPlatform::getTime());
+			#endif
+		}
 		break;
 	default: break;
 	}
@@ -175,6 +212,15 @@ void FirmwareUpdate::resourcesInit() {
 }
 
 /* --------------- Code_cpp block 10 start --------------- */
+void FirmwareUpdate::resetStateMachine() {
+	resource(PACKAGE_0)->set(OPAQUE_T());
+	resource(PACKAGE_URI_1)->set(STRING_T(""));
+	resource(STATE_3)->set(INT_T(IDLE));
+	#if RES_5_12
+	resource(LAST_STATE_CHANGE_TIME_12)->set((TIME_T)WppPlatform::getTime());
+	#endif
+	resource(UPDATE_RESULT_5)->set(INT_T(INITIAL));
+}
 /* --------------- Code_cpp block 10 end --------------- */
 
 } /* namespace wpp */

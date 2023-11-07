@@ -352,16 +352,6 @@ class ObjectGenerator:
 
         return json.dumps(dictionary, indent=4)
 
-    def create_folder(self):
-        try:
-            os.mkdir(self.object_names[const.KEY_NAME_OF_FOLDER])
-        except FileExistsError:
-            pass
-
-    def create_file(self, filename, filetype, content):
-        file = filename if filetype == "" else f"{filename}.{filetype}"
-        func.create_file(f"./{self.object_names[const.KEY_NAME_OF_FOLDER]}/{file}", content)
-
     def object_code_generate(self):
         resources_enum, resources_map = self.get_map_of_resources(self.resources_data)
         generated_header = self.generate_content_header(resources_enum)
@@ -372,16 +362,17 @@ class ObjectGenerator:
         generated_obj_integration_data = self.generate_obj_integration_data()
 
         name_class = self.object_names[const.KEY_NAME_CLASS]
+        json_file = const.FILE_OBJ_METADATA
 
-        self.create_folder()
+        folder = self.object_names[const.KEY_NAME_OF_FOLDER]
+        func.create_folder(folder)
 
-        self.create_file(f"{name_class}",       "h",    generated_header)
-        self.create_file(f"{name_class}Info",   "h",    generated_info_header)
-        self.create_file(f"{name_class}Config", "h",    generated_config)
-        self.create_file(f"{name_class}",       "cpp",  generated_cpp_file)
-        self.create_file(f"CMakeLists",         "txt",  generated_cmake_list)
-
-        self.create_file(const.FILE_OBJ_METADATA, "", generated_obj_integration_data)
+        func.create_file(f"{folder}/{name_class}",       "h",    generated_header)
+        func.create_file(f"{folder}/{name_class}Info",   "h",    generated_info_header)
+        func.create_file(f"{folder}/{name_class}Config", "h",    generated_config)
+        func.create_file(f"{folder}/{name_class}",       "cpp",  generated_cpp_file)
+        func.create_file(f"{folder}/CMakeLists",         "txt",  generated_cmake_list)   # TODO: add name of the file to the constants
+        func.create_file(f"{folder}/{json_file}",        "",     generated_obj_integration_data)
 
 
 if __name__ == "__main__":

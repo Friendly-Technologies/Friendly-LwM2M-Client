@@ -25,12 +25,11 @@ def write_to_file_line_by_line(file_path, content):
     file.close()
 
 
-def create_file(filename, filetype, content):
-    file = filename if filetype == "" else f"{filename}.{filetype}"
+def create_file(filename, content):
     if content is None:
         LOG(__name__, create_file.__name__, "content must be str, not None")
         return False
-    with open(file, 'w+') as file:
+    with open(filename, 'w+') as file:
         file.write(content)
     file.close()
     return True

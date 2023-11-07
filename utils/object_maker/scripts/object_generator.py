@@ -344,7 +344,7 @@ class ObjectGenerator:
                      const.KEY_FILE_IMPL_CPP:    f"{object_class_name}.cpp",
                      const.KEY_FILE_IMPL_CONFIG: f"{object_class_name}Config.h",
                      const.KEY_FILE_IMPL_INFO:   f"{object_class_name}Info.h",
-                     const.KEY_FILE_IMPL_CMAKE:  f"CMakeLists.txt"}
+                     const.KEY_FILE_IMPL_CMAKE:  f"{const.FILE_CMAKE_LISTS}"}
 
         dictionary[const.KEY_DICT_OBJ_META] = obj_dict
         dictionary[const.KEY_DICT_OBJ_NAMES] = obj_names
@@ -367,12 +367,12 @@ class ObjectGenerator:
         folder = self.object_names[const.KEY_NAME_OF_FOLDER]
         func.create_folder(folder)
 
-        func.create_file(f"{folder}/{name_class}",       "h",    generated_header)
-        func.create_file(f"{folder}/{name_class}Info",   "h",    generated_info_header)
-        func.create_file(f"{folder}/{name_class}Config", "h",    generated_config)
-        func.create_file(f"{folder}/{name_class}",       "cpp",  generated_cpp_file)
-        func.create_file(f"{folder}/CMakeLists",         "txt",  generated_cmake_list)   # TODO: add name of the file to the constants
-        func.create_file(f"{folder}/{json_file}",        "",     generated_obj_integration_data)
+        func.create_file(f"{folder}/{name_class}.h",            generated_header)
+        func.create_file(f"{folder}/{name_class}Info.h",        generated_info_header)
+        func.create_file(f"{folder}/{name_class}Config.h",      generated_config)
+        func.create_file(f"{folder}/{name_class}.cpp",          generated_cpp_file)
+        func.create_file(f"{folder}/{const.FILE_CMAKE_LISTS}",  generated_cmake_list)
+        func.create_file(f"{folder}/{json_file}",               generated_obj_integration_data)
 
 
 if __name__ == "__main__":

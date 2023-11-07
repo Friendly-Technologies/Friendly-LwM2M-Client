@@ -75,7 +75,11 @@ public: /* ---------- Public methods for common usage ----------*/
 	const std::vector<ID_T> getInstIds() const;
 
 	/* ---------- Methods for manage resource data ----------*/
-	// Generating prototypes of get/set/ptr for each supported type
+	/*
+	 * Generating prototypes of get/set/ptr for each supported type
+	 * The data that will be set through returned ptr() must be manualy
+	 * validated with using isDataValueValid()
+	 */
 	RES_METHODS_PROT_SET_FOR(BOOL_T);
 	RES_METHODS_PROT_SET_FOR(INT_T);
 	RES_METHODS_PROT_SET_FOR(UINT_T);

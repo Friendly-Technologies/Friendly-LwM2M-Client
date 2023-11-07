@@ -58,12 +58,26 @@ public: /* Interface that can be used by user */
 	template<typename T>
 	bool set(const ResLink &resId, const T &value);
 	/*
+	 * Sets resource value by moving user data to resource to avoid extra copy
+	 */
+	template<typename T>
+	bool setMove(ID_T resId, const T &value);
+	template<typename T>
+	bool setMove(const ResLink &resId, const T &value);
+	/*
 	 * Returns copy of resource value
 	 */
 	template<typename T>
 	bool get(ID_T resId, T &value);
 	template<typename T>
 	bool get(const ResLink &resId, T &value);
+	/*
+	 * Returns const ptr to resource data for avoid extra copy
+	 */
+	template<typename T>
+	bool getPtr(ID_T resId, const T **value);
+	template<typename T>
+	bool getPtr(const ResLink &resId, const T **value);
 	/*
 	 * It is quite dangerous to leave a resource without instances,
 	 * because when the server tries to read its value, the server
@@ -171,6 +185,29 @@ bool Instance::set(const ResLink &resId, const T &value)  {
 }
 
 /*
+ * Sets resource value by moving user data to resource to avoid extra copy
+ */
+template<typename T>
+bool Instance::setMove(ID_T resId, const T &value) {
+	return setMove({resId, SINGLE_INSTANCE_ID}, value);
+}
+
+template<typename T>
+bool Instance::setMove(const ResLink &resId, const T &value) {
+	auto res = resource(resId.resId);
+	if (res == _resources.end()) return false;
+	if (!res->isDataValueValid(value)) return false;
+
+	T *resData = NULL;
+	if (!res->ptr(&resData, resId.resInstId) || !resData) return false;
+	*resData = std::move(value);
+
+	notifyValueChanged({_id, {resId.resId, resId.resInstId}});
+	userOperationNotifier(ResOp::WRITE_UPD, resId);
+	return true;
+}
+
+/*
  * Returns copy of resource value
  */
 template<typename T>
@@ -189,6 +226,27 @@ bool Instance::get(const ResLink &resId, T &value) {
 	}
 
 	return result;
+}
+
+/*
+ * Returns const ptr to resource data for avoid extra copy
+ */
+template<typename T>
+bool Instance::getPtr(ID_T resId, const T **value) {
+	return getPtr({resId, SINGLE_INSTANCE_ID}, value);
+}
+
+template<typename T>
+bool Instance::getPtr(const ResLink &resId, const T **value) {
+	auto res = resource(resId.resId);
+	if (res == _resources.end()) return false;
+
+	T *resData = NULL;
+	if (!res->ptr(&resData, resId.resInstId) || !resData) return false;
+	*value = resData;
+
+	userOperationNotifier(ResOp::READ, resId);
+	return true;
 }
 
 } /* namespace wpp */

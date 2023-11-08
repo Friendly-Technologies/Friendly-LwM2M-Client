@@ -438,9 +438,7 @@ uint8_t Instance::execute(ID_T resId, uint8_t * buffer, int length) {
 	serverOperationNotifier(ResOp::EXECUTE, {res->getId(), ID_T_MAX_VAL});
 
 	WPP_LOGD_ARG(TAG_WPP_INST, "Resource execute: %d:%d:%d, buffer length: %d", _id.objId, _id.objInstId, resId, length);
-	execute(resId, OPAQUE_T(buffer, buffer + length));
-
-	return COAP_204_CHANGED;
+	return execute(resId, OPAQUE_T(buffer, buffer + length))? COAP_204_CHANGED : COAP_405_METHOD_NOT_ALLOWED;
 }
 
 uint8_t Instance::discover(int * numData, lwm2m_data_t ** dataArray) {

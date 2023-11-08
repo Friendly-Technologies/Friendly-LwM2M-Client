@@ -18,11 +18,16 @@ class FwUpdateImpl: public ObjObserver, public InstObserver {
 
         fwUpd->set(FirmwareUpdate::UPDATE_2, (EXECUTE_T)[](ID_T id, const OPAQUE_T& data) {
             cout << "FirmwareUpdate: execute UPDATE_2" << endl;
+            return true;
         });
-        fwUpd->set(FirmwareUpdate::STATE_3, (INT_T)FirmwareUpdate::IDLE);
-        fwUpd->set(FirmwareUpdate::UPDATE_RESULT_5, (INT_T)FirmwareUpdate::INITIAL);
+        fwUpd->set(FirmwareUpdate::STATE_3, (INT_T)FirmwareUpdate::S_IDLE);
+        fwUpd->set(FirmwareUpdate::UPDATE_RESULT_5, (INT_T)getLastUpdResult());
         fwUpd->set(FirmwareUpdate::FIRMWARE_UPDATE_DELIVERY_METHOD_9, (INT_T)FirmwareUpdate::PUSH);
 	}
+
+    FirmwareUpdate::UpdRes getLastUpdResult() {
+        return FirmwareUpdate::R_FW_UPD_SUCCESS;
+    }
 
 	void objectRestore(Object &object) override {
 		cout << "FwUpdateImpl: objectRestore: " << (ID_T)object.getObjectID() << endl;

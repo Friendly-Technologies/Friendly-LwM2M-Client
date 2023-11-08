@@ -50,27 +50,35 @@ public:
 	};
 
 	/* --------------- Code_h block 1 start --------------- */
+	enum Event: EVENT_ID_T {
+		E_URI_DOWNLOADIN = 0,
+		E_PKG_DOWNLOADIN,
+		E_DOWNLOADED,
+		E_UPDATING,
+		E_RESET
+	};
+
 	enum State: uint8_t {
-		IDLE = 0,
-		DOWNLOADING = 1,
-		DOWNLOADED = 2,
-		UPDATING = 3,
+		S_IDLE = 0,
+		S_DOWNLOADING = 1,
+		S_DOWNLOADED = 2,
+		S_UPDATING = 3,
 		STATE_MAX
 	};
 
 	enum UpdRes: uint8_t {
-		INITIAL = 0,
-		FW_UPD_SUCCESS = 1,
-		NOT_ENOUGH_FLASH = 2,
-		OUT_OF_RAM = 3,
-		CONN_LOST = 4,
-		INTEGRITY_CHECK_FAIL = 5,
-		UNSUPPORTED_PKG_TYPE = 6,
-		INVALID_URI = 7,
-		FW_UPD_FAIL = 8,
-		UNSUPPORTED_PROTOCOL = 9,
-		FW_UPD_CANCELLED = 10,
-		FW_UPD_DEFERRED = 11,
+		R_INITIAL = 0,
+		R_FW_UPD_SUCCESS = 1,
+		R_NOT_ENOUGH_FLASH = 2,
+		R_OUT_OF_RAM = 3,
+		R_CONN_LOST = 4,
+		R_INTEGRITY_CHECK_FAIL = 5,
+		R_UNSUPPORTED_PKG_TYPE = 6,
+		R_INVALID_URI = 7,
+		R_FW_UPD_FAIL = 8,
+		R_UNSUPPORTED_PROTOCOL = 9,
+		R_FW_UPD_CANCELLED = 10,
+		R_FW_UPD_DEFERRED = 11,
 		UPD_RES_MAX
 	};
 
@@ -108,6 +116,7 @@ public:
 	~FirmwareUpdate();
 
 	/* --------------- Code_h block 2 start --------------- */
+	void fwFromUriDownloaded();
 	void resetStateMachine();
 	/* --------------- Code_h block 2 end --------------- */
 
@@ -140,6 +149,14 @@ private:
 	void resourcesInit();
 	
 	/* --------------- Code_h block 3 start --------------- */
+	void changeState(State state);
+	void changeUpdRes(UpdRes res);
+
+	bool isUriValid(STRING_T uri);
+	STRING_T extarctProtocolFormUri(STRING_T uri);
+	#if RES_5_8
+	FwUpdProtocol protocolStrToEnum(STRING_T protocol);
+	#endif
 	/* --------------- Code_h block 3 end --------------- */
 
 private:

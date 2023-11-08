@@ -153,10 +153,10 @@ void Device::resourcesInit() {
 	resource(FIRMWARE_VERSION_3)->set(STRING_T("")); 
 	#endif     
  
-	resource(REBOOT_4)->set((EXECUTE_T)[](ID_T id, const OPAQUE_T& data) {});
+	resource(REBOOT_4)->set((EXECUTE_T)[](ID_T id, const OPAQUE_T& data) { return true; });
                                                                                                                                                                                                                             
 	#if RES_3_5
-	resource(FACTORY_RESET_5)->set((EXECUTE_T)[](ID_T id, const OPAQUE_T& data) {});
+	resource(FACTORY_RESET_5)->set((EXECUTE_T)[](ID_T id, const OPAQUE_T& data) { return true; });
 	#endif
 
 	#if RES_3_6
@@ -188,6 +188,8 @@ void Device::resourcesInit() {
 	resource(RESET_ERROR_CODE_12)->set((EXECUTE_T)[this](ID_T id, const OPAQUE_T& buff) { 
 		resource(ERROR_CODE_11)->clear();
 		resource(ERROR_CODE_11)->set((INT_T)NO_ERROR);
+		notifyValueChanged({ERROR_CODE_11,});
+		return true;
 	});
 	#endif
 

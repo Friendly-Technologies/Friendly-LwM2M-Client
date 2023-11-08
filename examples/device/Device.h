@@ -21,6 +21,7 @@ class DeviceImpl: public ObjObserver, public InstObserver {
         device->set(Device::REBOOT_4, (EXECUTE_T)[this](ID_T id, const OPAQUE_T& data) {
             cout << "Device: execute REBOOT_4" << endl;
             this->_reboot = true;
+            return true;
         });
         device->set(Device::ERROR_CODE_11, (INT_T)Device::NO_ERROR);
         device->set(Device::SUPPORTED_BINDING_AND_MODES_16, WPP_BINDING_UDP);

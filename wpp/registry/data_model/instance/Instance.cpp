@@ -19,7 +19,7 @@ bool Instance::clear(ID_T resId) {
 
 	bool result = res->clear();
 	if (result) {
-		notifyValueChanged({_id, {resId,}});
+		notifyValueChanged({resId,});
 		userOperationNotifier(ResOp::DELETE, {resId,});
 	}
 
@@ -32,16 +32,16 @@ bool Instance::remove(const ResLink &resId) {
 
 	bool result = res->remove(resId.resInstId);
 	if (result) {
-		notifyValueChanged({_id, {resId.resId, resId.resInstId}});
+		notifyValueChanged({resId.resId, resId.resInstId});
 		userOperationNotifier(ResOp::DELETE, {resId.resId, resId.resInstId});
 	}
 
 	return result;
 }
 
-void Instance::notifyValueChanged(const DataLink &data) {
-	WPP_LOGD_ARG(TAG_WPP_INST, "Notify value changed: objID=%d, instID=%d, resID=%d, resInstID=%d", data.instance.objId, data.instance.objInstId, data.resource.resId, data.resource.resInstId);	
-	lwm2m_uri_t uri = {data.instance.objId, data.instance.objInstId, data.resource.resId, data.resource.resInstId};
+void Instance::notifyValueChanged(const ResLink &resId) {
+	WPP_LOGD_ARG(TAG_WPP_INST, "Notify value changed: objID=%d, instID=%d, resID=%d, resInstID=%d", getObjectID(), getInstanceID(), resId.resId, resId.resInstId);	
+	lwm2m_uri_t uri = {(ID_T)getObjectID(), getInstanceID(), resId.resId, resId.resInstId};
 	lwm2m_resource_value_changed(&_context, &uri);
 }
 

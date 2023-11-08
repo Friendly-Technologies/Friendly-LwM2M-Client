@@ -98,7 +98,7 @@ protected: /* Interface that can be used by derived class */
 	/*
 	 * Notify core about resource value change.
 	 */
-	void notifyValueChanged(const DataLink &data);
+	void notifyValueChanged(const ResLink &resId);
 	/*
 	 * This method return list with resources that has been instantiated.
 	 * If resources does not exist then return empty list.
@@ -175,13 +175,13 @@ bool Instance::set(const ResLink &resId, const T &value)  {
 	auto res = resource(resId.resId);
 	if (res == _resources.end()) return false;
 
-	bool result = res->set(value, resId.resInstId);
-	if (result) {
-		notifyValueChanged({_id, {resId.resId, resId.resInstId}});
-		userOperationNotifier(ResOp::WRITE_UPD, resId);
-	}
+	if (!res->set(value, resId.resInstId)) return false;
 
-	return result;
+	const ResLink &link = res->isMultiple()? resId : ResLink {resId.resId,};
+	notifyValueChanged(link);
+	userOperationNotifier(ResOp::WRITE_UPD, link);
+
+	return true;
 }
 
 /*
@@ -202,8 +202,10 @@ bool Instance::setMove(const ResLink &resId, const T &value) {
 	if (!res->ptr(&resData, resId.resInstId) || !resData) return false;
 	*resData = std::move(value);
 
-	notifyValueChanged({_id, {resId.resId, resId.resInstId}});
-	userOperationNotifier(ResOp::WRITE_UPD, resId);
+	const ResLink &link = res->isMultiple()? resId : ResLink {resId.resId,};
+	notifyValueChanged(link);
+	userOperationNotifier(ResOp::WRITE_UPD, link);
+
 	return true;
 }
 
@@ -220,12 +222,12 @@ bool Instance::get(const ResLink &resId, T &value) {
 	auto res = resource(resId.resId);
 	if (res == _resources.end()) return false;
 
-	bool result = res->get(value, resId.resInstId);
-	if (result) {
-		userOperationNotifier(ResOp::READ, resId);
-	}
+	if (!res->get(value, resId.resInstId)) return false;
+	
+	if (res->isMultiple()) userOperationNotifier(ResOp::READ, resId);
+	else userOperationNotifier(ResOp::READ, {resId,});
 
-	return result;
+	return true;
 }
 
 /*
@@ -245,7 +247,9 @@ bool Instance::getPtr(const ResLink &resId, const T **value) {
 	if (!res->ptr(&resData, resId.resInstId) || !resData) return false;
 	*value = resData;
 
-	userOperationNotifier(ResOp::READ, resId);
+	if (res->isMultiple()) userOperationNotifier(ResOp::READ, resId);
+	else userOperationNotifier(ResOp::READ, {resId,});
+
 	return true;
 }
 

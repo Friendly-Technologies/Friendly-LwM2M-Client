@@ -110,12 +110,12 @@ def main():
 
     # ============================== initializing ==============================
     elif options.initialize:
-        # if len(args) != 2:
-        if len(args) != 1:
-            # parser.error("please, provide the path to the json-file and folder's path to the Wpp registers")
-            parser.error("please, provide the path to the json-file")
-        # if not OZ.ObjectInitializer(os.path.normpath(args[0]), os.path.normpath(args[1])).initialize():
-        if not OZ.ObjectInitializer(os.path.normpath(args[0])).initialize():
+        if 1 > len(args) > 2:
+            parser.error("please, provide the json-file's path "
+                         "and list of ID of the Objects must be initialized (optional)")
+        json_file = args[0]
+        list_of_id = None if len(args) != 2 else args[1]
+        if not OZ.ObjectInitializer(os.path.normpath(json_file), list_of_id).initialize():
             sys.exit(1)
 
     sys.exit(0)

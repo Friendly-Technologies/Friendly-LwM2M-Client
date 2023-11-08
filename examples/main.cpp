@@ -18,7 +18,7 @@
 #if OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
 #include "AccessControl.h"
 #endif
-#if OBJ_O_5_FIRMWARE_UPDATE_V12
+#if OBJ_O_5_FIRMWARE_UPDATE_V11
 #include "FwUpdate.h"
 #endif
 
@@ -47,7 +47,7 @@ int main() {
 	#if OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
 	AccessControl accessCtrl;
 	#endif
-	#if OBJ_O_5_FIRMWARE_UPDATE_V12
+	#if OBJ_O_5_FIRMWARE_UPDATE_V11
 	FwUpdateImpl fwUpd;
 	#endif
 
@@ -81,7 +81,7 @@ int main() {
 	accessCtrl.init(registry.lwm2mAccessControl());
 	registry.registerObj(registry.lwm2mAccessControl());
 	#endif
-	#if OBJ_O_5_FIRMWARE_UPDATE_V12
+	#if OBJ_O_5_FIRMWARE_UPDATE_V11
 	cout << endl << "---- Initialization wpp FirmwareUpdate ----" << endl;
 	fwUpd.init(registry.firmwareUpdate());
 	registry.registerObj(registry.firmwareUpdate());

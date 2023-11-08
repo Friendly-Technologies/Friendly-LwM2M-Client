@@ -1,10 +1,10 @@
 /*
  * FirmwareUpdate
- * Generated on: 2023-11-03 15:18:29
+ * Generated on: 2023-11-08 13:50:54
  * Created by: SinaiR&D
  */
 
-#include "o_5_firmware_update_v12/FirmwareUpdate.h"
+#include "o_5_firmware_update_v11/FirmwareUpdate.h"
 
 #include "Resource.h"
 #include "ResOp.h"
@@ -165,9 +165,6 @@ void FirmwareUpdate::resourcesCreate() {
 		#if RES_5_13                                                                                                                                                               
 		{MAXIMUM_DEFER_PERIOD_13,            ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::UINT },    
 		#endif                                                                                                                                                                     
-		#if RES_5_14                                                                                                                                                               
-		{AUTOMATIC_UPGRADE_AT_DOWNLOAD_14,   ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::BOOL },    
-		#endif                                                                                                                                                                     
 	};
 	_resources = std::move(resources);
 }
@@ -205,9 +202,6 @@ void FirmwareUpdate::resourcesInit() {
 	#endif
 	#if RES_5_13
 	resource(MAXIMUM_DEFER_PERIOD_13)->set(UINT_T(0));
-	#endif
-	#if RES_5_14
-	resource(AUTOMATIC_UPGRADE_AT_DOWNLOAD_14)->set(BOOL_T(false));
 	#endif
 	/* --------------- Code_cpp block 9 end --------------- */
 }

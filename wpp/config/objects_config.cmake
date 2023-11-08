@@ -13,7 +13,7 @@ if (OBJ_M_0_LWM2M_SECURITY_V11)
 endif()
 # ---------- Mandatory objects config block end ----------
 
-# ---------- Optional objects config bloсk begin ----------
+# ---------- Optional objects config block begin ----------
 option(OBJ_O_4_CONNECTIVITY_MONITORING_V13 "Include optional ConnectivityMonitoring object in the build" ON)
 if (OBJ_O_4_CONNECTIVITY_MONITORING_V13)
 	set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_O_4_CONNECTIVITY_MONITORING_V13=1)
@@ -22,9 +22,9 @@ option(OBJ_O_2_LWM2M_ACCESS_CONTROL_V11 "Include optional Lwm2mAccessControl obj
 if (OBJ_O_2_LWM2M_ACCESS_CONTROL_V11)
 	set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_O_2_LWM2M_ACCESS_CONTROL_V11=1)
 endif()
-option(OBJ_O_5_FIRMWARE_UPDATE_V12 "Include optional FirmwareUpdate object in the build" ON)
-if (OBJ_O_5_FIRMWARE_UPDATE_V12)
-	set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_O_5_FIRMWARE_UPDATE_V12=1)
+option(OBJ_O_5_FIRMWARE_UPDATE_V11 "Include optional FirmwareUpdate object in the build" ON)
+if (OBJ_O_5_FIRMWARE_UPDATE_V11)
+	set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_O_5_FIRMWARE_UPDATE_V11=1)
 endif()
 # ---------- Optional objects config block end ----------
 

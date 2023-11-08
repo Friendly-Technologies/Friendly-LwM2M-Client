@@ -1,5 +1,5 @@
 /*
- * Generated on: 2023-11-03 15:18:29
+ * Generated on: 2023-11-08 13:50:54
  * Created by: SinaiR&D
  */
 
@@ -8,7 +8,7 @@
 
 #include "ObjectInfo.h"
 
-#if OBJ_O_5_FIRMWARE_UPDATE_V12
+#if OBJ_O_5_FIRMWARE_UPDATE_V11
 
 namespace wpp {
 
@@ -18,9 +18,9 @@ static const ObjectInfo FIRMWARE_UPDATE_OBJ_INFO = {
 	/* Object ID */
 	OBJ_ID::FIRMWARE_UPDATE,
 	/* URN */
-	"urn:oma:lwm2m:oma:5:1.2",
+	"urn:oma:lwm2m:oma:5:1.1",
 	/* Object version */
-	{1,2},
+	{1,1},
 	/* Lwm2m version */
 	{1,1},
 	/* Is single */
@@ -41,5 +41,5 @@ static const ObjectInfo FIRMWARE_UPDATE_OBJ_INFO = {
 
 } /* namespace wpp */
 
-#endif /* OBJ_O_5_FIRMWARE_UPDATE_V12 */
+#endif /* OBJ_O_5_FIRMWARE_UPDATE_V11 */
 #endif // WPP_FIRMWARE_UPDATE_INFO_H

@@ -1,11 +1,11 @@
 /*
  * FirmwareUpdate
- * Generated on: 2023-11-03 15:18:29
+ * Generated on: 2023-11-08 13:50:54
  * Created by: SinaiR&D
  */
 
-#ifndef WPP_O_5_FIRMWARE_UPDATE_V12_H
-#define WPP_O_5_FIRMWARE_UPDATE_V12_H
+#ifndef WPP_O_5_FIRMWARE_UPDATE_V11_H
+#define WPP_O_5_FIRMWARE_UPDATE_V11_H
 
 #include "FirmwareUpdateConfig.h"
 #include "FirmwareUpdateInfo.h"
@@ -46,9 +46,6 @@ public:
 		#endif
 		#if RES_5_13
 		MAXIMUM_DEFER_PERIOD_13 = 13,
-		#endif
-		#if RES_5_14
-		AUTOMATIC_UPGRADE_AT_DOWNLOAD_14 = 14,
 		#endif
 	};
 
@@ -152,4 +149,4 @@ private:
 
 } /* namespace wpp */
 
-#endif /* WPP_O_5_FIRMWARE_UPDATE_V12_H */
+#endif /* WPP_O_5_FIRMWARE_UPDATE_V11_H */

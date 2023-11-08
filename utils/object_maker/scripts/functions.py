@@ -2,13 +2,24 @@ import os
 import sys
 import shutil
 
+TAG = "functions"
+
 
 def get_file_content(file_path):
     try:
         with open(file_path, 'r') as file:
             return True, file.read()
     except FileNotFoundError:
-        print(f'No such file "{file_path}"')
+        # LOG(TAG, get_file_content.__name__, f'No such file "{file_path}"'):
+        return False, ""
+
+
+def get_file_content_arr(file_path):
+    try:
+        with open(file_path) as file:
+            return True, [line.rstrip() for line in file]
+    except FileNotFoundError:
+        # LOG(TAG, get_file_content.__name__, f'No such file "{file_path}"'):
         return False, ""
 
 
@@ -34,6 +45,7 @@ def create_file(filename, content):
     file.close()
     return True
 
+
 def create_folder(folder_name):
     try:
         os.mkdir(folder_name)
@@ -50,4 +62,4 @@ def remove_folder(folder_path):
 
 
 def LOG(tag, func, text):
-    print(f"[{tag}:{func}()]: {text}")
+    print(f"[{tag}::{func}]: {text}")

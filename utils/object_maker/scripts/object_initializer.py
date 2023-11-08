@@ -66,13 +66,13 @@ class ObjectInitializer:
             # TODO ~
             if obtained_id == required_id and obtained_version == required_version:
                 func.LOG(self.log_tag,
-                         self.search_registry.__name__,
-                         f"the {data_dict[const.KEY_DICT_OBJ_NAMES]['class']} meet the requirements ")
+                         self.search_object.__name__,
+                         f"the {data_dict[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]} Object meet the requirements")
                 self.register_data = data_dict
                 return True
 
         func.LOG(self.log_tag,
-                 self.search_registry.__name__,
+                 self.search_object.__name__,
                  f"unable to found the Object appropriate to required id {required_id} and version {required_version}")
         return False
 
@@ -80,7 +80,7 @@ class ObjectInitializer:
         errcode, content = func.get_file_content(const.FILE_TMPLT_INIT_H)
         if not errcode:
             return False
-        register_name = self.register_data[const.KEY_DICT_OBJ_NAMES]['class']
+        register_name = self.register_data[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]
         register_name_up = self.register_data[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_UNDERLINE]
         content = content.replace("__CLASS_NAME__", register_name)
         content = content.replace("<<IF_DEF_DIRECTIVE>>", register_name_up)
@@ -91,7 +91,7 @@ class ObjectInitializer:
         errcode, content = func.get_file_content(const.FILE_TMPLT_INIT_CPP)
         if not errcode:
             return False
-        register_name = self.register_data[const.KEY_DICT_OBJ_NAMES]['class']
+        register_name = self.register_data[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]
         content = content.replace("__CLASS_NAME__", register_name)
         func.create_file(f"{register_name}/{register_name}.cpp", content)
         return True
@@ -100,7 +100,7 @@ class ObjectInitializer:
         errcode, content = func.get_file_content(const.FILE_TMPLT_INIT_CMAKE)
         if not errcode:
             return False
-        register_name = self.register_data[const.KEY_DICT_OBJ_NAMES]['class']
+        register_name = self.register_data[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]
         content = content.replace("__CLASS_NAME__", register_name)
         func.create_file(f"{register_name}/{const.FILE_CMAKE_LISTS}", content)
         return True

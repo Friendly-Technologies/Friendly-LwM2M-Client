@@ -105,6 +105,33 @@ class ObjectInitializer:
         func.create_file(f"{register_name}/{const.FILE_CMAKE_LISTS}", content)
         return True
 
+    def get_enum_of_resources(self, file):
+        """
+        Read header file of the existing Object, extract the enum of the
+        resources, create dictionary based on enum and return this dictionary.
+        """
+        errcode, content = func.get_file_content_arr(file)
+        if not errcode:
+            func.LOG(self.log_tag,
+                     self.get_enum_of_resources.__name__,
+                     "unable to get enum of resources")
+            return None
+        resources_dict = {}
+        flag_fill = False
+        for line in content:
+            if line.find("};") != -1:
+                flag_fill = False
+            if flag_fill:
+                if line.find('#') != -1:
+                    continue
+                divided_line = line.split('=')
+                resource = divided_line[0].strip()
+                number = divided_line[1]
+                resources_dict[str(resource)] = number
+            if line.find("enum") != -1 and line.find("ID") != -1 and line.find("ID_T") != 1:
+                flag_fill = True
+
+        return resources_dict
     def create_registers(self):
         pass
 

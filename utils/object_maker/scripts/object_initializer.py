@@ -161,6 +161,34 @@ class ObjectInitializer:
                     completed_res_dict[res_key] = res_1_val
         return completed_res_dict
 
+    def create_instances(self, obj):
+        # filter empty structures of the instances:
+        instances = [instance for instance in obj["instances"] if instance != {}]
+        result = ""
+        for instance in instances:
+            name = self.register_data[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]
+            folder = self.register_data["object_folder"]
+            file = self.register_data[const.KEY_DICT_OBJ_FILES][const.KEY_FILE_IMPL_H]
+            file_path = f"{const.FOLDER_OBJECTS}/{folder}/{file}"
+            resources_1 = self.get_enum_of_resources(file_path)
+            resources_2 = [i for i in instance["resources"] if i != {}]
+            merged_dictionary = self.assign_value_to_resources(resources_1, resources_2)
+            result += f"\twpp::Instance *{name} = testObj.createInstance({instance[const.KEY_JSON_ID]});\n"
+            result += f"\t{name}->subscribe(this);\n"
+            for resource_key, resources_value in merged_dictionary.items():
+                if type(resources_value) is int:
+                    for i in ["INT_T", "UINT_T", "FLOAT_T", "TIME_T"]:
+                        result += f"\t{name}->set({name}::{resource_key}, {i}({resources_value}));\n"
+                    continue
+                elif type(resources_value) is list:
+                    for i in resources_value:
+                        if i == {}:
+                            continue
+                        result += (f"\t{name}->set({{{name}::{resource_key}, "
+                                   f"{i[const.KEY_JSON_ID]}}}, {i[const.KEY_JSON_VAL]});\n")
+                    continue
+                result += f"\t{name}->set({name}::{resource_key}, {resources_value});\n"
+        return result
     def initialize(self):
         """
         Returns True if initialized example is created successful.

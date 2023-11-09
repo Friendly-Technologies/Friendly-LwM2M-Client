@@ -1,64 +1,33 @@
 #include "__CLASS_NAME__.h"
 
-__CLASS_NAME__Impl::__CLASS_NAME__Impl() {}
+__CLASS_NAME__Obj::__CLASS_NAME__Obj() {}
 
-__CLASS_NAME__Impl::~__CLASS_NAME__Impl() {}
+__CLASS_NAME__Obj::~__CLASS_NAME__Obj() {}
 
-void __CLASS_NAME__Impl::init(Object &testObj) {
-    testObj.subscribe(this);
-    // <instnace id>
-    wpp::Instance *test = testObj.createInstance(0);
-    test->subscribe(this);
+void __CLASS_NAME__Obj::init(Object &__CLASS_NAME__Obj) {
+    __CLASS_NAME__Obj.subscribe(this);
 
-    // <single resource with type BOOL_T>
-    test->set(__CLASS_NAME__::RES_0, true);
+__INSTANCES__}
 
-    // <single resource with type INT_T/UINT_T/FLOAT_T/TIME_T>
-    test->set(__CLASS_NAME__::RES_1, INT_T(123));
-    test->set(__CLASS_NAME__::RES_1, UINT_T(123));
-    test->set(__CLASS_NAME__::RES_1, FLOAT_T(123));
-    test->set(__CLASS_NAME__::RES_1, TIME_T(123));
-
-    // <single resource with type STRING_T>
-    test->set(__CLASS_NAME__::RES_2, STRING_T("test string"));
-
-    // <single resource with type OPAQUE_T>
-    test->set(__CLASS_NAME__::RES_3, OPAQUE_T{0x01, 0x0f, 0x55, 0xff});
-
-    // <single resource with type OBJ_LINK_T>
-    test->set(__CLASS_NAME__::RES_4, OBJ_LINK_T{2, 0});
-
-    // <single resource with type CORE_LINK_T>
-    test->set(__CLASS_NAME__::RES_2, CORE_LINK_T("</5>,</4>,</55>;ver=1.9,</55/0>"));
-
-    // <single resource with type EXECUTE_T>
-    test->set(__CLASS_NAME__::RES_6, (EXECUTE_T)[](ID_T id, const OPAQUE_T& data) {
-    });
-
-    // <multiple resource with any type>
-    test->set({__CLASS_NAME__::RES_7, 2}, INT_T(4223));
-    test->set({__CLASS_NAME__::RES_7, 4}, INT_T(65));
-}
-
-void __CLASS_NAME__Impl::objectRestore(Object &object) {
+void __CLASS_NAME__Obj::objectRestore(Object &object) {
     object.clear();
     init(object);
 }
 
-void __CLASS_NAME__Impl::instanceCreated(Object &object, ID_T instanceId) {
+void __CLASS_NAME__Obj::instanceCreated(Object &object, ID_T instanceId) {
 }
 
-// void __CLASS_NAME__Impl::instanceDeleting(Object &object, ID_T instanceId) {
+// void __CLASS_NAME__Obj::instanceDeleting(Object &object, ID_T instanceId) {
 // }
 
-void __CLASS_NAME__Impl::resourceRead(Instance &inst, const ResLink &resId) {
+void __CLASS_NAME__Obj::resourceRead(Instance &inst, const ResLink &resId) {
 }
 
-// void __CLASS_NAME__Impl::resourceWrite(Instance &inst, const ResLink &resId) {
+// void __CLASS_NAME__Obj::resourceWrite(Instance &inst, const ResLink &resId) {
 // }
 
-// void __CLASS_NAME__Impl::resourceExecute(Instance &inst, const ResLink &resId) {
+// void __CLASS_NAME__Obj::resourceExecute(Instance &inst, const ResLink &resId) {
 // }
 
-void __CLASS_NAME__Impl::resourcesReplaced(Instance &inst) {
+void __CLASS_NAME__Obj::resourcesReplaced(Instance &inst) {
 }

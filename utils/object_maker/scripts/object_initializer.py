@@ -137,6 +137,28 @@ class ObjectInitializer:
 
     def create_instances(self):
         pass
+    def assign_value_to_resources(self, res_names, res_values):
+        """
+        Creates a new dictionary of the resources.
+        The names of keys reach for that obtained from the existing Object (first parameter).
+        The values reach for a list of dictionaries obtained from the provided JSON file (second parameter).
+        """
+        completed_res_dict = {}
+        for resource_dict in res_values:
+            res_id_1 = resource_dict[const.KEY_JSON_ID]
+            try:
+                res_1_val = resource_dict["value"]
+            except KeyError:
+                res_1_val = "(EXECUTE_T)[](ID_T id, const OPAQUE_T& data) {\n})"
+            if type(res_1_val) is dict:
+                value = ""
+                for i in res_1_val.values():
+                    value += f"{i},"
+                res_1_val = f"OBJ_LINK_T{{{value[0:-1]}}});"
+            for res_key, res_val in res_names.items():
+                if res_id_1 == res_val:
+                    completed_res_dict[res_key] = res_1_val
+        return completed_res_dict
 
     def initialize(self):
         """

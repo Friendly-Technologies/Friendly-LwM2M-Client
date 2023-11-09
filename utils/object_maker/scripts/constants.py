@@ -57,7 +57,7 @@ KEY_NAME = "name"
 KEY_DESCRIPTION = "description"
 KEY_ID_OBJ = "obj_id"
 KEY_ID_RES = "res_id"
-KEY_JSON_ID = "id"
+
 KEY_URN = "urn"
 KEY_VER_LWM2M = "lwm2m_version"
 KEY_VER = "version"
@@ -97,3 +97,6 @@ ENUM_FIELD_PARTS_CNT = 2
 
 USER_CODE_BLOCK_START = r'block \d+ start'
 USER_CODE_BLOCK_END = r'block \d+ end'
+
+KEY_JSON_ID = "id"
+KEY_JSON_VAL = "value"

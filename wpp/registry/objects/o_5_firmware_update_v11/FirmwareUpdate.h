@@ -78,7 +78,9 @@ public:
 		R_FW_UPD_FAIL = 8,
 		R_UNSUPPORTED_PROTOCOL = 9,
 		R_FW_UPD_CANCELLED = 10,
+		#if RES_5_13
 		R_FW_UPD_DEFERRED = 11,
+		#endif
 		UPD_RES_MAX
 	};
 
@@ -116,8 +118,6 @@ public:
 	~FirmwareUpdate();
 
 	/* --------------- Code_h block 2 start --------------- */
-	void fwFromUriDownloaded();
-	void resetStateMachine();
 	/* --------------- Code_h block 2 end --------------- */
 
 protected:
@@ -149,14 +149,18 @@ private:
 	void resourcesInit();
 	
 	/* --------------- Code_h block 3 start --------------- */
-	void changeState(State state);
 	void changeUpdRes(UpdRes res);
+	void resetStateMachine();
 
 	bool isUriValid(STRING_T uri);
-	STRING_T extarctProtocolFormUri(STRING_T uri);
+	STRING_T extractSchemeFromUri(STRING_T uri);
+	bool isSchemeValid(STRING_T scheme);
 	#if RES_5_8
-	FwUpdProtocol protocolStrToEnum(STRING_T protocol);
+	bool isSchemeSupported(STRING_T scheme);
+	FwUpdProtocol schemeToProtId(STRING_T scheme);
 	#endif
+
+	bool isNewStateValid(State newState);
 	/* --------------- Code_h block 3 end --------------- */
 
 private:

@@ -178,8 +178,8 @@ bool Instance::set(const ResLink &resId, const T &value)  {
 	if (!res->set(value, resId.resInstId)) return false;
 
 	const ResLink &link = res->isMultiple()? resId : ResLink {resId.resId,};
-	notifyValueChanged(link);
 	userOperationNotifier(ResOp::WRITE_UPD, link);
+	notifyValueChanged(link);
 
 	return true;
 }
@@ -203,8 +203,8 @@ bool Instance::setMove(const ResLink &resId, const T &value) {
 	*resData = std::move(value);
 
 	const ResLink &link = res->isMultiple()? resId : ResLink {resId.resId,};
-	notifyValueChanged(link);
 	userOperationNotifier(ResOp::WRITE_UPD, link);
+	notifyValueChanged(link);
 
 	return true;
 }

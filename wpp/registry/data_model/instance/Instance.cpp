@@ -19,8 +19,8 @@ bool Instance::clear(ID_T resId) {
 
 	bool result = res->clear();
 	if (result) {
-		notifyValueChanged({resId,});
 		userOperationNotifier(ResOp::DELETE, {resId,});
+		notifyValueChanged({resId,});
 	}
 
 	return result;
@@ -32,8 +32,8 @@ bool Instance::remove(const ResLink &resId) {
 
 	bool result = res->remove(resId.resInstId);
 	if (result) {
-		notifyValueChanged({resId.resId, resId.resInstId});
 		userOperationNotifier(ResOp::DELETE, {resId.resId, resId.resInstId});
+		notifyValueChanged({resId.resId, resId.resInstId});
 	}
 
 	return result;

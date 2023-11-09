@@ -10,7 +10,7 @@ using namespace wpp;
 using namespace std;
 
 class FwUpdateImpl: public ObjActObserver, public InstEventObserver {
-	public:
+public:
 	void init(Object &fwUpdObj) {
 		fwUpdObj.subscribe(this);
         Instance *fwUpd = fwUpdObj.createInstance();
@@ -37,7 +37,18 @@ class FwUpdateImpl: public ObjActObserver, public InstEventObserver {
 
     void instEvent(Instance &inst, EVENT_ID_T eventId) override {
         cout << "FwUpdateImpl: event: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ", eventId: " << eventId << endl;
+        if (eventId == FirmwareUpdate::E_URI_DOWNLOADIN) _uriDownloading = true;
     }
+
+    void fwIsDownloaded(Instance &inst) {
+        if (!_uriDownloading) return;
+
+        _uriDownloading = false;
+        inst.set(FirmwareUpdate::STATE_3, (INT_T)FirmwareUpdate::S_DOWNLOADED);
+    }
+
+private:
+    bool _uriDownloading = false;
 };
 
 #endif // FIRMWARE_UPDATE_H

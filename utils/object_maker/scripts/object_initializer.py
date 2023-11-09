@@ -125,19 +125,18 @@ class ObjectInitializer:
             if flag_fill:
                 if line.find('#') != -1:
                     continue
-                divided_line = line.split('=')
-                resource = divided_line[0].strip()
-                number = divided_line[1]
-                resources_dict[str(resource)] = number
+                divided_line = line.split('=')  # "SMS_NUMBER_9 = 9," -> ["SMS_NUMBER_9 ", " 9,"]
+                divided_line = [i.strip() for i in divided_line]  # ["SMS_NUMBER_9 ", " 9,"] -> ["SMS_NUMBER_9", "9,"]
+                resource = divided_line[0]  # "SMS_NUMBER_9"
+                number = int(divided_line[1][0:-1])  # "9," -> 9
+                resources_dict[str(resource)] = number  # {"SMS_NUMBER_9": 9}
             if line.find("enum") != -1 and line.find("ID") != -1 and line.find("ID_T") != 1:
                 flag_fill = True
-
         return resources_dict
+
     def create_registers(self):
         pass
 
-    def create_instances(self):
-        pass
     def assign_value_to_resources(self, res_names, res_values):
         """
         Creates a new dictionary of the resources.
@@ -189,6 +188,7 @@ class ObjectInitializer:
                     continue
                 result += f"\t{name}->set({name}::{resource_key}, {resources_value});\n"
         return result
+
     def initialize(self):
         """
         Returns True if initialized example is created successful.

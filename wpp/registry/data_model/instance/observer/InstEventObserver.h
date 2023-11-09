@@ -15,7 +15,7 @@ public:
      * a specific implementation of the object. Each implementation of
      * the object can have its own specific events.
      */
-    virtual void event(Instance &inst, EVENT_ID_T eventId) {};
+    virtual void instEvent(Instance &inst, EVENT_ID_T eventId) {};
 };
 
 } // namespace wpp

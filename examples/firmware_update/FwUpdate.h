@@ -3,12 +3,13 @@
 
 #include <iostream>
 #include "WppRegistry.h"
-#include "ObjObserver.h"
+#include "ObjActObserver.h"
+#include "InstEventObserver.h"
 
 using namespace wpp;
 using namespace std;
 
-class FwUpdateImpl: public ObjObserver, public InstEventObserver {
+class FwUpdateImpl: public ObjActObserver, public InstEventObserver {
 	public:
 	void init(Object &fwUpdObj) {
 		fwUpdObj.subscribe(this);
@@ -34,15 +35,7 @@ class FwUpdateImpl: public ObjObserver, public InstEventObserver {
         init(object);
 	}
 
-    void instanceCreated(Object &object, ID_T instanceId) override {
-        cout << "FwUpdateImpl: instanceCreated: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
-    }
-
-    void instanceDeleting(Object &object, ID_T instanceId) override {
-		cout << "FwUpdateImpl: instanceDeleting: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
-    }
-
-    void event(Instance &inst, EVENT_ID_T eventId) override {
+    void instEvent(Instance &inst, EVENT_ID_T eventId) override {
         cout << "FwUpdateImpl: event: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ", eventId: " << eventId << endl;
     }
 };

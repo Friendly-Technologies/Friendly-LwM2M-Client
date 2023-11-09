@@ -62,7 +62,7 @@ protected:
     }
 
     void eventNotify(Instance &inst, EVENT_ID_T eventId) {
-        for(InstEventObserver *observer : _eventObservers) observer->event(inst, eventId);
+        for(InstEventObserver *observer : _eventObservers) observer->instEvent(inst, eventId);
     }
 
 private:

@@ -68,6 +68,7 @@ class ObjectInitializer:
                 func.LOG(self.log_tag,
                          self.search_object.__name__,
                          f"the {data_dict[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]} Object meet the requirements")
+                data_dict["object_folder"] = obj
                 self.register_data = data_dict
                 return True
 

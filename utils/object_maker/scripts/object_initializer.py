@@ -88,11 +88,12 @@ class ObjectInitializer:
         func.create_file(f"{register_name}/{register_name}.h", content)
         return True
 
-    def generate_cpp(self):
+    def generate_cpp(self, instances_txt):
         errcode, content = func.get_file_content(const.FILE_TMPLT_INIT_CPP)
         if not errcode:
             return False
         register_name = self.register_data[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]
+        content = content.replace("__INSTANCES__", instances_txt)
         content = content.replace("__CLASS_NAME__", register_name)
         func.create_file(f"{register_name}/{register_name}.cpp", content)
         return True
@@ -149,12 +150,19 @@ class ObjectInitializer:
             try:
                 res_1_val = resource_dict["value"]
             except KeyError:
-                res_1_val = "(EXECUTE_T)[](ID_T id, const OPAQUE_T& data) {\n})"
-            if type(res_1_val) is dict:
+                res_1_val = None
+            # correct value in order to its types:
+            if res_1_val is None:
+                res_1_val = "(EXECUTE_T)[](ID_T id, const OPAQUE_T& data) {\n\t\treturn true;\n\t}"
+            elif type(res_1_val) is dict:
                 value = ""
                 for i in res_1_val.values():
                     value += f"{i},"
-                res_1_val = f"OBJ_LINK_T{{{value[0:-1]}}});"
+                res_1_val = f"OBJ_LINK_T{{{value[0:-1]}}}"
+            elif type(res_1_val) is str:
+                res_1_val = f'STRING_T("{res_1_val}")'
+            elif type(res_1_val) is bool:
+                res_1_val = "true" if res_1_val else "false"
             for res_key, res_val in res_names.items():
                 if res_id_1 == res_val:
                     completed_res_dict[res_key] = res_1_val
@@ -213,7 +221,9 @@ class ObjectInitializer:
                 continue
             if not self.search_object(obj[const.KEY_JSON_ID], obj[const.KEY_VER]):
                 continue
+            # todo: must be return false if loop above will return false for each object
+            instances_txt = self.create_instances(obj)
             func.create_folder(self.register_data[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS])
-            if not self.generate_header() or not self.generate_cpp() or not self.generate_cmake_lists():
+            if not self.generate_header() or not self.generate_cpp(instances_txt) or not self.generate_cmake_lists():
                 return False
         return True

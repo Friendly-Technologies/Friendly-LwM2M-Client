@@ -4,12 +4,11 @@
 #include <iostream>
 #include "WppRegistry.h"
 #include "ObjObserver.h"
-#include "InstObserver.h"
 
 using namespace wpp;
 using namespace std;
 
-class FwUpdateImpl: public ObjObserver, public InstObserver {
+class FwUpdateImpl: public ObjObserver, public InstEventObserver {
 	public:
 	void init(Object &fwUpdObj) {
 		fwUpdObj.subscribe(this);
@@ -41,22 +40,6 @@ class FwUpdateImpl: public ObjObserver, public InstObserver {
 
     void instanceDeleting(Object &object, ID_T instanceId) override {
 		cout << "FwUpdateImpl: instanceDeleting: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
-	}
-
-	void resourceRead(Instance &inst, const ResLink &resId) override {
-        cout << "FwUpdateImpl: resourceRead: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
-    }
-
-    void resourceWrite(Instance &inst, const ResLink &resId) override {
-        cout << "FwUpdateImpl: resourceWrite: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
-    }
-
-    void resourceExecute(Instance &inst, const ResLink &resId) override {
-        cout << "FwUpdateImpl: resourceExecute: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
-    }
-
-    void resourcesReplaced(Instance &inst) override {
-        cout << "FwUpdateImpl: resourcesReplaced: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << endl;
     }
 
     void event(Instance &inst, EVENT_ID_T eventId) override {

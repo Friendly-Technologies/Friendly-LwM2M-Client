@@ -4,12 +4,11 @@
 #include <iostream>
 #include "WppRegistry.h"
 #include "ObjObserver.h"
-#include "InstObserver.h"
 
 using namespace wpp;
 using namespace std;
 
-class ServerImpl: public ObjObserver, public InstObserver {
+class ServerImpl: public ObjObserver, public InstOpObserver {
 	public:
     void init(Object &serverObj) {
         serverObj.subscribe(this);

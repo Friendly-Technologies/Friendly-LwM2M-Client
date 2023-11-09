@@ -1,13 +1,15 @@
-#ifndef WPP_INST_OBSERVER_H_
-#define WPP_INST_OBSERVER_H_
+#ifndef WPP_INST_OP_OBSERVER_H_
+#define WPP_INST_OP_OBSERVER_H_
+
+#include "types.h" 
 
 namespace wpp {
 
 class Instance;
 
-class InstObserver {
+class InstOpObserver {
 public:
-    virtual ~InstObserver() {};
+    virtual ~InstOpObserver() {};
     /*
      * Notifies observer immediately after read resource by server. 
      * Resource is already readed during this call.
@@ -28,14 +30,8 @@ public:
      * Instance and resource are already written during this call.
      */
     virtual void resourcesReplaced(Instance &inst) {};
-    /*
-     * Notifies observer about the generation of a specific event for
-     * a specific implementation of the object. Each implementation of
-     * the object can have its own specific events.
-     */
-    virtual void event(Instance &inst, EVENT_ID_T eventId) {};
 };
 
 } // namespace wpp
 
-#endif /* WPP_INST_OBSERVER_H_ */
+#endif /* WPP_INST_OP_OBSERVER_H_ */

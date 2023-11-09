@@ -4,14 +4,13 @@
 #include <iostream>
 #include "WppRegistry.h"
 #include "ObjObserver.h"
-#include "InstObserver.h"
 
 #include <ifaddrs.h>
 
 using namespace wpp;
 using namespace std;
 
-class CnnctvtMonnImpl: public ObjObserver, public InstObserver {
+class CnnctvtMonnImpl: public ObjObserver, public InstOpObserver {
 	public:
 	void init(Object &connMonObj) {
 		connMonObj.subscribe(this);

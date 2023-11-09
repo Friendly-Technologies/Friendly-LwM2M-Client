@@ -2,7 +2,8 @@
 #define WPP_INST_SUBJECT_H_
 
 #include "ResOp.h"
-#include "InstObserver.h"
+#include "InstOpObserver.h"
+#include "InstEventObserver.h"
 
 namespace wpp {
 
@@ -11,16 +12,28 @@ class Instance;
 class InstSubject {
 public:
     /*
-	 * Subscribers will be notified about the write, delete
+	 * Subscribers will be notified about the write, delete, replace
 	 * and execute of instance resources initiated by server.
 	 */
-	void subscribe(InstObserver *observer) {
+	void subscribe(InstOpObserver *observer) {
         if (!observer) return;
-        if (std::find(_observers.begin(), _observers.end(), observer) == _observers.end()) 
-            _observers.push_back(observer);
+        if (std::find(_opObservers.begin(), _opObservers.end(), observer) == _opObservers.end()) 
+            _opObservers.push_back(observer);
     }
-	void unsubscribe(InstObserver *observer) {
-        _observers.erase(std::find(_observers.begin(), _observers.end(), observer));
+	void unsubscribe(InstOpObserver *observer) {
+        _opObservers.erase(std::find(_opObservers.begin(), _opObservers.end(), observer));
+    }
+
+    /*
+	 * Subscribers will be notified about the custom instance events.
+	 */
+    void subscribe(InstEventObserver *observer) {
+        if (!observer) return;
+        if (std::find(_eventObservers.begin(), _eventObservers.end(), observer) == _eventObservers.end()) 
+            _eventObservers.push_back(observer);
+    }
+	void unsubscribe(InstEventObserver *observer) {
+        _eventObservers.erase(std::find(_eventObservers.begin(), _eventObservers.end(), observer));
     }
 
 protected:
@@ -28,7 +41,7 @@ protected:
 	 * Notify observers about operation
 	 */
 	void operationNotify(Instance &inst, const ResLink &resId, ResOp::TYPE type) {
-        for(InstObserver *observer : _observers) {
+        for(InstOpObserver *observer : _opObservers) {
             switch (type) {
             case ResOp::READ: 
                 observer->resourceRead(inst, resId);
@@ -49,11 +62,12 @@ protected:
     }
 
     void eventNotify(Instance &inst, EVENT_ID_T eventId) {
-        for(InstObserver *observer : _observers) observer->event(inst, eventId);
+        for(InstEventObserver *observer : _eventObservers) observer->event(inst, eventId);
     }
 
 private:
-    std::vector<InstObserver*> _observers;
+    std::vector<InstOpObserver*> _opObservers;
+    std::vector<InstEventObserver*> _eventObservers;
 };
 
 }

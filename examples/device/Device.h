@@ -4,12 +4,11 @@
 #include <iostream>
 #include "WppRegistry.h"
 #include "ObjObserver.h"
-#include "InstObserver.h"
 
 using namespace wpp;
 using namespace std;
 
-class DeviceImpl: public ObjObserver, public InstObserver {
+class DeviceImpl: public ObjObserver, public InstOpObserver {
 	public:
     DeviceImpl(): _reboot(false) {}
 

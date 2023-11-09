@@ -4,7 +4,6 @@
 #include <iostream>
 #include "WppRegistry.h"
 #include "ObjObserver.h"
-#include "InstObserver.h"
 
 #include <ifaddrs.h>
 
@@ -12,7 +11,7 @@ using namespace wpp;
 using namespace std;
 
 
-class AccessControl: public ObjObserver, public InstObserver {
+class AccessControl: public ObjObserver, public InstOpObserver {
 	public:
 	void init(Object &accssCtrlObj) {
 		accssCtrlObj.subscribe(this);

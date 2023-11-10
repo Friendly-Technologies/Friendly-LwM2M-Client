@@ -1,13 +1,11 @@
 #ifndef <<IF_DEF_DIRECTIVE>>_H_
 #define <<IF_DEF_DIRECTIVE>>_H_
 
-#include "WppRegistry.h"
-#include "ObjObserver.h"
-#include "InstObserver.h"
+__INCLUDES__
 
 using namespace wpp;
 
-class __CLASS_NAME__Impl: public wpp::ObjObserver, public wpp::InstObserver {
+class __CLASS_NAME__Impl: __INHERITANCES__ {
 public:
     __CLASS_NAME__Impl();
     ~__CLASS_NAME__Impl();
@@ -15,21 +13,6 @@ public:
     void init(Object &testObj);
 
 private:
-    void objectRestore(Object &object) override;
-
-    // inst_create_clb: true,   <generate callback for notify about creating instance>
-    void instanceCreated(Object &object, ID_T instanceId) override;
-    // inst_delete_clb: false, <generate callback for notify about deleteing instance>
-    // void instanceDeleting(Object &object, ID_T instanceId) override;
-
-    // res_read_clb: true,  <generate callback for notify about reading resource>
-    void resourceRead(Instance &inst, const ResLink &resId) override;
-    // res_write_clb: false,    <generate callback for notify about writing resource>
-    // void resourceWrite(Instance &inst, const ResLink &resId) override;
-    // res_execute_clb: false, <generate callback for notify about executing resource>
-    // void resourceExecute(Instance &inst, const ResLink &resId) override;
-    //res_replace_clb: true,    <generate callback for notify about replacing all resource>
-    void resourcesReplaced(Instance &inst) override;
-};
+__CALLBACKS__};
 
 #endif // <<IF_DEF_DIRECTIVE>>_H_

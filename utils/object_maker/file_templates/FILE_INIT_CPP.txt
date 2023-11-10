@@ -14,20 +14,4 @@ void __CLASS_NAME__Obj::objectRestore(Object &object) {
     init(object);
 }
 
-void __CLASS_NAME__Obj::instanceCreated(Object &object, ID_T instanceId) {
-}
-
-// void __CLASS_NAME__Obj::instanceDeleting(Object &object, ID_T instanceId) {
-// }
-
-void __CLASS_NAME__Obj::resourceRead(Instance &inst, const ResLink &resId) {
-}
-
-// void __CLASS_NAME__Obj::resourceWrite(Instance &inst, const ResLink &resId) {
-// }
-
-// void __CLASS_NAME__Obj::resourceExecute(Instance &inst, const ResLink &resId) {
-// }
-
-void __CLASS_NAME__Obj::resourcesReplaced(Instance &inst) {
-}
+__CALLBACKS__

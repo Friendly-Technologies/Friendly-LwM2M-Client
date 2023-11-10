@@ -85,6 +85,8 @@ DATA_KEYS = {KEY_NAME:          "Name",
              KEY_DEFINE_RES:    "Define",
              }
 
+WPP_TYPES = ["INT", "UINT", "BOOL", "STRING", "EXECUTE", "OPAQUE", "FLOAT", "OBJ_LINK", "TIME", "CORE_LINK", "NONE"]
+
 LWM2M_WEB_RESOURCES = ["raw.githubusercontent.com", "github.com"]
 
 OPTIONS_MANDATORY = ["Mandatory", "Optional"]

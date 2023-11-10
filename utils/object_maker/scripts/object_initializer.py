@@ -212,7 +212,7 @@ class ObjectInitializer:
             for line in data:
                 if line.find(resource[const.KEY_NAME]) == -1:
                     continue
-                for res_type, res_type_len in const.WORD_LEN_TYPES.items():
+                for res_type in const.WPP_TYPES:
                     founded = line.find(res_type)
                     if founded != -1:
                         resource["type"] = f"{res_type}_T"

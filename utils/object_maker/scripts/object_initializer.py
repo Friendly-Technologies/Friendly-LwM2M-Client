@@ -138,6 +138,25 @@ class ObjectInitializer:
                 flag_fill = True
         return resources
 
+    def transform_types_of_value(self, res_value, res_type):
+        """
+        Transform value in order to its types.
+        """
+        if res_type in ["INT_T", "UINT_T", "FLOAT_T", "TIME_T"]:
+            return f'{res_type}({res_value})'
+        if res_type in ["CORE_LINK_T", "STRING_T"]:
+            return f'{res_type}("{res_value}")'
+        elif res_type == "EXECUTE_T":
+            return "(EXECUTE_T)[](ID_T id, const OPAQUE_T& data) {\n\t\treturn true;\n\t}"
+        elif res_type == "BOOL_T":
+            return "true" if res_value else "false"
+        elif res_type == "OPAQUE_T":
+            bytes_values = [f"0x{res_value[i:i+2]}" for i in range(0, len(res_value), 2)]
+            bytes_values_j = ", ".join(bytes_values)
+            return f"OPAQUE_T{{{bytes_values_j}}}"
+        elif res_type == "OBJ_LINK_T":
+            values = [str(i) for i in res_value.values()]
+            return f"OBJ_LINK_T{{{', '.join(values)}}}"
 
     def assign_value_to_resources(self, resources_from_json, resources_from_obj):
         """
@@ -207,26 +226,29 @@ class ObjectInitializer:
         for instance in instances:
             name = self.register_data[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]
             folder = self.register_data["object_folder"]
-            file = self.register_data[const.KEY_DICT_OBJ_FILES][const.KEY_FILE_IMPL_H]
-            file_path = f"{const.FOLDER_OBJECTS}/{folder}/{file}"
-            resources_1 = self.get_enum_of_resources(file_path)
-            resources_2 = [i for i in instance["resources"] if i != {}]
-            merged_dictionary = self.assign_value_to_resources(resources_1, resources_2)
+            file_h = self.register_data[const.KEY_DICT_OBJ_FILES][const.KEY_FILE_IMPL_H]
+            file_cpp = self.register_data[const.KEY_DICT_OBJ_FILES][const.KEY_FILE_IMPL_CPP]
+            file_path_h = f"{const.FOLDER_OBJECTS}/{folder}/{file_h}"
+            file_path_cpp = f"{const.FOLDER_OBJECTS}/{folder}/{file_cpp}"
+
+            resources_from_json = [i for i in instance["resources"] if i != {}]
+            resources_from_obj = self.get_enum_of_resources(file_path_h)
+            resources_merged = self.assign_value_to_resources(resources_from_json, resources_from_obj)
+            resources_merged = self.assign_type_to_resources(file_path_cpp, resources_merged)
+            # [print(i) for i in resources_merged]
             result += f"\twpp::Instance *{name} = testObj.createInstance({instance[const.KEY_JSON_ID]});\n"
             result += f"\t{name}->subscribe(this);\n"
-            for resource_key, resources_value in merged_dictionary.items():
-                if type(resources_value) is int:
-                    for i in ["INT_T", "UINT_T", "FLOAT_T", "TIME_T"]:
-                        result += f"\t{name}->set({name}::{resource_key}, {i}({resources_value}));\n"
+            for resource_dict in resources_merged:
+                resources_value = resource_dict[const.KEY_JSON_VAL]
+                resources_type = resource_dict["type"]
+                if type(resources_value) is list:
+                    res_instances_list = [inst for inst in resources_value if inst != {}]
+                    for res_instance_dict in res_instances_list:
+                        value = self.transform_types_of_value(res_instance_dict["value"], resources_type)
+                        result += f'\t{name}->set({{{name}::{resource_dict["name"]}}}, {value});\n'
                     continue
-                elif type(resources_value) is list:
-                    for i in resources_value:
-                        if i == {}:
-                            continue
-                        result += (f"\t{name}->set({{{name}::{resource_key}, "
-                                   f"{i[const.KEY_JSON_ID]}}}, {i[const.KEY_JSON_VAL]});\n")
-                    continue
-                result += f"\t{name}->set({name}::{resource_key}, {resources_value});\n"
+                value = self.transform_types_of_value(resources_value, resources_type)
+                result += f'\t{name}->set({name}::{resource_dict["name"]}, {value});\n'
         return result
 
     def initialize(self):

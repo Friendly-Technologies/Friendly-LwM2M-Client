@@ -16,7 +16,7 @@ public:
         deviceObj.subscribe(this);
         wpp::Instance *device = deviceObj.createInstance();
 
-        device->set(Device::REBOOT_4, (EXECUTE_T)[this](ID_T id, const OPAQUE_T& data) {
+        device->set(Device::REBOOT_4, (EXECUTE_T)[this](Instance& inst, ID_T resId, const OPAQUE_T& data) {
             cout << "Device: execute REBOOT_4" << endl;
             this->_reboot = true;
             return true;

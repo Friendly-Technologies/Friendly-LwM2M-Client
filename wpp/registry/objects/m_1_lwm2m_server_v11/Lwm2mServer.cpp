@@ -156,7 +156,7 @@ void Lwm2mServer::resourcesInit() {
 
 	// TODO: Disable (Res id 4) must be implemented by wakaama core or WppClient
 	#if RES_1_4
-	resource(DISABLE_4)->set((EXECUTE_T)[](ID_T id, const OPAQUE_T& data) { return true; });
+	resource(DISABLE_4)->set((EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
 	#endif
 
 	#if RES_1_5                                                                                                                                                                                                                        
@@ -170,11 +170,11 @@ void Lwm2mServer::resourcesInit() {
 	resource(BINDING_7)->setDataVerifier((VERIFY_STRING_T)[](const STRING_T& value) { return wppBindingValidate(value); });
 
 	// TODO: Registration Update (Res id 8) must be implemented by wakaama core or WppClient
-	resource(REGISTRATION_UPDATE_TRIGGER_8)->set((EXECUTE_T)[](ID_T id, const OPAQUE_T& data) { return true; });
+	resource(REGISTRATION_UPDATE_TRIGGER_8)->set((EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
 
 	// TODO: Bootstrap Request (Res id 9) must be implemented by wakaama core or WppClient
 	#if RES_1_9
-	resource(BOOTSTRAP_REQUEST_TRIGGER_9)->set((EXECUTE_T)[](ID_T id, const OPAQUE_T& data) { return true; });
+	resource(BOOTSTRAP_REQUEST_TRIGGER_9)->set((EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
 	#endif
 
 	#if RES_1_10    

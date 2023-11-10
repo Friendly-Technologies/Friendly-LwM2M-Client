@@ -19,7 +19,7 @@ public:
         Instance *fwUpd = fwUpdObj.createInstance();
         fwUpd->subscribe(this);
 
-        fwUpd->set(FirmwareUpdate::UPDATE_2, (EXECUTE_T)[](ID_T id, const OPAQUE_T& data) {
+        fwUpd->set(FirmwareUpdate::UPDATE_2, (EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) {
             cout << "FirmwareUpdate: execute UPDATE_2" << endl;
             return true;
         });
@@ -31,7 +31,7 @@ public:
         #endif
         fwUpd->set(FirmwareUpdate::FIRMWARE_UPDATE_DELIVERY_METHOD_9, (INT_T)FirmwareUpdate::PUSH);
         #if RES_5_10
-        fwUpd->set(FirmwareUpdate::CANCEL_10, (EXECUTE_T)[this](ID_T id, const OPAQUE_T& data) {
+        fwUpd->set(FirmwareUpdate::CANCEL_10, (EXECUTE_T)[this](Instance& inst, ID_T resId, const OPAQUE_T& data) {
             cout << "FirmwareUpdate: execute CANCEL_10" << endl;
             this->_downloader.cancelDownloading();
             return true;

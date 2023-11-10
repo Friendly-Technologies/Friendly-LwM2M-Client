@@ -236,7 +236,7 @@ void FirmwareUpdate::resourcesInit() {
 	});
 	resource(PACKAGE_URI_1)->set(STRING_T(""));
 	resource(PACKAGE_URI_1)->setDataVerifier((VERIFY_STRING_T)[this](const STRING_T& value) { return this->isUriValid(value); });
-	resource(UPDATE_2)->set((EXECUTE_T)[](ID_T id, const OPAQUE_T& data) { return true; });
+	resource(UPDATE_2)->set((EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
 	resource(STATE_3)->set(INT_T(S_IDLE));
 	resource(STATE_3)->setDataVerifier((VERIFY_INT_T)[this](const INT_T& value) { 
 		if (!this->isNewStateValid(State(value))) return false;
@@ -273,7 +273,7 @@ void FirmwareUpdate::resourcesInit() {
 	resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set(INT_T(PUSH));
 	resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return PULL <= value && value < FW_UPD_DELIVERY_MAX; });
 	#if RES_5_10
-	resource(CANCEL_10)->set((EXECUTE_T)[](ID_T id, const OPAQUE_T& data) { return true; });
+	resource(CANCEL_10)->set((EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
 	#endif
 	#if RES_5_11
 	resource(SEVERITY_11)->set(INT_T(MANDATORY));

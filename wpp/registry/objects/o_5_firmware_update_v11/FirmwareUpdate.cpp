@@ -118,7 +118,7 @@ void FirmwareUpdate::serverOperationNotifier(ResOp::TYPE type, const ResLink &re
 		#if RES_5_10
 		case CANCEL_10: 
 			resetStateMachine();
-			changeUpdRes(FW_UPD_CANCELLED);
+			changeUpdRes(R_FW_UPD_CANCELLED);
 			break;
 		#endif
 		default: break;
@@ -369,6 +369,8 @@ FirmwareUpdate::FwUpdProtocol FirmwareUpdate::schemeToProtId(STRING_T scheme) {
 bool FirmwareUpdate::isNewStateValid(State newState) {
 	INT_T currState;
 	resource(STATE_3)->get(currState);
+	if (currState == newState) return true;
+
 	switch (currState) {
 		case S_IDLE:
 			if (newState == S_DOWNLOADING) return true;

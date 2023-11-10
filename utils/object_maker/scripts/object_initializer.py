@@ -139,35 +139,66 @@ class ObjectInitializer:
         return resources
 
 
-    def assign_value_to_resources(self, res_names, res_values):
+    def assign_value_to_resources(self, resources_from_json, resources_from_obj):
         """
-        Creates a new dictionary of the resources.
-        The names of keys reach for that obtained from the existing Object (first parameter).
-        The values reach for a list of dictionaries obtained from the provided JSON file (second parameter).
+        Creates a new list of the dictionary of the resources.
+            Param 1: list of dict contains ids and values of the resources obtained from a provided JSON file.
+            Param 2: list of dict contains ids and names of the resources obtained from the existing Object.
         """
-        completed_res_dict = {}
-        for resource_dict in res_values:
-            res_id_1 = resource_dict[const.KEY_JSON_ID]
-            try:
-                res_1_val = resource_dict["value"]
-            except KeyError:
-                res_1_val = None
-            # correct value in order to its types:
-            if res_1_val is None:
-                res_1_val = "(EXECUTE_T)[](ID_T id, const OPAQUE_T& data) {\n\t\treturn true;\n\t}"
-            elif type(res_1_val) is dict:
-                value = ""
-                for i in res_1_val.values():
-                    value += f"{i},"
-                res_1_val = f"OBJ_LINK_T{{{value[0:-1]}}}"
-            elif type(res_1_val) is str:
-                res_1_val = f'STRING_T("{res_1_val}")'
-            elif type(res_1_val) is bool:
-                res_1_val = "true" if res_1_val else "false"
-            for res_key, res_val in res_names.items():
-                if res_id_1 == res_val:
-                    completed_res_dict[res_key] = res_1_val
-        return completed_res_dict
+        completed_resources = []
+        if len(resources_from_json) != len(resources_from_obj):
+            func.LOG(self.log_tag, self.assign_value_to_resources.__name__,
+                     f"WARNING: the number of resources from the existing Object "
+                     f"and the provided JSON do not match each other "
+                     f" ({len(resources_from_json)}!={len(resources_from_obj)})")
+        for resource_dict_json in resources_from_json:
+            completed_res_dict = {}
+            if const.KEY_JSON_VAL not in resource_dict_json:
+                resource_dict_json[const.KEY_JSON_VAL] = None
+            res_id_json = resource_dict_json[const.KEY_JSON_ID]
+            for resource_dict_obj in resources_from_obj:
+                res_id_obj = resource_dict_obj[const.KEY_JSON_ID]
+                if res_id_json == res_id_obj:
+                    completed_res_dict[const.KEY_JSON_ID] = resource_dict_obj[const.KEY_JSON_ID]
+                    completed_res_dict[const.KEY_NAME] = resource_dict_obj[const.KEY_NAME]
+                    resource_dict_obj[const.KEY_JSON_VAL] = resource_dict_json[const.KEY_JSON_VAL]
+                    completed_resources.append(resource_dict_obj)
+        # [print(i) for i in completed_resources]
+        return completed_resources
+
+    def assign_type_to_resources(self, file, resources):
+        """
+        Read header file of the existing Object, extract the enum of the
+        resources, create dictionary based on enum and return this dictionary.
+        """
+        errcode, content = func.get_file_content_arr(file)
+        if not errcode:
+            func.LOG(self.log_tag,
+                     self.assign_type_to_resources.__name__,
+                     "unable to get the types of the resources from the file")
+            return None
+        data = []
+        flag_fill = False
+        for line in content:
+            if line.find("};") != -1:
+                flag_fill = False
+            if flag_fill:
+                if line.find('#if') != -1 or line.find('#endif') != -1:
+                    continue
+                data.append(line.strip())
+            if line.find("std::vector") != -1 and line.find("Resource") != -1:
+                flag_fill = True
+        # [print(i) for i in data]
+        for resource in resources:
+            for line in data:
+                if line.find(resource[const.KEY_NAME]) == -1:
+                    continue
+                for res_type, res_type_len in const.WORD_LEN_TYPES.items():
+                    founded = line.find(res_type)
+                    if founded != -1:
+                        resource["type"] = f"{res_type}_T"
+        # [print(i) for i in resources]
+        return resources
 
     def create_instances(self, obj):
         # filter empty structures of the instances:

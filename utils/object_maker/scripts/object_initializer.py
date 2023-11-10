@@ -1,6 +1,5 @@
 import os
 import json
-import sys
 
 import functions as func
 import constants as const
@@ -77,23 +76,33 @@ class ObjectInitializer:
                  f"unable to found the Object appropriate to required id {required_id} and version {required_version}")
         return False
 
-    def generate_header(self):
+    def generate_header(self, includes, inheritances, callbacks):
         errcode, content = func.get_file_content(const.FILE_TMPLT_INIT_H)
         if not errcode:
             return False
         register_name = self.register_data[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]
         register_name_up = self.register_data[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_UNDERLINE]
         content = content.replace("__CLASS_NAME__", register_name)
+        content = content.replace("__INCLUDES__", includes)
+        content = content.replace("__INHERITANCES__", inheritances)
+        content = content.replace("__CALLBACKS__", callbacks)
         content = content.replace("<<IF_DEF_DIRECTIVE>>", register_name_up)
         func.create_file(f"{register_name}/{register_name}.h", content)
         return True
 
-    def generate_cpp(self, instances_txt):
+    def generate_cpp(self, instances_txt, callbacks_txt, types_enabled_dict):
         errcode, content = func.get_file_content(const.FILE_TMPLT_INIT_CPP)
         if not errcode:
             return False
         register_name = self.register_data[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]
+        content = content.replace("__CALLBACKS__", callbacks_txt)
         content = content.replace("__INSTANCES__", instances_txt)
+        subscribe_1 = "__CLASS_NAME__Obj.subscribe(this);" if (types_enabled_dict["type1"]
+                                                               or types_enabled_dict["type2"]) else ""
+        subscribe_2 = "__CLASS_NAME__.subscribe(this);" if (types_enabled_dict["type3"]
+                                                            or types_enabled_dict["type4"]) else ""
+        content = content.replace("__SUBSCRB_1__", subscribe_1)
+        content = content.replace("__SUBSCRB_2__", subscribe_2)
         content = content.replace("__CLASS_NAME__", register_name)
         func.create_file(f"{register_name}/{register_name}.cpp", content)
         return True
@@ -151,7 +160,7 @@ class ObjectInitializer:
         elif res_type == "BOOL_T":
             return "true" if res_value else "false"
         elif res_type == "OPAQUE_T":
-            bytes_values = [f"0x{res_value[i:i+2]}" for i in range(0, len(res_value), 2)]
+            bytes_values = [f"0x{res_value[i:i + 2]}" for i in range(0, len(res_value), 2)]
             bytes_values_j = ", ".join(bytes_values)
             return f"OPAQUE_T{{{bytes_values_j}}}"
         elif res_type == "OBJ_LINK_T":
@@ -339,8 +348,19 @@ class ObjectInitializer:
             if not self.search_object(obj[const.KEY_JSON_ID], obj[const.KEY_VER]):
                 continue
             # todo: must be return false if loop above will return false for each object
-            instances_txt = self.create_instances(obj)
             func.create_folder(self.register_data[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS])
-            if not self.generate_header() or not self.generate_cpp(instances_txt) or not self.generate_cmake_lists():
+            callbacks_txt_h, callbacks_txt_cpp = self.create_callbacks(obj)
+            # CmakeLists stuff:
+            if not self.generate_cmake_lists():
+                return False
+            # header stuff:
+            types_enabled = self.define_types_enabled(obj)
+            includes_txt = self.create_includes(types_enabled)
+            inheritance_txt = self.create_inheritance(types_enabled)
+            if not self.generate_header(includes_txt, inheritance_txt, callbacks_txt_h):
+                return False
+            # cpp stuff:
+            instances_txt = self.create_instances(obj)
+            if not self.generate_cpp(instances_txt, callbacks_txt_cpp, types_enabled):
                 return False
         return True

@@ -18,7 +18,7 @@ public:
 
         device->set(Device::REBOOT_4, (EXECUTE_T)[this](Instance& inst, ID_T resId, const OPAQUE_T& data) {
             cout << "Device: execute REBOOT_4" << endl;
-            this->_reboot = true;
+            this->requestReboot();
             return true;
         });
         device->set(Device::ERROR_CODE_11, (INT_T)Device::NO_ERROR);
@@ -26,6 +26,10 @@ public:
         device->set(Device::MANUFACTURER_0, (STRING_T)"Open Mobile Alliance");
         device->set(Device::MODEL_NUMBER_1, (STRING_T)"Lightweight M2M Client");
         device->set(Device::SERIAL_NUMBER_2, (STRING_T)"345000123");
+    }
+
+    void requestReboot() {
+        _reboot = true;
     }
 
     bool isNeededReboot() {

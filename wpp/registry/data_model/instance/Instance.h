@@ -239,7 +239,9 @@ bool Instance::getPtr(const ResLink &resId, const T **value) {
 	auto res = resource(resId.resId);
 	if (res == _resources.end()) return false;
 
-	if (!res->ptr(value, resId.resInstId)) return false;
+	T *tmpValue = NULL;
+	if (!res->ptr(&tmpValue, resId.resInstId) || !tmpValue) return false;
+	*value = tmpValue;
 
 	if (res->isMultiple()) userOperationNotifier(ResOp::READ, resId);
 	else userOperationNotifier(ResOp::READ, {resId,});

@@ -2,10 +2,12 @@
 #define FIRMWARE_UPDATE_H
 
 #include <iostream>
+#include <fstream>
 #include "WppRegistry.h"
 #include "ObjActObserver.h"
 #include "InstEventObserver.h"
 #include "WppClient.h"
+#include "Device.h"
 
 #include "FwDownloaderStub.h"
 
@@ -14,13 +16,16 @@ using namespace std;
 
 class FwUpdateImpl: public ObjActObserver, public InstEventObserver {
 public:
+    FwUpdateImpl(DeviceImpl &device) : _device(device) {}
+
 	void init(Object &fwUpdObj) {
 		fwUpdObj.subscribe(this);
         Instance *fwUpd = fwUpdObj.createInstance();
         fwUpd->subscribe(this);
 
-        fwUpd->set(FirmwareUpdate::UPDATE_2, (EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) {
+        fwUpd->set(FirmwareUpdate::UPDATE_2, (EXECUTE_T)[this](Instance& inst, ID_T resId, const OPAQUE_T& data) {
             cout << "FirmwareUpdate: execute UPDATE_2" << endl;
+            this->update(inst);
             return true;
         });
         fwUpd->set(FirmwareUpdate::STATE_3, (INT_T)FirmwareUpdate::S_IDLE);
@@ -67,8 +72,35 @@ public:
         client->giveOwnership();
     }
 
+    void update(Instance& inst) {
+        STRING_T fileName = "test";
+        #if RES_5_6 && RES_5_7
+        STRING_T pkgName, pkgVersion;
+        inst.get(FirmwareUpdate::PKGNAME_6, pkgName);
+        inst.get(FirmwareUpdate::PKGVERSION_7, pkgVersion);
+        fileName += pkgName + pkgVersion;
+        #endif
+        fileName += ".fw";
+
+        const OPAQUE_T *fwData = NULL;
+        inst.getPtr(FirmwareUpdate::PACKAGE_0, &fwData);
+        if (fwData && !fwData->empty()) this->saveToFile(fileName, fwData);
+
+        _device.requestReboot();
+    }
+
+    void saveToFile(STRING_T fileName, const OPAQUE_T *buff) {
+        if (buff == NULL) return;
+
+        std::ofstream file(fileName, std::ios::binary);
+        if (!file.is_open()) return;
+        file.write(reinterpret_cast<const char*>(buff->data()), buff->size());
+        file.close();
+    }
+
 private:
     FwDownloaderStub _downloader;
+    DeviceImpl &_device;
 };
 
 #endif // FIRMWARE_UPDATE_H

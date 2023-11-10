@@ -112,28 +112,31 @@ class ObjectInitializer:
         Read header file of the existing Object, extract the enum of the
         resources, create dictionary based on enum and return this dictionary.
         """
+        resources = []
         errcode, content = func.get_file_content_arr(file)
         if not errcode:
             func.LOG(self.log_tag,
                      self.get_enum_of_resources.__name__,
-                     "unable to get enum of resources")
+                     "unable to extract the enum of the resources from the file")
             return None
-        resources_dict = {}
         flag_fill = False
         for line in content:
+            resources_dict = {}
             if line.find("};") != -1:
                 flag_fill = False
             if flag_fill:
                 if line.find('#') != -1:
                     continue
-                divided_line = line.split('=')  # "SMS_NUMBER_9 = 9," -> ["SMS_NUMBER_9 ", " 9,"]
-                divided_line = [i.strip() for i in divided_line]  # ["SMS_NUMBER_9 ", " 9,"] -> ["SMS_NUMBER_9", "9,"]
-                resource = divided_line[0]  # "SMS_NUMBER_9"
-                number = int(divided_line[1][0:-1])  # "9," -> 9
-                resources_dict[str(resource)] = number  # {"SMS_NUMBER_9": 9}
+                divided_line = line.split('=')                      # "SMS_NUMBER_9 = 9," -> ["SMS_NUMBER_9 ", " 9,"]
+                divided_line = [i.strip() for i in divided_line]    # ["SMS_NUMBER_9 ", " 9,"] -> ["SMS_NUMBER_9", "9,"]
+                resource = divided_line[0]                          # "SMS_NUMBER_9"
+                number = int(divided_line[1][0:-1])                 # "9," -> 9
+                resources_dict[const.KEY_NAME] = resource           # {"name: "SMS_NUMBER_9"}
+                resources_dict[const.KEY_JSON_ID] = number          # {"name: "SMS_NUMBER_9", "id": 9}
+                resources.append(resources_dict)
             if line.find("enum") != -1 and line.find("ID") != -1 and line.find("ID_T") != 1:
                 flag_fill = True
-        return resources_dict
+        return resources
 
     def create_registers(self):
         pass

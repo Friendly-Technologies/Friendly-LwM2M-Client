@@ -251,6 +251,69 @@ class ObjectInitializer:
                 result += f'\t{name}->set({name}::{resource_dict["name"]}, {value});\n'
         return result
 
+    def define_types_enabled(self, object_dict):
+        types_enabled_dict = {
+            "type1": object_dict["inst_create_clb"] or object_dict["inst_delete_clb"],
+            "type2": object_dict["inst_restore_clb"],
+            "type3": object_dict["res_read_clb"] or object_dict["res_write_clb"] or object_dict["res_execute_clb"] or
+                     object_dict["res_replace_clb"],
+            "type4": object_dict["res_inst_event_clb"]
+        }
+        return types_enabled_dict
+
+    def create_includes(self, types_enabled_dict):
+        includes = '#include "WppRegistry.h"\n'
+        if types_enabled_dict["type1"]:
+            includes += '#include "ObjOpObserver.h"\n'
+        if types_enabled_dict["type2"]:
+            includes += '#include "ObjActObserver.h"\n'
+        if types_enabled_dict["type3"]:
+            includes += '#include "InstOpObserver.h"\n'
+        if types_enabled_dict["type4"]:
+            includes += '#include "InstEventObserver.h"\n'
+        return includes
+
+    def create_inheritance(self, types_enabled_dict):
+        inheritances = ""
+        if types_enabled_dict["type1"]:
+            inheritances += "public wpp::ObjOpObserver, "
+        if types_enabled_dict["type2"]:
+            inheritances += "public wpp::ObjActObserver, "
+        if types_enabled_dict["type3"]:
+            inheritances += "public wpp::InstOpObserver, "
+        if types_enabled_dict["type4"]:
+            inheritances += "public wpp::InstEventObserver, "
+        return inheritances[:-2]  # remove redundant ' ,' symbols
+
+    def create_callbacks(self, object_dict):
+        callbacks_h = ""
+        callbacks_cpp = ""
+        if object_dict["inst_create_clb"]:
+            callbacks_cpp += "void __CLASS_NAME__Obj::instanceCreated(Object & object, ID_T instanceId) {\n}\n\n"
+            callbacks_h += "\tvoid instanceCreated(Object &object, ID_T instanceId) override;\n"
+        if object_dict["inst_delete_clb"]:
+            callbacks_cpp += "void __CLASS_NAME__Obj::instanceDeleting(Object & object, ID_T instanceId) {\n}\n\n"
+            callbacks_h += "\tvoid instanceDeleting(Object &object, ID_T instanceId) override;\n"
+        if object_dict["inst_restore_clb"]:
+            callbacks_cpp += "void TestImpl::objectRestore(Object &object) {\n\tobject.clear();\n\tinit(object);\n}\n\n"
+            callbacks_h += "\tvoid objectRestore(Object &object) override;\n"
+        if object_dict["res_read_clb"]:
+            callbacks_cpp += "void __CLASS_NAME__Obj::resourceRead(Instance & inst, const ResLink & resId) {\n}\n\n"
+            callbacks_h += "\tvoid resourceRead(Instance &inst, const ResLink &resId) override;\n"
+        if object_dict["res_write_clb"]:
+            callbacks_cpp += "void __CLASS_NAME__Obj::resourceWrite(Instance & inst, const ResLink & resId) {\n}\n\n"
+            callbacks_h += "\tvoid resourceWrite(Instance &inst, const ResLink &resId) override;\n"
+        if object_dict["res_execute_clb"]:
+            callbacks_cpp += "void __CLASS_NAME__Obj::resourceExecute(Instance & inst, const ResLink & resId) {\n}\n\n"
+            callbacks_h += "\tvoid resourceExecute(Instance &inst, const ResLink &resId) override;\n"
+        if object_dict["res_replace_clb"]:
+            callbacks_cpp += "void __CLASS_NAME__Obj::resourcesReplaced(Instance & inst) {\n}\n\n"
+            callbacks_h += "\tvoid resourcesReplaced(Instance &inst) override;\n"
+        if object_dict["res_inst_event_clb"]:
+            callbacks_cpp += "void TestImpl::instEvent(Instance &inst, EVENT_ID_T eventId) {\n}\n\n"
+            callbacks_h += "\tvoid instEvent(Instance &inst, EVENT_ID_T eventId) override;\n"
+        return callbacks_h, callbacks_cpp
+
     def initialize(self):
         """
         Returns True if initialized example is created successful.

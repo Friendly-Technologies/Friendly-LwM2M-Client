@@ -7,16 +7,19 @@
 
 #include "Resource.h"
 
-#define RES_METHODS_IMPL_SET_FOR(_TYPE_)					\
-bool Resource::set(const _TYPE_ &value, ID_T resInstId) {	\
-	return _set(value, resInstId);							\
-}															\
-bool Resource::get(_TYPE_ &value, ID_T resInstId) const {	\
-	return _get(value, resInstId);							\
-}															\
-bool Resource::ptr(_TYPE_ **value, ID_T resInstId) {		\
-	return _ptr(value, resInstId);							\
-}															\
+#define RES_METHODS_IMPL_SET_FOR(_TYPE_)									\
+bool Resource::set(const _TYPE_ &value, ID_T resInstId) {					\
+	return _set(value, resInstId);											\
+}																			\
+bool Resource::setMove(const _TYPE_ &value, ID_T resInstId) {							\
+	return _setMove(value, resInstId);										\
+}																			\
+bool Resource::get(_TYPE_ &value, ID_T resInstId) const {					\
+	return _get(value, resInstId);											\
+}																			\
+bool Resource::ptr(_TYPE_ **value, ID_T resInstId) {	\
+	return _ptr(value, resInstId);										\
+}																			\
 
 namespace wpp {
 

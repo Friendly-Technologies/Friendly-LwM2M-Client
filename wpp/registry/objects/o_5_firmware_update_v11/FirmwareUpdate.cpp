@@ -298,6 +298,7 @@ void FirmwareUpdate::resetStateMachine() {
 }
 
 bool FirmwareUpdate::isUriValid(STRING_T uri) {
+	if (uri.empty()) return true;
 	STRING_T scheme = extractSchemeFromUri(uri);
 	if (isSchemeValid(scheme)) {
 		changeUpdRes(R_INVALID_URI);

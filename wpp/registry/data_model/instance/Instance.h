@@ -196,11 +196,7 @@ template<typename T>
 bool Instance::setMove(const ResLink &resId, const T &value) {
 	auto res = resource(resId.resId);
 	if (res == _resources.end()) return false;
-	if (!res->isDataValueValid(value)) return false;
-
-	T *resData = NULL;
-	if (!res->ptr(&resData, resId.resInstId) || !resData) return false;
-	*resData = std::move(value);
+	if (!res->setMove(value, resId.resInstId)) return false;
 
 	const ResLink &link = res->isMultiple()? resId : ResLink {resId.resId,};
 	userOperationNotifier(ResOp::WRITE_UPD, link);
@@ -243,9 +239,7 @@ bool Instance::getPtr(const ResLink &resId, const T **value) {
 	auto res = resource(resId.resId);
 	if (res == _resources.end()) return false;
 
-	T *resData = NULL;
-	if (!res->ptr(&resData, resId.resInstId) || !resData) return false;
-	*value = resData;
+	if (!res->ptr(value, resId.resInstId)) return false;
 
 	if (res->isMultiple()) userOperationNotifier(ResOp::READ, resId);
 	else userOperationNotifier(ResOp::READ, {resId,});

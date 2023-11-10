@@ -148,22 +148,14 @@ bool Instance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &res, ID_T
 		if (data.type != LWM2M_TYPE_OPAQUE && data.type != LWM2M_TYPE_STRING) return false;
 		size_t len = data.value.asBuffer.length;
 		uint8_t *buffer =  data.value.asBuffer.buffer;
-		OPAQUE_T *dataPtr = NULL;
-		if (!res.set(OPAQUE_T(), instanceId) || !res.ptr(&dataPtr, instanceId) || !dataPtr) return false;
-		OPAQUE_T tmpData(buffer, buffer+len);
-		if (!res.isDataValueValid(tmpData)) return false;
-		*dataPtr = std::move(tmpData);
+		if (!res.setMove(OPAQUE_T(buffer, buffer+len), instanceId)) return false;
 		break;
 	}
 	case TYPE_ID::STRING: {
 		if (data.type != LWM2M_TYPE_OPAQUE && data.type != LWM2M_TYPE_STRING) return false;
 		size_t len = data.value.asBuffer.length;
 		uint8_t *buffer =  data.value.asBuffer.buffer;
-		STRING_T *dataPtr = NULL;
-		if (!res.set(STRING_T(""), instanceId) || !res.ptr(&dataPtr, instanceId) || !dataPtr) return false;
-		STRING_T tmpData(buffer, buffer+len);
-		if (!res.isDataValueValid(tmpData)) return false;
-		*dataPtr = std::move(tmpData);
+		if (!res.setMove(STRING_T(buffer, buffer+len), instanceId)) return false;
 		break;
 	}
 	case TYPE_ID::CORE_LINK: {
@@ -171,7 +163,7 @@ bool Instance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &res, ID_T
 		if (data.type != LWM2M_TYPE_OPAQUE && data.type != LWM2M_TYPE_STRING && data.type != LWM2M_TYPE_CORE_LINK) return false;
 		size_t len = data.value.asBuffer.length;
 		uint8_t *buffer =  data.value.asBuffer.buffer;
-		if (!res.set(CORE_LINK_T(buffer, buffer + len), instanceId)) return false;
+		if (!res.setMove(CORE_LINK_T(buffer, buffer + len), instanceId)) return false;
 		break;
 	}
 	default: return false;

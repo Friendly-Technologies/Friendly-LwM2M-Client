@@ -11,6 +11,7 @@
 #include "types.h"
 
 #define RES_METHODS_PROT_SET_FOR(_TYPE_) bool set(const _TYPE_ &value, ID_T resInstId = SINGLE_INSTANCE_ID); \
+										 bool setMove(const _TYPE_ &value, ID_T resInstId = SINGLE_INSTANCE_ID); \
 								   		 bool get(_TYPE_ &value, ID_T resInstId = SINGLE_INSTANCE_ID) const; \
 								   		 bool ptr(_TYPE_ **value, ID_T resInstId = SINGLE_INSTANCE_ID)
 
@@ -95,9 +96,11 @@ public: /* ---------- Public methods for common usage ----------*/
     template<typename T>
     bool set(const T &value, ID_T resInstId = SINGLE_INSTANCE_ID) = delete;
 	template<typename T>
+	bool setMove(const T &value, ID_T resInstId = SINGLE_INSTANCE_ID) = delete;
+	template<typename T>
 	bool get(T &value, ID_T resInstId = SINGLE_INSTANCE_ID) const  = delete;
 	template<typename T>
-	bool ptr(T **value, ID_T resInstId = SINGLE_INSTANCE_ID) const  = delete;
+	bool ptr(T **value, ID_T resInstId = SINGLE_INSTANCE_ID)  = delete;
 
 	/*
 	 * Remove resource instance if resource is multiple and instance exists,
@@ -120,6 +123,9 @@ private:
     template<typename T>
 	bool _set(const T &value, ID_T resInstId);
 
+	template<typename T>
+	bool _setMove(const T &value, ID_T resInstId);
+	
 	template<typename T>
 	bool _get(T &value, ID_T resInstId) const;
 
@@ -154,6 +160,22 @@ bool Resource::_set(const T &value, ID_T resInstId) {
 		instIter->data = value;
 	} else {
 		_instances.push_back({resInstId, value});
+	}
+
+	return true;
+}
+
+template<typename T>
+bool Resource::_setMove(const T &value, ID_T resInstId) {
+	if (!isInstanceIdPossible(resInstId)) return false;
+	if (!isDataValueValid(value)) return false;
+
+	if (isInstanceExist(resInstId)) {
+		auto instIter = getResInstIter(resInstId);
+		instIter->data = std::move(value);
+	} else {
+		ResInst newInst = {resInstId, std::move(value)};
+		_instances.push_back(std::move(newInst));
 	}
 
 	return true;

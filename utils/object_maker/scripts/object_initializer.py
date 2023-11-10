@@ -138,8 +138,6 @@ class ObjectInitializer:
                 flag_fill = True
         return resources
 
-    def create_registers(self):
-        pass
 
     def assign_value_to_resources(self, res_names, res_values):
         """

@@ -25,8 +25,10 @@ public:
         });
         fwUpd->set(FirmwareUpdate::STATE_3, (INT_T)FirmwareUpdate::S_IDLE);
         fwUpd->set(FirmwareUpdate::UPDATE_RESULT_5, (INT_T)getLastUpdResult());
+        #if RES_5_8
         fwUpd->set(FirmwareUpdate::FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8, (INT_T)FirmwareUpdate::COAP);
         fwUpd->set({FirmwareUpdate::FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8, 1}, (INT_T)FirmwareUpdate::COAPS);
+        #endif
         fwUpd->set(FirmwareUpdate::FIRMWARE_UPDATE_DELIVERY_METHOD_9, (INT_T)FirmwareUpdate::PUSH);
         #if RES_5_10
         fwUpd->set(FirmwareUpdate::CANCEL_10, (EXECUTE_T)[this](ID_T id, const OPAQUE_T& data) {

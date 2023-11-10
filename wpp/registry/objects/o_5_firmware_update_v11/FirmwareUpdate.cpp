@@ -80,9 +80,9 @@ void FirmwareUpdate::serverOperationNotifier(ResOp::TYPE type, const ResLink &re
 			} else {
 				WPP_LOGD_ARG(TAG, "Server write package", resId.resId, resId.resInstId);
 				changeUpdRes(R_INITIAL);
-				resource(STATE_3)->set(INT_T(S_DOWNLOADING));
+				changeState(S_DOWNLOADING);
 				eventNotify(*this, E_PKG_DOWNLOADIN);
-				resource(STATE_3)->set(INT_T(S_DOWNLOADED));
+				changeState(S_DOWNLOADED);
 				eventNotify(*this, E_DOWNLOADED);
 			}
 			break;
@@ -96,7 +96,7 @@ void FirmwareUpdate::serverOperationNotifier(ResOp::TYPE type, const ResLink &re
 				eventNotify(*this, E_RESET);
 			} else {
 				changeUpdRes(R_INITIAL);
-				resource(STATE_3)->set(INT_T(S_DOWNLOADING));
+				changeState(S_DOWNLOADING);
 				eventNotify(*this, E_URI_DOWNLOADIN);
 			}
 			break;
@@ -111,7 +111,7 @@ void FirmwareUpdate::serverOperationNotifier(ResOp::TYPE type, const ResLink &re
 			resource(STATE_3)->get(state);
 			if (state == S_DOWNLOADED) {
 				changeUpdRes(R_INITIAL);
-				resource(STATE_3)->set(INT_T(S_UPDATING));
+				changeState(S_UPDATING);
 			}
 			break;
 		}
@@ -150,6 +150,8 @@ void FirmwareUpdate::userOperationNotifier(ResOp::TYPE type, const ResLink &resI
 				resource(PACKAGE_URI_1)->set(STRING_T(""));
 				notifyValueChanged({PACKAGE_URI_1,});
 				changeUpdRes(R_INITIAL);
+			} else if (state == S_DOWNLOADED) {
+				eventNotify(*this, E_DOWNLOADED);
 			}
 			break;
 		}
@@ -161,7 +163,7 @@ void FirmwareUpdate::userOperationNotifier(ResOp::TYPE type, const ResLink &resI
 			case R_FW_UPD_DEFERRED: {
 				INT_T state;
 				resource(STATE_3)->get(state);
-				if (state == S_UPDATING) resource(STATE_3)->set(INT_T(S_DOWNLOADED));
+				if (state == S_UPDATING) changeState(S_DOWNLOADED);
 				else resource(UPDATE_RESULT_5)->set(INT_T(R_INITIAL));
 				break;
 			}
@@ -177,7 +179,7 @@ void FirmwareUpdate::userOperationNotifier(ResOp::TYPE type, const ResLink &resI
 				notifyValueChanged({PACKAGE_0,});
 				resource(PACKAGE_URI_1)->set(STRING_T(""));
 				notifyValueChanged({PACKAGE_URI_1,});
-				resource(STATE_3)->set(INT_T(S_IDLE));
+				changeState(S_IDLE);
 			}
 			default: break;
 			}
@@ -228,6 +230,10 @@ void FirmwareUpdate::resourcesCreate() {
 void FirmwareUpdate::resourcesInit() {
 	/* --------------- Code_cpp block 9 start --------------- */
 	resource(PACKAGE_0)->set(OPAQUE_T());
+	resource(PACKAGE_0)->setDataVerifier((VERIFY_OPAQUE_T)[this](const OPAQUE_T& value) { 
+		if (value.empty() || isDeliveryTypeSupported(PUSH)) return true;
+		return false;
+	});
 	resource(PACKAGE_URI_1)->set(STRING_T(""));
 	resource(PACKAGE_URI_1)->setDataVerifier((VERIFY_STRING_T)[this](const STRING_T& value) { return this->isUriValid(value); });
 	resource(UPDATE_2)->set((EXECUTE_T)[](ID_T id, const OPAQUE_T& data) { return true; });
@@ -288,19 +294,26 @@ void FirmwareUpdate::changeUpdRes(UpdRes res) {
 	notifyValueChanged({UPDATE_RESULT_5,});
 }
 
+void FirmwareUpdate::changeState(State state) {
+	resource(STATE_3)->set(INT_T(state));
+	notifyValueChanged({STATE_3,});
+}
+
 void FirmwareUpdate::resetStateMachine() {
 	resource(PACKAGE_0)->set(OPAQUE_T());
 	notifyValueChanged({PACKAGE_0,});
 	resource(PACKAGE_URI_1)->set(STRING_T(""));
 	notifyValueChanged({PACKAGE_URI_1,});
-	resource(STATE_3)->set(INT_T(S_IDLE));
+	changeState(S_IDLE);
 	changeUpdRes(R_INITIAL);
 }
 
 bool FirmwareUpdate::isUriValid(STRING_T uri) {
 	if (uri.empty()) return true;
+	if (!isDeliveryTypeSupported(PULL)) return false;
+
 	STRING_T scheme = extractSchemeFromUri(uri);
-	if (isSchemeValid(scheme)) {
+	if (!isSchemeValid(scheme)) {
 		changeUpdRes(R_INVALID_URI);
 		return false;
 	}
@@ -326,7 +339,7 @@ bool FirmwareUpdate::isSchemeValid(STRING_T scheme) {
 
 	const char *validSchemes[] = {COAP_SCHEME, COAPS_SCHEME, HTTP_SCHEME, HTTPS_SCHEME, COAP_TCP_SCHEME, COAP_TLS_SCHEME};
 	for (auto s : validSchemes) {
-		if (std::strcmp(scheme.c_str(), s)) return true;
+		if (!std::strcmp(scheme.c_str(), s)) return true;
 	}
 	return false;
 }
@@ -343,12 +356,12 @@ bool FirmwareUpdate::isSchemeSupported(STRING_T scheme) {
 }
 
 FirmwareUpdate::FwUpdProtocol FirmwareUpdate::schemeToProtId(STRING_T scheme) {
-	if (std::strcmp(scheme.c_str(), COAP_SCHEME)) return COAP;
-	else if (std::strcmp(scheme.c_str(), COAPS_SCHEME)) return COAPS;
-	else if (std::strcmp(scheme.c_str(), HTTP_SCHEME)) return HTTP;
-	else if (std::strcmp(scheme.c_str(), HTTPS_SCHEME)) return HTTPS;
-	else if (std::strcmp(scheme.c_str(), COAP_TCP_SCHEME)) return COAP_TCP;
-	else if (std::strcmp(scheme.c_str(), COAP_TLS_SCHEME)) return COAP_TLS;
+	if (!std::strcmp(scheme.c_str(), COAP_SCHEME)) return COAP;
+	else if (!std::strcmp(scheme.c_str(), COAPS_SCHEME)) return COAPS;
+	else if (!std::strcmp(scheme.c_str(), HTTP_SCHEME)) return HTTP;
+	else if (!std::strcmp(scheme.c_str(), HTTPS_SCHEME)) return HTTPS;
+	else if (!std::strcmp(scheme.c_str(), COAP_TCP_SCHEME)) return COAP_TCP;
+	else if (!std::strcmp(scheme.c_str(), COAP_TLS_SCHEME)) return COAP_TLS;
 	else return FW_UPD_PROTOCOL_MAX;
 }
 #endif
@@ -371,6 +384,13 @@ bool FirmwareUpdate::isNewStateValid(State newState) {
 			break;
 		default: break;
 	}
+	return false;
+}
+
+bool FirmwareUpdate::isDeliveryTypeSupported(FwUpdDelivery type) {
+	INT_T deliveryType = FW_UPD_DELIVERY_MAX;
+	resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->get(deliveryType);
+	if (deliveryType == type || deliveryType == BOTH) return true;
 	return false;
 }
 /* --------------- Code_cpp block 10 end --------------- */

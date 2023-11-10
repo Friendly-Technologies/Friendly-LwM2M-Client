@@ -54,7 +54,6 @@ public:
 		E_URI_DOWNLOADIN = 0,
 		E_PKG_DOWNLOADIN,
 		E_DOWNLOADED,
-		E_UPDATING,
 		E_RESET
 	};
 
@@ -150,7 +149,10 @@ private:
 	
 	/* --------------- Code_h block 3 start --------------- */
 	void changeUpdRes(UpdRes res);
+	void changeState(State state);
 	void resetStateMachine();
+
+	bool isPkgValid(OPAQUE_T uri);
 
 	bool isUriValid(STRING_T uri);
 	STRING_T extractSchemeFromUri(STRING_T uri);
@@ -161,6 +163,8 @@ private:
 	#endif
 
 	bool isNewStateValid(State newState);
+
+	bool isDeliveryTypeSupported(FwUpdDelivery type);
 	/* --------------- Code_h block 3 end --------------- */
 
 private:

@@ -5,6 +5,9 @@
 #include "WppRegistry.h"
 #include "ObjActObserver.h"
 #include "InstEventObserver.h"
+#include "WppClient.h"
+
+#include "FwDownloaderStub.h"
 
 using namespace wpp;
 using namespace std;
@@ -22,7 +25,7 @@ public:
         });
         fwUpd->set(FirmwareUpdate::STATE_3, (INT_T)FirmwareUpdate::S_IDLE);
         fwUpd->set(FirmwareUpdate::UPDATE_RESULT_5, (INT_T)getLastUpdResult());
-        fwUpd->set(FirmwareUpdate::FIRMWARE_UPDATE_DELIVERY_METHOD_9, (INT_T)FirmwareUpdate::PUSH);
+        fwUpd->set(FirmwareUpdate::FIRMWARE_UPDATE_DELIVERY_METHOD_9, (INT_T)FirmwareUpdate::PULL);
 	}
 
     FirmwareUpdate::UpdRes getLastUpdResult() {
@@ -36,19 +39,25 @@ public:
 	}
 
     void instEvent(Instance &inst, EVENT_ID_T eventId) override {
-        cout << "FwUpdateImpl: event: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ", eventId: " << eventId << endl;
-        if (eventId == FirmwareUpdate::E_URI_DOWNLOADIN) _uriDownloading = true;
+        cout << "FwUpdateImpl: event: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ", eventId: " << (int)eventId << endl;
+        if (eventId == FirmwareUpdate::E_URI_DOWNLOADIN) {
+            STRING_T uri;
+            inst.get(FirmwareUpdate::PACKAGE_URI_1, uri);
+            _downloader.startDownloading(uri, [this](string file){ 
+                cout << "FW is downloaded to file: " << file << endl;
+                this->fwIsDownloaded(); 
+            });
+        }
     }
 
-    void fwIsDownloaded(Instance &inst) {
-        if (!_uriDownloading) return;
-
-        _uriDownloading = false;
-        inst.set(FirmwareUpdate::STATE_3, (INT_T)FirmwareUpdate::S_DOWNLOADED);
+    void fwIsDownloaded() {
+        WppClient *client = WppClient::takeOwnershipBlocking();
+        client->registry().firmwareUpdate().instance()->set(FirmwareUpdate::STATE_3, (INT_T)FirmwareUpdate::S_DOWNLOADED);
+        client->giveOwnership();
     }
 
 private:
-    bool _uriDownloading = false;
+    FwDownloaderStub _downloader;
 };
 
 #endif // FIRMWARE_UPDATE_H

@@ -136,6 +136,7 @@ class ObjectInitializer:
         flag_fill = False
         enum_elements_counter = 0
         for line in content:
+            line = str(line)
             resources_dict = {}
             if line.find("};") != -1:
                 flag_fill = False
@@ -143,17 +144,18 @@ class ObjectInitializer:
                 if line.find('#') != -1:
                     continue
                 divided_line = line.split('=')                      # "SMS_NUMBER_9 = 9," -> ["SMS_NUMBER_9 ", " 9,"]
-                if len(divided_line) == 1:                          # "SMS_NUMBER_9," -> ["SMS_NUMBER_9,"]
-                    divided_line = [i[:-1] for i in divided_line]   # ["SMS_NUMBER_9,"] -> ["SMS_NUMBER_9"]
-                    divided_line.append(enum_elements_counter)      # ["SMS_NUMBER_9"] -> ["SMS_NUMBER_9", "9"]
                 divided_line = [i.strip() for i in divided_line]    # ["SMS_NUMBER_9 ", " 9,"] -> ["SMS_NUMBER_9", "9,"]
-                resource = divided_line[0]                          # "SMS_NUMBER_9"
-                number = int(divided_line[1][0:-1])                 # "9," -> 9
+                if len(divided_line) == 1:                          # "SMS_NUMBER_9," -> ["SMS_NUMBER_9,"]
+                    resource = divided_line[:-1]                    # ["SMS_NUMBER_9,"] -> "SMS_NUMBER_9"
+                    number = enum_elements_counter
+                else:
+                    resource = divided_line[0]                      # "SMS_NUMBER_9"
+                    number = int(divided_line[1][0:-1])             # "9," -> 9
                 resources_dict[const.KEY_NAME] = resource           # {"name: "SMS_NUMBER_9"}
                 resources_dict[const.KEY_JSON_ID] = number          # {"name: "SMS_NUMBER_9", "id": 9}
                 resources.append(resources_dict)
                 enum_elements_counter += number + 1
-            if line.find(" enum ") != -1 and line.find(" ID ") != -1 and line.find(" ID_T ") != 1:
+            if line.replace(" ", "").find(const.ENUM_START_PATTERN.replace(" ", "")) != -1:
                 print("START LINE: " + line)
                 flag_fill = True
         return resources

@@ -156,7 +156,7 @@ class ObjectInitializer:
                 resources.append(resources_dict)
                 enum_elements_counter += number + 1
             if line.replace(" ", "").find(const.ENUM_START_PATTERN.replace(" ", "")) != -1:
-                print("START LINE: " + line)
+                # print("START LINE: " + line)
                 flag_fill = True
         return resources
 
@@ -245,6 +245,7 @@ class ObjectInitializer:
         # filter empty structures of the instances:
         instances = [instance for instance in obj["instances"] if instance != {}]
         result = ""
+        counter = 0
         for instance in instances:
             name = self.register_data[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]
             folder = self.register_data["object_folder"]
@@ -258,8 +259,8 @@ class ObjectInitializer:
             resources_merged = self.assign_value_to_resources(resources_from_json, resources_from_obj)
             resources_merged = self.assign_type_to_resources(file_path_cpp, resources_merged)
             # [print(i) for i in resources_merged]
-            result += f"\twpp::Instance *{name} = testObj.createInstance({instance[const.KEY_JSON_ID]});\n"
-            result += f"\t{name}->subscribe(this);\n"
+            result += f"\twpp::Instance *inst{counter} = obj.createInstance({instance[const.KEY_JSON_ID]});\n"
+            counter += 1
             for resource_dict in resources_merged:
                 resources_value = resource_dict[const.KEY_JSON_VAL]
                 resources_type = resource_dict["type"]

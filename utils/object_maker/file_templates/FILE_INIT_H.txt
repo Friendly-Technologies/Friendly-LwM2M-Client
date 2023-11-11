@@ -10,7 +10,7 @@ public:
     __CLASS_NAME__Impl();
     ~__CLASS_NAME__Impl();
 
-    void init(Object &testObj);
+    void init(Object &obj);
 
 private:
 __CALLBACKS__};

@@ -26,17 +26,14 @@
 /* ---------- Mandatory objects include block end ---------- */
 
 /* ---------- Optional objects include block begin ---------- */
-#if OPTIONAL_ACL_OBJ
-#include "acl/Acl.h"
-#endif
-#if OPTIONAL_FIRMWARE_UPD_OBJ
-#include "firmware_upd/FirmwareUpd.h"
-#endif
 #if OBJ_O_4_CONNECTIVITY_MONITORING_V13
 #include "o_4_connectivity_monitoring_v13/ConnectivityMonitoring.h"
 #endif
 #if OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
 #include "o_2_lwm2m_access_control_v11/Lwm2mAccessControl.h"
+#endif
+#if OBJ_O_5_FIRMWARE_UPDATE_V11
+#include "o_5_firmware_update_v11/FirmwareUpdate.h"
 #endif
 /* ---------- Optional objects include block end ---------- */
 
@@ -72,17 +69,14 @@ public:
 	/* ---------- Mandatory objects prototype block end ---------- */
 
 	/* ---------- Optional objects prototype block begin ---------- */
-	#if OPTIONAL_ACL_OBJ
-	ObjectImpl<Acl>& acl();
-	#endif
-	#if OPTIONAL_FIRMWARE_UPD_OBJ
-	ObjectImpl<FirmwareUpd>& firmwareUpd();
-	#endif
 	#if OBJ_O_4_CONNECTIVITY_MONITORING_V13
 	ObjectImpl<ConnectivityMonitoring> & connectivityMonitoring();
 	#endif
 	#if OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
 	ObjectImpl<Lwm2mAccessControl> & lwm2mAccessControl();
+	#endif
+	#if OBJ_O_5_FIRMWARE_UPDATE_V11
+	ObjectImpl<FirmwareUpdate> & firmwareUpdate();
 	#endif
 	/* ---------- Optional objects prototype block end ---------- */
 

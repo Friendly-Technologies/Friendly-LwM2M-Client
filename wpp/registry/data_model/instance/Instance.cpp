@@ -19,8 +19,8 @@ bool Instance::clear(ID_T resId) {
 
 	bool result = res->clear();
 	if (result) {
-		notifyValueChanged({_id, {resId,}});
 		userOperationNotifier(ResOp::DELETE, {resId,});
+		notifyValueChanged({resId,});
 	}
 
 	return result;
@@ -32,16 +32,16 @@ bool Instance::remove(const ResLink &resId) {
 
 	bool result = res->remove(resId.resInstId);
 	if (result) {
-		notifyValueChanged({_id, {resId.resId, resId.resInstId}});
 		userOperationNotifier(ResOp::DELETE, {resId.resId, resId.resInstId});
+		notifyValueChanged({resId.resId, resId.resInstId});
 	}
 
 	return result;
 }
 
-void Instance::notifyValueChanged(const DataLink &data) {
-	WPP_LOGD_ARG(TAG_WPP_INST, "Notify value changed: objID=%d, instID=%d, resID=%d, resInstID=%d", data.instance.objId, data.instance.objInstId, data.resource.resId, data.resource.resInstId);	
-	lwm2m_uri_t uri = {data.instance.objId, data.instance.objInstId, data.resource.resId, data.resource.resInstId};
+void Instance::notifyValueChanged(const ResLink &resId) {
+	WPP_LOGD_ARG(TAG_WPP_INST, "Notify value changed: objID=%d, instID=%d, resID=%d, resInstID=%d", getObjectID(), getInstanceID(), resId.resId, resId.resInstId);	
+	lwm2m_uri_t uri = {(ID_T)getObjectID(), getInstanceID(), resId.resId, resId.resInstId};
 	lwm2m_resource_value_changed(&_context, &uri);
 }
 
@@ -148,14 +148,14 @@ bool Instance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &res, ID_T
 		if (data.type != LWM2M_TYPE_OPAQUE && data.type != LWM2M_TYPE_STRING) return false;
 		size_t len = data.value.asBuffer.length;
 		uint8_t *buffer =  data.value.asBuffer.buffer;
-		if (!res.set(OPAQUE_T(buffer, buffer + len), instanceId)) return false;
+		if (!res.setMove(OPAQUE_T(buffer, buffer+len), instanceId)) return false;
 		break;
 	}
 	case TYPE_ID::STRING: {
 		if (data.type != LWM2M_TYPE_OPAQUE && data.type != LWM2M_TYPE_STRING) return false;
 		size_t len = data.value.asBuffer.length;
 		uint8_t *buffer =  data.value.asBuffer.buffer;
-		if (!res.set(STRING_T(buffer, buffer + len), instanceId)) return false;
+		if (!res.setMove(STRING_T(buffer, buffer+len), instanceId)) return false;
 		break;
 	}
 	case TYPE_ID::CORE_LINK: {
@@ -163,7 +163,7 @@ bool Instance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &res, ID_T
 		if (data.type != LWM2M_TYPE_OPAQUE && data.type != LWM2M_TYPE_STRING && data.type != LWM2M_TYPE_CORE_LINK) return false;
 		size_t len = data.value.asBuffer.length;
 		uint8_t *buffer =  data.value.asBuffer.buffer;
-		if (!res.set(CORE_LINK_T(buffer, buffer + len), instanceId)) return false;
+		if (!res.setMove(CORE_LINK_T(buffer, buffer + len), instanceId)) return false;
 		break;
 	}
 	default: return false;
@@ -272,7 +272,7 @@ uint8_t Instance::resourceRead(lwm2m_data_t &data, Resource &res) {
 	if (res.isMultiple() && data.type != LWM2M_TYPE_MULTIPLE_RESOURCE) {
 		lwm2m_data_t *subData = lwm2m_data_new(res.instanceCnt());
 		lwm2m_data_t *dataCnt = subData;
-		for (const auto& inst : res.getInstances()) (dataCnt++)->id = inst.id;
+		for (auto id : res.getInstIds()) (dataCnt++)->id = id;
 		lwm2m_data_encode_instances(subData, res.instanceCnt(), &data);
 	}
 
@@ -426,12 +426,11 @@ uint8_t Instance::execute(ID_T resId, uint8_t * buffer, int length) {
 		return COAP_404_NOT_FOUND;
 	}
 
-	WPP_LOGD_ARG(TAG_WPP_INST, "Resource execute: %d:%d:%d, buffer length: %d", _id.objId, _id.objInstId, resId, length);
-	execute(resId, OPAQUE_T(buffer, buffer + length));
 	// Notify implementation about execute resource operation
 	serverOperationNotifier(ResOp::EXECUTE, {res->getId(), ID_T_MAX_VAL});
 
-	return COAP_204_CHANGED;
+	WPP_LOGD_ARG(TAG_WPP_INST, "Resource execute: %d:%d:%d, buffer length: %d", _id.objId, _id.objInstId, resId, length);
+	return execute(*this, resId, OPAQUE_T(buffer, buffer + length))? COAP_204_CHANGED : COAP_405_METHOD_NOT_ALLOWED;
 }
 
 uint8_t Instance::discover(int * numData, lwm2m_data_t ** dataArray) {
@@ -459,11 +458,11 @@ uint8_t Instance::discover(int * numData, lwm2m_data_t ** dataArray) {
 		if (res->isMultiple() && data->type != LWM2M_TYPE_MULTIPLE_RESOURCE) {
 			lwm2m_data_t *subData = lwm2m_data_new(res->instanceCnt());
 			lwm2m_data_t *dataCnt = subData;
-			for (const auto& inst : res->getInstances()) {
-				(dataCnt++)->id = inst.id;
-				WPP_LOGD_ARG(TAG_WPP_INST, "Resource instance discover: %d:%d:%d:%d", _id.objId, _id.objInstId, data->id, inst.id);
+			for (auto id : res->getInstIds()) {
+				(dataCnt++)->id = id;
+				WPP_LOGD_ARG(TAG_WPP_INST, "Resource instance discover: %d:%d:%d:%d", _id.objId, _id.objInstId, data->id, id);
 				// Notify implementation about discover resource instance operation
-				serverOperationNotifier(ResOp::DISCOVER, {res->getId(), inst.id});
+				serverOperationNotifier(ResOp::DISCOVER, {res->getId(), id});
 			}
 			lwm2m_data_encode_instances(subData, res->instanceCnt(), data);
 		} else {

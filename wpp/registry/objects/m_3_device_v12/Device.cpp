@@ -6,9 +6,6 @@
 
 #include "m_3_device_v12/Device.h"
 
-#include <unordered_map>
-#include <iostream>
-
 #include "Resource.h"
 #include "ResOp.h"
 #include "types.h"
@@ -58,7 +55,7 @@ void Device::serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
 	/* --------------- Code_cpp block 6 start --------------- */
 	/* --------------- Code_cpp block 6 end --------------- */
 
-	observerNotify(*this, resId, type);
+	operationNotify(*this, resId, type);
 
 	/* --------------- Code_cpp block 7 start --------------- */
 	/* --------------- Code_cpp block 7 end --------------- */
@@ -156,10 +153,10 @@ void Device::resourcesInit() {
 	resource(FIRMWARE_VERSION_3)->set(STRING_T("")); 
 	#endif     
  
-	resource(REBOOT_4)->set((EXECUTE_T)[](ID_T id, const OPAQUE_T& data) {});
+	resource(REBOOT_4)->set((EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
                                                                                                                                                                                                                             
 	#if RES_3_5
-	resource(FACTORY_RESET_5)->set((EXECUTE_T)[](ID_T id, const OPAQUE_T& data) {});
+	resource(FACTORY_RESET_5)->set((EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
 	#endif
 
 	#if RES_3_6
@@ -188,9 +185,11 @@ void Device::resourcesInit() {
 	resource(ERROR_CODE_11)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return NO_ERROR <= value && value < ERR_CODE_MAX; });
 	
 	#if RES_3_12
-	resource(RESET_ERROR_CODE_12)->set((EXECUTE_T)[this](ID_T id, const OPAQUE_T& buff) { 
+	resource(RESET_ERROR_CODE_12)->set((EXECUTE_T)[this](Instance& inst, ID_T resId, const OPAQUE_T& buff) { 
 		resource(ERROR_CODE_11)->clear();
 		resource(ERROR_CODE_11)->set((INT_T)NO_ERROR);
+		notifyValueChanged({ERROR_CODE_11,});
+		return true;
 	});
 	#endif
 

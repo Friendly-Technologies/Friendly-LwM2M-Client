@@ -6,9 +6,6 @@
 
 #include "m_0_lwm2m_security_v11/Lwm2mSecurity.h"
 
-#include <unordered_map>
-#include <iostream>
-
 #include "Resource.h"
 #include "ResOp.h"
 #include "types.h"
@@ -58,7 +55,7 @@ void Lwm2mSecurity::serverOperationNotifier(ResOp::TYPE type, const ResLink &res
 	/* --------------- Code_cpp block 6 start --------------- */
 	/* --------------- Code_cpp block 6 end --------------- */
 
-	observerNotify(*this, resId, type);
+	operationNotify(*this, resId, type);
 
 	/* --------------- Code_cpp block 7 start --------------- */
 	/* --------------- Code_cpp block 7 end --------------- */

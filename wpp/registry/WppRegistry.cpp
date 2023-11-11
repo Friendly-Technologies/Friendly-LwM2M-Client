@@ -26,6 +26,9 @@ WppRegistry::WppRegistry(lwm2m_context_t &context): _context(context) {
 	# if OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
 	_objects.push_back(new ObjectImpl<Lwm2mAccessControl>(_context, LWM2M_ACCESS_CONTROL_OBJ_INFO));
 	#endif
+	# if OBJ_O_5_FIRMWARE_UPDATE_V11
+	_objects.push_back(new ObjectImpl<FirmwareUpdate>(_context, FIRMWARE_UPDATE_OBJ_INFO));
+	#endif
 	/* ---------- Optional objects init block end ---------- */
 }
 
@@ -80,11 +83,6 @@ ObjectImpl<Lwm2mSecurity> & WppRegistry::lwm2mSecurity() {
 /* ---------- Mandatory objects method block end ---------- */
 
 /* ---------- Optional objects method block begin ---------- */
-#if OPTIONAL_ACL_OBJ
-#endif
-
-#if OPTIONAL_FIRMWARE_UPD_OBJ
-#endif
 # if OBJ_O_4_CONNECTIVITY_MONITORING_V13
 ObjectImpl<ConnectivityMonitoring> & WppRegistry::connectivityMonitoring() {
 	return *static_cast<ObjectImpl<ConnectivityMonitoring>*>(object(OBJ_ID::CONNECTIVITY_MONITORING));
@@ -93,6 +91,11 @@ ObjectImpl<ConnectivityMonitoring> & WppRegistry::connectivityMonitoring() {
 # if OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
 ObjectImpl<Lwm2mAccessControl> & WppRegistry::lwm2mAccessControl() {
 	return *static_cast<ObjectImpl<Lwm2mAccessControl>*>(object(OBJ_ID::LWM2M_ACCESS_CONTROL));
+}
+#endif
+# if OBJ_O_5_FIRMWARE_UPDATE_V11
+ObjectImpl<FirmwareUpdate> & WppRegistry::firmwareUpdate() {
+	return *static_cast<ObjectImpl<FirmwareUpdate>*>(object(OBJ_ID::FIRMWARE_UPDATE));
 }
 #endif
 /* ---------- Optional objects method block end ---------- */

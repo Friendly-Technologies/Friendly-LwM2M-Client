@@ -27,6 +27,9 @@ enum class OBJ_ID: ID_T {
 	#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
 	LWM2M_ACCESS_CONTROL = 2,
 	#endif
+	#ifdef OBJ_O_5_FIRMWARE_UPDATE_V11
+	FIRMWARE_UPDATE = 5,
+	#endif
 	/* ---------- Optional objects ID block end ---------- */
 
 	MAX_ID = ID_T_MAX_VAL,

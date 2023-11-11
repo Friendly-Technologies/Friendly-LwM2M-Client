@@ -1,5 +1,5 @@
-#ifndef I_WPP_OBJ_OBSERVER_H_
-#define I_WPP_OBJ_OBSERVER_H_
+#ifndef WPP_OBJ_OP_OBSERVER_H_
+#define WPP_OBJ_OP_OBSERVER_H_
 
 #include "types.h"
 
@@ -7,14 +7,9 @@ namespace wpp {
 
 class Object;
 
-class ObjObserver {
+class ObjOpObserver {
 public:
-    virtual ~ObjObserver() {};
-    /*
-     * Notifies observer about the need to restore the object. 
-     * User must restore object to default state.
-     */
-    virtual void objectRestore(Object &object) = 0;
+    virtual ~ObjOpObserver() {};
     /*
      * Notifies observer immediately after creating instance by server. 
      * Instance is already created during this call.
@@ -29,4 +24,4 @@ public:
 
 } // namespace wpp
 
-#endif /* I_WPP_OBJ_OBSERVER_H_ */
+#endif /* WPP_OBJ_OP_OBSERVER_H_ */

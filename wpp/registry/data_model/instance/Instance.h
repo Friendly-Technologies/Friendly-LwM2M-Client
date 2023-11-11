@@ -58,12 +58,26 @@ public: /* Interface that can be used by user */
 	template<typename T>
 	bool set(const ResLink &resId, const T &value);
 	/*
+	 * Sets resource value by moving user data to resource to avoid extra copy
+	 */
+	template<typename T>
+	bool setMove(ID_T resId, const T &value);
+	template<typename T>
+	bool setMove(const ResLink &resId, const T &value);
+	/*
 	 * Returns copy of resource value
 	 */
 	template<typename T>
 	bool get(ID_T resId, T &value);
 	template<typename T>
 	bool get(const ResLink &resId, T &value);
+	/*
+	 * Returns const ptr to resource data for avoid extra copy
+	 */
+	template<typename T>
+	bool getPtr(ID_T resId, const T **value);
+	template<typename T>
+	bool getPtr(const ResLink &resId, const T **value);
 	/*
 	 * It is quite dangerous to leave a resource without instances,
 	 * because when the server tries to read its value, the server
@@ -84,7 +98,7 @@ protected: /* Interface that can be used by derived class */
 	/*
 	 * Notify core about resource value change.
 	 */
-	void notifyValueChanged(const DataLink &data);
+	void notifyValueChanged(const ResLink &resId);
 	/*
 	 * This method return list with resources that has been instantiated.
 	 * If resources does not exist then return empty list.
@@ -104,16 +118,18 @@ protected: /* Interface that must be implemented by derived class */
 	 */
 	virtual void setDefaultState() = 0;
 	/*
-	 * This method must be implemented by derived class, and handle
-     * information about resource operation (READ, WRITE_UPD, 
-	 * WRITE_REPLACE_INST, WRITE_REPLACE_RES, EXECUTE, DISCOVER).
-	 * Called by Instance after resource operation performed by SERVER.
+	 * This method must be implemented by the derived class, and handle
+	 * information about resource operation (READ, WRITE_UPD, WRITE_REPLACE_INST,
+	 * WRITE_REPLACE_RES, EXECUTE, DISCOVER). Called by Instance after 
+	 * resource operation performed by SERVER if the operation is  
+	 * READ/WRITE_UPD/WRITE_REPLACE_INST/WRITE_REPLACE_RES/DISCOVER, 
+	 * if the operation is EXECUTE then called before this operation.
 	 */
 	virtual void serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) = 0;
 	/*
-	 * This method must be implemented by derived class, and handle
+	 * This method must be implemented by the derived class, and handle
      * information about resource operation (READ, WRITE_UPD, DELETE).
-	 * Called by Instance after resource operation performed by USER.
+	 * Called by Instance after resource operation performed by the USER.
 	 */
 	virtual void userOperationNotifier(ResOp::TYPE type, const ResLink &resId) = 0;
 
@@ -159,13 +175,34 @@ bool Instance::set(const ResLink &resId, const T &value)  {
 	auto res = resource(resId.resId);
 	if (res == _resources.end()) return false;
 
-	bool result = res->set(value, resId.resInstId);
-	if (result) {
-		notifyValueChanged({_id, {resId.resId, resId.resInstId}});
-		userOperationNotifier(ResOp::WRITE_UPD, resId);
-	}
+	if (!res->set(value, resId.resInstId)) return false;
 
-	return result;
+	const ResLink &link = res->isMultiple()? resId : ResLink {resId.resId,};
+	userOperationNotifier(ResOp::WRITE_UPD, link);
+	notifyValueChanged(link);
+
+	return true;
+}
+
+/*
+ * Sets resource value by moving user data to resource to avoid extra copy
+ */
+template<typename T>
+bool Instance::setMove(ID_T resId, const T &value) {
+	return setMove({resId, SINGLE_INSTANCE_ID}, value);
+}
+
+template<typename T>
+bool Instance::setMove(const ResLink &resId, const T &value) {
+	auto res = resource(resId.resId);
+	if (res == _resources.end()) return false;
+	if (!res->setMove(value, resId.resInstId)) return false;
+
+	const ResLink &link = res->isMultiple()? resId : ResLink {resId.resId,};
+	userOperationNotifier(ResOp::WRITE_UPD, link);
+	notifyValueChanged(link);
+
+	return true;
 }
 
 /*
@@ -181,12 +218,35 @@ bool Instance::get(const ResLink &resId, T &value) {
 	auto res = resource(resId.resId);
 	if (res == _resources.end()) return false;
 
-	bool result = res->get(value, resId.resInstId);
-	if (result) {
-		userOperationNotifier(ResOp::READ, resId);
-	}
+	if (!res->get(value, resId.resInstId)) return false;
+	
+	if (res->isMultiple()) userOperationNotifier(ResOp::READ, resId);
+	else userOperationNotifier(ResOp::READ, {resId,});
 
-	return result;
+	return true;
+}
+
+/*
+ * Returns const ptr to resource data for avoid extra copy
+ */
+template<typename T>
+bool Instance::getPtr(ID_T resId, const T **value) {
+	return getPtr({resId, SINGLE_INSTANCE_ID}, value);
+}
+
+template<typename T>
+bool Instance::getPtr(const ResLink &resId, const T **value) {
+	auto res = resource(resId.resId);
+	if (res == _resources.end()) return false;
+
+	T *tmpValue = NULL;
+	if (!res->ptr(&tmpValue, resId.resInstId) || !tmpValue) return false;
+	*value = tmpValue;
+
+	if (res->isMultiple()) userOperationNotifier(ResOp::READ, resId);
+	else userOperationNotifier(ResOp::READ, {resId,});
+
+	return true;
 }
 
 } /* namespace wpp */

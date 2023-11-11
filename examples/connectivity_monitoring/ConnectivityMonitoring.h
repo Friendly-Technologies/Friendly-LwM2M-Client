@@ -3,20 +3,18 @@
 
 #include <iostream>
 #include "WppRegistry.h"
-#include "ObjObserver.h"
-#include "InstObserver.h"
+#include "ObjActObserver.h"
 
 #include <ifaddrs.h>
 
 using namespace wpp;
 using namespace std;
 
-class CnnctvtMonnImpl: public ObjObserver, public InstObserver {
-	public:
+class CnnctvtMonnImpl: public ObjActObserver {
+public:
 	void init(Object &connMonObj) {
 		connMonObj.subscribe(this);
         Instance *connMon = connMonObj.createInstance();
-        connMon->subscribe(this);
 
         STRING_T ip;
         getIpAddress(&ip);
@@ -31,30 +29,6 @@ class CnnctvtMonnImpl: public ObjObserver, public InstObserver {
 		object.clear();
         init(object);
 	}
-
-    void instanceCreated(Object &object, ID_T instanceId) override {
-        cout << "CnnctvtMonnImpl: instanceCreated: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
-    }
-
-    void instanceDeleting(Object &object, ID_T instanceId) override {
-		cout << "CnnctvtMonnImpl: instanceDeleting: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
-	}
-
-	void resourceRead(Instance &inst, const ResLink &resId) override {
-        cout << "CnnctvtMonnImpl: resourceRead: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
-    }
-
-    void resourceWrite(Instance &inst, const ResLink &resId) override {
-        cout << "CnnctvtMonnImpl: resourceWrite: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
-    }
-
-    void resourceExecute(Instance &inst, const ResLink &resId) override {
-        cout << "CnnctvtMonnImpl: resourceExecute: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
-    }
-
-    void resourcesReplaced(Instance &inst) override {
-        cout << "CnnctvtMonnImpl: resourcesReplaced: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << endl;
-    }
 
     void getIpAddress(string* ip) {
         struct ifaddrs *interfaces = NULL;

@@ -62,6 +62,14 @@ WppClient* WppClient::takeOwnership() {
     return _client;
 }
 
+WppClient* WppClient::takeOwnershipBlocking() {
+    if (!isCreated()) return NULL;
+	// WPP_LOGD(TAG_WPP_CLIENT, "Taking ownership of client instance");
+	_clientGuard.lock();
+	// WPP_LOGD(TAG_WPP_CLIENT, "Lock acquired, transferring ownership");
+    return _client;
+}
+
 void WppClient::giveOwnership() {
 	// WPP_LOGD(TAG_WPP_CLIENT, "Giving ownership of client instance");
     _clientGuard.unlock();

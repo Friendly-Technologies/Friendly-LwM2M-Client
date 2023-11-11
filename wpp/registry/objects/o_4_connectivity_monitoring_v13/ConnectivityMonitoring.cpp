@@ -6,9 +6,6 @@
 
 #include "o_4_connectivity_monitoring_v13/ConnectivityMonitoring.h"
 
-#include <unordered_map>
-#include <iostream>
-
 #include "Resource.h"
 #include "ResOp.h"
 #include "types.h"
@@ -80,7 +77,7 @@ void ConnectivityMonitoring::serverOperationNotifier(ResOp::TYPE type, const Res
 	/* --------------- Code_cpp block 6 start --------------- */
 	/* --------------- Code_cpp block 6 end --------------- */
 
-	observerNotify(*this, resId, type);
+	operationNotify(*this, resId, type);
 
 	/* --------------- Code_cpp block 7 start --------------- */
 	/* --------------- Code_cpp block 7 end --------------- */

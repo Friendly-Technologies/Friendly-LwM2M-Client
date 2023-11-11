@@ -7,6 +7,20 @@
 
 #include "Resource.h"
 
+#define RES_METHODS_IMPL_SET_FOR(_TYPE_)									\
+bool Resource::set(const _TYPE_ &value, ID_T resInstId) {					\
+	return _set(value, resInstId);											\
+}																			\
+bool Resource::setMove(const _TYPE_ &value, ID_T resInstId) {							\
+	return _setMove(value, resInstId);										\
+}																			\
+bool Resource::get(_TYPE_ &value, ID_T resInstId) const {					\
+	return _get(value, resInstId);											\
+}																			\
+bool Resource::ptr(_TYPE_ **value, ID_T resInstId) {	\
+	return _ptr(value, resInstId);										\
+}																			\
+
 namespace wpp {
 
 /* ---------- Public methods for common usage ----------*/
@@ -133,76 +147,21 @@ size_t Resource::instanceCnt() const {
 	return _instances.size();
 }
 
-
-/* ---------- Extended abilities for access directly to resource data for avoid coping ----------*/
-const std::vector<Resource::ResInst>& Resource::getInstances() {
-	return _instances;
+const std::vector<ID_T> Resource::getInstIds() const {
+	std::vector<ID_T> ids;
+	for (auto inst : _instances) ids.push_back(inst.id);
+	return ids;
 }
 
 /* ---------- Methods for get and set resource value ----------*/
-bool Resource::set(const BOOL_T &value, ID_T resInstId) {
-	return _set(value, resInstId);
-}
-
-bool Resource::set(const INT_T &value, ID_T resInstId) {
-	return _set(value, resInstId);
-}
-
-bool Resource::set(const UINT_T &value, ID_T resInstId) {
-	return _set(value, resInstId);
-}
-
-bool Resource::set(const FLOAT_T &value, ID_T resInstId) {
-	return _set(value, resInstId);
-}
-
-bool Resource::set(const OPAQUE_T &value, ID_T resInstId) {
-	return _set(value, resInstId);
-}
-
-bool Resource::set(const OBJ_LINK_T &value, ID_T resInstId) {
-	return _set(value, resInstId);
-}
-
-bool Resource::set(const STRING_T &value, ID_T resInstId) {
-	return _set(value, resInstId);
-}
-
-bool Resource::set(const EXECUTE_T &value, ID_T resInstId) {
-	return _set(value, resInstId);
-}
-
-bool Resource::get(BOOL_T &value, ID_T resInstId) const {
-	return _get(value, resInstId);
-}
-
-bool Resource::get(INT_T &value, ID_T resInstId) const {
-	return _get(value, resInstId);
-}
-
-bool Resource::get(UINT_T &value, ID_T resInstId) const {
-	return _get(value, resInstId);
-}
-
-bool Resource::get(FLOAT_T &value, ID_T resInstId) const {
-	return _get(value, resInstId);
-}
-
-bool Resource::get(OPAQUE_T &value, ID_T resInstId) const {
-	return _get(value, resInstId);
-}
-
-bool Resource::get(OBJ_LINK_T &value, ID_T resInstId) const {
-	return _get(value, resInstId);
-}
-
-bool Resource::get(STRING_T &value, ID_T resInstId) const {
-	return _get(value, resInstId);
-}
-
-bool Resource::get(EXECUTE_T &value, ID_T resInstId) const {
-	return _get(value, resInstId);
-}
+RES_METHODS_IMPL_SET_FOR(BOOL_T);
+RES_METHODS_IMPL_SET_FOR(INT_T);
+RES_METHODS_IMPL_SET_FOR(UINT_T);
+RES_METHODS_IMPL_SET_FOR(FLOAT_T);
+RES_METHODS_IMPL_SET_FOR(OPAQUE_T);
+RES_METHODS_IMPL_SET_FOR(OBJ_LINK_T);
+RES_METHODS_IMPL_SET_FOR(STRING_T);
+RES_METHODS_IMPL_SET_FOR(EXECUTE_T);
 
 bool Resource::remove(ID_T resInstId) {
 	if (!isInstanceExist(resInstId) || isSingle()) return false;

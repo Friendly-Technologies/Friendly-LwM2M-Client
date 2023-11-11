@@ -15,6 +15,8 @@ namespace wpp {
 using ID_T = uint16_t;
 #define ID_T_MAX_VAL (LWM2M_MAX_ID)
 
+using EVENT_ID_T = uint8_t;
+
 /*
  * Wpp data types ID
  */
@@ -66,7 +68,8 @@ using CORE_LINK_T = std::string;
  * but will throw a std::bad_function_call exception at runtime if
  * you try to call the copied std::function.
  */
-using EXECUTE_T = std::function<void(ID_T, const OPAQUE_T&)>;
+class Instance;
+using EXECUTE_T = std::function<bool(Instance&, ID_T, const OPAQUE_T&)>;
 
 /*
  * Determining type ID by real type

@@ -1,13 +1,15 @@
-#ifndef WPP_INST_OBSERVER_H_
-#define WPP_INST_OBSERVER_H_
+#ifndef WPP_INST_OP_OBSERVER_H_
+#define WPP_INST_OP_OBSERVER_H_
+
+#include "types.h" 
 
 namespace wpp {
 
 class Instance;
 
-class InstObserver {
+class InstOpObserver {
 public:
-    virtual ~InstObserver() {};
+    virtual ~InstOpObserver() {};
     /*
      * Notifies observer immediately after read resource by server. 
      * Resource is already readed during this call.
@@ -32,4 +34,4 @@ public:
 
 } // namespace wpp
 
-#endif /* WPP_INST_OBSERVER_H_ */
+#endif /* WPP_INST_OP_OBSERVER_H_ */

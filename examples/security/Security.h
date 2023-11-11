@@ -3,25 +3,23 @@
 
 #include <iostream>
 #include "WppRegistry.h"
-#include "ObjObserver.h"
-#include "InstObserver.h"
+#include "ObjActObserver.h"
 
 using namespace wpp;
 using namespace std;
 
-class SecurityImpl: public ObjObserver, public InstObserver {
+class SecurityImpl: public ObjActObserver {
 	public:
     void init(Object &securityObj) {
         securityObj.subscribe(this);
         Instance *security = securityObj.createInstance();
-        security->subscribe(this);
         
         #if LWM2M_BOOTSTRAP
             string url = "coap://demodm.friendly-tech.com:5680";
             security->set(Lwm2mSecurity::BOOTSTRAP_SERVER_1, true);
             security->set(Lwm2mSecurity::CLIENT_HOLD_OFF_TIME_11, (INT_T)10);
         #else
-            string url = "coaps://demodm.friendly-tech.com:";//"coap://eu.iot.avsystem.cloud:"; //"coaps://leshan.eclipseprojects.io:";
+            string url = "coaps://leshan.eclipseprojects.io:";//"coap://eu.iot.avsystem.cloud:"; //"coaps://leshan.eclipseprojects.io:";
             #if DTLS_WITH_PSK
                 url += "5684";
                 string pskId = "SINAI_TEST_DEV_ID";
@@ -49,31 +47,6 @@ class SecurityImpl: public ObjObserver, public InstObserver {
 		object.clear();
         init(object);
 	}
-
-    void instanceCreated(Object &object, ID_T instanceId) override {
-        cout << "Lwm2mSecurity: instanceCreated: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
-        object.instance(instanceId)->subscribe(this);
-    }
-
-    void instanceDeleting(Object &object, ID_T instanceId) override {
-		cout << "Lwm2mSecurity: instanceDeleting: " << (ID_T)object.getObjectID() << ":" << instanceId << endl;
-	}
-
-	void resourceRead(Instance &inst, const ResLink &resId) override {
-        cout << "Lwm2mSecurity: resourceRead: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
-    }
-
-    void resourceWrite(Instance &inst, const ResLink &resId) override {
-        cout << "Lwm2mSecurity: resourceWrite: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
-    }
-
-    void resourceExecute(Instance &inst, const ResLink &resId) override {
-        cout << "Lwm2mSecurity: resourceExecute: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ":" << resId.resId << ":" << resId.resInstId << endl;
-    }
-
-    void resourcesReplaced(Instance &inst) override {
-        cout << "Lwm2mSecurity: resourcesReplaced: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << endl;
-    }
 };
 
 #endif // SECURITY_H_

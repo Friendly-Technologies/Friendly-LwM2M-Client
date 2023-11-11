@@ -56,6 +56,7 @@ public:
 	 * must call giveOwnership().
 	 */
 	static WppClient* takeOwnership();
+	static WppClient* takeOwnershipBlocking();
 	void giveOwnership();
 
 	/* ------------- WppClient components ------------- */

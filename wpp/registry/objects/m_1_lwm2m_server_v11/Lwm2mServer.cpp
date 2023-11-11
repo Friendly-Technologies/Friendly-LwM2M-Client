@@ -6,9 +6,6 @@
 
 #include "m_1_lwm2m_server_v11/Lwm2mServer.h"
 
-#include <unordered_map>
-#include <iostream>
-
 #include "Resource.h"
 #include "ResOp.h"
 #include "types.h"
@@ -58,7 +55,7 @@ void Lwm2mServer::serverOperationNotifier(ResOp::TYPE type, const ResLink &resId
 	/* --------------- Code_cpp block 6 start --------------- */
 	/* --------------- Code_cpp block 6 end --------------- */
 
-	observerNotify(*this, resId, type);
+	operationNotify(*this, resId, type);
 
 	/* --------------- Code_cpp block 7 start --------------- */
 	/* --------------- Code_cpp block 7 end --------------- */
@@ -159,7 +156,7 @@ void Lwm2mServer::resourcesInit() {
 
 	// TODO: Disable (Res id 4) must be implemented by wakaama core or WppClient
 	#if RES_1_4
-	resource(DISABLE_4)->set((EXECUTE_T)[](ID_T id, const OPAQUE_T& data) {});
+	resource(DISABLE_4)->set((EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
 	#endif
 
 	#if RES_1_5                                                                                                                                                                                                                        
@@ -173,11 +170,11 @@ void Lwm2mServer::resourcesInit() {
 	resource(BINDING_7)->setDataVerifier((VERIFY_STRING_T)[](const STRING_T& value) { return wppBindingValidate(value); });
 
 	// TODO: Registration Update (Res id 8) must be implemented by wakaama core or WppClient
-	resource(REGISTRATION_UPDATE_TRIGGER_8)->set((EXECUTE_T)[](ID_T id, const OPAQUE_T& data) {});
+	resource(REGISTRATION_UPDATE_TRIGGER_8)->set((EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
 
 	// TODO: Bootstrap Request (Res id 9) must be implemented by wakaama core or WppClient
 	#if RES_1_9
-	resource(BOOTSTRAP_REQUEST_TRIGGER_9)->set((EXECUTE_T)[](ID_T id, const OPAQUE_T& data) {});
+	resource(BOOTSTRAP_REQUEST_TRIGGER_9)->set((EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
 	#endif
 
 	#if RES_1_10    

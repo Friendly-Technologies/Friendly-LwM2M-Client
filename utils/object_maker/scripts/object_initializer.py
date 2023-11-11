@@ -156,7 +156,7 @@ class ObjectInitializer:
         if res_type in ["CORE_LINK_T", "STRING_T"]:
             return f'{res_type}("{res_value}")'
         elif res_type == "EXECUTE_T":
-            return "(EXECUTE_T)[](ID_T id, const OPAQUE_T& data) {\n\t\treturn true;\n\t}"
+            return "(EXECUTE_T)[](Instance& inst, ID_T id, const OPAQUE_T& data) {\n\t\treturn true;\n\t}"
         elif res_type == "BOOL_T":
             return "true" if res_value else "false"
         elif res_type == "OPAQUE_T":

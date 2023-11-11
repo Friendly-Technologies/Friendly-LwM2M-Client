@@ -5,7 +5,6 @@ __CLASS_NAME__Obj::__CLASS_NAME__Obj() {}
 __CLASS_NAME__Obj::~__CLASS_NAME__Obj() {}
 
 void __CLASS_NAME__Obj::init(Object &__CLASS_NAME__Obj) {
-    __CLASS_NAME__Obj.subscribe(this);
 
 __INSTANCES__}
 

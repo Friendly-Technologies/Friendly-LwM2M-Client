@@ -56,12 +56,17 @@ class ObjectInitializer:
             try:
                 data_dict = json.loads(data_str)
             except json.decoder.JSONDecodeError:
-                print(f'{self.log_tag} Unable to pars provided json-file. Operation interrupted.')
+                print(f'{self.log_tag} Unable to parse provided json-file. Operation interrupted.')
                 return False
             # TODO ~
             # TODO: do not convert type here but create json with this types:
-            obtained_id = int(data_dict[const.KEY_DICT_OBJ_META][const.KEY_JSON_ID])
-            obtained_version = float(data_dict[const.KEY_DICT_OBJ_META][const.KEY_VER])
+            try:
+                obtained_id = int(data_dict[const.KEY_DICT_OBJ_META][const.KEY_JSON_ID])
+                obtained_version = float(data_dict[const.KEY_DICT_OBJ_META][const.KEY_VER])
+            except KeyError as e:
+                func.LOG(self.log_tag, self.search_object.__name__,
+                         "unable to parse json-file of the Object. Operation interrupted.")
+                return False
             # TODO ~
             if obtained_id == required_id and obtained_version == required_version:
                 func.LOG(self.log_tag,
@@ -129,6 +134,7 @@ class ObjectInitializer:
                      "unable to extract the enum of the resources from the file")
             return None
         flag_fill = False
+        enum_elements_counter = 0
         for line in content:
             resources_dict = {}
             if line.find("};") != -1:
@@ -137,13 +143,18 @@ class ObjectInitializer:
                 if line.find('#') != -1:
                     continue
                 divided_line = line.split('=')                      # "SMS_NUMBER_9 = 9," -> ["SMS_NUMBER_9 ", " 9,"]
+                if len(divided_line) == 1:                          # "SMS_NUMBER_9," -> ["SMS_NUMBER_9,"]
+                    divided_line = [i[:-1] for i in divided_line]   # ["SMS_NUMBER_9,"] -> ["SMS_NUMBER_9"]
+                    divided_line.append(enum_elements_counter)      # ["SMS_NUMBER_9"] -> ["SMS_NUMBER_9", "9"]
                 divided_line = [i.strip() for i in divided_line]    # ["SMS_NUMBER_9 ", " 9,"] -> ["SMS_NUMBER_9", "9,"]
                 resource = divided_line[0]                          # "SMS_NUMBER_9"
                 number = int(divided_line[1][0:-1])                 # "9," -> 9
                 resources_dict[const.KEY_NAME] = resource           # {"name: "SMS_NUMBER_9"}
                 resources_dict[const.KEY_JSON_ID] = number          # {"name: "SMS_NUMBER_9", "id": 9}
                 resources.append(resources_dict)
-            if line.find("enum") != -1 and line.find("ID") != -1 and line.find("ID_T") != 1:
+                enum_elements_counter += number + 1
+            if line.find(" enum ") != -1 and line.find(" ID ") != -1 and line.find(" ID_T ") != 1:
+                print("START LINE: " + line)
                 flag_fill = True
         return resources
 

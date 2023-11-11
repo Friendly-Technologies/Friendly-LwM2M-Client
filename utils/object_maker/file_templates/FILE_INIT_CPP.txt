@@ -9,9 +9,5 @@ void __CLASS_NAME__Obj::init(Object &__CLASS_NAME__Obj) {
 
 __INSTANCES__}
 
-void __CLASS_NAME__Obj::objectRestore(Object &object) {
-    object.clear();
-    init(object);
-}
 
 __CALLBACKS__

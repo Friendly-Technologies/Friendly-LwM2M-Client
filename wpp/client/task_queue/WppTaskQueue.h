@@ -14,9 +14,12 @@
 
 #include "types.h"
 
+#define WPP_TASK_DEF_CTX	  NULL
+
 #define WPP_TASK_MIN_DELAY_S  (time_t)1
 #define WPP_TASK_DEF_DELAY_S  (time_t)10
 #define WPP_TASK_MAX_DELAY_S  (time_t)(0xFFFFFFF)
+
 #define WPP_ERR_TASK_ID 	  NULL
 
 namespace wpp {
@@ -29,7 +32,7 @@ class WppClient;
  * it is only guaranteed that the task will be called after the specified
  * delay. The queue should not be used for critical tasks. When a task is
  * created via addTask(), the party that creates the task must guarantee
- * the validity of the context_t ctx during the entire existence of the 
+ * the validity of the ctx_t ctx during the entire existence of the 
  * task. Tasks may be deleted not immediately, but with the next call to
  * handleEachTask(), but it is guaranteed that the deleted task will not
  * be executed. It is forbidden to use any delays in the task, because all
@@ -45,8 +48,16 @@ class WppTaskQueue {
 
 public:
 	using task_id_t = void *;
-	using context_t = void *;
-	using task_t = std::function<bool(WppClient&, context_t)>;
+	using ctx_t = void *;
+	/**
+	 * Keep in mind that while std::function itself is always copy able,
+	 * it might hold a callable object (like a lambda) that captures
+	 * variables which may not be copy able. If you try to copy a
+	 * std::function that holds a non-copyable callable, it will compile,
+	 * but will throw a std::bad_function_call exception at runtime if
+	 * you try to call the copied std::function.
+	 */
+	using task_t = std::function<bool(WppClient&, ctx_t)>;
 
 private:
 	enum TaskState : uint8_t {
@@ -60,7 +71,7 @@ private:
 		task_t task;
 		time_t delaySec;
 		time_t nextCallTime;
-		context_t ctx = NULL;
+		ctx_t ctx = NULL;
 		size_t ctxSize = 0;
 		TaskState state;
 	};
@@ -73,18 +84,31 @@ public:
 
 	/* ------------- Tasks management ------------- */
 	/**
-	 * Add task to queue, ctx passed to task by pointer without copy.
+	 * Add task to queue, ctx that passed to task equals to NULL.
 	 *
-	 * @val ctx - User data ptr that will be passed to task, without coping.
 	 * @val delaySec - Min time after which task will be run first time, and 
 	 * 			    time beatween next calls of this task while it returns false.
-	 * 				Minimum value is WPP_TASK_MIN_DELAY_S.
+	 * 				Minimum value is WPP_TASK_MIN_DELAY_S, max value is WPP_TASK_MAX_DELAY_S.
 	 * @val task - Task for execute, while task returns false it will be called
 	 * 			   with specified delay, after returning true task deleted from
 	 * 			   queue.
 	 * @return id of created task or WPP_ERR_TASK_ID
 	 */
-	static task_id_t addTask(context_t ctx, time_t delaySec, task_t task);
+	static task_id_t addTask(time_t delaySec, task_t task);
+
+	/**
+	 * Add task to queue, ctx passed to task by pointer without copy.
+	 *
+	 * @val ctx - User data ptr that will be passed to task, without coping.
+	 * @val delaySec - Min time after which task will be run first time, and 
+	 * 			    time beatween next calls of this task while it returns false.
+	 * 				Minimum value is WPP_TASK_MIN_DELAY_S, max value is WPP_TASK_MAX_DELAY_S.
+	 * @val task - Task for execute, while task returns false it will be called
+	 * 			   with specified delay, after returning true task deleted from
+	 * 			   queue.
+	 * @return id of created task or WPP_ERR_TASK_ID
+	 */
+	static task_id_t addTask(ctx_t ctx, time_t delaySec, task_t task);
 
 	/**
 	 * Add task to queue, ctx passed to task by pointer with copy,
@@ -94,13 +118,13 @@ public:
 	 * @val size - User data size that will be copied.
 	 * @val delaySec - Min time after which task will be run first time, and 
 	 * 			    time beatween next calls of this task while it returns false.
-	 * 				Minimum value is WPP_TASK_MIN_DELAY_S.
+	 * 				Minimum value is WPP_TASK_MIN_DELAY_S, max value is WPP_TASK_MAX_DELAY_S.
 	 * @val task - Task for execute, while task returns false it will be called,
 	 * 			   with specified delay,after returning true task deleted from
 	 * 			   the queue, and relese allocated memory for ctx.
 	 * @return id of created task or WPP_ERR_TASK_ID
 	 */
-	static task_id_t addTaskWithCopy(context_t ctx, size_t size, time_t delaySec, task_t task);
+	static task_id_t addTaskWithCopy(ctx_t ctx, size_t size, time_t delaySec, task_t task);
 
 	/**
 	 * Returns count of tasks in the queue.
@@ -165,12 +189,12 @@ private:
 	 */
 	static time_t handleEachTask(WppClient& clien);
 
-	/*
+	/**
 	 * Deletes from list task with state SHOULD_BE_DELETED.
 	 */
 	void deleteFinishedTasks();
 
-	/*
+	/**
 	 * Returns minimum delay in sec to the next task executions.
 	 */
 	time_t updateNextCallTimeForTasks();
@@ -179,6 +203,12 @@ private:
 	static WppTaskQueue	_instance;
 	std::mutex _handleTaskGuard;
 	std::mutex _taskQueueGuard;
+	/**
+	 * Adding, removing and moving the elements within the list or
+	 * across several lists does not invalidate the iterators or
+	 * references. An iterator is invalidated only when the
+	 * corresponding element is deleted.
+	 */
 	std::list<TaskInfo *> _tasks;
 };
 

@@ -99,6 +99,7 @@ time_t WppClient::loop() {
 	// Handles packets retreived from server
 	if (connection().getPacketQueueSize()) connection().handlePacketsInQueue(getContext());
 
+	WPP_LOGD(TAG_WPP_CLIENT, "Handling wpp tasks if they exists");
 	// Handles Wpp tasks in the WppClient context and return next call interval
 	if (WppTaskQueue::getTaskCnt()) {
 		time_t nextTaskCallIntervalSec = WppTaskQueue::handleEachTask(*this);
@@ -107,7 +108,7 @@ time_t WppClient::loop() {
 
 	// Handles wakaama core state
 	int result = lwm2m_step(_lwm2m_context, &sleepTimeSec);
-	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Processing internal state: result -> %d, state -> %d", result, getState());
+	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Handling lwm2m internal state: result -> %d, state -> %d", result, getState());
 	if (result) {
 		WPP_LOGW_ARG(TAG_WPP_CLIENT, "LWM2M core step failed, error code: %d", result);
 		if (getState() == STATE_BOOTSTRAPPING || getState() == STATE_BOOTSTRAP_REQUIRED) {

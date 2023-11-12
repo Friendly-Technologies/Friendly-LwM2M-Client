@@ -27,7 +27,13 @@ WppTaskQueue::~WppTaskQueue() {
 }
 
 /* ------------- Tasks management ------------- */
-WppTaskQueue::task_id_t WppTaskQueue::addTask(context_t ctx, time_t delaySec, task_t task) {
+WppTaskQueue::task_id_t WppTaskQueue::addTask(time_t delaySec, task_t task) {
+	return addTask(WPP_TASK_DEF_CTX, delaySec, task);
+}
+
+WppTaskQueue::task_id_t WppTaskQueue::addTask(ctx_t ctx, time_t delaySec, task_t task) {
+	if (delaySec < WPP_TASK_MIN_DELAY_S || WPP_TASK_MAX_DELAY_S < delaySec) return WPP_ERR_TASK_ID;
+
 	std::lock_guard<std::mutex> lock(_instance._taskQueueGuard);
 
 	TaskInfo *newTask = new TaskInfo;
@@ -42,7 +48,9 @@ WppTaskQueue::task_id_t WppTaskQueue::addTask(context_t ctx, time_t delaySec, ta
 	return newTask;
 }
 
-WppTaskQueue::task_id_t WppTaskQueue::addTaskWithCopy(context_t ctx, size_t size, time_t delaySec, task_t task) {
+WppTaskQueue::task_id_t WppTaskQueue::addTaskWithCopy(ctx_t ctx, size_t size, time_t delaySec, task_t task) {
+	if (!ctx || !size || delaySec < WPP_TASK_MIN_DELAY_S || WPP_TASK_MAX_DELAY_S < delaySec) return WPP_ERR_TASK_ID;
+
 	std::lock_guard<std::mutex> lock(_instance._taskQueueGuard);
 
 	TaskInfo *newTask = new TaskInfo;

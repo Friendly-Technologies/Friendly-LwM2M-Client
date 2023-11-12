@@ -12,6 +12,8 @@
 #include "WppLogs.h"
 
 /* --------------- Code_cpp block 0 start --------------- */
+#include "WppTaskQueue.h"
+
 #if RES_3_9
 #define BAT_LVL_MIN	0
 #define BAT_LVL_MAX	100
@@ -194,7 +196,13 @@ void Device::resourcesInit() {
 	#endif
 
 	#if RES_3_13
-	resource(CURRENT_TIME_13)->set(TIME_T(0));                                                                                                                                                                                       
+	resource(CURRENT_TIME_13)->set(TIME_T(WppPlatform::getTime()));
+	WppTaskQueue::addTask(1, [this](WppClient &client, WppTaskQueue::ctx_t ctx) -> bool {
+		TIME_T currentTime = WppPlatform::getTime();
+		this->resource(CURRENT_TIME_13)->set(currentTime);
+		this->notifyValueChanged({CURRENT_TIME_13,});
+		return false;
+	});
 	#endif                                                                                                                                                                                                              
 	
 	#if RES_3_14

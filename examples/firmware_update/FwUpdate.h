@@ -42,6 +42,9 @@ public:
             return true;
         });
         #endif
+        #if RES_5_13
+        fwUpd->set(FirmwareUpdate::MAXIMUM_DEFER_PERIOD_13, (UINT_T)10);
+        #endif
 	}
 
     FirmwareUpdate::UpdRes getLastUpdResult() {
@@ -73,6 +76,15 @@ public:
     }
 
     void update(Instance& inst) {
+        #if RES_5_13
+        static uint8_t reqCnt = 0;
+        if (!reqCnt) {
+            inst.set(FirmwareUpdate::UPDATE_RESULT_5, (INT_T)FirmwareUpdate::R_FW_UPD_DEFERRED);
+            reqCnt++;
+            return;
+        }
+        #endif
+
         STRING_T fileName = "test";
         #if RES_5_6 && RES_5_7
         STRING_T pkgName, pkgVersion;

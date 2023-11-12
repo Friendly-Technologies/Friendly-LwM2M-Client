@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <cstring>
 #include "WppPlatform.h"
-
+#include "WppLogs.h"
 
 namespace wpp {
 
@@ -123,7 +123,7 @@ time_t WppTaskQueue::handleEachTask(WppClient& clien) {
 	for (auto task : tasksCopy) {
 		// Be sure that we do not override SHOULD_BE_DELETED state
 		_instance._taskQueueGuard.lock();
-		if (task->state & SHOULD_BE_DELETED || task->nextCallTime < WppPlatform::getTime()) {
+		if (task->state & SHOULD_BE_DELETED || task->nextCallTime > WppPlatform::getTime()) {
 			_instance._taskQueueGuard.unlock();
 			continue;
 		}

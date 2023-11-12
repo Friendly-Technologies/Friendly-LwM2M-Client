@@ -9,13 +9,14 @@
 #include "WppRegistry.h"
 #include "WppConnection.h"
 #include "WppLogs.h"
+#include "WppTaskQueue.h"
 
 namespace wpp {
 
 WppClient *WppClient::_client = NULL;
 std::mutex WppClient::_clientGuard;
 
-WppClient::WppClient(WppConnection &connection, time_t maxSleepTime): _connection(connection), _maxSleepTime(maxSleepTime) {
+WppClient::WppClient(WppConnection &connection, time_t maxSleepTimeSec): _connection(connection), _maxSleepTimeSec(maxSleepTimeSec) {
 	lwm2mContextOpen();
 	_registry = new WppRegistry(getContext());
 }
@@ -92,14 +93,20 @@ lwm2m_client_state_t WppClient::getState() {
 
 time_t WppClient::loop() {
 	// Max sleep time
-	time_t sleepTime = _maxSleepTime;
+	time_t sleepTimeSec = _maxSleepTimeSec;
 
 	WPP_LOGD(TAG_WPP_CLIENT, "Handling server packets if they exists");
-	// Handle packets retreived from server
+	// Handles packets retreived from server
 	if (connection().getPacketQueueSize()) connection().handlePacketsInQueue(getContext());
 
-	// Handle wakaama core state
-	int result = lwm2m_step(_lwm2m_context, &sleepTime);
+	// Handles Wpp tasks in the WppClient context and return next call interval
+	if (WppTaskQueue::getTaskCnt()) {
+		time_t nextTaskCallIntervalSec = WppTaskQueue::handleEachTask(*this);
+		if (nextTaskCallIntervalSec < sleepTimeSec) sleepTimeSec = nextTaskCallIntervalSec;
+	}
+
+	// Handles wakaama core state
+	int result = lwm2m_step(_lwm2m_context, &sleepTimeSec);
 	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Processing internal state: result -> %d, state -> %d", result, getState());
 	if (result) {
 		WPP_LOGW_ARG(TAG_WPP_CLIENT, "LWM2M core step failed, error code: %d", result);
@@ -111,7 +118,7 @@ time_t WppClient::loop() {
 		_lwm2m_context->state = STATE_INITIAL;
 	}
 
-	return sleepTime;
+	return sleepTimeSec;
 }
 
 bool WppClient::updateServerRegistration(INT_T serverId, bool withObjects) {

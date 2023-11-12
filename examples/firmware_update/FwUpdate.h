@@ -8,6 +8,7 @@
 #include "InstEventObserver.h"
 #include "WppClient.h"
 #include "Device.h"
+#include "WppTaskQueue.h"
 
 #include "FwDownloaderStub.h"
 
@@ -62,9 +63,13 @@ public:
         if (eventId == FirmwareUpdate::E_URI_DOWNLOADIN) {
             STRING_T uri;
             inst.get(FirmwareUpdate::PACKAGE_URI_1, uri);
-            _downloader.startDownloading(uri, [this](string file){ 
+            _downloader.startDownloading(uri, [](string file){ 
                 cout << "FW is downloaded to file: " << file << endl;
-                this->fwIsDownloaded(); 
+                WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, [](WppClient &client, WppTaskQueue::ctx_t ctx) -> bool {
+                    client.registry().firmwareUpdate().instance()->set(FirmwareUpdate::STATE_3, (INT_T)FirmwareUpdate::S_DOWNLOADED);
+                    return true;
+                });
+                //this->fwIsDownloaded(); 
             });
         }
     }

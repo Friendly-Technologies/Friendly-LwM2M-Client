@@ -134,7 +134,7 @@ class ObjectInitializer:
         for line in content:
             line = str(line)
             resources_dict = {}
-            if line.find("};") != -1:
+            if line.replace(" ", "").find(const.ENUM_END_PATTERN.replace(" ", "")) != -1:
                 flag_fill = False
             if flag_fill:
                 if line.find('#') != -1:
@@ -217,7 +217,7 @@ class ObjectInitializer:
         data = []
         flag_fill = False
         for line in content:
-            if line.find("};") != -1:
+            if line.replace(" ", "").find(const.ENUM_END_PATTERN.replace(" ", "")) != -1:
                 flag_fill = False
             if flag_fill:
                 if line.find('#if') != -1 or line.find('#endif') != -1:

@@ -8,6 +8,7 @@
 #include "InstEventObserver.h"
 #include "WppClient.h"
 #include "Device.h"
+#include "WppTaskQueue.h"
 
 #include "FwDownloaderStub.h"
 
@@ -42,6 +43,9 @@ public:
             return true;
         });
         #endif
+        #if RES_5_13
+        fwUpd->set(FirmwareUpdate::MAXIMUM_DEFER_PERIOD_13, (UINT_T)10);
+        #endif
 	}
 
     FirmwareUpdate::UpdRes getLastUpdResult() {
@@ -59,9 +63,13 @@ public:
         if (eventId == FirmwareUpdate::E_URI_DOWNLOADIN) {
             STRING_T uri;
             inst.get(FirmwareUpdate::PACKAGE_URI_1, uri);
-            _downloader.startDownloading(uri, [this](string file){ 
+            _downloader.startDownloading(uri, [](string file){ 
                 cout << "FW is downloaded to file: " << file << endl;
-                this->fwIsDownloaded(); 
+                WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, [](WppClient &client, WppTaskQueue::ctx_t ctx) -> bool {
+                    client.registry().firmwareUpdate().instance()->set(FirmwareUpdate::STATE_3, (INT_T)FirmwareUpdate::S_DOWNLOADED);
+                    return true;
+                });
+                //this->fwIsDownloaded(); 
             });
         }
     }
@@ -73,6 +81,15 @@ public:
     }
 
     void update(Instance& inst) {
+        #if RES_5_13
+        static uint8_t reqCnt = 0;
+        if (!reqCnt) {
+            inst.set(FirmwareUpdate::UPDATE_RESULT_5, (INT_T)FirmwareUpdate::R_FW_UPD_DEFERRED);
+            reqCnt++;
+            return;
+        }
+        #endif
+
         STRING_T fileName = "test";
         #if RES_5_6 && RES_5_7
         STRING_T pkgName, pkgVersion;

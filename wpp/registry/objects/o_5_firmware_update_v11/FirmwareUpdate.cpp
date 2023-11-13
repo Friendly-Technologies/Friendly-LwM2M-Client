@@ -35,6 +35,9 @@ namespace wpp {
 FirmwareUpdate::FirmwareUpdate(lwm2m_context_t &context, const OBJ_LINK_T &id): Instance(context, id) {
 
 	/* --------------- Code_cpp block 1 start --------------- */
+	#if RES_5_13
+	_deferUpdateTaskId = WPP_ERR_TASK_ID;
+	#endif
 	/* --------------- Code_cpp block 1 end --------------- */
 
 	resourcesCreate();
@@ -46,11 +49,15 @@ FirmwareUpdate::FirmwareUpdate(lwm2m_context_t &context, const OBJ_LINK_T &id): 
 
 FirmwareUpdate::~FirmwareUpdate() {
 	/* --------------- Code_cpp block 3 start --------------- */
+	#if RES_5_13
+	stopDeferUpdateGuard();
+	#endif
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
 void FirmwareUpdate::setDefaultState() {
 	/* --------------- Code_cpp block 4 start --------------- */
+	void stopDeferUpdateGuard();
 	/* --------------- Code_cpp block 4 end --------------- */
 
 	_resources.clear();
@@ -110,6 +117,9 @@ void FirmwareUpdate::serverOperationNotifier(ResOp::TYPE type, const ResLink &re
 			INT_T state;
 			resource(STATE_3)->get(state);
 			if (state == S_DOWNLOADED) {
+				#if RES_5_13
+				stopDeferUpdateGuard();
+				#endif
 				changeUpdRes(R_INITIAL);
 				changeState(S_UPDATING);
 			}
@@ -144,14 +154,28 @@ void FirmwareUpdate::userOperationNotifier(ResOp::TYPE type, const ResLink &resI
 		case STATE_3: {
 			INT_T state;
 			resource(STATE_3)->get(state);
-			if (state == S_IDLE) {
+			switch (state) {
+			case S_IDLE:
 				resource(PACKAGE_0)->set(OPAQUE_T());
 				notifyValueChanged({PACKAGE_0,});
 				resource(PACKAGE_URI_1)->set(STRING_T(""));
 				notifyValueChanged({PACKAGE_URI_1,});
 				changeUpdRes(R_INITIAL);
-			} else if (state == S_DOWNLOADED) {
+				break;
+			case S_DOWNLOADED:
 				eventNotify(*this, E_DOWNLOADED);
+				break;
+			#if RES_5_13
+			case S_UPDATING: {
+				INT_T res;
+				resource(UPDATE_RESULT_5)->get(res);
+				if (res == R_FW_UPD_DEFERRED) {
+					resource(UPDATE_RESULT_5)->set(INT_T(R_INITIAL));
+					stopDeferUpdateGuard();
+				}
+			}
+			#endif
+			default: break;
 			}
 			break;
 		}
@@ -166,7 +190,10 @@ void FirmwareUpdate::userOperationNotifier(ResOp::TYPE type, const ResLink &resI
 			case R_FW_UPD_DEFERRED: {
 				INT_T state;
 				resource(STATE_3)->get(state);
-				if (state == S_UPDATING) changeState(S_DOWNLOADED);
+				if (state == S_UPDATING) {
+					changeState(S_DOWNLOADED);
+					startDeferUpdateGuard();
+				}
 				else resource(UPDATE_RESULT_5)->set(INT_T(R_INITIAL));
 				break;
 			}
@@ -398,6 +425,42 @@ bool FirmwareUpdate::isDeliveryTypeSupported(FwUpdDelivery type) {
 	if (deliveryType == type || deliveryType == BOTH) return true;
 	return false;
 }
+
+#if RES_5_13
+void FirmwareUpdate::startDeferUpdateGuard() {
+	if (_deferUpdateTaskId != WPP_ERR_TASK_ID) return;
+
+	UINT_T maxDefer = 0;
+	resource(MAXIMUM_DEFER_PERIOD_13)->get(maxDefer);
+	if (!maxDefer) return;
+
+	_deferUpdateTaskId = WppTaskQueue::addTask(maxDefer, [this](WppClient &client, WppTaskQueue::ctx_t ctx) -> bool {
+		WPP_LOGD(TAG, "Defer update task is running");
+		INT_T res, state;
+		resource(UPDATE_RESULT_5)->get(res);
+		resource(STATE_3)->get(state);
+		if (state != S_DOWNLOADED && res != R_FW_UPD_DEFERRED) return true;
+
+		changeUpdRes(R_INITIAL);
+		changeState(S_UPDATING);
+
+		EXECUTE_T execute;
+		resource(UPDATE_2)->get(execute);
+		if (!resource(UPDATE_2)->get(execute) || !execute) return true;
+
+		execute(*this, UPDATE_2, OPAQUE_T());
+
+		return true;
+	});
+}
+
+void FirmwareUpdate::stopDeferUpdateGuard() {
+	if (_deferUpdateTaskId != WPP_ERR_TASK_ID) {
+		WppTaskQueue::requestToRemoveTask(_deferUpdateTaskId);
+		_deferUpdateTaskId = WPP_ERR_TASK_ID;
+	}
+}
+#endif
 /* --------------- Code_cpp block 10 end --------------- */
 
 } /* namespace wpp */

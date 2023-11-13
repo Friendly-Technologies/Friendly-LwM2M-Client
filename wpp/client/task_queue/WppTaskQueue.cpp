@@ -10,18 +10,15 @@ namespace wpp {
 WppTaskQueue WppTaskQueue::_instance;
 std::mutex WppTaskQueue::_handleTaskGuard;
 std::mutex WppTaskQueue::_taskQueueGuard;
-bool WppTaskQueue::_isInstExist = false;
 
 WppTaskQueue::WppTaskQueue() {
 	_handleTaskGuard.unlock();
 	_taskQueueGuard.unlock();
-	_isInstExist = true;
 }
 
 WppTaskQueue::~WppTaskQueue() {
 	std::lock_guard<std::mutex> handleLock(_handleTaskGuard);
 	std::lock_guard<std::mutex> queueLock(_taskQueueGuard);
-	_isInstExist = false;
 
 	for (auto task : _tasks) {
 		if (task->ctxSize > 0) {
@@ -42,7 +39,6 @@ WppTaskQueue::task_id_t WppTaskQueue::addTask(ctx_t ctx, time_t delaySec, task_t
 	if (delaySec < WPP_TASK_MIN_DELAY_S || WPP_TASK_MAX_DELAY_S < delaySec) return WPP_ERR_TASK_ID;
 
 	std::lock_guard<std::mutex> lock(_taskQueueGuard);
-	if (!isInstExist()) return WPP_ERR_TASK_ID;
 
 	TaskInfo *newTask = new TaskInfo;
 	newTask->task = task;
@@ -60,7 +56,6 @@ WppTaskQueue::task_id_t WppTaskQueue::addTaskWithCopy(ctx_t ctx, size_t size, ti
 	if (!ctx || !size || delaySec < WPP_TASK_MIN_DELAY_S || WPP_TASK_MAX_DELAY_S < delaySec) return WPP_ERR_TASK_ID;
 
 	std::lock_guard<std::mutex> lock(_taskQueueGuard);
-	if (!isInstExist()) return WPP_ERR_TASK_ID;
 
 	TaskInfo *newTask = new TaskInfo;
 	newTask->task = task;
@@ -76,14 +71,11 @@ WppTaskQueue::task_id_t WppTaskQueue::addTaskWithCopy(ctx_t ctx, size_t size, ti
 }
 
 size_t WppTaskQueue::getTaskCnt() {
-	std::lock_guard<std::mutex> lock(_taskQueueGuard);
-	if (!isInstExist()) return 0;
 	return _instance._tasks.size();
 }
 
 bool WppTaskQueue::isTaskExist(task_id_t id) {
 	std::lock_guard<std::mutex> lock(_taskQueueGuard);
-	if (!isInstExist()) return false;
 
 	auto task = std::find(_instance._tasks.begin(), _instance._tasks.end(), (TaskInfo *)id);
 	return task != _instance._tasks.end();
@@ -91,7 +83,6 @@ bool WppTaskQueue::isTaskExist(task_id_t id) {
 
 bool WppTaskQueue::isTaskIdle(task_id_t id) {
 	std::lock_guard<std::mutex> lock(_taskQueueGuard);
-	if (!isInstExist()) return false;
 
 	auto task = std::find(_instance._tasks.begin(), _instance._tasks.end(), (TaskInfo *)id);
 	if (task == _instance._tasks.end()) return false;
@@ -100,7 +91,6 @@ bool WppTaskQueue::isTaskIdle(task_id_t id) {
 
 bool WppTaskQueue::isTaskExecuting(task_id_t id) {
 	std::lock_guard<std::mutex> lock(_taskQueueGuard);
-	if (!isInstExist()) return false;
 
 	auto task = std::find(_instance._tasks.begin(), _instance._tasks.end(), (TaskInfo *)id);
 	if (task == _instance._tasks.end()) return false;
@@ -109,7 +99,6 @@ bool WppTaskQueue::isTaskExecuting(task_id_t id) {
 
 bool WppTaskQueue::isTaskShouldBeDeleted(task_id_t id) {
 	std::lock_guard<std::mutex> lock(_taskQueueGuard);
-	if (!isInstExist()) return false;
 
 	auto task = std::find(_instance._tasks.begin(), _instance._tasks.end(), (TaskInfo *)id);
 	if (task == _instance._tasks.end()) return false;
@@ -118,7 +107,6 @@ bool WppTaskQueue::isTaskShouldBeDeleted(task_id_t id) {
 
 void WppTaskQueue::requestToRemoveTask(task_id_t id) {
 	std::lock_guard<std::mutex> queueLock(_taskQueueGuard);
-	if (!isInstExist()) return;
 
 	auto task = std::find(_instance._tasks.begin(), _instance._tasks.end(), (TaskInfo *)id);
 	if (task == _instance._tasks.end()) return;
@@ -128,13 +116,11 @@ void WppTaskQueue::requestToRemoveTask(task_id_t id) {
 
 void WppTaskQueue::requestToRemoveEachTask() {
 	std::lock_guard<std::mutex> queueLock(_taskQueueGuard);
-	if (!isInstExist()) return;
 	for (auto task : _instance._tasks) task->state = (TaskState)(task->state | SHOULD_BE_DELETED);
 }
 
 time_t WppTaskQueue::handleEachTask(WppClient& clien) {
 	std::lock_guard<std::mutex> handleLock(_handleTaskGuard);
-	if (!isInstExist()) return WPP_TASK_MAX_DELAY_S;
 
 	_taskQueueGuard.lock();
 	// We create copy for be sure that adding new task not corrupted begin()
@@ -170,10 +156,6 @@ time_t WppTaskQueue::handleEachTask(WppClient& clien) {
 
 	_instance.deleteFinishedTasks();
 	return _instance.updateNextCallTimeForTasks();
-}
-
-bool WppTaskQueue::isInstExist() {
-	return _isInstExist;
 }
 
 void WppTaskQueue::deleteFinishedTasks() {

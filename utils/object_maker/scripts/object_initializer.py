@@ -241,7 +241,7 @@ class ObjectInitializer:
         # filter empty structures of the instances:
         instances = [instance for instance in obj["instances"] if instance != {}]
         result = ""
-        counter = 0
+        instances_counter = 0
         for instance in instances:
             name = self.register_data[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]
             folder = self.register_data["object_folder"]
@@ -255,9 +255,9 @@ class ObjectInitializer:
             resources_merged = self.assign_value_to_resources(resources_from_json, resources_from_obj)
             resources_merged = self.assign_type_to_resources(file_path_cpp, resources_merged)
             # [print(i) for i in resources_merged]
-            result += f"\twpp::Instance *inst{counter} = obj.createInstance({instance[const.KEY_JSON_ID]});\n"
-            result += f"inst{counter}.subscribe(this);" if is_subscribe else ""
-            counter += 1
+            instance_name = f"inst{instances_counter}"
+            result += f"\twpp::Instance *{instance_name} = obj.createInstance({instance[const.KEY_JSON_ID]});\n"
+            result += f"inst{instances_counter}.subscribe(this);" if is_subscribe else ""
             for resource_dict in resources_merged:
                 resources_value = resource_dict[const.KEY_JSON_VAL]
                 resources_type = resource_dict["type"]
@@ -265,10 +265,11 @@ class ObjectInitializer:
                     res_instances_list = [inst for inst in resources_value if inst != {}]
                     for res_instance_dict in res_instances_list:
                         value = self.transform_types_of_value(res_instance_dict["value"], resources_type)
-                        result += f'\t{name}->set({{{name}::{resource_dict["name"]}}}, {value});\n'
+                        result += f'\t{instance_name}->set({{{name}::{resource_dict["name"]}}}, {value});\n'
                     continue
                 value = self.transform_types_of_value(resources_value, resources_type)
-                result += f'\t{name}->set({name}::{resource_dict["name"]}, {value});\n'
+                result += f'\t{instance_name}->set({name}::{resource_dict["name"]}, {value});\n'
+            instances_counter += 1
         return result
 
     def define_types_enabled(self, object_dict):

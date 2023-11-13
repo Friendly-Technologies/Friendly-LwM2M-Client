@@ -102,8 +102,7 @@ class ObjectInitializer:
         register_name = self.register_data[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]
         content = content.replace("__CALLBACKS__", callbacks_txt)
         content = content.replace("__INSTANCES__", instances_txt)
-        subscribe = "obj.subscribe(this);" if is_subscribed else ""
-        content = content.replace("__SUBSCRB_1__", subscribe)
+        content = content.replace("__SUBSCRB_1__", "obj.subscribe(this);" if is_subscribed else "")
         content = content.replace("__CLASS_NAME__", register_name)
         func.create_file(f"{register_name}/{register_name}.cpp", content)
         return True
@@ -257,7 +256,7 @@ class ObjectInitializer:
             # [print(i) for i in resources_merged]
             instance_name = f"inst{instances_counter}"
             result += f"\twpp::Instance *{instance_name} = obj.createInstance({instance[const.KEY_JSON_ID]});\n"
-            result += f"inst{instances_counter}.subscribe(this);" if is_subscribe else ""
+            result += f"\tinst{instances_counter}.subscribe(this);\n" if is_subscribe else ""
             for resource_dict in resources_merged:
                 resources_value = resource_dict[const.KEY_JSON_VAL]
                 resources_type = resource_dict["type"]
@@ -316,7 +315,7 @@ class ObjectInitializer:
             callbacks_cpp += "void __CLASS_NAME__Obj::instanceDeleting(Object & object, ID_T instanceId) {\n}\n\n"
             callbacks_h += "\tvoid instanceDeleting(Object &object, ID_T instanceId) override;\n"
         if object_dict["inst_restore_clb"]:
-            callbacks_cpp += "void TestImpl::objectRestore(Object &object) {\n\tobject.clear();\n\tinit(object);\n}\n\n"
+            callbacks_cpp += "void __CLASS_NAME__Impl::objectRestore(Object &object) {\n\tobject.clear();\n\tinit(object);\n}\n\n"
             callbacks_h += "\tvoid objectRestore(Object &object) override;\n"
         if object_dict["res_read_clb"]:
             callbacks_cpp += "void __CLASS_NAME__Obj::resourceRead(Instance & inst, const ResLink & resId) {\n}\n\n"
@@ -331,7 +330,7 @@ class ObjectInitializer:
             callbacks_cpp += "void __CLASS_NAME__Obj::resourcesReplaced(Instance & inst) {\n}\n\n"
             callbacks_h += "\tvoid resourcesReplaced(Instance &inst) override;\n"
         if object_dict["res_inst_event_clb"]:
-            callbacks_cpp += "void TestImpl::instEvent(Instance &inst, EVENT_ID_T eventId) {\n}\n\n"
+            callbacks_cpp += "void __CLASS_NAME__Impl::instEvent(Instance &inst, EVENT_ID_T eventId) {\n}\n\n"
             callbacks_h += "\tvoid instEvent(Instance &inst, EVENT_ID_T eventId) override;\n"
         return callbacks_h, callbacks_cpp
 
@@ -339,6 +338,7 @@ class ObjectInitializer:
         """
         Returns True if initialized example is created successful.
         """
+        errcode = 0
         must_be_checked = False
 
         if self.list_of_id is not None:
@@ -357,14 +357,21 @@ class ObjectInitializer:
             # check if it's required to initialize this Object (was indicated by second parameter):
             if must_be_checked and obj[const.KEY_JSON_ID] not in self.list_of_id:
                 continue
+            print("===================================================================================================")
+            func.LOG(self.log_tag,
+                     self.initialize.__name__,
+                     f"The example with ID {obj[const.KEY_JSON_ID]} is initializing...")
             if not self.search_object(obj[const.KEY_JSON_ID], obj[const.KEY_VER]):
+                func.LOG(self.log_tag, self.initialize.__name__, "Operation interrupted.")
+                errcode = 1
                 continue
             # todo: must be return false if loop above will return false for each object
             func.create_folder(self.register_data[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS])
             callbacks_txt_h, callbacks_txt_cpp = self.create_callbacks(obj)
             # CmakeLists stuff:
             if not self.generate_cmake_lists():
-                return False
+                errcode = 1
+                return errcode
             # header stuff:
             types_enabled = self.define_types_enabled(obj)
 
@@ -374,9 +381,14 @@ class ObjectInitializer:
             includes_txt = self.create_includes(types_enabled)
             inheritance_txt = self.create_inheritance(types_enabled)
             if not self.generate_header(includes_txt, inheritance_txt, callbacks_txt_h):
-                return False
+                errcode = 1
+                return errcode
             # cpp stuff:
             instances_txt = self.create_instances(obj, is_subscribe_2)
             if not self.generate_cpp(instances_txt, callbacks_txt_cpp, is_subscribe_1):
-                return False
-        return True
+                errcode = 1
+                return errcode
+            func.LOG(self.log_tag,
+                     self.initialize.__name__,
+                     f"The example with ID {obj[const.KEY_JSON_ID]} initialized successfully")
+        return errcode

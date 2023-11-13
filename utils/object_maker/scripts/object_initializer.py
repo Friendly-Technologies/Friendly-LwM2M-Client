@@ -95,19 +95,15 @@ class ObjectInitializer:
         func.create_file(f"{register_name}/{register_name}.h", content)
         return True
 
-    def generate_cpp(self, instances_txt, callbacks_txt, types_enabled_dict):
+    def generate_cpp(self, instances_txt, callbacks_txt, is_subscribed):
         errcode, content = func.get_file_content(const.FILE_TMPLT_INIT_CPP)
         if not errcode:
             return False
         register_name = self.register_data[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]
         content = content.replace("__CALLBACKS__", callbacks_txt)
         content = content.replace("__INSTANCES__", instances_txt)
-        subscribe_1 = "__CLASS_NAME__Obj.subscribe(this);" if (types_enabled_dict["type1"]
-                                                               or types_enabled_dict["type2"]) else ""
-        subscribe_2 = "__CLASS_NAME__.subscribe(this);" if (types_enabled_dict["type3"]
-                                                            or types_enabled_dict["type4"]) else ""
-        content = content.replace("__SUBSCRB_1__", subscribe_1)
-        content = content.replace("__SUBSCRB_2__", subscribe_2)
+        subscribe = "obj.subscribe(this);" if is_subscribed else ""
+        content = content.replace("__SUBSCRB_1__", subscribe)
         content = content.replace("__CLASS_NAME__", register_name)
         func.create_file(f"{register_name}/{register_name}.cpp", content)
         return True
@@ -241,7 +237,7 @@ class ObjectInitializer:
         # [print(i) for i in resources]
         return resources
 
-    def create_instances(self, obj):
+    def create_instances(self, obj, is_subscribe):
         # filter empty structures of the instances:
         instances = [instance for instance in obj["instances"] if instance != {}]
         result = ""
@@ -260,6 +256,7 @@ class ObjectInitializer:
             resources_merged = self.assign_type_to_resources(file_path_cpp, resources_merged)
             # [print(i) for i in resources_merged]
             result += f"\twpp::Instance *inst{counter} = obj.createInstance({instance[const.KEY_JSON_ID]});\n"
+            result += f"inst{counter}.subscribe(this);" if is_subscribe else ""
             counter += 1
             for resource_dict in resources_merged:
                 resources_value = resource_dict[const.KEY_JSON_VAL]
@@ -369,12 +366,16 @@ class ObjectInitializer:
                 return False
             # header stuff:
             types_enabled = self.define_types_enabled(obj)
+
+            is_subscribe_1 = types_enabled["type1"] or types_enabled["type2"]
+            is_subscribe_2 = types_enabled["type3"] or types_enabled["type4"]
+
             includes_txt = self.create_includes(types_enabled)
             inheritance_txt = self.create_inheritance(types_enabled)
             if not self.generate_header(includes_txt, inheritance_txt, callbacks_txt_h):
                 return False
             # cpp stuff:
-            instances_txt = self.create_instances(obj)
-            if not self.generate_cpp(instances_txt, callbacks_txt_cpp, types_enabled):
+            instances_txt = self.create_instances(obj, is_subscribe_2)
+            if not self.generate_cpp(instances_txt, callbacks_txt_cpp, is_subscribe_1):
                 return False
         return True

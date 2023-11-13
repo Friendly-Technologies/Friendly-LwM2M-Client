@@ -8,14 +8,21 @@
 namespace wpp {
 
 WppTaskQueue WppTaskQueue::_instance;
+std::mutex WppTaskQueue::_handleTaskGuard;
+std::mutex WppTaskQueue::_taskQueueGuard;
+bool WppTaskQueue::_isInstExist = false;
 
 WppTaskQueue::WppTaskQueue() {
 	_handleTaskGuard.unlock();
 	_taskQueueGuard.unlock();
+	_isInstExist = true;
 }
 
 WppTaskQueue::~WppTaskQueue() {
+	std::lock_guard<std::mutex> handleLock(_handleTaskGuard);
 	std::lock_guard<std::mutex> queueLock(_taskQueueGuard);
+	_isInstExist = false;
+
 	for (auto task : _tasks) {
 		if (task->ctxSize > 0) {
 			delete[] (uint8_t *)(task->ctx);
@@ -34,7 +41,8 @@ WppTaskQueue::task_id_t WppTaskQueue::addTask(time_t delaySec, task_t task) {
 WppTaskQueue::task_id_t WppTaskQueue::addTask(ctx_t ctx, time_t delaySec, task_t task) {
 	if (delaySec < WPP_TASK_MIN_DELAY_S || WPP_TASK_MAX_DELAY_S < delaySec) return WPP_ERR_TASK_ID;
 
-	std::lock_guard<std::mutex> lock(_instance._taskQueueGuard);
+	std::lock_guard<std::mutex> lock(_taskQueueGuard);
+	if (!isInstExist()) return WPP_ERR_TASK_ID;
 
 	TaskInfo *newTask = new TaskInfo;
 	newTask->task = task;
@@ -51,7 +59,8 @@ WppTaskQueue::task_id_t WppTaskQueue::addTask(ctx_t ctx, time_t delaySec, task_t
 WppTaskQueue::task_id_t WppTaskQueue::addTaskWithCopy(ctx_t ctx, size_t size, time_t delaySec, task_t task) {
 	if (!ctx || !size || delaySec < WPP_TASK_MIN_DELAY_S || WPP_TASK_MAX_DELAY_S < delaySec) return WPP_ERR_TASK_ID;
 
-	std::lock_guard<std::mutex> lock(_instance._taskQueueGuard);
+	std::lock_guard<std::mutex> lock(_taskQueueGuard);
+	if (!isInstExist()) return WPP_ERR_TASK_ID;
 
 	TaskInfo *newTask = new TaskInfo;
 	newTask->task = task;
@@ -67,38 +76,49 @@ WppTaskQueue::task_id_t WppTaskQueue::addTaskWithCopy(ctx_t ctx, size_t size, ti
 }
 
 size_t WppTaskQueue::getTaskCnt() {
+	std::lock_guard<std::mutex> lock(_taskQueueGuard);
+	if (!isInstExist()) return 0;
 	return _instance._tasks.size();
 }
 
 bool WppTaskQueue::isTaskExist(task_id_t id) {
-	std::lock_guard<std::mutex> lock(_instance._taskQueueGuard);
+	std::lock_guard<std::mutex> lock(_taskQueueGuard);
+	if (!isInstExist()) return false;
+
 	auto task = std::find(_instance._tasks.begin(), _instance._tasks.end(), (TaskInfo *)id);
 	return task != _instance._tasks.end();
 }
 
 bool WppTaskQueue::isTaskIdle(task_id_t id) {
-	std::lock_guard<std::mutex> lock(_instance._taskQueueGuard);
+	std::lock_guard<std::mutex> lock(_taskQueueGuard);
+	if (!isInstExist()) return false;
+
 	auto task = std::find(_instance._tasks.begin(), _instance._tasks.end(), (TaskInfo *)id);
 	if (task == _instance._tasks.end()) return false;
 	return (*task)->state & IDLE;
 }
 
 bool WppTaskQueue::isTaskExecuting(task_id_t id) {
-	std::lock_guard<std::mutex> lock(_instance._taskQueueGuard);
+	std::lock_guard<std::mutex> lock(_taskQueueGuard);
+	if (!isInstExist()) return false;
+
 	auto task = std::find(_instance._tasks.begin(), _instance._tasks.end(), (TaskInfo *)id);
 	if (task == _instance._tasks.end()) return false;
 	return (*task)->state & EXECUTING;
 }
 
 bool WppTaskQueue::isTaskShouldBeDeleted(task_id_t id) {
-	std::lock_guard<std::mutex> lock(_instance._taskQueueGuard);
+	std::lock_guard<std::mutex> lock(_taskQueueGuard);
+	if (!isInstExist()) return false;
+
 	auto task = std::find(_instance._tasks.begin(), _instance._tasks.end(), (TaskInfo *)id);
 	if (task == _instance._tasks.end()) return false;
 	return (*task)->state & SHOULD_BE_DELETED;
 }
 
 void WppTaskQueue::requestToRemoveTask(task_id_t id) {
-	std::lock_guard<std::mutex> queueLock(_instance._taskQueueGuard);
+	std::lock_guard<std::mutex> queueLock(_taskQueueGuard);
+	if (!isInstExist()) return;
 
 	auto task = std::find(_instance._tasks.begin(), _instance._tasks.end(), (TaskInfo *)id);
 	if (task == _instance._tasks.end()) return;
@@ -107,28 +127,30 @@ void WppTaskQueue::requestToRemoveTask(task_id_t id) {
 }
 
 void WppTaskQueue::requestToRemoveEachTask() {
-	std::lock_guard<std::mutex> queueLock(_instance._taskQueueGuard);
+	std::lock_guard<std::mutex> queueLock(_taskQueueGuard);
+	if (!isInstExist()) return;
 	for (auto task : _instance._tasks) task->state = (TaskState)(task->state | SHOULD_BE_DELETED);
 }
 
 time_t WppTaskQueue::handleEachTask(WppClient& clien) {
-	std::lock_guard<std::mutex> handleLock(_instance._handleTaskGuard);
+	std::lock_guard<std::mutex> handleLock(_handleTaskGuard);
+	if (!isInstExist()) return WPP_TASK_MAX_DELAY_S;
 
-	_instance._taskQueueGuard.lock();
+	_taskQueueGuard.lock();
 	// We create copy for be sure that adding new task not corrupted begin()
 	// and end() iterators inside _tasks list.
 	std::list<TaskInfo *> tasksCopy = _instance._tasks;
-	_instance._taskQueueGuard.unlock();
+	_taskQueueGuard.unlock();
 
 	for (auto task : tasksCopy) {
 		// Be sure that we do not override SHOULD_BE_DELETED state
-		_instance._taskQueueGuard.lock();
+		_taskQueueGuard.lock();
 		if (task->state & SHOULD_BE_DELETED || task->nextCallTime > WppPlatform::getTime()) {
 			_instance._taskQueueGuard.unlock();
 			continue;
 		}
 		task->state = EXECUTING;
-		_instance._taskQueueGuard.unlock();
+		_taskQueueGuard.unlock();
 
 		// Here state can be changed to SHOULD_BE_DELETED but it is
 		// not matter becouse we have already set EXECUTING state look
@@ -136,20 +158,23 @@ time_t WppTaskQueue::handleEachTask(WppClient& clien) {
 		bool isFinished = task->task(clien, task->ctx);
 
 		// Be sure that we do not override SHOULD_BE_DELETED state
-		_instance._taskQueueGuard.lock();
+		_taskQueueGuard.lock();
 		if (isFinished || task->state & SHOULD_BE_DELETED) {
 			task->state = SHOULD_BE_DELETED;
 		} else {
 			task->state = IDLE;
 			task->nextCallTime = WppPlatform::getTime() + task->delaySec;
 		}
-		_instance._taskQueueGuard.unlock();
+		_taskQueueGuard.unlock();
 	}
 
 	_instance.deleteFinishedTasks();
 	return _instance.updateNextCallTimeForTasks();
 }
 
+bool WppTaskQueue::isInstExist() {
+	return _isInstExist;
+}
 
 void WppTaskQueue::deleteFinishedTasks() {
 	std::lock_guard<std::mutex> queueLock(_taskQueueGuard);

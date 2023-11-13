@@ -189,6 +189,8 @@ private:
 	 */
 	static time_t handleEachTask(WppClient& clien);
 
+	static bool isInstExist();
+
 	/**
 	 * Deletes from list task with state SHOULD_BE_DELETED.
 	 */
@@ -201,8 +203,9 @@ private:
 
 private:
 	static WppTaskQueue	_instance;
-	std::mutex _handleTaskGuard;
-	std::mutex _taskQueueGuard;
+	static std::mutex _handleTaskGuard;
+	static std::mutex _taskQueueGuard;
+	static bool _isInstExist;
 	/**
 	 * Adding, removing and moving the elements within the list or
 	 * across several lists does not invalidate the iterators or

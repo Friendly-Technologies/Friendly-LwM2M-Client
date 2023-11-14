@@ -1,11 +1,12 @@
 #ifndef LWM2M_SECURITY_H_
 #define LWM2M_SECURITY_H_
 
+#include <iostream>
 #include "WppRegistry.h"
 #include "ObjActObserver.h"
 
-
 using namespace wpp;
+using namespace std;
 
 class Lwm2mSecurityImpl: public wpp::ObjActObserver {
 public:
@@ -13,8 +14,6 @@ public:
     ~Lwm2mSecurityImpl();
 
     void init(Object &obj);
-
-private:
 	void objectRestore(Object &object) override;
 };
 

@@ -1,13 +1,13 @@
 #include "FirmwareUpdate.h"
 
-FirmwareUpdateImpl::FirmwareUpdateImpl() {}
+FirmwareUpdateImpl::FirmwareUpdateImpl(DeviceImpl &device) : _device(device) {}
 
 FirmwareUpdateImpl::~FirmwareUpdateImpl() {}
 
 void FirmwareUpdateImpl::init(Object &obj) {
 	obj.subscribe(this);
 	wpp::Instance *inst0 = obj.createInstance(0);
-	inst0.subscribe(this);
+	inst0->subscribe(this);
 
 	inst0->set(FirmwareUpdate::UPDATE_2, (EXECUTE_T)[this](Instance& inst, ID_T id, const OPAQUE_T& data) {
 		cout << "FirmwareUpdate: execute UPDATE_2" << endl;
@@ -33,17 +33,17 @@ void FirmwareUpdateImpl::init(Object &obj) {
     #endif
 }
 
-FirmwareUpdate::UpdRes getLastUpdResult() {
+FirmwareUpdate::UpdRes FirmwareUpdateImpl::getLastUpdResult() {
     return FirmwareUpdate::R_FW_UPD_SUCCESS;
 }
 
-void FirmwareUpdateImpl::objectRestore(Object &object) override {
+void FirmwareUpdateImpl::objectRestore(Object &object) {
 	cout << "FwUpdateImpl: objectRestore: " << (ID_T)object.getObjectID() << endl;
 	object.clear();
     init(object);
 }
 
-void FirmwareUpdateImpl::instEvent(Instance &inst, EVENT_ID_T eventId) override {
+void FirmwareUpdateImpl::instEvent(Instance &inst, EVENT_ID_T eventId) {
     cout << "FwUpdateImpl: event: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ", eventId: " << (int)eventId << endl;
     if (eventId == FirmwareUpdate::E_URI_DOWNLOADIN) {
         STRING_T uri;

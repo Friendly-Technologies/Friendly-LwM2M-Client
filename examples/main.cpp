@@ -8,18 +8,18 @@
 #include <thread>
 #include <chrono>
 
-#include "Server.h"
-#include "Security.h"
+#include "Lwm2mServer.h"
+#include "Lwm2mSecurity.h"
 #include "Device.h"
 #include "Connection.h"
 #if OBJ_O_4_CONNECTIVITY_MONITORING_V13
 #include "ConnectivityMonitoring.h"
 #endif
 #if OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
-#include "AccessControl.h"
+#include "Lwm2mAccessControl.h"
 #endif
 #if OBJ_O_5_FIRMWARE_UPDATE_V11
-#include "FwUpdate.h"
+#include "FirmwareUpdate.h"
 #endif
 
 #include "WppClient.h"
@@ -38,17 +38,17 @@ void socketPolling(Connection *connection, DeviceImpl *device) {
 int main() {
 	cout << endl << "---- Creating requiered components ----" << endl;
 	Connection connection("56830", AF_INET);
-	ServerImpl server;
-	SecurityImpl security;
+	Lwm2mServerImpl server;
+	Lwm2mSecurityImpl security;
 	DeviceImpl device;
 	#if OBJ_O_4_CONNECTIVITY_MONITORING_V13
-	CnnctvtMonnImpl conn_mon;
+	ConnectivityMonitoringImpl conn_mon;
 	#endif
 	#if OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
-	AccessControl accessCtrl;
+	Lwm2mAccessControlImpl accessCtrl;
 	#endif
 	#if OBJ_O_5_FIRMWARE_UPDATE_V11
-	FwUpdateImpl fwUpd(device);
+	FirmwareUpdateImpl fwUpd(device);
 	#endif
 
 	// Client initialization

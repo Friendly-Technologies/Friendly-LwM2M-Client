@@ -17,7 +17,7 @@ void Lwm2mAccessControlImpl::init(Object &obj) {
 }
 
 void Lwm2mAccessControlImpl::objectRestore(Object &object) {
-	cout << "AccessControl: objectRestore: " << (ID_T)object.getObjectID() << endl;
+	std::cout << "AccessControl: objectRestore: " << (ID_T)object.getObjectID() << std::endl;
 	object.clear();
 	init(object);
 }

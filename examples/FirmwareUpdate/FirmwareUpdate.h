@@ -15,7 +15,7 @@
 using namespace wpp;
 using namespace std;
 
-class FirmwareUpdateImpl: public wpp::InstEventObserver {
+class FirmwareUpdateImpl: public wpp::ObjActObserver, public wpp::InstEventObserver {
 public:
     FirmwareUpdateImpl();
     ~FirmwareUpdateImpl();

@@ -7,9 +7,13 @@ ConnectivityMonitoringImpl::~ConnectivityMonitoringImpl() {}
 void ConnectivityMonitoringImpl::init(Object &obj) {
 	obj.subscribe(this);
 	wpp::Instance *inst0 = obj.createInstance(0);
+
+    STRING_T ip;
+    getIpAddress(&ip);
 	inst0->set(ConnectivityMonitoring::NETWORK_BEARER_0,
                INT_T(ConnectivityMonitoring::NtwrkBrr::ETHERNET));
 	inst0->set(ConnectivityMonitoring::RADIO_SIGNAL_STRENGTH_2, INT_T(-20));
+    inst0->set(ConnectivityMonitoring::IP_ADDRESSES_4, ip);
 }
 
 

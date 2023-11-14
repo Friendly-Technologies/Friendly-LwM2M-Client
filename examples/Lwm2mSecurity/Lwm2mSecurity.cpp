@@ -1,10 +1,10 @@
 #include "Lwm2mSecurity.h"
 
-Lwm2mSecurityObj::Lwm2mSecurityObj() {}
+Lwm2mSecurityImpl::Lwm2mSecurityImpl() {}
 
-Lwm2mSecurityObj::~Lwm2mSecurityObj() {}
+Lwm2mSecurityImpl::~Lwm2mSecurityImpl() {}
 
-void Lwm2mSecurityObj::init(Object &obj) {
+void Lwm2mSecurityImpl::init(Object &obj) {
 	obj.subscribe(this);
 	wpp::Instance *inst0 = obj.createInstance(0);
 	#if LWM2M_BOOTSTRAP

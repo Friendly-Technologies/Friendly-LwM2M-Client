@@ -1,11 +1,11 @@
 #include "Lwm2mServer.h"
 #include <iostream>
 
-Lwm2mServerObj::Lwm2mServerObj() {}
+Lwm2mServerImpl::Lwm2mServerImpl() {}
 
-Lwm2mServerObj::~Lwm2mServerObj() {}
+Lwm2mServerImpl::~Lwm2mServerImpl() {}
 
-void Lwm2mServerObj::init(Object &obj) {
+void Lwm2mServerImpl::init(Object &obj) {
 	obj.subscribe(this);
 	wpp::Instance *inst0 = obj.createInstance(0);
 	inst0->set(Lwm2mServer::SHORT_SERVER_ID_0, INT_T(123));

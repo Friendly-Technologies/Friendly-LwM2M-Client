@@ -1,11 +1,14 @@
 #ifndef CONNECTIVITY_MONITORING_H_
 #define CONNECTIVITY_MONITORING_H_
 
+#include <iostream>
 #include "WppRegistry.h"
 #include "ObjActObserver.h"
 
+#include <ifaddrs.h>
 
 using namespace wpp;
+using namespace std;
 
 class ConnectivityMonitoringImpl: public wpp::ObjActObserver {
 public:
@@ -14,7 +17,6 @@ public:
 
     void init(Object &obj);
 
-private:
 	void objectRestore(Object &object) override;
     void getIpAddress(string* ip);
 };

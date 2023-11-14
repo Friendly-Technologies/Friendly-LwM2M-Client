@@ -1,10 +1,10 @@
 #include "Device.h"
 
-DeviceObj::DeviceObj() {}
+DeviceImpl::DeviceImpl() {}
 
-DeviceObj::~DeviceObj() {}
+DeviceImpl::~DeviceImpl() {}
 
-void DeviceObj::init(Object &obj) {
+void DeviceImpl::init(Object &obj) {
 	obj.subscribe(this);
 	wpp::Instance *inst0 = obj.createInstance(0);
 	inst0->set(Device::MANUFACTURER_0, STRING_T("Open Mobile Alliance"));
@@ -19,15 +19,15 @@ void DeviceObj::init(Object &obj) {
     inst0->set(Device::SUPPORTED_BINDING_AND_MODES_16, WPP_BINDING_UDP);
 }
 
-void TestImpl::objectRestore(Object &object) {
+void DeviceImpl::objectRestore(Object &object) {
 	object.clear();
 	init(object);
 }
 
-void requestReboot() {
+void DeviceImpl::requestReboot() {
     _reboot = true;
 }
 
-bool isNeededReboot() {
+bool DeviceImpl::isNeededReboot() {
     return _reboot;
 }

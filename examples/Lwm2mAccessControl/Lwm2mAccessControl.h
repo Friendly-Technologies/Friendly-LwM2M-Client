@@ -1,9 +1,11 @@
 #ifndef LWM2M_ACCESS_CONTROL_H_
 #define LWM2M_ACCESS_CONTROL_H_
 
+#include <iostream>
 #include "WppRegistry.h"
 #include "ObjActObserver.h"
 
+#include <ifaddrs.h>
 
 using namespace wpp;
 
@@ -13,8 +15,6 @@ public:
     ~Lwm2mAccessControlImpl();
 
     void init(Object &obj);
-
-private:
 	void objectRestore(Object &object) override;
 };
 

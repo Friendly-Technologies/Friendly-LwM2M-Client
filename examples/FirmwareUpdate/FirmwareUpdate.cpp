@@ -1,10 +1,10 @@
 #include "FirmwareUpdate.h"
 
-FirmwareUpdateObj::FirmwareUpdateObj() {}
+FirmwareUpdateImpl::FirmwareUpdateImpl() {}
 
-FirmwareUpdateObj::~FirmwareUpdateObj() {}
+FirmwareUpdateImpl::~FirmwareUpdateImpl() {}
 
-void FirmwareUpdateObj::init(Object &obj) {
+void FirmwareUpdateImpl::init(Object &obj) {
 	obj.subscribe(this);
 	wpp::Instance *inst0 = obj.createInstance(0);
 	inst0.subscribe(this);
@@ -34,7 +34,7 @@ FirmwareUpdate::UpdRes getLastUpdResult() {
     return FirmwareUpdate::R_FW_UPD_SUCCESS;
 }
 
-void objectRestore(Object &object) override {
+void FirmwareUpdateImpl::objectRestore(Object &object) override {
 	cout << "FwUpdateImpl: objectRestore: " << (ID_T)object.getObjectID() << endl;
 	object.clear();
     init(object);
@@ -52,13 +52,13 @@ void FirmwareUpdateImpl::instEvent(Instance &inst, EVENT_ID_T eventId) {
         }
 }
 
-void fwIsDownloaded() {
+void FirmwareUpdateImpl::fwIsDownloaded() {
         WppClient *client = WppClient::takeOwnershipBlocking();
         client->registry().firmwareUpdate().instance()->set(FirmwareUpdate::STATE_3, (INT_T)FirmwareUpdate::S_DOWNLOADED);
         client->giveOwnership();
     }
 
-void update(Instance& inst) {
+void FirmwareUpdateImpl::update(Instance& inst) {
     STRING_T fileName = "test";
     #if RES_5_6 && RES_5_7
     STRING_T pkgName, pkgVersion;
@@ -75,7 +75,7 @@ void update(Instance& inst) {
     _device.requestReboot();
 }
 
-void saveToFile(STRING_T fileName, const OPAQUE_T *buff) {
+void FirmwareUpdateImpl::saveToFile(STRING_T fileName, const OPAQUE_T *buff) {
     if (buff == NULL) return;
 
     std::ofstream file(fileName, std::ios::binary);

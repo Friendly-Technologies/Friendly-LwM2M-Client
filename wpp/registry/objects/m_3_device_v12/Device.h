@@ -13,6 +13,7 @@
 #include "InstSubject.h"
 
 /* --------------- Сode_h block 0 start --------------- */
+#include "WppTaskQueue.h"
 #include "WppBindings.h"
 /* --------------- Сode_h block 0 end --------------- */
 
@@ -168,6 +169,9 @@ private:
 
 private:
 	/* --------------- Code_h block 4 start --------------- */
+	#if RES_3_13
+	WppTaskQueue::task_id_t _currentTimeTaskId;
+	#endif
 	/* --------------- Code_h block 4 end --------------- */
 };
 

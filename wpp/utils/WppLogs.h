@@ -10,6 +10,7 @@
 #define TAG_WPP_REG         "WppRegistry"
 #define TAG_WPP_OBJ         "Object"
 #define TAG_WPP_INST        "Instance"
+#define TAG_WPP_TASK        "WppTaskQueue"
 /* ---------- WPP components log TAGs end ---------- */
 
 /* ---------- Logs config start ---------- */

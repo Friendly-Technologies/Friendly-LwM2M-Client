@@ -25,6 +25,9 @@ namespace wpp {
 Device::Device(lwm2m_context_t &context, const OBJ_LINK_T &id): Instance(context, id) {
 
 	/* --------------- Code_cpp block 1 start --------------- */
+	#if RES_3_13
+	_currentTimeTaskId = WPP_ERR_TASK_ID;
+	#endif
 	/* --------------- Code_cpp block 1 end --------------- */
 
 	resourcesCreate();
@@ -36,11 +39,17 @@ Device::Device(lwm2m_context_t &context, const OBJ_LINK_T &id): Instance(context
 
 Device::~Device() {
 	/* --------------- Code_cpp block 3 start --------------- */
+	#if RES_3_13
+	if (_currentTimeTaskId != WPP_ERR_TASK_ID) WppTaskQueue::requestToRemoveTask(_currentTimeTaskId);
+	#endif
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
 void Device::setDefaultState() {
 	/* --------------- Code_cpp block 4 start --------------- */
+	#if RES_3_13
+	if (_currentTimeTaskId != WPP_ERR_TASK_ID) WppTaskQueue::requestToRemoveTask(_currentTimeTaskId);
+	#endif
 	/* --------------- Code_cpp block 4 end --------------- */
 
 	_resources.clear();
@@ -194,7 +203,13 @@ void Device::resourcesInit() {
 	#endif
 
 	#if RES_3_13
-	resource(CURRENT_TIME_13)->set(TIME_T(0));                                                                                                                                                                                       
+	resource(CURRENT_TIME_13)->set(TIME_T(WppPlatform::getTime()));
+	_currentTimeTaskId = WppTaskQueue::addTask(1, [this](WppClient &client, WppTaskQueue::ctx_t ctx) -> bool {
+		TIME_T currentTime = WppPlatform::getTime();
+		this->resource(CURRENT_TIME_13)->set(currentTime);
+		this->notifyValueChanged({CURRENT_TIME_13,});
+		return false;
+	});
 	#endif                                                                                                                                                                                                              
 	
 	#if RES_3_14

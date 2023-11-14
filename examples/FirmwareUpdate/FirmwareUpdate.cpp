@@ -9,7 +9,7 @@ void FirmwareUpdateImpl::init(Object &obj) {
 	wpp::Instance *inst0 = obj.createInstance(0);
 	inst0.subscribe(this);
 
-	inst0->set(FirmwareUpdate::UPDATE_2, (EXECUTE_T)[](Instance& inst, ID_T id, const OPAQUE_T& data) {
+	inst0->set(FirmwareUpdate::UPDATE_2, (EXECUTE_T)[this](Instance& inst, ID_T id, const OPAQUE_T& data) {
 		cout << "FirmwareUpdate: execute UPDATE_2" << endl;
 		this->update(inst);
 		return true;
@@ -22,11 +22,14 @@ void FirmwareUpdateImpl::init(Object &obj) {
     #endif
     inst0->set(FirmwareUpdate::FIRMWARE_UPDATE_DELIVERY_METHOD_9, (INT_T)FirmwareUpdate::PUSH);
 	#if RES_5_10
-	inst0->set(FirmwareUpdate::CANCEL_10, (EXECUTE_T)[](Instance& inst, ID_T id, const OPAQUE_T& data) {
+	inst0->set(FirmwareUpdate::CANCEL_10, (EXECUTE_T)[this](Instance& inst, ID_T id, const OPAQUE_T& data) {
 		cout << "FirmwareUpdate: execute CANCEL_10" << endl;
 		this->_downloader.cancelDownloading();
 		return true;
     });
+    #endif
+    #if RES_5_13
+    inst0->set(FirmwareUpdate::MAXIMUM_DEFER_PERIOD_13, (UINT_T)10);
     #endif
 }
 
@@ -40,16 +43,20 @@ void FirmwareUpdateImpl::objectRestore(Object &object) override {
     init(object);
 }
 
-void FirmwareUpdateImpl::instEvent(Instance &inst, EVENT_ID_T eventId) {
-	cout << "FwUpdateImpl: event: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ", eventId: " << (int)eventId << endl;
-        if (eventId == FirmwareUpdate::E_URI_DOWNLOADIN) {
-            STRING_T uri;
-            inst.get(FirmwareUpdate::PACKAGE_URI_1, uri);
-            _downloader.startDownloading(uri, [this](string file){ 
-                cout << "FW is downloaded to file: " << file << endl;
-                this->fwIsDownloaded(); 
+void FirmwareUpdateImpl::instEvent(Instance &inst, EVENT_ID_T eventId) override {
+    cout << "FwUpdateImpl: event: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ", eventId: " << (int)eventId << endl;
+    if (eventId == FirmwareUpdate::E_URI_DOWNLOADIN) {
+        STRING_T uri;
+        inst.get(FirmwareUpdate::PACKAGE_URI_1, uri);
+        _downloader.startDownloading(uri, [](string file){ 
+            cout << "FW is downloaded to file: " << file << endl;
+            WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, [](WppClient &client, WppTaskQueue::ctx_t ctx) -> bool {
+                client.registry().firmwareUpdate().instance()->set(FirmwareUpdate::STATE_3, (INT_T)FirmwareUpdate::S_DOWNLOADED);
+                return true;
             });
-        }
+            //this->fwIsDownloaded(); 
+        });
+    }
 }
 
 void FirmwareUpdateImpl::fwIsDownloaded() {
@@ -59,6 +66,15 @@ void FirmwareUpdateImpl::fwIsDownloaded() {
     }
 
 void FirmwareUpdateImpl::update(Instance& inst) {
+    #if RES_5_13
+    static uint8_t reqCnt = 0;
+    if (!reqCnt) {
+        inst.set(FirmwareUpdate::UPDATE_RESULT_5, (INT_T)FirmwareUpdate::R_FW_UPD_DEFERRED);
+        reqCnt++;
+        return;
+    }
+    #endif
+
     STRING_T fileName = "test";
     #if RES_5_6 && RES_5_7
     STRING_T pkgName, pkgVersion;

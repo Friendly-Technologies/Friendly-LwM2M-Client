@@ -1,10 +1,10 @@
 #include "Lwm2mAccessControl.h"
 
-Lwm2mAccessControlObj::Lwm2mAccessControlObj() {}
+Lwm2mAccessControlImpl::Lwm2mAccessControlImpl() {}
 
-Lwm2mAccessControlObj::~Lwm2mAccessControlObj() {}
+Lwm2mAccessControlImpl::~Lwm2mAccessControlImpl() {}
 
-void Lwm2mAccessControlObj::init(Object &obj) {
+void Lwm2mAccessControlImpl::init(Object &obj) {
 	obj.subscribe(this);
 	wpp::Instance *inst0 = obj.createInstance(0);
 	Lwm2mAccessControl->set(Lwm2mAccessControl::OBJECT_ID_0, INT_T(35464));
@@ -17,7 +17,7 @@ void Lwm2mAccessControlObj::init(Object &obj) {
 }
 
 
-void TestImpl::objectRestore(Object &object) {
+void Lwm2mAccessControlImpl::objectRestore(Object &object) {
 	cout << "AccessControl: objectRestore: " << (ID_T)object.getObjectID() << endl;
 	object.clear();
 	init(object);

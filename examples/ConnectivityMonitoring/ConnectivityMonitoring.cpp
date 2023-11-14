@@ -1,10 +1,10 @@
 #include "ConnectivityMonitoring.h"
 
-ConnectivityMonitoringObj::ConnectivityMonitoringObj() {}
+ConnectivityMonitoringImpl::ConnectivityMonitoringImpl() {}
 
-ConnectivityMonitoringObj::~ConnectivityMonitoringObj() {}
+ConnectivityMonitoringImpl::~ConnectivityMonitoringImpl() {}
 
-void ConnectivityMonitoringObj::init(Object &obj) {
+void ConnectivityMonitoringImpl::init(Object &obj) {
 	obj.subscribe(this);
 	wpp::Instance *inst0 = obj.createInstance(0);
 	inst0->set(ConnectivityMonitoring::NETWORK_BEARER_0,
@@ -13,13 +13,13 @@ void ConnectivityMonitoringObj::init(Object &obj) {
 }
 
 
-void TestImpl::objectRestore(Object &object) {
+void ConnectivityMonitoringImpl::objectRestore(Object &object) {
 	cout << "CnnctvtMonnImpl: objectRestore: " << (ID_T)object.getObjectID() << endl;
 	object.clear();
 	init(object);
 }
 
-void getIpAddress(string* ip) {
+void ConnectivityMonitoringImpl::getIpAddress(string* ip) {
     struct ifaddrs *interfaces = NULL;
     struct ifaddrs *temp_addr = NULL;
     // retrieve the current interfaces - returns 0 on success

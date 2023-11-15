@@ -251,7 +251,8 @@ class ObjectInitializer:
             resources_merged = self.assign_type_to_resources(file_path_cpp, resources_merged)
             # [print(i) for i in resources_merged]
             instance_name = f"inst{instances_counter}"
-            result += f"\twpp::Instance *{instance_name} = obj.createInstance({instances_counter});\n"
+            instance_id = instance[const.KEY_JSON_ID]
+            result += f"\n\twpp::Instance *{instance_name} = obj.createInstance({instance_id});\n"
             result += f"\tinst{instances_counter}.subscribe(this);\n" if is_subscribe else ""
             for resource_dict in resources_merged:
                 resources_value = resource_dict[const.KEY_JSON_VAL]

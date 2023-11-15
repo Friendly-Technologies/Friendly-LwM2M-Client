@@ -6,7 +6,7 @@ import constants as const
 
 class ObjectInitializer:
     def __init__(self, path_json_file, list_of_id):
-        self.objects = None
+        self.initialization_data_list = None
         self.register_data = None
         self.log_tag = self.__class__.__name__
         self.path_json_file = path_json_file
@@ -30,7 +30,7 @@ class ObjectInitializer:
             func.LOG(self.log_tag, self.get_init_data.__name__,
                      f'unable to get data to initialize from "{self.path_json_file}" file. Operation interrupted.')
             return False
-        self.objects = [obj for obj in data_dict["objects"] if obj != {}]
+        self.initialization_data_list = [obj for obj in data_dict["objects"] if obj != {}]
         return True
 
     def search_object(self, required_id, required_version):
@@ -350,15 +350,16 @@ class ObjectInitializer:
                      self.initialize.__name__,
                      "unable to the list of Objects' ID not parsed. Operation interrupted.")
             return False
-        for obj in self.objects:
+
+        for initialization_data_item in self.initialization_data_list:
             # check if it's required to initialize this Object (was indicated by second parameter):
-            if must_be_checked and obj[const.KEY_JSON_ID] not in self.list_of_id:
+            if must_be_checked and initialization_data_item[const.KEY_JSON_ID] not in self.list_of_id:
                 continue
             print("===================================================================================================")
             func.LOG(self.log_tag,
                      self.initialize.__name__,
-                     f"The example with ID {obj[const.KEY_JSON_ID]} is initializing...")
-            if not self.search_object(obj[const.KEY_JSON_ID], obj[const.KEY_VER]):
+                     f"The example with ID {initialization_data_item[const.KEY_JSON_ID]} is initializing...")
+            if not self.search_object(initialization_data_item[const.KEY_JSON_ID], initialization_data_item[const.KEY_VER]):
                 func.LOG(self.log_tag, self.initialize.__name__, "Operation interrupted.")
                 errcode = 1
                 continue
@@ -370,13 +371,13 @@ class ObjectInitializer:
                          f"The folder {folder_name} is already exists. Operation interrupted.")
                 errcode = 1
                 continue
-            callbacks_txt_h, callbacks_txt_cpp = self.create_callbacks(obj)
+            callbacks_txt_h, callbacks_txt_cpp = self.create_callbacks(initialization_data_item)
             # CmakeLists stuff:
             if not self.generate_cmake_lists():
                 errcode = 1
                 return errcode
             # header stuff:
-            types_enabled = self.define_types_enabled(obj)
+            types_enabled = self.define_types_enabled(initialization_data_item)
 
             is_subscribe_1 = types_enabled["type1"] or types_enabled["type2"]
             is_subscribe_2 = types_enabled["type3"] or types_enabled["type4"]
@@ -387,11 +388,11 @@ class ObjectInitializer:
                 errcode = 1
                 return errcode
             # cpp stuff:
-            instances_txt = self.create_instances(obj, is_subscribe_2)
+            instances_txt = self.create_instances(initialization_data_item, is_subscribe_2)
             if not self.generate_cpp(instances_txt, callbacks_txt_cpp, is_subscribe_1):
                 errcode = 1
                 return errcode
             func.LOG(self.log_tag,
                      self.initialize.__name__,
-                     f"The example with ID {obj[const.KEY_JSON_ID]} initialized successfully")
+                     f"The example with ID {initialization_data_item[const.KEY_JSON_ID]} initialized successfully")
         return errcode

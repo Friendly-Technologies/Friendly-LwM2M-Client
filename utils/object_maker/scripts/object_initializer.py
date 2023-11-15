@@ -45,8 +45,7 @@ class ObjectInitializer:
             json_file_of_obj = f"{registers_folder}/{obj}/{const.FILE_OBJ_METADATA}"
             errcode, data_dict = func.get_json_from_file(json_file_of_obj)
             if not errcode:
-                func.LOG(self.log_tag,
-                         self.search_object.__name__,
+                func.LOG(self.log_tag, self.search_object.__name__,
                          f'invalid "{json_file_of_obj}". Continue searching...')
             try:
                 # TODO: do not convert type here but create json with this types:
@@ -54,15 +53,13 @@ class ObjectInitializer:
                 obtained_version = float(data_dict[const.KEY_DICT_OBJ_META][const.KEY_VER])
                 # TODO ~
             except KeyError as e:
-                func.LOG(self.log_tag,
-                         self.search_object.__name__,
+                func.LOG(self.log_tag, self.search_object.__name__,
                          f"unable to parse json-file of the Object ({e} key not found). Continue searching...")
                 continue
 
             existing_object_name = data_dict[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]
             if obtained_id == required_id and obtained_version == required_version:
-                func.LOG(self.log_tag,
-                         self.search_object.__name__,
+                func.LOG(self.log_tag, self.search_object.__name__,
                          f"the {existing_object_name} Object meet the requirements")
                 data_dict["object_folder"] = obj
                 self.object_data_dict = data_dict
@@ -72,8 +69,7 @@ class ObjectInitializer:
             #          f"the {existing_object_name} Object doesn't meet the requirements. Continue searching...")
             continue
 
-        func.LOG(self.log_tag,
-                 self.search_object.__name__,
+        func.LOG(self.log_tag, self.search_object.__name__,
                  f"unable to found the Object appropriate to required id {required_id} and version {required_version}")
         return False
 
@@ -120,8 +116,7 @@ class ObjectInitializer:
         resources = []
         errcode, content = func.get_file_content_arr(file)
         if not errcode:
-            func.LOG(self.log_tag,
-                     self.get_enum_of_resources.__name__,
+            func.LOG(self.log_tag, self.get_enum_of_resources.__name__,
                      "unable to extract the enum of the resources from the file")
             return None
         flag_fill = False
@@ -242,8 +237,7 @@ class ObjectInitializer:
         """
         errcode, content = func.get_file_content_arr(file)
         if not errcode:
-            func.LOG(self.log_tag,
-                     self.assign_type_to_resources.__name__,
+            func.LOG(self.log_tag, self.assign_type_to_resources.__name__,
                      "unable to get the types of the resources from the file")
             return None
         data = []
@@ -316,8 +310,8 @@ class ObjectInitializer:
         types_enabled_dict = {
             "type1": object_dict["inst_create_clb"] or object_dict["inst_delete_clb"],
             "type2": object_dict["inst_restore_clb"],
-            "type3": object_dict["res_read_clb"] or object_dict["res_write_clb"] or object_dict["res_execute_clb"] or
-                     object_dict["res_replace_clb"],
+            "type3": object_dict["res_read_clb"] or object_dict["res_write_clb"] or
+                     object_dict["res_execute_clb"] or object_dict["res_replace_clb"],
             "type4": object_dict["res_inst_event_clb"]
         }
         return types_enabled_dict
@@ -384,15 +378,13 @@ class ObjectInitializer:
 
         if self.list_of_id is not None:
             if not self.parse_list_of_id():
-                func.LOG(self.log_tag,
-                         self.initialize.__name__,
+                func.LOG(self.log_tag, self.initialize.__name__,
                          "the list of Objects' ID not parsed. Operation interrupted.")
                 errcode = 1
                 return errcode
             must_be_checked = True
         if not self.get_init_data():
-            func.LOG(self.log_tag,
-                     self.initialize.__name__,
+            func.LOG(self.log_tag, self.initialize.__name__,
                      "unable to get data for initializing. Operation interrupted.")
             errcode = 1
             return errcode
@@ -402,8 +394,7 @@ class ObjectInitializer:
             if must_be_checked and initialization_data_item[const.KEY_JSON_ID] not in self.list_of_id:
                 continue
             print("===================================================================================================")
-            func.LOG(self.log_tag,
-                     self.initialize.__name__,
+            func.LOG(self.log_tag, self.initialize.__name__,
                      f"the example with ID {initialization_data_item[const.KEY_JSON_ID]} initializing...")
             if not self.search_object(initialization_data_item[const.KEY_JSON_ID], initialization_data_item[const.KEY_VER]):
                 func.LOG(self.log_tag, self.initialize.__name__, "Operation interrupted.")
@@ -412,8 +403,7 @@ class ObjectInitializer:
             # todo: must be return false if loop above will return false for each object
             folder_name = self.object_data_dict[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]
             if not func.create_folder(self.object_data_dict[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]):
-                func.LOG(self.log_tag,
-                         self.initialize.__name__,
+                func.LOG(self.log_tag, self.initialize.__name__,
                          f"the folder {folder_name} is already exists. Operation interrupted.")
                 errcode = 1
                 continue
@@ -443,7 +433,6 @@ class ObjectInitializer:
             if not self.generate_cpp(instances_txt, callbacks_txt_cpp, is_subscribe_1):
                 errcode = 1
                 return errcode
-            func.LOG(self.log_tag,
-                     self.initialize.__name__,
+            func.LOG(self.log_tag, self.initialize.__name__,
                      f"the example with ID {initialization_data_item[const.KEY_JSON_ID]} initialized successfully")
         return errcode

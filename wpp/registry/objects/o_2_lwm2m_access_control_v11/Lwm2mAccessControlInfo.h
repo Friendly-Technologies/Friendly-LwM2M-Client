@@ -12,7 +12,7 @@
 
 namespace wpp {
 
-static const ObjectInfo LWM2M_ACCESS_CONTROL_OBJ_INFO = {
+inline const ObjectInfo LWM2M_ACCESS_CONTROL_OBJ_INFO = {
 	/* Name */
 	"LwM2M Access Control",
 	/* Object ID */

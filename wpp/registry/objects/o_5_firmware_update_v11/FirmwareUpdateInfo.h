@@ -12,7 +12,7 @@
 
 namespace wpp {
 
-static const ObjectInfo FIRMWARE_UPDATE_OBJ_INFO = {
+inline const ObjectInfo FIRMWARE_UPDATE_OBJ_INFO = {
 	/* Name */
 	"Firmware Update",
 	/* Object ID */

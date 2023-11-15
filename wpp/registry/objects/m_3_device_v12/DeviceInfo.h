@@ -12,7 +12,7 @@
 
 namespace wpp {
 
-static const ObjectInfo DEVICE_OBJ_INFO = {
+inline const ObjectInfo DEVICE_OBJ_INFO = {
 	/* Name */
 	"Device",
 	/* Object ID */

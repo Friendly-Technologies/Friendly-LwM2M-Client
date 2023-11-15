@@ -12,7 +12,7 @@
 
 namespace wpp {
 
-static const ObjectInfo LWM2M_SECURITY_OBJ_INFO = {
+inline const ObjectInfo LWM2M_SECURITY_OBJ_INFO = {
 	/* Name */
 	"LWM2M Security",
 	/* Object ID */

@@ -33,7 +33,7 @@ def get_file_content_arr(file_path):
         with open(file_path) as file:
             return True, [line.rstrip() for line in file]
     except FileNotFoundError:
-        LOG(TAG, get_file_content_arr.__name__, f'No such file "{file_path}"'):
+        LOG(TAG, get_file_content_arr.__name__, f'No such file "{file_path}"')
         return False, ""
 
 

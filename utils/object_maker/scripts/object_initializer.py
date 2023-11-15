@@ -48,22 +48,30 @@ class ObjectInitializer:
                 func.LOG(self.log_tag,
                          self.search_object.__name__,
                          f'invalid "{json_file_of_obj}". Continue searching...')
-            # TODO: do not convert type here but create json with this types:
             try:
+                # TODO: do not convert type here but create json with this types:
                 obtained_id = int(data_dict[const.KEY_DICT_OBJ_META][const.KEY_JSON_ID])
                 obtained_version = float(data_dict[const.KEY_DICT_OBJ_META][const.KEY_VER])
+                # TODO ~
             except KeyError as e:
-                func.LOG(self.log_tag, self.search_object.__name__,
-                         "unable to parse json-file of the Object. Operation interrupted.")
-                return False
-            # TODO ~
+                func.LOG(self.log_tag,
+                         self.search_object.__name__,
+                         f"unable to parse json-file of the Object ({e} key not found). Continue searching...")
+                continue
+
+            existing_object_name = data_dict[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]
             if obtained_id == required_id and obtained_version == required_version:
                 func.LOG(self.log_tag,
                          self.search_object.__name__,
-                         f"the {data_dict[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]} Object meet the requirements")
+                         f"the {existing_object_name} Object meet the requirements")
                 data_dict["object_folder"] = obj
                 self.register_data = data_dict
                 return True
+            else:
+                func.LOG(self.log_tag,
+                         self.search_object.__name__,
+                         f"the {existing_object_name} Object doesn't meet the requirements. Continue searching...")
+                continue
 
         func.LOG(self.log_tag,
                  self.search_object.__name__,

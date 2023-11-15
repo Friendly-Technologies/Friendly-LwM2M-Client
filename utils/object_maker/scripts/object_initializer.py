@@ -309,25 +309,25 @@ class ObjectInitializer:
         callbacks_h = ""
         callbacks_cpp = ""
         if object_dict["inst_create_clb"]:
-            callbacks_cpp += "void __CLASS_NAME__Obj::instanceCreated(Object & object, ID_T instanceId) {\n}\n\n"
+            callbacks_cpp += "void __CLASS_NAME__Impl::instanceCreated(Object & object, ID_T instanceId) {\n}\n\n"
             callbacks_h += "\tvoid instanceCreated(Object &object, ID_T instanceId) override;\n"
         if object_dict["inst_delete_clb"]:
-            callbacks_cpp += "void __CLASS_NAME__Obj::instanceDeleting(Object & object, ID_T instanceId) {\n}\n\n"
+            callbacks_cpp += "void __CLASS_NAME__Impl::instanceDeleting(Object & object, ID_T instanceId) {\n}\n\n"
             callbacks_h += "\tvoid instanceDeleting(Object &object, ID_T instanceId) override;\n"
         if object_dict["inst_restore_clb"]:
             callbacks_cpp += "void __CLASS_NAME__Impl::objectRestore(Object &object) {\n\tobject.clear();\n\tinit(object);\n}\n\n"
             callbacks_h += "\tvoid objectRestore(Object &object) override;\n"
         if object_dict["res_read_clb"]:
-            callbacks_cpp += "void __CLASS_NAME__Obj::resourceRead(Instance & inst, const ResLink & resId) {\n}\n\n"
+            callbacks_cpp += "void __CLASS_NAME__Impl::resourceRead(Instance & inst, const ResLink & resId) {\n}\n\n"
             callbacks_h += "\tvoid resourceRead(Instance &inst, const ResLink &resId) override;\n"
         if object_dict["res_write_clb"]:
-            callbacks_cpp += "void __CLASS_NAME__Obj::resourceWrite(Instance & inst, const ResLink & resId) {\n}\n\n"
+            callbacks_cpp += "void __CLASS_NAME__Impl::resourceWrite(Instance & inst, const ResLink & resId) {\n}\n\n"
             callbacks_h += "\tvoid resourceWrite(Instance &inst, const ResLink &resId) override;\n"
         if object_dict["res_execute_clb"]:
-            callbacks_cpp += "void __CLASS_NAME__Obj::resourceExecute(Instance & inst, const ResLink & resId) {\n}\n\n"
+            callbacks_cpp += "void __CLASS_NAME__Impl::resourceExecute(Instance & inst, const ResLink & resId) {\n}\n\n"
             callbacks_h += "\tvoid resourceExecute(Instance &inst, const ResLink &resId) override;\n"
         if object_dict["res_replace_clb"]:
-            callbacks_cpp += "void __CLASS_NAME__Obj::resourcesReplaced(Instance & inst) {\n}\n\n"
+            callbacks_cpp += "void __CLASS_NAME__Impl::resourcesReplaced(Instance & inst) {\n}\n\n"
             callbacks_h += "\tvoid resourcesReplaced(Instance &inst) override;\n"
         if object_dict["res_inst_event_clb"]:
             callbacks_cpp += "void __CLASS_NAME__Impl::instEvent(Instance &inst, EVENT_ID_T eventId) {\n}\n\n"

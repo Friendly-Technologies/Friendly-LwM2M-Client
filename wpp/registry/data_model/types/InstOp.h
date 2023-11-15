@@ -22,7 +22,7 @@ public:
     inline bool isCompatible(const InstOp& operation) const { return (_flags & operation._flags) == _flags; };
     inline bool isCreate() const { return _flags & CREATE; }
     inline bool isDelete() const { return _flags & DELETE; }
-    inline bool isBlock1Create() const { return _flags & BLOCK1_CREATE; }
+    inline bool isBlockCreate() const { return _flags & BLOCK1_CREATE; }
     inline uint8_t getFlags() const { return _flags; }
     inline std::vector<TYPE> asVector() const {
     	uint16_t flags = _flags;

@@ -176,7 +176,7 @@ class ObjectGenerator:
 
     def get_content_resourcesInit_f(self):
         content = f"""void __CLASS_NAME__::resourcesInit() {{\n""" \
-                  f"""\t/* --------------- Code_cpp block 11 start --------------- */\n"""
+                  f"""\t/* --------------- Code_cpp block 9 start --------------- */\n"""
         for resource in self.resources_data:
             if resource[ "Mandatory"] == "MANDATORY":
                 # content += f"""\t\t#if {resource["Name"]}_{resource["Mandatory"]}\n\t"""
@@ -192,7 +192,7 @@ class ObjectGenerator:
                 content += f"\tresource({resource['Name']}_{resource['ID']})->set( /* TODO */ );\n"
                 content += f"\tresource({resource['Name']}_{resource['ID']})->setDataVerifier( /* TODO */ );\n"
                 content += f"\t#endif\n"
-        content += f"""\t/* --------------- Code_cpp block 11 end --------------- */\n}}"""
+        content += f"""\t/* --------------- Code_cpp block 9 end --------------- */\n}}"""
 
         return content
 
@@ -248,24 +248,6 @@ class ObjectGenerator:
                   f"""\t/* --------------- Code_cpp block 8 end --------------- */\n}}"""
         return prefix + postfix
 
-    def get_content_serverBlockOperationNotifier(self):
-        cases = ["BLOCK_WRITE", "BLOCK_EXECUTE"]
-        base = \
-            f"""void __CLASS_NAME__::serverBlockOperationNotifier(ResBlockOp::TYPE type, const ResLink &resId, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock) {{\n""" \
-            f"""\t/* --------------- Code_cpp block 9 start --------------- */\n""" \
-            f"""\t/* --------------- Code_cpp block 9 end --------------- */\n""" \
-            f"""\n\blockOperationNotify(*this, resId, type, buff, blockNum, isLastBlock);\n\n""" \
-            f"""\t/* --------------- Code_cpp block 10 start --------------- */\n""" \
-            f"""\tswitch (type) {{\n\t"""
-        for case in cases:
-            base += f"""case {const.TYPE_BLOCK_OPERATION}::{case}:\n\t\t{self.create_log_string(
-                f"Server {case} -> resId: %d, resInstId: %d",
-                ["resId.resId", "resId.resInstId"],
-                False
-            )}\n\t\tbreak;\n\t"""
-        return f"""{base}default: break;\n\t}}\n\t""" \
-               f"""/* --------------- Code_cpp block 10 end --------------- */\n}}"""
-
     def generate_content_header(self, resources_enum):
         data_str_h = func.get_file_content(const.FILE_TMPLT_IMPL_H)[1]
         data_str_h = data_str_h.replace("__DATETIME__", DATETIME)
@@ -284,8 +266,6 @@ class ObjectGenerator:
                                             self.get_content_serverOperationNotifier())
         data_str_cpp = data_str_cpp.replace("__F_USER_OPERATION_NOTIFIER__",
                                             self.get_content_userOperationNotifier())
-        data_str_cpp = data_str_cpp.replace("__F_SERVER_BLOCK_OPERATION_NOTIFIER__",
-                                            self.get_content_serverBlockOperationNotifier())
         data_str_cpp = data_str_cpp.replace("__F_RESOURCE_INIT__",
                                             self.get_content_resourcesInit_f())
         data_str_cpp = data_str_cpp.replace("__CLASS_NAME__", self.object_names[const.KEY_NAME_CLASS])

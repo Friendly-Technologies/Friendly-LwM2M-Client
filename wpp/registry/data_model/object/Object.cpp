@@ -25,11 +25,11 @@ Object::Object(lwm2m_context_t &context, const ObjectInfo &info):  _context(cont
 	if (_objInfo.instOperation.isDelete()) _lwm2m_object.deleteFunc = delete_clb;
 	else  _lwm2m_object.deleteFunc = NULL;
 #ifdef LWM2M_RAW_BLOCK1_REQUESTS
-	if (_objInfo.instOperation.isBlock1Create()) _lwm2m_object.rawBlock1CreateFunc = block1Ccreate_clb;
+	if (_objInfo.instOperation.isBlockCreate()) _lwm2m_object.rawBlock1CreateFunc = blockCcreate_clb;
 	else  _lwm2m_object.rawBlock1CreateFunc = NULL;
-	if (_objInfo.resOperation.isBlock1Write()) _lwm2m_object.rawBlock1WriteFunc = block1Write_clb;
+	if (_objInfo.resOperation.isBlockWrite()) _lwm2m_object.rawBlock1WriteFunc = blockWrite_clb;
 	else  _lwm2m_object.rawBlock1WriteFunc = NULL;
-	if (_objInfo.resOperation.isBlock1Execute()) _lwm2m_object.rawBlock1ExecuteFunc = block1Execute_clb;
+	if (_objInfo.resOperation.isBlockExecute()) _lwm2m_object.rawBlock1ExecuteFunc = blockExecute_clb;
 	else  _lwm2m_object.rawBlock1ExecuteFunc = NULL;
 #endif
 }
@@ -182,5 +182,27 @@ uint8_t Object::delete_clb(lwm2m_context_t * contextP, ID_T instanceId, lwm2m_ob
 
 	return obj->removeInstance(instanceId)? COAP_202_DELETED : COAP_404_NOT_FOUND;
 }
+
+#ifdef LWM2M_RAW_BLOCK1_REQUESTS
+uint8_t Object::blockCcreate_clb(lwm2m_context_t * contextP, lwm2m_uri_t * uriP, lwm2m_media_type_t format, uint8_t * buffer, int length, lwm2m_object_t * objectP, uint32_t block_num, uint8_t block_more) {
+	Object *obj = (Object *)objectP->userData;
+	WPP_LOGE_ARG(TAG_WPP_OBJ, "wakaama block create %d:%d", obj->getObjectID(), uriP->instanceId);
+	return COAP_501_NOT_IMPLEMENTED;
+}
+
+uint8_t Object::blockWrite_clb(lwm2m_context_t * contextP, lwm2m_uri_t * uriP, lwm2m_media_type_t format, uint8_t * buffer, int length, lwm2m_object_t * objectP, uint32_t block_num, uint8_t block_more) {
+	Object *obj = (Object *)objectP->userData;
+    WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama block write %d:%d", obj->getObjectID(), uriP->instanceId);
+	if (!obj->isInstanceExist(uriP->instanceId)) return COAP_404_NOT_FOUND;
+	return obj->instance(uriP->instanceId)->blockWrite(uriP, format, buffer, length, block_num, block_more);
+}
+
+uint8_t Object::blockExecute_clb(lwm2m_context_t * contextP, lwm2m_uri_t * uriP, uint8_t * buffer, int length, lwm2m_object_t * objectP, uint32_t block_num, uint8_t block_more) {
+	Object *obj = (Object *)objectP->userData;
+    WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama block execute %d:%d", obj->getObjectID(), uriP->instanceId);
+	if (!obj->isInstanceExist(uriP->instanceId)) return COAP_404_NOT_FOUND;
+	return obj->instance(uriP->instanceId)->blockExecute(uriP, buffer, length, block_num, block_more);
+}
+#endif
 
 } // namespace wpp

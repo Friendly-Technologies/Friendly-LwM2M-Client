@@ -66,6 +66,12 @@ std::vector<Resource>::iterator Instance::resource(ID_T resId) {
 	return std::find_if(_resources.begin(), _resources.end(), finder);
 }
 
+#ifdef LWM2M_RAW_BLOCK1_REQUESTS
+void Instance::serverBlockOperationNotifier(ResOp::TYPE type, const ResLink &resId, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock) {
+	WPP_LOGI_ARG(TAG_WPP_INST, "Block operation notifier not implemented for: %d:%d:%d, operation type: %d", _id.objId, _id.objInstId, type);
+}
+#endif
+
 bool Instance::resourceToLwm2mData(Resource &res, ID_T instanceId, lwm2m_data_t &data) {
 	switch(res.getTypeId()) {
 	case TYPE_ID::BOOL: {
@@ -473,6 +479,18 @@ uint8_t Instance::discover(int * numData, lwm2m_data_t ** dataArray) {
 	}
 	return COAP_205_CONTENT;
 }
+
+#ifdef LWM2M_RAW_BLOCK1_REQUESTS
+uint8_t Instance::blockWrite(lwm2m_uri_t * uri, lwm2m_media_type_t format, uint8_t * buffer, int length, uint32_t blockNum, uint8_t blockMore) {
+	serverBlockOperationNotifier(ResOp::BLOCK_WRITE, {uri->resourceId, uri->resourceInstanceId}, OPAQUE_T(buffer, buffer+length), blockNum, !blockMore);
+	return blockMore? COAP_231_CONTINUE : COAP_204_CHANGED;
+}
+
+uint8_t Instance::blockExecute(lwm2m_uri_t * uri, uint8_t * buffer, int length, uint32_t blockNum, uint8_t blockMore) {
+	serverBlockOperationNotifier(ResOp::BLOCK_EXECUTE, {uri->resourceId, uri->resourceInstanceId}, OPAQUE_T(buffer, buffer+length), blockNum, !blockMore);
+	return blockMore? COAP_231_CONTINUE : COAP_204_CHANGED;
+}
+#endif
 
 } // namespcae wpp
 

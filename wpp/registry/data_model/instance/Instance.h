@@ -13,9 +13,6 @@
 #include "liblwm2m.h"
 #include "Resource.h"
 #include "ResOp.h"
-#ifdef LWM2M_RAW_BLOCK1_REQUESTS
-#include "ResBlockOp.h"
-#endif
 #include "types.h"
 #include "InstSubject.h"
 
@@ -146,7 +143,7 @@ protected: /* Interface that must be implemented by derived class */
 	 * Instance class, which decides on the necessary actions. This is done 
 	 * to minimize memory usage.
 	 */
-	virtual void serverBlockOperationNotifier(ResBlockOp::TYPE type, const ResLink &resId, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock) = 0;
+	virtual void serverBlockOperationNotifier(ResOp::TYPE type, const ResLink &resId, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock);
 	#endif
 
 private: /* Interface used by Object<T> or Instance class */
@@ -169,6 +166,10 @@ private: /* Interface used by Object<T> or Instance class */
 	uint8_t write(int numData, lwm2m_data_t * dataArray, lwm2m_write_type_t writeType);
 	uint8_t execute(ID_T resId, uint8_t * buffer, int length);
 	uint8_t discover(int * numDataP, lwm2m_data_t ** dataArray);
+	#ifdef LWM2M_RAW_BLOCK1_REQUESTS
+	uint8_t blockWrite(lwm2m_uri_t * uri, lwm2m_media_type_t format, uint8_t * buffer, int length, uint32_t blockNum, uint8_t blockMore);
+	uint8_t blockExecute(lwm2m_uri_t * uri, uint8_t * buffer, int length, uint32_t blockNum, uint8_t blockMore);
+	#endif
 
 protected:
 	lwm2m_context_t &_context;

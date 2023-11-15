@@ -80,13 +80,13 @@ protected:
     }
 
     #ifdef LWM2M_RAW_BLOCK1_REQUESTS
-    void blockOperationNotify(Instance &inst, const ResLink &resId, ResBlockOp::TYPE type, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock) {
+    void blockOperationNotify(Instance &inst, const ResLink &resId, ResOp::TYPE type, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock) {
         for(InstBlockOpObserver *observer : _blockOpObservers) {
             switch (type) {
-            case ResBlockOp::BLOCK_WRITE: 
+            case ResOp::BLOCK_WRITE: 
                 observer->resourceBlockWrite(inst, resId, buff, blockNum, isLastBlock);
                 break;
-            case ResBlockOp::BLOCK_EXECUTE:
+            case ResOp::BLOCK_EXECUTE:
                 observer->resourceBlockExecute(inst, resId, buff, blockNum, isLastBlock);
                 break;
             default: break;

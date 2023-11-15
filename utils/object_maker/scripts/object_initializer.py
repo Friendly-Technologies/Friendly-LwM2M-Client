@@ -171,6 +171,20 @@ class ObjectInitializer:
             values = [str(i) for i in res_value.values()]
             return f"OBJ_LINK_T{{{', '.join(values)}}}"
 
+    def is_resource_id_valid(self, resources_from_json, resources_from_obj):
+        """
+        Checks if obtained Object have the required resource (by id).
+        """
+        existing_ids = [i[const.KEY_JSON_ID] for i in resources_from_obj]
+        required_ids = [i[const.KEY_JSON_ID] for i in resources_from_json]
+
+        for id in required_ids:
+            if id not in existing_ids:
+                func.LOG(self.log_tag, self.is_resource_id_valid.__name__,
+                         f"the existing Object haven't required id ({id})")
+                return False
+        return True
+
     def assign_value_to_resources(self, resources_from_json, resources_from_obj):
         """
         Creates a new list of the dictionary of the resources.
@@ -198,10 +212,33 @@ class ObjectInitializer:
         # [print(i) for i in completed_resources]
         return completed_resources
 
-    def assign_type_to_resources(self, file, resources):
+    def assign_type_to_resources(self, data, resources):
+        for resource in resources:
+            for line in data:
+                if line.find(resource[const.KEY_NAME]) == -1:
+                    continue
+                for res_type in const.WPP_TYPES:
+                    if line.find(res_type) != -1:
+                        resource["type"] = f"{res_type}_T"
+        # [print(i) for i in resources]
+        return resources
+
+    def check_multiple_resource(self, data, resources):
+        for resource in resources:
+            for line in data:
+                if line.find(resource[const.KEY_NAME]) == -1:
+                    continue
+                if line.find("MULTIPLE") == -1 and type(resource["value"]) == list:
+                    return False
+        return True
+
+    def is_object_multiple(self):
+        return self.object_data_dict[const.KEY_DICT_OBJ_META]["is_multiple"]
+
+    def get_resources_parameters(self, file):
         """
-        Read header file of the existing Object, extract the enum of the
-        resources, create dictionary based on enum and return this dictionary.
+        Reads cpp file of the existing Object line by line, extract
+        the enum of the resources and return it as list of strings.
         """
         errcode, content = func.get_file_content_arr(file)
         if not errcode:
@@ -221,16 +258,7 @@ class ObjectInitializer:
             if line.find("std::vector") != -1 and line.find("Resource") != -1:
                 flag_fill = True
         # [print(i) for i in data]
-        for resource in resources:
-            for line in data:
-                if line.find(resource[const.KEY_NAME]) == -1:
-                    continue
-                for res_type in const.WPP_TYPES:
-                    founded = line.find(res_type)
-                    if founded != -1:
-                        resource["type"] = f"{res_type}_T"
-        # [print(i) for i in resources]
-        return resources
+        return data
 
     def create_instances(self, obj, is_subscribe):
         name = self.object_data_dict[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]
@@ -242,13 +270,29 @@ class ObjectInitializer:
 
         # filter empty structures of the instances:
         instances = [instance for instance in obj["instances"] if instance != {}]
+
+        if len(instances) > 1 and not self.is_object_multiple():
+            func.LOG(self.log_tag, self.create_instances.__name__,
+                     f"the {name} Object is not multiple but there is a requirement")
+            return False, ""
+
         result = ""
         instances_counter = 0
         for instance in instances:
             resources_from_json = [i for i in instance["resources"] if i != {}]
             resources_from_obj = self.get_enum_of_resources(file_path_h)
+            if not self.is_resource_id_valid(resources_from_json, resources_from_obj):
+                func.LOG(self.log_tag, self.assign_value_to_resources.__name__, "invalid required ID.")
+                return False, ""
+
+            resources_parameters = self.get_resources_parameters(file_path_cpp)
             resources_merged = self.assign_value_to_resources(resources_from_json, resources_from_obj)
-            resources_merged = self.assign_type_to_resources(file_path_cpp, resources_merged)
+            if not self.check_multiple_resource(resources_parameters, resources_merged):
+                func.LOG(self.log_tag, self.assign_value_to_resources.__name__,
+                         "invalid single/multiple parameter of the resource.")
+                return False, ""
+
+            resources_merged = self.assign_type_to_resources(resources_parameters, resources_merged)
             # [print(i) for i in resources_merged]
             instance_name = f"inst{instances_counter}"
             instance_id = instance[const.KEY_JSON_ID]
@@ -266,7 +310,7 @@ class ObjectInitializer:
                 value = self.transform_types_of_value(resources_value, resources_type)
                 result += f'\t{instance_name}->set({name}::{resource_dict["name"]}, {value});\n'
             instances_counter += 1
-        return result
+        return True, result
 
     def define_types_enabled(self, object_dict):
         types_enabled_dict = {

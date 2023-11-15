@@ -110,7 +110,7 @@ def main():
 
     # ============================== initializing ==============================
     elif options.initialize:
-        if 1 > len(args) > 2:
+        if len(args) not in [1, 2]:
             parser.error("please, provide the json-file's path "
                          "and list of ID of the Objects must be initialized (optional)")
         json_file = args[0]

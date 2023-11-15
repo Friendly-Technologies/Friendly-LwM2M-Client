@@ -46,6 +46,12 @@ protected:
 	 * Handles information about resource operation that made user
 	 */
 	void userOperationNotifier(ResOp::TYPE type, const ResLink &resId) override;
+	#ifdef LWM2M_RAW_BLOCK1_REQUESTS
+	/*
+	 * Handles information about resource block operation that made server
+	 */
+	void serverBlockOperationNotifier(ResBlockOp::TYPE type, const ResLink &resId, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock);
+	#endif
 
 private:
 	/* --------------- Class private methods --------------- */

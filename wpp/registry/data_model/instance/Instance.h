@@ -13,6 +13,9 @@
 #include "liblwm2m.h"
 #include "Resource.h"
 #include "ResOp.h"
+#ifdef LWM2M_RAW_BLOCK1_REQUESTS
+#include "ResBlockOp.h"
+#endif
 #include "types.h"
 #include "InstSubject.h"
 
@@ -132,6 +135,19 @@ protected: /* Interface that must be implemented by derived class */
 	 * Called by Instance after resource operation performed by the USER.
 	 */
 	virtual void userOperationNotifier(ResOp::TYPE type, const ResLink &resId) = 0;
+	#ifdef LWM2M_RAW_BLOCK1_REQUESTS
+	/*
+	 * This method must be implemented by the derived class, and handle
+	 * information about resource block operation (BLOCK_WRITE, BLOCK_EXECUTE).
+	 * During block operation resource value is not changed, instead user
+	 * dirrectly handle block data. Also, the EXECUTE_T resource is not
+	 * called, all information and data about the block operation is
+	 * transferred through this method to the final implementation of the
+	 * Instance class, which decides on the necessary actions. This is done 
+	 * to minimize memory usage.
+	 */
+	virtual void serverBlockOperationNotifier(ResBlockOp::TYPE type, const ResLink &resId, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock) = 0;
+	#endif
 
 private: /* Interface used by Object<T> or Instance class */
 	/* ------------- Compatibility with core data structure ------------- */

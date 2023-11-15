@@ -3,6 +3,9 @@
 
 #include "ResOp.h"
 #include "InstOpObserver.h"
+#ifdef LWM2M_RAW_BLOCK1_REQUESTS
+#include "InstBlockOpObserver.h"
+#endif
 #include "InstEventObserver.h"
 
 namespace wpp {
@@ -23,6 +26,21 @@ public:
 	void unsubscribe(InstOpObserver *observer) {
         _opObservers.erase(std::find(_opObservers.begin(), _opObservers.end(), observer));
     }
+
+    #ifdef LWM2M_RAW_BLOCK1_REQUESTS
+    /*
+	 * Subscribers will be notified about the block write
+	 * and block execute of instance resources initiated by server.
+	 */
+    void subscribe(InstBlockOpObserver *observer) {
+        if (!observer) return;
+        if (std::find(_blockOpObservers.begin(), _blockOpObservers.end(), observer) == _blockOpObservers.end()) 
+            _blockOpObservers.push_back(observer);
+    }
+	void unsubscribe(InstBlockOpObserver *observer) {
+        _blockOpObservers.erase(std::find(_blockOpObservers.begin(), _blockOpObservers.end(), observer));
+    }
+    #endif
 
     /*
 	 * Subscribers will be notified about the custom instance events.
@@ -61,12 +79,31 @@ protected:
         }
     }
 
+    #ifdef LWM2M_RAW_BLOCK1_REQUESTS
+    void blockOperationNotify(Instance &inst, const ResLink &resId, ResBlockOp::TYPE type, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock) {
+        for(InstBlockOpObserver *observer : _blockOpObservers) {
+            switch (type) {
+            case ResBlockOp::BLOCK_WRITE: 
+                observer->resourceBlockWrite(inst, resId, buff, blockNum, isLastBlock);
+                break;
+            case ResBlockOp::BLOCK_EXECUTE:
+                observer->resourceBlockExecute(inst, resId, buff, blockNum, isLastBlock);
+                break;
+            default: break;
+            }
+        }
+    }
+    #endif
+
     void eventNotify(Instance &inst, EVENT_ID_T eventId) {
         for(InstEventObserver *observer : _eventObservers) observer->instEvent(inst, eventId);
     }
 
 private:
     std::vector<InstOpObserver*> _opObservers;
+    #ifdef LWM2M_RAW_BLOCK1_REQUESTS
+    std::vector<InstBlockOpObserver*> _blockOpObservers;
+    #endif
     std::vector<InstEventObserver*> _eventObservers;
 };
 

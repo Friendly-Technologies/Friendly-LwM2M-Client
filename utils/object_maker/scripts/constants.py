@@ -77,6 +77,7 @@ KEY_TYPE = "type"
 KEY_DEFINE_RES = "res_define"
 
 TYPE_OPERATION = "ResOp"
+TYPE_BLOCK_OPERATION = "ResBlockOp"
 TYPE_OBJECT = "ObjectImpl"
 
 DATA_KEYS = {KEY_NAME:          "Name",

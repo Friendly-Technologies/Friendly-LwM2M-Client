@@ -1,6 +1,6 @@
 #include "Device.h"
 
-DeviceImpl::DeviceImpl() {}
+DeviceImpl::DeviceImpl(): _reboot(false) {}
 
 DeviceImpl::~DeviceImpl() {}
 

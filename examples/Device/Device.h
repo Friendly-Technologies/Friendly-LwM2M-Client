@@ -14,11 +14,12 @@ public:
     ~DeviceImpl();
 
     void init(Object &obj);
+    void objectRestore(Object &object) override;
+    
     void requestReboot();
     bool isNeededReboot();
 
 private:
-	void objectRestore(Object &object) override;
     bool _reboot;
 };
 

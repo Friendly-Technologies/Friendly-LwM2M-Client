@@ -33,10 +33,6 @@ void FirmwareUpdateImpl::init(Object &obj) {
     #endif
 }
 
-FirmwareUpdate::UpdRes FirmwareUpdateImpl::getLastUpdResult() {
-    return FirmwareUpdate::R_FW_UPD_SUCCESS;
-}
-
 void FirmwareUpdateImpl::objectRestore(Object &object) {
 	cout << "FwUpdateImpl: objectRestore: " << (ID_T)object.getObjectID() << endl;
 	object.clear();
@@ -48,7 +44,7 @@ void FirmwareUpdateImpl::instEvent(Instance &inst, EVENT_ID_T eventId) {
     if (eventId == FirmwareUpdate::E_URI_DOWNLOADIN) {
         STRING_T uri;
         inst.get(FirmwareUpdate::PACKAGE_URI_1, uri);
-        _downloader.startDownloading(uri, [](string file){ 
+        _downloader.startDownloading(uri, [](string file) { 
             cout << "FW is downloaded to file: " << file << endl;
             WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, [](WppClient &client, WppTaskQueue::ctx_t ctx) -> bool {
                 client.registry().firmwareUpdate().instance()->set(FirmwareUpdate::STATE_3, (INT_T)FirmwareUpdate::S_DOWNLOADED);
@@ -57,6 +53,10 @@ void FirmwareUpdateImpl::instEvent(Instance &inst, EVENT_ID_T eventId) {
             //this->fwIsDownloaded(); 
         });
     }
+}
+
+FirmwareUpdate::UpdRes FirmwareUpdateImpl::getLastUpdResult() {
+    return FirmwareUpdate::R_FW_UPD_SUCCESS;
 }
 
 void FirmwareUpdateImpl::fwIsDownloaded() {

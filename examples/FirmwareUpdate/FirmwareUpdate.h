@@ -22,9 +22,9 @@ public:
 
     void init(Object &obj);
 
-    FirmwareUpdate::UpdRes getLastUpdResult();
     void objectRestore(Object &object) override;
 	void instEvent(Instance &inst, EVENT_ID_T eventId) override;
+    FirmwareUpdate::UpdRes getLastUpdResult();
     void fwIsDownloaded();
     void update(Instance& inst);
     void saveToFile(STRING_T fileName, const OPAQUE_T *buff);

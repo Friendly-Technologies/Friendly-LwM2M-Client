@@ -171,11 +171,11 @@ class ObjectInitializer:
             Param 2: list of dict contains ids and names of the resources obtained from the existing Object.
         """
         completed_resources = []
-        if len(resources_from_json) != len(resources_from_obj):
-            func.LOG(self.log_tag, self.assign_value_to_resources.__name__,
-                     f"WARNING: the number of resources from the existing Object "
-                     f"and the provided JSON do not match each other "
-                     f" ({len(resources_from_json)}!={len(resources_from_obj)})")
+        # if len(resources_from_json) != len(resources_from_obj):
+        #     func.LOG(self.log_tag, self.assign_value_to_resources.__name__,
+        #              f"INFO: the number of resources from the existing Object "
+        #              f"and the provided JSON do not match each other "
+        #              f" ({len(resources_from_obj)}!={len(resources_from_json)})")
         for resource_dict_json in resources_from_json:
             completed_res_dict = {}
             if const.KEY_JSON_VAL not in resource_dict_json:
@@ -298,25 +298,25 @@ class ObjectInitializer:
         callbacks_h = ""
         callbacks_cpp = ""
         if object_dict["inst_create_clb"]:
-            callbacks_cpp += "void __CLASS_NAME__Impl::instanceCreated(Object & object, ID_T instanceId) {\n}\n\n"
+            callbacks_cpp += "void __CLASS_NAME__Impl::instanceCreated(Object &object, ID_T instanceId) {\n}\n\n"
             callbacks_h += "\tvoid instanceCreated(Object &object, ID_T instanceId) override;\n"
         if object_dict["inst_delete_clb"]:
-            callbacks_cpp += "void __CLASS_NAME__Impl::instanceDeleting(Object & object, ID_T instanceId) {\n}\n\n"
+            callbacks_cpp += "void __CLASS_NAME__Impl::instanceDeleting(Object &object, ID_T instanceId) {\n}\n\n"
             callbacks_h += "\tvoid instanceDeleting(Object &object, ID_T instanceId) override;\n"
         if object_dict["inst_restore_clb"]:
             callbacks_cpp += "void __CLASS_NAME__Impl::objectRestore(Object &object) {\n\tobject.clear();\n\tinit(object);\n}\n\n"
             callbacks_h += "\tvoid objectRestore(Object &object) override;\n"
         if object_dict["res_read_clb"]:
-            callbacks_cpp += "void __CLASS_NAME__Impl::resourceRead(Instance & inst, const ResLink & resId) {\n}\n\n"
+            callbacks_cpp += "void __CLASS_NAME__Impl::resourceRead(Instance &inst, const ResLink &resId) {\n}\n\n"
             callbacks_h += "\tvoid resourceRead(Instance &inst, const ResLink &resId) override;\n"
         if object_dict["res_write_clb"]:
-            callbacks_cpp += "void __CLASS_NAME__Impl::resourceWrite(Instance & inst, const ResLink & resId) {\n}\n\n"
+            callbacks_cpp += "void __CLASS_NAME__Impl::resourceWrite(Instance &inst, const ResLink &resId) {\n}\n\n"
             callbacks_h += "\tvoid resourceWrite(Instance &inst, const ResLink &resId) override;\n"
         if object_dict["res_execute_clb"]:
-            callbacks_cpp += "void __CLASS_NAME__Impl::resourceExecute(Instance & inst, const ResLink & resId) {\n}\n\n"
+            callbacks_cpp += "void __CLASS_NAME__Impl::resourceExecute(Instance &inst, const ResLink &resId) {\n}\n\n"
             callbacks_h += "\tvoid resourceExecute(Instance &inst, const ResLink &resId) override;\n"
         if object_dict["res_replace_clb"]:
-            callbacks_cpp += "void __CLASS_NAME__Impl::resourcesReplaced(Instance & inst) {\n}\n\n"
+            callbacks_cpp += "void __CLASS_NAME__Impl::resourcesReplaced(Instance &inst) {\n}\n\n"
             callbacks_h += "\tvoid resourcesReplaced(Instance &inst) override;\n"
         if object_dict["res_inst_event_clb"]:
             callbacks_cpp += "void __CLASS_NAME__Impl::instEvent(Instance &inst, EVENT_ID_T eventId) {\n}\n\n"
@@ -355,7 +355,13 @@ class ObjectInitializer:
                 errcode = 1
                 continue
             # todo: must be return false if loop above will return false for each object
-            func.create_folder(self.register_data[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS])
+            folder_name = self.register_data[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]
+            if not func.create_folder(self.register_data[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]):
+                func.LOG(self.log_tag,
+                         self.initialize.__name__,
+                         f"The folder {folder_name} is already exists. Operation interrupted.")
+                errcode = 1
+                continue
             callbacks_txt_h, callbacks_txt_cpp = self.create_callbacks(obj)
             # CmakeLists stuff:
             if not self.generate_cmake_lists():

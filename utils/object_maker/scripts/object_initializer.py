@@ -67,11 +67,10 @@ class ObjectInitializer:
                 data_dict["object_folder"] = obj
                 self.object_data_dict = data_dict
                 return True
-            else:
-                func.LOG(self.log_tag,
-                         self.search_object.__name__,
-                         f"the {existing_object_name} Object doesn't meet the requirements. Continue searching...")
-                continue
+            # func.LOG(self.log_tag,
+            #          self.search_object.__name__,
+            #          f"the {existing_object_name} Object doesn't meet the requirements. Continue searching...")
+            continue
 
         func.LOG(self.log_tag,
                  self.search_object.__name__,
@@ -234,18 +233,18 @@ class ObjectInitializer:
         return resources
 
     def create_instances(self, obj, is_subscribe):
+        name = self.object_data_dict[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]
+        folder = self.object_data_dict["object_folder"]
+        file_h = self.object_data_dict[const.KEY_DICT_OBJ_FILES][const.KEY_FILE_IMPL_H]
+        file_cpp = self.object_data_dict[const.KEY_DICT_OBJ_FILES][const.KEY_FILE_IMPL_CPP]
+        file_path_h = f"{const.FOLDER_OBJECTS}/{folder}/{file_h}"
+        file_path_cpp = f"{const.FOLDER_OBJECTS}/{folder}/{file_cpp}"
+
         # filter empty structures of the instances:
         instances = [instance for instance in obj["instances"] if instance != {}]
         result = ""
         instances_counter = 0
         for instance in instances:
-            name = self.register_data[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]
-            folder = self.register_data["object_folder"]
-            file_h = self.register_data[const.KEY_DICT_OBJ_FILES][const.KEY_FILE_IMPL_H]
-            file_cpp = self.register_data[const.KEY_DICT_OBJ_FILES][const.KEY_FILE_IMPL_CPP]
-            file_path_h = f"{const.FOLDER_OBJECTS}/{folder}/{file_h}"
-            file_path_cpp = f"{const.FOLDER_OBJECTS}/{folder}/{file_cpp}"
-
             resources_from_json = [i for i in instance["resources"] if i != {}]
             resources_from_obj = self.get_enum_of_resources(file_path_h)
             resources_merged = self.assign_value_to_resources(resources_from_json, resources_from_obj)
@@ -343,13 +342,15 @@ class ObjectInitializer:
                 func.LOG(self.log_tag,
                          self.initialize.__name__,
                          "the list of Objects' ID not parsed. Operation interrupted.")
-                return False
+                errcode = 1
+                return errcode
             must_be_checked = True
         if not self.get_init_data():
             func.LOG(self.log_tag,
                      self.initialize.__name__,
-                     "unable to the list of Objects' ID not parsed. Operation interrupted.")
-            return False
+                     "unable to get data for initializing. Operation interrupted.")
+            errcode = 1
+            return errcode
 
         for initialization_data_item in self.initialization_data_list:
             # check if it's required to initialize this Object (was indicated by second parameter):
@@ -388,7 +389,12 @@ class ObjectInitializer:
                 errcode = 1
                 return errcode
             # cpp stuff:
-            instances_txt = self.create_instances(initialization_data_item, is_subscribe_2)
+            errcode, instances_txt = self.create_instances(initialization_data_item, is_subscribe_2)
+            if not errcode:
+                func.LOG(self.log_tag, self.initialize.__name__, f"Operation interrupted.")
+                errcode = 1
+                return errcode
+
             if not self.generate_cpp(instances_txt, callbacks_txt_cpp, is_subscribe_1):
                 errcode = 1
                 return errcode

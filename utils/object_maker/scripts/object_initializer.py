@@ -1,5 +1,4 @@
 import os
-import json
 
 import functions as func
 import constants as const
@@ -26,15 +25,10 @@ class ObjectInitializer:
         """
         Reads data from provided json file. Save the list of the Objects to field of class.
         """
-        errcode, data_str = func.get_file_content(self.path_json_file)
+        errcode, data_dict = func.get_json_from_file(self.path_json_file)
         if not errcode:
-            print(f'{self.log_tag} There is no file with the metadata of the Object'
-                  f'"{self.path_json_file}". Operation interrupted.')
-            return False
-        try:
-            data_dict = json.loads(data_str)
-        except json.decoder.JSONDecodeError:
-            print(f'{self.log_tag} Unable to pars provided json-file. Operation interrupted.')
+            func.LOG(self.log_tag, self.get_init_data.__name__,
+                     f'unable to get data to initialize from "{self.path_json_file}" file. Operation interrupted.')
             return False
         self.objects = [obj for obj in data_dict["objects"] if obj != {}]
         return True
@@ -48,17 +42,12 @@ class ObjectInitializer:
         list_of_objects = [f for f in os.listdir(registers_folder) if not os.path.isfile(f"{registers_folder}/{f}")]
         # search required Object from existing Objects:
         for obj in list_of_objects:
-            errcode, data_str = func.get_file_content(f"{registers_folder}/{obj}/{const.FILE_OBJ_METADATA}")
+            json_file_of_obj = f"{registers_folder}/{obj}/{const.FILE_OBJ_METADATA}"
+            errcode, data_dict = func.get_json_from_file(json_file_of_obj)
             if not errcode:
-                # func.print_log(self.log_tag, "There is no file with the metadata of the Object.")
-                continue
-            # TODO: create separated function in FUNCTIONS to open and parse json
-            try:
-                data_dict = json.loads(data_str)
-            except json.decoder.JSONDecodeError:
-                print(f'{self.log_tag} Unable to parse provided json-file. Operation interrupted.')
-                return False
-            # TODO ~
+                func.LOG(self.log_tag,
+                         self.search_object.__name__,
+                         f'invalid "{json_file_of_obj}". Continue searching...')
             # TODO: do not convert type here but create json with this types:
             try:
                 obtained_id = int(data_dict[const.KEY_DICT_OBJ_META][const.KEY_JSON_ID])
@@ -82,7 +71,7 @@ class ObjectInitializer:
         return False
 
     def generate_header(self, includes, inheritances, callbacks):
-        errcode, content = func.get_file_content(const.FILE_TMPLT_INIT_H)
+        errcode, content = func.get_content_from_file(const.FILE_TMPLT_INIT_H)
         if not errcode:
             return False
         register_name = self.register_data[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]
@@ -96,7 +85,7 @@ class ObjectInitializer:
         return True
 
     def generate_cpp(self, instances_txt, callbacks_txt, is_subscribed):
-        errcode, content = func.get_file_content(const.FILE_TMPLT_INIT_CPP)
+        errcode, content = func.get_content_from_file(const.FILE_TMPLT_INIT_CPP)
         if not errcode:
             return False
         register_name = self.register_data[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]
@@ -108,7 +97,7 @@ class ObjectInitializer:
         return True
 
     def generate_cmake_lists(self):
-        errcode, content = func.get_file_content(const.FILE_TMPLT_INIT_CMAKE)
+        errcode, content = func.get_content_from_file(const.FILE_TMPLT_INIT_CMAKE)
         if not errcode:
             return False
         register_name = self.register_data[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]

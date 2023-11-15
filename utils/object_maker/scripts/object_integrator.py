@@ -2,7 +2,6 @@ import constants as const
 import functions as func
 
 import sys
-import json
 import shutil
 from optparse import OptionParser
 
@@ -17,7 +16,7 @@ class ObjectIntegrator:
     def update_file(self, stop_string, content, path_to_file):
         is_stop_string_present = False
         new_content = ''
-        errcode, old_content = func.get_file_content(path_to_file)
+        errcode, old_content = func.get_content_from_file(path_to_file)
 
         if not errcode:
             print(f'{self.log_tag} The file "{path_to_file}" not found')
@@ -41,15 +40,16 @@ class ObjectIntegrator:
 
     def insert_additional_data(self):
         file_path = f"{self.folder_name}/{const.FILE_OBJ_METADATA}"
-        errcode, data_str = func.get_file_content(file_path)
+
+        errcode, data_dict = func.get_json_from_file(file_path)
         if not errcode:
-            print(f'{self.log_tag} There is no file with the metadata of the Object'
-                  f'"{file_path}". Operation interrupted.')
+            func.LOG(self.log_tag,
+                     self.set_relations.__name__,
+                     f'the "{file_path}" file not found. Operation interrupted.')
             return False
+        
+        type_obj = const.TYPE_OBJECT        
 
-        type_obj = const.TYPE_OBJECT
-
-        data_dict = json.loads(data_str)
         dict_obj_meta = data_dict[const.KEY_DICT_OBJ_META]
         dict_obj_names = data_dict[const.KEY_DICT_OBJ_NAMES]
 

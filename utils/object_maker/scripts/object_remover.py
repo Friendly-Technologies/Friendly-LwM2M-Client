@@ -3,7 +3,6 @@ import functions as func
 
 import sys
 from optparse import OptionParser
-import json
 
 
 class ObjectRemover:
@@ -15,7 +14,7 @@ class ObjectRemover:
         self.object_define = self.extract_define()
 
     def update_file(self, path_to_file):
-        old_content = func.get_file_content(path_to_file)[1]
+        old_content = func.get_content_from_file(path_to_file)[1]
         new_content = ''
 
         if old_content.find(self.object_define) == -1:
@@ -46,10 +45,10 @@ class ObjectRemover:
         return True
 
     def extract_define(self):
-        errcode, data_str = func.get_file_content(f"{self.object_folder_path}/{const.FILE_OBJ_METADATA}")
+        json_file = f"{self.object_folder_path}/{const.FILE_OBJ_METADATA}"
+        errcode, data_dict = func.get_json_from_file(json_file)
         if not errcode:
             return False
-        data_dict = json.loads(data_str)
         dict_obj_meta = data_dict[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_DEFINE]
         return dict_obj_meta
 

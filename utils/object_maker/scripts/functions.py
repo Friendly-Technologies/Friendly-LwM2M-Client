@@ -1,17 +1,31 @@
 import os
-import sys
+import json
 import shutil
 
 TAG = "functions"
 
 
-def get_file_content(file_path):
+def get_content_from_file(file_path):
     try:
         with open(file_path, 'r') as file:
             return True, file.read()
     except FileNotFoundError:
-        # LOG(TAG, get_file_content.__name__, f'No such file "{file_path}"'):
+        LOG(TAG, get_content_from_file.__name__, f'the file "{file_path}" not found.')
         return False, ""
+
+
+def get_json_from_file(json_file_path):
+    func_name = get_json_from_file.__name__
+    errcode, data_str = get_content_from_file(json_file_path)
+    if not errcode:
+        LOG(TAG, func_name, f'unable to get content of the "{json_file_path}" file.')
+        return False, ""
+    try:
+        data_dict = json.loads(data_str)
+    except json.decoder.JSONDecodeError as e:
+        LOG(TAG, func_name, f'unable to parse the content from "{json_file_path}" file ({e}).')
+        return False, ""
+    return True, data_dict
 
 
 def get_file_content_arr(file_path):
@@ -19,7 +33,7 @@ def get_file_content_arr(file_path):
         with open(file_path) as file:
             return True, [line.rstrip() for line in file]
     except FileNotFoundError:
-        # LOG(TAG, get_file_content.__name__, f'No such file "{file_path}"'):
+        LOG(TAG, get_file_content_arr.__name__, f'No such file "{file_path}"'):
         return False, ""
 
 
@@ -50,7 +64,9 @@ def create_folder(folder_name):
     try:
         os.mkdir(folder_name)
     except FileExistsError:
-        LOG(__name__, create_folder.__name__, "the folder already exists")
+        # LOG(__name__, create_folder.__name__, "the folder already exists")
+        return False
+    return True
 
 
 def remove_folder(folder_path):

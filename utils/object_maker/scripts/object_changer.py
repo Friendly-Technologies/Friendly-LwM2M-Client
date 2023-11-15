@@ -7,7 +7,6 @@ import object_integrator
 import os
 import re
 from optparse import OptionParser
-import json
 
 
 class ObjectChanger:
@@ -26,13 +25,15 @@ class ObjectChanger:
         datas = []
 
         for folder in folders:
-            file_path = f"{folder}/{const.FILE_OBJ_METADATA}"
             # just read and save data to list:
-            errcode, content = func.get_file_content(file_path)
+            file_path = f"{folder}/{const.FILE_OBJ_METADATA}"
+            errcode, json_data = func.get_json_from_file(file_path)
             if not errcode:
-                print(f'{self.log_tag} The "{file_path}" file not found. Operation interrupted')
+                func.LOG(self.log_tag, 
+                         self.set_relations.__name__,
+                         f'the "{file_path}" file not found. Operation interrupted.')
                 return False
-            datas.append(json.loads(content))
+            datas.append(json_data)
             
         # parse, pack and save object_files-dict to Class-field:
         try:
@@ -71,7 +72,13 @@ class ObjectChanger:
     def put_info(self, path_to_file, file_user_code_dict):
         counter = 0
         new_content = ''
-        old_content = func.get_file_content(path_to_file)[1]
+        errcode, old_content = func.get_content_from_file(path_to_file)
+        if not errcode:
+            func.LOG(self.log_tag,
+                     self.put_info.__name__,
+                     f'unable get old content from "{path_to_file}" file')
+            return False
+        
         add_flag = True
         
         for line in old_content.split("\n"):

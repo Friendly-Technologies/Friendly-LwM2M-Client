@@ -249,7 +249,7 @@ class ObjectGenerator:
         return prefix + postfix
 
     def generate_content_header(self, resources_enum):
-        data_str_h = func.get_file_content(const.FILE_TMPLT_IMPL_H)[1]
+        data_str_h = func.get_content_from_file(const.FILE_TMPLT_IMPL_H)[1]
         data_str_h = data_str_h.replace("__DATETIME__", DATETIME)
         data_str_h = data_str_h.replace("__IF_NOT_DEFINED_DEFINE__",    self.object_names[const.KEY_NAME_OF_FOLDER].upper())
         data_str_h = data_str_h.replace("__CLASS_NAME__",               self.object_names[const.KEY_NAME_CLASS])
@@ -259,7 +259,7 @@ class ObjectGenerator:
         return data_str_h
 
     def generate_content_cpp(self, resources_map):
-        data_str_cpp = func.get_file_content(const.FILE_TMPLT_IMPL_CPP)[1]
+        data_str_cpp = func.get_content_from_file(const.FILE_TMPLT_IMPL_CPP)[1]
         data_str_cpp = data_str_cpp.replace("__DATETIME__", DATETIME)
         data_str_cpp = data_str_cpp.replace("__OBJ_FOLDER__", self.object_names[const.KEY_NAME_OF_FOLDER])
         data_str_cpp = data_str_cpp.replace("__F_SERVER_OPERATION_NOTIFIER__",
@@ -274,7 +274,7 @@ class ObjectGenerator:
         return data_str_cpp
 
     def generate_content_cmake_list(self):
-        content = func.get_file_content(const.FILE_TMPLT_CMAKE)[1]
+        content = func.get_content_from_file(const.FILE_TMPLT_CMAKE)[1]
         content = content.replace("__DATETIME__",   DATETIME)
         content = content.replace("__OBJ_DEFINE__", self.object_names[const.KEY_NAME_DEFINE])
         content = content.replace("__CLASS_NAME__", self.object_names[const.KEY_NAME_CLASS])
@@ -285,7 +285,7 @@ class ObjectGenerator:
         is_multiple = "MULTIPLE" if self.object_data[const.DATA_KEYS[const.KEY_IS_MULTIPLE]] else "SINGLE"
         is_mandatory = "MANDATORY" if self.object_data[const.DATA_KEYS[const.KEY_IS_MANDATORY]] else "OPTIONAL"
 
-        content = func.get_file_content(const.FILE_TMPLT_INFO)[1]
+        content = func.get_content_from_file(const.FILE_TMPLT_INFO)[1]
         content = content.replace("__DATETIME__", DATETIME)
         content = content.replace("<<IF_DEF_DIRECTIVE>>",   self.object_names[const.KEY_NAME_UNDERLINE])
         content = content.replace("__UPNAME__",             self.object_names[const.KEY_NAME_UNDERLINE])
@@ -308,7 +308,7 @@ class ObjectGenerator:
             if resource["Mandatory"] == "OPTIONAL":
                 defines += f"""#define {resource['Define']} 0\n"""
 
-        content = func.get_file_content(const.FILE_TMPLT_CONFIG)[1]
+        content = func.get_content_from_file(const.FILE_TMPLT_CONFIG)[1]
         content = content.replace("__DATETIME__",           DATETIME)
         content = content.replace("<<IF_DEF_DIRECTIVE>>",   self.object_names[const.KEY_NAME_UNDERLINE])
         content = content.replace("__OBJ_DEFINE__",         self.object_names[const.KEY_NAME_DEFINE])

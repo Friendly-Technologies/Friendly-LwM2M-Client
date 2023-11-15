@@ -7,7 +7,7 @@ import constants as const
 class ObjectInitializer:
     def __init__(self, path_json_file, list_of_id):
         self.initialization_data_list = None
-        self.register_data = None
+        self.object_data_dict = None
         self.log_tag = self.__class__.__name__
         self.path_json_file = path_json_file
         self.list_of_id = list_of_id
@@ -65,7 +65,7 @@ class ObjectInitializer:
                          self.search_object.__name__,
                          f"the {existing_object_name} Object meet the requirements")
                 data_dict["object_folder"] = obj
-                self.register_data = data_dict
+                self.object_data_dict = data_dict
                 return True
             else:
                 func.LOG(self.log_tag,
@@ -82,8 +82,8 @@ class ObjectInitializer:
         errcode, content = func.get_content_from_file(const.FILE_TMPLT_INIT_H)
         if not errcode:
             return False
-        register_name = self.register_data[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]
-        register_name_up = self.register_data[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_UNDERLINE]
+        register_name = self.object_data_dict[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]
+        register_name_up = self.object_data_dict[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_UNDERLINE]
         content = content.replace("__CLASS_NAME__", register_name)
         content = content.replace("__INCLUDES__", includes)
         content = content.replace("__INHERITANCES__", inheritances)
@@ -96,7 +96,7 @@ class ObjectInitializer:
         errcode, content = func.get_content_from_file(const.FILE_TMPLT_INIT_CPP)
         if not errcode:
             return False
-        register_name = self.register_data[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]
+        register_name = self.object_data_dict[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]
         content = content.replace("__CALLBACKS__", callbacks_txt)
         content = content.replace("__INSTANCES__", instances_txt)
         content = content.replace("__SUBSCRB_1__", "obj.subscribe(this);" if is_subscribed else "")
@@ -108,7 +108,7 @@ class ObjectInitializer:
         errcode, content = func.get_content_from_file(const.FILE_TMPLT_INIT_CMAKE)
         if not errcode:
             return False
-        register_name = self.register_data[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]
+        register_name = self.object_data_dict[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]
         content = content.replace("__CLASS_NAME__", register_name)
         func.create_file(f"{register_name}/{const.FILE_CMAKE_LISTS}", content)
         return True
@@ -358,17 +358,17 @@ class ObjectInitializer:
             print("===================================================================================================")
             func.LOG(self.log_tag,
                      self.initialize.__name__,
-                     f"The example with ID {initialization_data_item[const.KEY_JSON_ID]} is initializing...")
+                     f"the example with ID {initialization_data_item[const.KEY_JSON_ID]} initializing...")
             if not self.search_object(initialization_data_item[const.KEY_JSON_ID], initialization_data_item[const.KEY_VER]):
                 func.LOG(self.log_tag, self.initialize.__name__, "Operation interrupted.")
                 errcode = 1
                 continue
             # todo: must be return false if loop above will return false for each object
-            folder_name = self.register_data[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]
-            if not func.create_folder(self.register_data[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]):
+            folder_name = self.object_data_dict[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]
+            if not func.create_folder(self.object_data_dict[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]):
                 func.LOG(self.log_tag,
                          self.initialize.__name__,
-                         f"The folder {folder_name} is already exists. Operation interrupted.")
+                         f"the folder {folder_name} is already exists. Operation interrupted.")
                 errcode = 1
                 continue
             callbacks_txt_h, callbacks_txt_cpp = self.create_callbacks(initialization_data_item)
@@ -394,5 +394,5 @@ class ObjectInitializer:
                 return errcode
             func.LOG(self.log_tag,
                      self.initialize.__name__,
-                     f"The example with ID {initialization_data_item[const.KEY_JSON_ID]} initialized successfully")
+                     f"the example with ID {initialization_data_item[const.KEY_JSON_ID]} initialized successfully")
         return errcode

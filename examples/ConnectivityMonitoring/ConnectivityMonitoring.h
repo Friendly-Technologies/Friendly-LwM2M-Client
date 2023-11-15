@@ -5,8 +5,6 @@
 #include "WppRegistry.h"
 #include "ObjActObserver.h"
 
-#include <ifaddrs.h>
-
 using namespace wpp;
 using namespace std;
 

@@ -1,5 +1,9 @@
 #include "ConnectivityMonitoring.h"
 
+#include <ifaddrs.h>
+#include <arpa/inet.h>
+#include <cstring>
+
 ConnectivityMonitoringImpl::ConnectivityMonitoringImpl() {}
 
 ConnectivityMonitoringImpl::~ConnectivityMonitoringImpl() {}

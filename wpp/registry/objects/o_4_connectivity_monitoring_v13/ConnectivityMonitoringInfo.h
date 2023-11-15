@@ -12,7 +12,7 @@
 
 namespace wpp {
 
-static const ObjectInfo CONNECTIVITY_MONITORING_OBJ_INFO = {
+inline const ObjectInfo CONNECTIVITY_MONITORING_OBJ_INFO = {
 	/* Name */
 	"Connectivity Monitoring",
 	/* Object ID */

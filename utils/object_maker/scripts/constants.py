@@ -101,6 +101,3 @@ ENUM_FIELD_PARTS_CNT = 2
 
 USER_CODE_BLOCK_START = r'block \d+ start'
 USER_CODE_BLOCK_END = r'block \d+ end'
-
-KEY_JSON_ID = "id"
-KEY_JSON_VAL = "value"

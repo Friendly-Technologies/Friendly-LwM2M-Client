@@ -48,7 +48,7 @@ class ObjectInitializer:
                 func.LOG(self.log_tag, self.search_object.__name__,
                          f'invalid "{json_file_of_obj}". Continue searching...')
             try:
-                obtained_id = int(data_dict[const.KEY_DICT_OBJ_META][const.KEY_JSON_ID])
+                obtained_id = int(data_dict[const.KEY_DICT_OBJ_META][const.KEY_ID])
                 obtained_version = float(data_dict[const.KEY_DICT_OBJ_META][const.KEY_VER])
             except KeyError as e:
                 func.LOG(self.log_tag, self.search_object.__name__,
@@ -136,7 +136,7 @@ class ObjectInitializer:
                     resource = divided_line[0]                      # "SMS_NUMBER_9"
                     number = int(divided_line[1][0:-1])             # "9," -> 9
                 resources_dict[const.KEY_NAME] = resource           # {"name: "SMS_NUMBER_9"}
-                resources_dict[const.KEY_JSON_ID] = number          # {"name: "SMS_NUMBER_9", "id": 9}
+                resources_dict[const.KEY_ID] = number               # {"name: "SMS_NUMBER_9", "id": 9}
                 resources.append(resources_dict)
                 enum_elements_counter += number + 1
             if line.replace(" ", "").find(const.ENUM_START_PATTERN.replace(" ", "")) != -1:
@@ -168,8 +168,8 @@ class ObjectInitializer:
         """
         Checks if obtained Object have the required resource (by id).
         """
-        existing_ids = [i[const.KEY_JSON_ID] for i in resources_from_obj]
-        required_ids = [i[const.KEY_JSON_ID] for i in resources_from_json]
+        existing_ids = [i[const.KEY_ID] for i in resources_from_obj]
+        required_ids = [i[const.KEY_ID] for i in resources_from_json]
 
         for id in required_ids:
             if id not in existing_ids:
@@ -192,15 +192,15 @@ class ObjectInitializer:
         #              f" ({len(resources_from_obj)}!={len(resources_from_json)})")
         for resource_dict_json in resources_from_json:
             completed_res_dict = {}
-            if const.KEY_JSON_VAL not in resource_dict_json:
-                resource_dict_json[const.KEY_JSON_VAL] = None
-            res_id_json = resource_dict_json[const.KEY_JSON_ID]
+            if const.KEY_VALUE not in resource_dict_json:
+                resource_dict_json[const.KEY_VALUE] = None
+            res_id_json = resource_dict_json[const.KEY_ID]
             for resource_dict_obj in resources_from_obj:
-                res_id_obj = resource_dict_obj[const.KEY_JSON_ID]
+                res_id_obj = resource_dict_obj[const.KEY_ID]
                 if res_id_json == res_id_obj:
-                    completed_res_dict[const.KEY_JSON_ID] = resource_dict_obj[const.KEY_JSON_ID]
+                    completed_res_dict[const.KEY_ID] = resource_dict_obj[const.KEY_ID]
                     completed_res_dict[const.KEY_NAME] = resource_dict_obj[const.KEY_NAME]
-                    resource_dict_obj[const.KEY_JSON_VAL] = resource_dict_json[const.KEY_JSON_VAL]
+                    resource_dict_obj[const.KEY_VALUE] = resource_dict_json[const.KEY_VALUE]
                     completed_resources.append(resource_dict_obj)
         # [print(i) for i in completed_resources]
         return completed_resources
@@ -287,11 +287,11 @@ class ObjectInitializer:
             resources_merged = self.assign_type_to_resources(resources_parameters, resources_merged)
             # [print(i) for i in resources_merged]
             instance_name = f"inst{instances_counter}"
-            instance_id = instance[const.KEY_JSON_ID]
+            instance_id = instance[const.KEY_ID]
             result += f"\n\twpp::Instance *{instance_name} = obj.createInstance({instance_id});\n"
             result += f"\tinst{instances_counter}.subscribe(this);\n" if is_subscribe else ""
             for resource_dict in resources_merged:
-                resources_value = resource_dict[const.KEY_JSON_VAL]
+                resources_value = resource_dict[const.KEY_VALUE]
                 resources_type = resource_dict[const.KEY_TYPE]
                 if type(resources_value) is list:
                     res_instances_list = [inst for inst in resources_value if inst != {}]
@@ -391,12 +391,12 @@ class ObjectInitializer:
 
         for initialization_data_item in self.initialization_data_list:
             # check if it's required to initialize this Object (was indicated by second parameter):
-            if must_be_checked and initialization_data_item[const.KEY_JSON_ID] not in self.list_of_id:
+            if must_be_checked and initialization_data_item[const.KEY_ID] not in self.list_of_id:
                 continue
             print("===================================================================================================")
             func.LOG(self.log_tag, self.initialize.__name__,
-                     f"the example with ID {initialization_data_item[const.KEY_JSON_ID]} initializing...")
-            if not self.search_object(initialization_data_item[const.KEY_JSON_ID], initialization_data_item[const.KEY_VER]):
+                     f"the example with ID {initialization_data_item[const.KEY_ID]} initializing...")
+            if not self.search_object(initialization_data_item[const.KEY_ID], initialization_data_item[const.KEY_VER]):
                 func.LOG(self.log_tag, self.initialize.__name__, "Operation interrupted.")
                 errcode = 1
                 continue
@@ -434,5 +434,5 @@ class ObjectInitializer:
                 errcode = 1
                 return errcode
             func.LOG(self.log_tag, self.initialize.__name__,
-                     f"the example with ID {initialization_data_item[const.KEY_JSON_ID]} initialized successfully")
+                     f"the example with ID {initialization_data_item[const.KEY_ID]} initialized successfully")
         return errcode

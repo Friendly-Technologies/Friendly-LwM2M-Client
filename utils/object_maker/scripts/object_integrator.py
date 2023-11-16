@@ -54,7 +54,7 @@ class ObjectIntegrator:
         dict_obj_names = data_dict[const.KEY_DICT_OBJ_NAMES]
 
         obj_is_mandatory = dict_obj_meta[const.KEY_IS_MANDATORY]
-        obj_id = dict_obj_meta[const.KEY_ID_OBJ]
+        obj_id = dict_obj_meta[const.KEY_ID]
 
         obj_name_class = dict_obj_names[const.KEY_NAME_CLASS]
         obj_name_define = dict_obj_names[const.KEY_NAME_DEFINE]

@@ -38,8 +38,8 @@ class ObjectGenerator:
         obj_name_underline_lw = obj_name_underline.lower()                      # 'lwm2m_server'
 
         obj_requirement_short = "M" if self.object_data[const.DATA_KEYS[const.KEY_IS_MANDATORY]] else "O"    # 'M' | 'O'
-        obj_version = self.object_data[const.DATA_KEYS[const.KEY_VER]].replace(".", "")           # 13
-        obj_id = self.object_data[const.DATA_KEYS[const.KEY_ID_OBJ]]                                      # 1
+        obj_version = self.object_data[const.DATA_KEYS[const.KEY_VER]].replace(".", "")                      # 13
+        obj_id = self.object_data[const.DATA_KEYS[const.KEY_ID_OBJ]]                                         # 1
         obj_name_folder = f"{obj_requirement_short.lower()}_" \
                           f"{obj_id}_" \
                           f"{obj_name_underline_lw}_"\

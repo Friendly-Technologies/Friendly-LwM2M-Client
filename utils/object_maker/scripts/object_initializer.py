@@ -48,10 +48,8 @@ class ObjectInitializer:
                 func.LOG(self.log_tag, self.search_object.__name__,
                          f'invalid "{json_file_of_obj}". Continue searching...')
             try:
-                # TODO: do not convert type here but create json with this types:
                 obtained_id = int(data_dict[const.KEY_DICT_OBJ_META][const.KEY_JSON_ID])
                 obtained_version = float(data_dict[const.KEY_DICT_OBJ_META][const.KEY_VER])
-                # TODO ~
             except KeyError as e:
                 func.LOG(self.log_tag, self.search_object.__name__,
                          f"unable to parse json-file of the Object ({e} key not found). Continue searching...")
@@ -214,7 +212,7 @@ class ObjectInitializer:
                     continue
                 for res_type in const.WPP_TYPES:
                     if line.find(res_type) != -1:
-                        resource["type"] = f"{res_type}_T"
+                        resource[const.KEY_TYPE] = f"{res_type}_T"
         # [print(i) for i in resources]
         return resources
 
@@ -223,12 +221,12 @@ class ObjectInitializer:
             for line in data:
                 if line.find(resource[const.KEY_NAME]) == -1:
                     continue
-                if line.find("MULTIPLE") == -1 and type(resource["value"]) == list:
+                if line.find("MULTIPLE") == -1 and type(resource[const.KEY_VALUE]) == list:
                     return False
         return True
 
     def is_object_multiple(self):
-        return self.object_data_dict[const.KEY_DICT_OBJ_META]["is_multiple"]
+        return self.object_data_dict[const.KEY_DICT_OBJ_META][const.KEY_IS_MULTIPLE]
 
     def get_resources_parameters(self, file):
         """
@@ -294,15 +292,15 @@ class ObjectInitializer:
             result += f"\tinst{instances_counter}.subscribe(this);\n" if is_subscribe else ""
             for resource_dict in resources_merged:
                 resources_value = resource_dict[const.KEY_JSON_VAL]
-                resources_type = resource_dict["type"]
+                resources_type = resource_dict[const.KEY_TYPE]
                 if type(resources_value) is list:
                     res_instances_list = [inst for inst in resources_value if inst != {}]
                     for res_instance_dict in res_instances_list:
-                        value = self.transform_types_of_value(res_instance_dict["value"], resources_type)
-                        result += f'\t{instance_name}->set({{{name}::{resource_dict["name"]}}}, {value});\n'
+                        value = self.transform_types_of_value(res_instance_dict[const.KEY_VALUE], resources_type)
+                        result += f'\t{instance_name}->set({{{name}::{resource_dict[const.KEY_NAME]}}}, {value});\n'
                     continue
                 value = self.transform_types_of_value(resources_value, resources_type)
-                result += f'\t{instance_name}->set({name}::{resource_dict["name"]}, {value});\n'
+                result += f'\t{instance_name}->set({name}::{resource_dict[const.KEY_NAME]}, {value});\n'
             instances_counter += 1
         return True, result
 
@@ -329,16 +327,18 @@ class ObjectInitializer:
         return includes
 
     def create_inheritance(self, types_enabled_dict):
-        inheritances = ""
+        inheritances = []
         if types_enabled_dict["type1"]:
-            inheritances += "public wpp::ObjOpObserver, "
+            inheritances.append("public wpp::ObjOpObserver")
         if types_enabled_dict["type2"]:
-            inheritances += "public wpp::ObjActObserver, "
+            inheritances.append("public wpp::ObjActObserver")
         if types_enabled_dict["type3"]:
-            inheritances += "public wpp::InstOpObserver, "
+            inheritances.append("public wpp::InstOpObserver")
         if types_enabled_dict["type4"]:
-            inheritances += "public wpp::InstEventObserver, "
-        return inheritances[:-2]  # remove redundant ' ,' symbols
+            inheritances.append("public wpp::InstEventObserver")
+
+        inheritances_txt = ", ".join(inheritances)
+        return inheritances_txt
 
     def create_callbacks(self, object_dict):
         callbacks_h = ""

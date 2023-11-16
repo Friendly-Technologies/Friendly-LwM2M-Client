@@ -12,8 +12,14 @@ public:
 	enum TYPE: uint16_t {
         NONE = 0,
 	    READ = 1,
+		/* When server updates a resource instance value */
 	    WRITE_UPD = 2,
+		/* When server updates a resource value */
 		WRITE_REPLACE_RES = 4,
+		/* When the server replaces all resources in the 
+		 * instance with its values, it possible replaces
+		 * even read-only resources.
+		 */
 		WRITE_REPLACE_INST = 8,
 		WRITE = WRITE_UPD | WRITE_REPLACE_RES | WRITE_REPLACE_INST,
 	    EXECUTE = 16,

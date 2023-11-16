@@ -68,7 +68,7 @@ std::vector<Resource>::iterator Instance::resource(ID_T resId) {
 
 #ifdef LWM2M_RAW_BLOCK1_REQUESTS
 void Instance::serverBlockOperationNotifier(ResOp::TYPE type, const ResLink &resId, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock) {
-	WPP_LOGI_ARG(TAG_WPP_INST, "Block operation notifier not implemented for: %d:%d:%d, operation type: %d", _id.objId, _id.objInstId, type);
+	WPP_LOGI_ARG(TAG_WPP_INST, "Block operation notifier not implemented for: %d:%d:%d, operation type: %d", _id.objId, resId.resId, resId.resInstId, type);
 }
 #endif
 
@@ -482,11 +482,45 @@ uint8_t Instance::discover(int * numData, lwm2m_data_t ** dataArray) {
 
 #ifdef LWM2M_RAW_BLOCK1_REQUESTS
 uint8_t Instance::blockWrite(lwm2m_uri_t * uri, lwm2m_media_type_t format, uint8_t * buffer, int length, uint32_t blockNum, uint8_t blockMore) {
-	serverBlockOperationNotifier(ResOp::BLOCK_WRITE, {uri->resourceId, uri->resourceInstanceId}, OPAQUE_T(buffer, buffer+length), blockNum, !blockMore);
+	WPP_LOGD_ARG(TAG_WPP_INST, "Block write parameters: %d:%d:%d:%d, format: %d, len: %d, block number: %d, blockMore %d",
+								uri->objectId, uri->instanceId, uri->resourceId, uri->resourceInstanceId, format, length, blockNum, blockMore);
+	// TODO: For now is not supported writing multiple resources or whole instance at once
+	if (!LWM2M_URI_IS_SET_RESOURCE(uri)) return COAP_405_METHOD_NOT_ALLOWED;
+	ResLink resLink = {uri->resourceId, uri->resourceInstanceId};
+
+	switch (format) {
+    case LWM2M_CONTENT_TEXT:
+    case LWM2M_CONTENT_OPAQUE:
+        serverBlockOperationNotifier(ResOp::BLOCK_WRITE, resLink, OPAQUE_T(buffer, buffer+length), blockNum, !blockMore);
+		break;
+	#ifdef LWM2M_SUPPORT_TLV
+	case LWM2M_CONTENT_TLV: {
+		if (!blockNum) {
+			lwm2m_data_type_t dataType;
+			ID_T id;
+			size_t dataStart, dataLen;
+			lwm2m_decode_TLV(buffer, length, &dataType, &id, &dataStart, &dataLen);
+			// TODO: For now is not supported writing multiple resources or whole instance at once
+			if (dataType == LWM2M_TYPE_MULTIPLE_RESOURCE) return COAP_405_METHOD_NOT_ALLOWED;
+			serverBlockOperationNotifier(ResOp::BLOCK_WRITE, resLink, OPAQUE_T(buffer+dataStart, buffer+dataStart+dataLen), blockNum, !blockMore);
+		} else {
+			serverBlockOperationNotifier(ResOp::BLOCK_WRITE, resLink, OPAQUE_T(buffer, buffer+length), blockNum, !blockMore);
+		}
+		break;
+	}
+	#endif
+	#ifdef LWM2M_SUPPORT_SENML_JSON
+    case LWM2M_CONTENT_SENML_JSON:
+        break;
+	#endif
+	default: return COAP_405_METHOD_NOT_ALLOWED;
+	}
+
 	return blockMore? COAP_231_CONTINUE : COAP_204_CHANGED;
 }
 
 uint8_t Instance::blockExecute(lwm2m_uri_t * uri, uint8_t * buffer, int length, uint32_t blockNum, uint8_t blockMore) {
+	WPP_LOGD_ARG(TAG_WPP_INST, "Block execute parameters: %d:%d:%d, len: %d, block number: %d, blockMoreL %d", uri->objectId, uri->instanceId, uri->resourceId, length, blockNum, blockMore);
 	serverBlockOperationNotifier(ResOp::BLOCK_EXECUTE, {uri->resourceId, uri->resourceInstanceId}, OPAQUE_T(buffer, buffer+length), blockNum, !blockMore);
 	return blockMore? COAP_231_CONTINUE : COAP_204_CHANGED;
 }

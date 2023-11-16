@@ -329,11 +329,12 @@ class ObjectGenerator:
         object_class_name = self.object_names[const.KEY_NAME_CLASS]
 
 
-        obj_dict = {const.KEY_IS_MANDATORY: self.object_data[const.DATA_KEYS[const.KEY_IS_MANDATORY]],
-                    const.KEY_NAME:         self.object_data[const.DATA_KEYS[const.KEY_NAME]],
+        obj_dict = {const.KEY_NAME:         self.object_data[const.DATA_KEYS[const.KEY_NAME]],
                     const.KEY_ID_OBJ:       self.object_data[const.DATA_KEYS[const.KEY_ID_OBJ]],
+                    const.KEY_VER:          self.object_data[const.DATA_KEYS[const.KEY_VER]],
                     const.KEY_VER_LWM2M:    self.object_data[const.DATA_KEYS[const.KEY_VER_LWM2M]],
-                    const.KEY_VER:          self.object_data[const.DATA_KEYS[const.KEY_VER]]}
+                    const.KEY_IS_MANDATORY: self.object_data[const.DATA_KEYS[const.KEY_IS_MANDATORY]],
+                    const.KEY_IS_MULTIPLE:  self.object_data[const.DATA_KEYS[const.KEY_IS_MULTIPLE]]}
 
         obj_names = {const.KEY_NAME_CLASS:      self.object_names[const.KEY_NAME_CLASS],
                      const.KEY_NAME_CAMELCASE:  self.object_names[const.KEY_NAME_CAMELCASE],

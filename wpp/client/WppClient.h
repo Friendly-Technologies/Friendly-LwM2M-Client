@@ -41,7 +41,7 @@ public:
 	~WppClient();
 
 	/* ------------- WppClient management ------------- */
-	static bool create(const ClientInfo &info, WppConnection &connection, time_t maxSleepTime=WPP_CLIENT_MAX_SLEEP_TIME_S);
+	static bool create(const ClientInfo &info, WppConnection &connection, time_t maxSleepTimeSec=WPP_CLIENT_MAX_SLEEP_TIME_S);
 	static void remove();
 	static bool isCreated();
 	
@@ -94,7 +94,7 @@ private:
 	WppConnection &_connection;
 	WppRegistry *_registry;
 
-	time_t _maxSleepTime;
+	time_t _maxSleepTimeSec;
 
 	lwm2m_context_t *_lwm2m_context;
 };

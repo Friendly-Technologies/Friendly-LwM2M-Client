@@ -1,4 +1,0 @@
-# Update SOURCES variable from parent scope.
-# set(SOURCES ${SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/Lwm2mAccessControl.cpp PARENT_SCOPE)
-# Update WPP_SOURCES variable from parent scope.
-set(INCLUDES ${INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/ PARENT_SCOPE)

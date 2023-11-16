@@ -13,6 +13,7 @@
 #include "InstSubject.h"
 
 /* --------------- Сode_h block 0 start --------------- */
+#include "WppTaskQueue.h"
 /* --------------- Сode_h block 0 end --------------- */
 
 namespace wpp {
@@ -165,10 +166,18 @@ private:
 	bool isNewStateValid(State newState);
 
 	bool isDeliveryTypeSupported(FwUpdDelivery type);
+
+	#if RES_5_13
+	void startDeferUpdateGuard();
+	void stopDeferUpdateGuard();
+	#endif
 	/* --------------- Code_h block 3 end --------------- */
 
 private:
 	/* --------------- Code_h block 4 start --------------- */
+	#if RES_5_13
+	WppTaskQueue::task_id_t _deferUpdateTaskId;
+	#endif
 	/* --------------- Code_h block 4 end --------------- */
 };
 

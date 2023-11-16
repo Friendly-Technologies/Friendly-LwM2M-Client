@@ -17,7 +17,7 @@ class ObjectGenerator:
     """Add some comments here"""
 
     def __init__(self, xml_file, xml_url):
-        self.log_tag = f"[{self.__class__.__name__}]:"
+        self.log_tag = self.__class__.__name__
         xp = object_xml_parser.ObjectXmlParser(xml_file=xml_file, xml_url=xml_url)
         self.object_data = xp.object_data
         self.resources_data = xp.resources_data
@@ -374,6 +374,7 @@ class ObjectGenerator:
         func.create_file(f"{folder}/{name_class}.cpp",          generated_cpp_file)
         func.create_file(f"{folder}/{const.FILE_CMAKE_LISTS}",  generated_cmake_list)
         func.create_file(f"{folder}/{json_file}",               generated_obj_integration_data)
+        func.LOG(self.log_tag, "", f"the Object {self.object_names[const.KEY_NAME_CLASS]} generated successfully")
 
 
 if __name__ == "__main__":

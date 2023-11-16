@@ -10,7 +10,7 @@ class ObjectIntegrator:
     """Add some comments here"""
 
     def __init__(self, folder_name):
-        self.log_tag = f"[{self.__class__.__name__}]:"
+        self.log_tag = self.__class__.__name__
         self.folder_name = folder_name
 
     def update_file(self, stop_string, content, path_to_file):
@@ -19,11 +19,11 @@ class ObjectIntegrator:
         errcode, old_content = func.get_content_from_file(path_to_file)
 
         if not errcode:
-            print(f'{self.log_tag} The file "{path_to_file}" not found')
+            func.LOG(self.log_tag, self.update_file.__name__, f'WARNING: the file "{path_to_file}" not found')
             return 
 
         if old_content.find(content) != -1:
-            print(f'{self.log_tag} The file "{path_to_file}" is already updated')
+            func.LOG(self.log_tag, self.update_file.__name__, f'the file "{path_to_file}" is already updated')
             return
 
         for line in old_content.split("\n"):
@@ -33,7 +33,7 @@ class ObjectIntegrator:
             new_content += line + "\n"
 
         if not is_stop_string_present:
-            print(f'{self.log_tag} The "{path_to_file}" file was not updated')
+            func.LOG(self.log_tag, self.update_file.__name__, f'WARNING: the "{path_to_file}" file was not updated')
             return
 
         func.write_to_file(path_to_file, new_content[:-1])
@@ -43,9 +43,7 @@ class ObjectIntegrator:
 
         errcode, data_dict = func.get_json_from_file(file_path)
         if not errcode:
-            func.LOG(self.log_tag,
-                     self.set_relations.__name__,
-                     f'the "{file_path}" file not found. Operation interrupted.')
+            func.LOG(self.log_tag, self.insert_additional_data.__name__, f'the "{file_path}" file not found.')
             return False
         
         type_obj = const.TYPE_OBJECT        
@@ -114,15 +112,18 @@ class ObjectIntegrator:
             shutil.copytree(self.folder_name, file_path)
             return True
         except FileExistsError:
-            print(f'{self.log_tag} The folder "{file_path}" already exists. Operation interrupted.')
+            func.LOG(self.log_tag, self.copy_main_files.__name__, f'the folder "{file_path}" already exists.')
             return False
 
     def update_files(self):
         if not self.copy_main_files():
+            func.LOG(self.log_tag, "", "please, check the folders. Operation interrupted.")
             return False
         if not self.insert_additional_data():
+            func.LOG(self.log_tag, "", "unable to get data for integrate. Operation interrupted.")
             return False
         func.remove_folder(self.folder_name)
+        func.LOG(self.log_tag, "", "the Object integrated successfully")
         return True
 
 

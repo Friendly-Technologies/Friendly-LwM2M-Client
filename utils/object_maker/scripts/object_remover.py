@@ -9,7 +9,7 @@ class ObjectRemover:
     """Add some comments here"""
 
     def __init__(self, object_folder_path):
-        self.log_tag = f"[{self.__class__.__name__}]:"
+        self.log_tag = self.__class__.__name__
         self.object_folder_path = object_folder_path
         self.object_define = self.extract_define()
 
@@ -18,7 +18,8 @@ class ObjectRemover:
         new_content = ''
 
         if old_content.find(self.object_define) == -1:
-            print(f'{self.log_tag} The file "{path_to_file}" is not contain the Object\'s info that must be removed')
+            func.LOG(self.log_tag, self.update_file.__name__,
+                     f'the file "{path_to_file}" is not contain the Object\'s info that must be removed')
             return
 
         add_line = True     # the flag indicates whether leave the line
@@ -38,7 +39,7 @@ class ObjectRemover:
 
     def update_files(self):
         if not self.extract_define():
-            print(f'{self.log_tag} The define of the deleted Object not extracted')
+            func.LOG(self.log_tag, self.update_files.__name__, "the define of the deleted Object not extracted")
             return False
         for file in [const.FILE_OBJECT_ID, const.FILE_REGISTRY_H, const.FILE_REGISTRY_CPP, const.FILE_CONFIG_CMAKE]:
             self.update_file(file)
@@ -54,8 +55,10 @@ class ObjectRemover:
 
     def remove_object(self):
         if not self.update_files():
+            func.LOG(self.log_tag, self.remove_object.__name__, "unable to get defines. Operation interrupted.")
             return False
         func.remove_folder(self.object_folder_path)
+        func.LOG(self.log_tag, self.remove_object.__name__, "the Object removed successfully.")
         return True
 
 

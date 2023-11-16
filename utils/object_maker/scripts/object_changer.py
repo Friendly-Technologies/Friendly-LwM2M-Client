@@ -13,7 +13,7 @@ class ObjectChanger:
     """Add some comments here"""
 
     def __init__(self, obj_folder_to_change, obj_metadata_to_use):
-        self.log_tag = f"[{self.__class__.__name__}]:"
+        self.log_tag = self.__class__.__name__
         self.user_codes_relations = None
         self.obj_folder_to_change = obj_folder_to_change
         self.obj_metadata_to_use = obj_metadata_to_use
@@ -29,9 +29,7 @@ class ObjectChanger:
             file_path = f"{folder}/{const.FILE_OBJ_METADATA}"
             errcode, json_data = func.get_json_from_file(file_path)
             if not errcode:
-                func.LOG(self.log_tag, 
-                         self.set_relations.__name__,
-                         f'the "{file_path}" file not found. Operation interrupted.')
+                func.LOG(self.log_tag, self.set_relations.__name__, f'the "{file_path}" file not found.')
                 return False
             datas.append(json_data)
             
@@ -43,7 +41,7 @@ class ObjectChanger:
             return True
 
         except KeyError:
-            # print(f'There is no "{const.KEY_DICT_OBJ_FILES}" key on dictionaries')
+            # func.LOG(self.log_tag, self.set_relations.__name__, f'the "{const.KEY_DICT_OBJ_FILES}" key not found')
             return False
 
     def get_info(self, path_to_file):
@@ -74,9 +72,7 @@ class ObjectChanger:
         new_content = ''
         errcode, old_content = func.get_content_from_file(path_to_file)
         if not errcode:
-            func.LOG(self.log_tag,
-                     self.put_info.__name__,
-                     f'unable get old content from "{path_to_file}" file')
+            func.LOG(self.log_tag, self.put_info.__name__, f'unable get old content from "{path_to_file}" file')
             return False
         
         add_flag = True
@@ -136,7 +132,8 @@ class ObjectChanger:
     def get_obj_res_enum_content_from_file(self, obj_path):
         impl_file = self.get_file_name_by_type("old", const.KEY_FILE_IMPL_H)
         if not impl_file:
-            print(f'{self.log_tag} File with type "{const.KEY_FILE_IMPL_H}" not found in the path "{obj_path}"')
+            func.LOG(self.log_tag, self.get_obj_res_enum_content_from_file.__name__,
+                     f'file with type "{const.KEY_FILE_IMPL_H}" not found in the path "{obj_path}"')
             return ""
 
         with open(obj_path + "/" + impl_file, 'r') as file:
@@ -165,7 +162,7 @@ class ObjectChanger:
         # Return ["line0", "line1", ...]
         res_enum = self.get_obj_res_enum_content_from_file(self.obj_folder_to_change)
         if not res_enum:
-            print(f"{self.log_tag} Enum with resources definitions not found")
+            func.LOG(self.log_tag, self.get_resource_names_old.__name__, "enum with resources definitions not found")
             return dict()
 
         names = dict()
@@ -174,7 +171,7 @@ class ObjectChanger:
                 continue
             field_parts = line.replace(" ", "").strip("\t,\n").split("=")
             if len(field_parts) != const.ENUM_FIELD_PARTS_CNT or not field_parts[1].isnumeric():
-                print(f"{self.log_tag} Incorrect enum field format '{line}'")
+                func.LOG(self.log_tag, self.get_resource_names_old.__name__, f'incorrect enum field format "{line}"')
                 continue
             names[int(field_parts[1])] = field_parts[0]
         return names
@@ -230,6 +227,7 @@ class ObjectChanger:
         # 2. check if there is possible and set the relations of user-code blocks (old_object -> updated_object):
         if not self.set_relations([self.obj_folder_to_change, path_to_new_object]):     # don't change order in list
             func.remove_folder(path_to_new_object)
+            func.LOG(self.log_tag, self.change.__name__, "unable to mapped old and new data. Operation interrupted.")
             return False
 
         # 3. update the code of the new Object by user-code block of the old Object:
@@ -239,13 +237,13 @@ class ObjectChanger:
         # 4. remove old Object code:
         obj_r = object_remover.ObjectRemover(self.obj_folder_to_change)
         if not obj_r.remove_object():
-            print(f"{self.log_tag} Unable to remove old data. Operation interrupted.")
+            func.LOG(self.log_tag, self.change.__name__, "unable to remove old data. Operation interrupted.")
             return False
 
         # 5. integrate new code of the Object:
         obj_i = object_integrator.ObjectIntegrator(path_to_new_object)
         if not obj_i.update_files():
-            print(f"{self.log_tag} Please, check the existing Object and try again")
+            func.LOG(self.log_tag, self.update_files.__name__, "please, check the existing Object and try again")
             return False
         return True
 

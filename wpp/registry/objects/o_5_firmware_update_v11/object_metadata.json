@@ -1,13 +1,14 @@
 {
     "object_data": {
-        "is_mandatory": false,
         "name": "Firmware Update",
-        "obj_id": "5",
+        "id": "5",
+        "version": "1.1",
         "lwm2m_version": "1.1",
-        "version": "1.1"
+        "is_mandatory": false,
+        "is_multiple": false
     },
     "object_names": {
-        "name": "FirmwareUpdate",
+        "class": "FirmwareUpdate",
         "camelcase": "firmwareUpdate",
         "define": "OBJ_O_5_FIRMWARE_UPDATE_V11",
         "up_underline": "FIRMWARE_UPDATE"

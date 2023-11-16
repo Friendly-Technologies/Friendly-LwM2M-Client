@@ -330,7 +330,7 @@ class ObjectGenerator:
 
 
         obj_dict = {const.KEY_NAME:         self.object_data[const.DATA_KEYS[const.KEY_NAME]],
-                    const.KEY_ID_OBJ:       self.object_data[const.DATA_KEYS[const.KEY_ID_OBJ]],
+                    const.KEY_ID:           self.object_data[const.DATA_KEYS[const.KEY_ID_OBJ]],
                     const.KEY_VER:          self.object_data[const.DATA_KEYS[const.KEY_VER]],
                     const.KEY_VER_LWM2M:    self.object_data[const.DATA_KEYS[const.KEY_VER_LWM2M]],
                     const.KEY_IS_MANDATORY: self.object_data[const.DATA_KEYS[const.KEY_IS_MANDATORY]],

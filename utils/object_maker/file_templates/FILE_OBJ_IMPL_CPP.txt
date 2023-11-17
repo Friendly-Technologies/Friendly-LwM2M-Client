@@ -51,6 +51,9 @@ __F_SERVER_OPERATION_NOTIFIER__
 
 __F_USER_OPERATION_NOTIFIER__
 
+/* --------------- Code_cpp block 9 start --------------- */
+/* --------------- Code_cpp block 9 end --------------- */
+
 void __CLASS_NAME__::resourcesCreate() {
 	std::vector<Resource> resources = {
 __RESOURCES_TABLE__
@@ -60,7 +63,7 @@ __RESOURCES_TABLE__
 
 __F_RESOURCE_INIT__
 
-/* --------------- Code_cpp block 10 start --------------- */
-/* --------------- Code_cpp block 10 end --------------- */
+/* --------------- Code_cpp block 11 start --------------- */
+/* --------------- Code_cpp block 11 end --------------- */
 
 } /* namespace wpp */

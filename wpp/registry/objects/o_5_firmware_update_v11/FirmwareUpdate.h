@@ -136,6 +136,9 @@ protected:
 	void userOperationNotifier(ResOp::TYPE type, const ResLink &resId) override;
 
 	/* --------------- Code_h block 3 start --------------- */
+	#ifdef LWM2M_RAW_BLOCK1_REQUESTS
+	void serverBlockOperationNotifier(ResOp::TYPE type, const ResLink &resId, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock) override;
+	#endif
 	/* --------------- Code_h block 3 end --------------- */
 
 private:

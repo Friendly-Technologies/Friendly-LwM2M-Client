@@ -176,7 +176,7 @@ class ObjectGenerator:
 
     def get_content_resourcesInit_f(self):
         content = f"""void __CLASS_NAME__::resourcesInit() {{\n""" \
-                  f"""\t/* --------------- Code_cpp block 9 start --------------- */\n"""
+                  f"""\t/* --------------- Code_cpp block 10 start --------------- */\n"""
         for resource in self.resources_data:
             if resource[ "Mandatory"] == "MANDATORY":
                 # content += f"""\t\t#if {resource["Name"]}_{resource["Mandatory"]}\n\t"""
@@ -192,7 +192,7 @@ class ObjectGenerator:
                 content += f"\tresource({resource['Name']}_{resource['ID']})->set( /* TODO */ );\n"
                 content += f"\tresource({resource['Name']}_{resource['ID']})->setDataVerifier( /* TODO */ );\n"
                 content += f"\t#endif\n"
-        content += f"""\t/* --------------- Code_cpp block 9 end --------------- */\n}}"""
+        content += f"""\t/* --------------- Code_cpp block 10 end --------------- */\n}}"""
 
         return content
 

@@ -224,6 +224,12 @@ void FirmwareUpdate::userOperationNotifier(ResOp::TYPE type, const ResLink &resI
 	/* --------------- Code_cpp block 8 end --------------- */
 }
 
+/* --------------- Code_cpp block 9 start --------------- */
+void serverBlockOperationNotifier(ResOp::TYPE type, const ResLink &resId, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock) {
+	
+}
+/* --------------- Code_cpp block 9 end --------------- */
+
 void FirmwareUpdate::resourcesCreate() {
 	std::vector<Resource> resources = {
 		{PACKAGE_0,                          ResOp(ResOp::WRITE),             IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::OPAQUE },  
@@ -258,7 +264,7 @@ void FirmwareUpdate::resourcesCreate() {
 }
 
 void FirmwareUpdate::resourcesInit() {
-	/* --------------- Code_cpp block 9 start --------------- */
+	/* --------------- Code_cpp block 10 start --------------- */
 	resource(PACKAGE_0)->set(OPAQUE_T());
 	resource(PACKAGE_0)->setDataVerifier((VERIFY_OPAQUE_T)[this](const OPAQUE_T& value) { 
 		if (value.empty() || isDeliveryTypeSupported(PUSH)) return true;
@@ -315,10 +321,10 @@ void FirmwareUpdate::resourcesInit() {
 	#if RES_5_13
 	resource(MAXIMUM_DEFER_PERIOD_13)->set(UINT_T(DEFER_NOT_ALLWED));
 	#endif
-	/* --------------- Code_cpp block 9 end --------------- */
+	/* --------------- Code_cpp block 10 end --------------- */
 }
 
-/* --------------- Code_cpp block 10 start --------------- */
+/* --------------- Code_cpp block 11 start --------------- */
 void FirmwareUpdate::changeUpdRes(UpdRes res) {
 	resource(UPDATE_RESULT_5)->set(INT_T(res));
 	notifyValueChanged({UPDATE_RESULT_5,});
@@ -461,6 +467,6 @@ void FirmwareUpdate::stopDeferUpdateGuard() {
 	}
 }
 #endif
-/* --------------- Code_cpp block 10 end --------------- */
+/* --------------- Code_cpp block 11 end --------------- */
 
 } /* namespace wpp */

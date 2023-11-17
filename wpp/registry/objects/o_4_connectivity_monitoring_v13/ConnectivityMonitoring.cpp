@@ -88,6 +88,9 @@ void ConnectivityMonitoring::userOperationNotifier(ResOp::TYPE type, const ResLi
 	/* --------------- Code_cpp block 8 end --------------- */
 }
 
+/* --------------- Code_cpp block 9 start --------------- */
+/* --------------- Code_cpp block 9 end --------------- */
+
 void ConnectivityMonitoring::resourcesCreate() {
 	std::vector<Resource> resources = {
 		{NETWORK_BEARER_0,              ResOp(ResOp::READ), IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::INT },    
@@ -129,7 +132,7 @@ void ConnectivityMonitoring::resourcesCreate() {
 }
 
 void ConnectivityMonitoring::resourcesInit() {
-	/* --------------- Code_cpp block 9 start --------------- */
+	/* --------------- Code_cpp block 10 start --------------- */
 
 	resource(NETWORK_BEARER_0)->set(INT_T(NTWRK_BRR_MAX));
 	resource(NETWORK_BEARER_0)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return GSM <= value && value < NTWRK_BRR_MAX; });
@@ -187,10 +190,10 @@ void ConnectivityMonitoring::resourcesInit() {
 	resource(COVERAGE_ENHANCEMENT_LEVEL_13)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return MISSING <= value && value < CVRG_ENHNCMNT_LVL_MAX; });
 	#endif
 
-	/* --------------- Code_cpp block 9 end --------------- */
+	/* --------------- Code_cpp block 10 end --------------- */
 }
 
-/* --------------- Code_cpp block 10 start --------------- */
+/* --------------- Code_cpp block 11 start --------------- */
 
 bool ConnectivityMonitoring::checkLinkQuality(uint8_t linkQuality) {
 	INT_T networkBearer;
@@ -227,6 +230,6 @@ bool ConnectivityMonitoring::checkCellId(uint32_t cellId) {
 	}
 }
 
-/* --------------- Code_cpp block 10 end --------------- */
+/* --------------- Code_cpp block 11 end --------------- */
 
 } /* namespace wpp */

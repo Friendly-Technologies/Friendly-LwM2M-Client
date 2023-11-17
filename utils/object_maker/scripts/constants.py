@@ -6,6 +6,7 @@ FOLDER_OBJECTS = f"{FOLDER_WPP}/registry/objects"
 FOLDER_CONFIG = f"{FOLDER_WPP}/config"
 
 FILE_OBJ_METADATA = "object_metadata.json"
+FILE_CMAKE_LISTS = "CMakeLists.txt"
 
 FILE_OBJECT_ID = f"{FOLDER_WPP}/registry/ObjectID.h"
 FILE_REGISTRY_H = f"{FOLDER_WPP}/registry/WppRegistry.h"
@@ -17,6 +18,10 @@ FILE_TMPLT_IMPL_CPP = f"{FOLDER_TEMPLATES}/FILE_OBJ_IMPL_CPP.txt"
 FILE_TMPLT_INFO = f"{FOLDER_TEMPLATES}/FILE_OBJ_INFO.txt"
 FILE_TMPLT_CONFIG = f"{FOLDER_TEMPLATES}/FILE_OBJ_CONFIG.txt"
 FILE_TMPLT_CMAKE = f"{FOLDER_TEMPLATES}/FILE_OBJ_CMAKE.txt"
+
+FILE_TMPLT_INIT_CPP = f"{FOLDER_TEMPLATES}/FILE_INIT_CPP.txt"
+FILE_TMPLT_INIT_H = f"{FOLDER_TEMPLATES}/FILE_INIT_H.txt"
+FILE_TMPLT_INIT_CMAKE = f"{FOLDER_TEMPLATES}/FILE_INIT_CMAKE.txt"
 
 KEY_FILE_IMPL_H = "impl_h"
 KEY_FILE_IMPL_CPP = "impl_cpp"
@@ -41,44 +46,33 @@ KEY_DICT_OBJ_META = "object_data"
 KEY_DICT_OBJ_NAMES = "object_names"
 KEY_DICT_OBJ_FILES = "object_files"
 
-#  old
-# KEY_DICT_OBJ_NAMES_CLASS = "class"
-# KEY_DICT_OBJ_NAMES_CAMELC = "camelcase"
-# KEY_DICT_OBJ_NAMES_DEFINE = "define"
-# KEY_DICT_OBJ_NAMES_UNDERL = "up_underline"
-#
-
-KEY_NAME_CLASS = "name"
+KEY_NAME_CLASS = "class"
 KEY_NAME_CAMELCASE = "camelcase"
 KEY_NAME_DEFINE = "define"
 KEY_NAME_UNDERLINE = "up_underline"
 KEY_PATH_TO_FOLDER = "name_path_to_folder"
 KEY_NAME_OF_FOLDER = "name_of_folder"
 
-# old
-# KEY_DICT_OBJ_META_MANDAT = "is_mandatory"
-# KEY_DICT_OBJ_META_NAME = "name"
-# KEY_DICT_OBJ_META_ID = "id"
-# KEY_DICT_OBJ_META_VER_LWM2M = "lwm2m_version"
-# KEY_DICT_OBJ_META_VER = "version"
-#
-
 KEY_NAME = "name"
-KEY_DESCRIPTION = "description"
+KEY_TYPE = "type"
+KEY_VALUE = "value"
+KEY_ID = "id"
 KEY_ID_OBJ = "obj_id"
 KEY_ID_RES = "res_id"
+
 KEY_URN = "urn"
-KEY_VER_LWM2M = "lwm2m_version"
 KEY_VER = "version"
+KEY_VER_LWM2M = "lwm2m_version"
+KEY_DESCRIPTION = "description"
 KEY_IS_MULTIPLE = "is_multiple"
 KEY_IS_MANDATORY = "is_mandatory"
 KEY_OPERATIONS = "operations"
-KEY_TYPE = "type"
 KEY_DEFINE_RES = "res_define"
 
 TYPE_OPERATION = "ResOp"
 TYPE_OBJECT = "ObjectImpl"
 
+# there is a map between terms used in program, and terms used in LwM2M below:
 DATA_KEYS = {KEY_NAME:          "Name",
              KEY_DESCRIPTION:   "Description1",
              KEY_ID_OBJ:        "ObjectID",
@@ -92,6 +86,8 @@ DATA_KEYS = {KEY_NAME:          "Name",
              KEY_ID_RES:        "ID",
              KEY_DEFINE_RES:    "Define",
              }
+
+WPP_TYPES = ["INT", "UINT", "BOOL", "STRING", "EXECUTE", "OPAQUE", "FLOAT", "OBJ_LINK", "TIME", "CORE_LINK", "NONE"]
 
 LWM2M_WEB_RESOURCES = ["raw.githubusercontent.com", "github.com"]
 

@@ -70,7 +70,7 @@ void FirmwareUpdate::setDefaultState() {
 
 void FirmwareUpdate::serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
 	/* --------------- Code_cpp block 6 start --------------- */
-	// TODO Implement business logic for Defer Period
+	WPP_LOGD_ARG(TAG, "Server operation -> type: %d, resId: %d, resInstId: %d", type, resId.resId, resId.resInstId);
 	switch (type) {
 	case ResOp::WRITE_UPD:
 	case ResOp::WRITE_REPLACE_RES: {
@@ -78,17 +78,14 @@ void FirmwareUpdate::serverOperationNotifier(ResOp::TYPE type, const ResLink &re
 		case PACKAGE_0: {
 			OPAQUE_T *pkg;
 			resource(PACKAGE_0)->ptr(&pkg);
-			WPP_LOGD_ARG(TAG, "PACKAGE_0 size: %d", pkg->size());
-			WPP_LOGD_ARG(TAG, "PACKAGE_0 first: %d, last: %d", (*pkg)[0], (*pkg)[pkg->size()-1]);
 			if (pkg->empty()) {
 				WPP_LOGD_ARG(TAG, "Server reset state machine through PACKAGE_0", resId.resId, resId.resInstId);
 				resetStateMachine();
 				eventNotify(*this, E_RESET);
 			} else {
-				WPP_LOGD_ARG(TAG, "Server write package", resId.resId, resId.resInstId);
 				changeUpdRes(R_INITIAL);
 				changeState(S_DOWNLOADING);
-				eventNotify(*this, E_PKG_DOWNLOADIN);
+				eventNotify(*this, E_PKG_DOWNLOADING);
 				changeState(S_DOWNLOADED);
 				eventNotify(*this, E_DOWNLOADED);
 			}
@@ -147,9 +144,9 @@ void FirmwareUpdate::serverOperationNotifier(ResOp::TYPE type, const ResLink &re
 
 void FirmwareUpdate::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
 	/* --------------- Code_cpp block 8 start --------------- */
+	WPP_LOGD_ARG(TAG, "User operation -> type: %d, resId: %d, resInstId: %d", type, resId.resId, resId.resInstId);
 	switch (type) {
 	case ResOp::WRITE_UPD: {
-		WPP_LOGD_ARG(TAG, "User WRITE_UPD -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
 		switch (resId.resId) {
 		case STATE_3: {
 			INT_T state;
@@ -225,9 +222,22 @@ void FirmwareUpdate::userOperationNotifier(ResOp::TYPE type, const ResLink &resI
 }
 
 /* --------------- Code_cpp block 9 start --------------- */
-void serverBlockOperationNotifier(ResOp::TYPE type, const ResLink &resId, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock) {
-	
+#ifdef LWM2M_RAW_BLOCK1_REQUESTS
+void FirmwareUpdate::serverBlockOperationNotifier(ResOp::TYPE type, const ResLink &resId, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock) {
+	if (type != ResOp::BLOCK_WRITE || resId.resId != PACKAGE_0) return;
+
+	if (!blockNum) {
+		changeUpdRes(R_INITIAL);
+		changeState(S_DOWNLOADING);
+		eventNotify(*this, E_PKG_DOWNLOADING);
+	} else if (isLastBlock) {
+		changeState(S_DOWNLOADED);
+		eventNotify(*this, E_DOWNLOADED);
+	}
+
+	blockOperationNotify(*this, resId, type, buff, blockNum, isLastBlock);
 }
+#endif
 /* --------------- Code_cpp block 9 end --------------- */
 
 void FirmwareUpdate::resourcesCreate() {
@@ -441,7 +451,6 @@ void FirmwareUpdate::startDeferUpdateGuard() {
 	if (!maxDefer) return;
 
 	_deferUpdateTaskId = WppTaskQueue::addTask(maxDefer, [this](WppClient &client, WppTaskQueue::ctx_t ctx) -> bool {
-		WPP_LOGD(TAG, "Defer update task is running");
 		INT_T res, state;
 		resource(UPDATE_RESULT_5)->get(res);
 		resource(STATE_3)->get(state);

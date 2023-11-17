@@ -485,7 +485,10 @@ uint8_t Instance::blockWrite(lwm2m_uri_t * uri, lwm2m_media_type_t format, uint8
 	WPP_LOGD_ARG(TAG_WPP_INST, "Block write parameters: %d:%d:%d:%d, format: %d, len: %d, block number: %d, blockMore %d",
 								uri->objectId, uri->instanceId, uri->resourceId, uri->resourceInstanceId, format, length, blockNum, blockMore);
 	// TODO: For now is not supported writing multiple resources or whole instance at once
-	if (!LWM2M_URI_IS_SET_RESOURCE(uri) || LWM2M_URI_IS_SET_RESOURCE_INSTANCE(uri)) return COAP_400_BAD_REQUEST;
+	if (!LWM2M_URI_IS_SET_RESOURCE(uri) || LWM2M_URI_IS_SET_RESOURCE_INSTANCE(uri)) {
+		WPP_LOGW_ARG(TAG_WPP_INST, "Not possible to apply block write operation for: %d:%d:%d:%d", uri->objectId, uri->instanceId, uri->resourceId, uri->resourceInstanceId);
+		return COAP_400_BAD_REQUEST;
+	}
 	ResLink resLink = {uri->resourceId, ID_T_MAX_VAL};
 
 	switch (format) {
@@ -501,15 +504,20 @@ uint8_t Instance::blockWrite(lwm2m_uri_t * uri, lwm2m_media_type_t format, uint8
 			size_t dataStart, dataLen;
 			lwm2m_decode_TLV(buffer, length, &dataType, &id, &dataStart, &dataLen);
 			// TODO: For now is not supported writing multiple resources or whole instance at once
-			if (dataType == LWM2M_TYPE_MULTIPLE_RESOURCE) return COAP_400_BAD_REQUEST;
-			serverBlockOperationNotifier(ResOp::BLOCK_WRITE, resLink, OPAQUE_T(buffer+dataStart, buffer+dataStart+dataLen), blockNum, !blockMore);
+			if (dataType == LWM2M_TYPE_MULTIPLE_RESOURCE) {
+				WPP_LOGW(TAG_WPP_INST, "Not possible to apply block write operation for TLV with multiple resources");
+				return COAP_400_BAD_REQUEST;
+			}
+			serverBlockOperationNotifier(ResOp::BLOCK_WRITE, resLink, OPAQUE_T(buffer+dataStart, buffer+length), blockNum, !blockMore);
 		} else {
 			serverBlockOperationNotifier(ResOp::BLOCK_WRITE, resLink, OPAQUE_T(buffer, buffer+length), blockNum, !blockMore);
 		}
 		break;
 	}
 	#endif
-	default: return COAP_405_METHOD_NOT_ALLOWED;
+	default: 
+		WPP_LOGW_ARG(TAG_WPP_INST, "Unsupported format: %d", format);
+		return COAP_405_METHOD_NOT_ALLOWED;
 	}
 
 	return blockMore? COAP_231_CONTINUE : COAP_204_CHANGED;

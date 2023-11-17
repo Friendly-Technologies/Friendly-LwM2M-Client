@@ -97,7 +97,7 @@ int main() {
 	for (int iterationCnt = 0; !device.isNeededReboot(); iterationCnt++) {
 		time_t currTime = time(NULL);
 
-		cout << endl << "---- iteration:" << iterationCnt << ", time: " << std::time(NULL) << " ----" << endl;
+		cout << endl << "---- iteration:" << iterationCnt << ", time: " << time(NULL) << " ----" << endl;
 		if (currTime >= callTime || connection.getPacketQueueSize()) {
 			// Handle client state and process packets from the server
 			client = WppClient::takeOwnership();

@@ -18,12 +18,12 @@ public:
 	 * Subscribers will be notified about the write, delete, replace
 	 * and execute of instance resources initiated by server.
 	 */
-	void subscribe(InstOpObserver *observer) {
+	void opSubscribe(InstOpObserver *observer) {
         if (!observer) return;
         if (std::find(_opObservers.begin(), _opObservers.end(), observer) == _opObservers.end()) 
             _opObservers.push_back(observer);
     }
-	void unsubscribe(InstOpObserver *observer) {
+	void opUnsubscribe(InstOpObserver *observer) {
         _opObservers.erase(std::find(_opObservers.begin(), _opObservers.end(), observer));
     }
 
@@ -32,12 +32,12 @@ public:
 	 * Subscribers will be notified about the block write
 	 * and block execute of instance resources initiated by server.
 	 */
-    void subscribe(InstBlockOpObserver *observer) {
+    void blockOpSubscribe(InstBlockOpObserver *observer) {
         if (!observer) return;
         if (std::find(_blockOpObservers.begin(), _blockOpObservers.end(), observer) == _blockOpObservers.end()) 
             _blockOpObservers.push_back(observer);
     }
-	void unsubscribe(InstBlockOpObserver *observer) {
+	void blockOpUnsubscribe(InstBlockOpObserver *observer) {
         _blockOpObservers.erase(std::find(_blockOpObservers.begin(), _blockOpObservers.end(), observer));
     }
     #endif
@@ -45,12 +45,12 @@ public:
     /*
 	 * Subscribers will be notified about the custom instance events.
 	 */
-    void subscribe(InstEventObserver *observer) {
+    void eventSubscribe(InstEventObserver *observer) {
         if (!observer) return;
         if (std::find(_eventObservers.begin(), _eventObservers.end(), observer) == _eventObservers.end()) 
             _eventObservers.push_back(observer);
     }
-	void unsubscribe(InstEventObserver *observer) {
+	void eventUnsubscribe(InstEventObserver *observer) {
         _eventObservers.erase(std::find(_eventObservers.begin(), _eventObservers.end(), observer));
     }
 

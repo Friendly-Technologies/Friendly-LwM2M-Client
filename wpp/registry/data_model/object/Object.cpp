@@ -162,7 +162,7 @@ uint8_t Object::create_clb(lwm2m_context_t * contextP, ID_T instanceId, int numD
     WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama create %d:%d", obj->getObjectID(), instanceId);
 	if (!obj->createInstance(instanceId)) return COAP_500_INTERNAL_SERVER_ERROR;
 	// Notify user about creating instance
-	obj->observerNotify(*obj, instanceId, InstOp::CREATE);
+	obj->operationNotify(*obj, instanceId, InstOp::CREATE);
 
 	uint8_t result = write_clb(contextP, instanceId, numData, dataArray, objectP, LWM2M_WRITE_REPLACE_RESOURCES);
 	if (result != COAP_204_CHANGED) {
@@ -178,7 +178,7 @@ uint8_t Object::delete_clb(lwm2m_context_t * contextP, ID_T instanceId, lwm2m_ob
     WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama delete %d:%d", obj->getObjectID(), instanceId);
 	if (!obj->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
 	// Notify user about deleting instance
-	obj->observerNotify(*obj, instanceId, InstOp::DELETE);
+	obj->operationNotify(*obj, instanceId, InstOp::DELETE);
 
 	return obj->removeInstance(instanceId)? COAP_202_DELETED : COAP_404_NOT_FOUND;
 }

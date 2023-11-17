@@ -53,7 +53,7 @@ public:
 	/* --------------- Code_h block 1 start --------------- */
 	enum Event: EVENT_ID_T {
 		E_URI_DOWNLOADIN = 0,
-		E_PKG_DOWNLOADIN,
+		E_PKG_DOWNLOADING,
 		E_DOWNLOADED,
 		E_RESET
 	};

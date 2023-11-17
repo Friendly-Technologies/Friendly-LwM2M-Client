@@ -17,14 +17,14 @@ class ObjectXmlParser:
     """
 
     def __init__(self, xml_file=None, xml_url=None):
-        self.log_tag = f"[{self.__class__.__name__}]:"
+        self.log_tag = self.__class__.__name__
         self.xml_file = xml_file
         self.xml_url = xml_url
         self.object_data = None
         self.resources_data = None
 
         if xml_file and xml_url:
-            print(self.__class__.__name__, "only one source should be provided to create the the Object (file or url")
+            func.LOG(self.log_tag, "", "only one source should be provided to create the the Object (file or url")
 
         self.set_xml_file()
         self.set_parsed_data()  # sets self.object_data and self.resources_data
@@ -63,12 +63,14 @@ class ObjectXmlParser:
 
         # convert the "is_mandatory" to bool
         if object_data[const.DATA_KEYS[const.KEY_IS_MANDATORY]] not in const.OPTIONS_MANDATORY:
-            print(f"{self.log_tag} The critical error is possible! Check the <Mandatory> field of the Object.")
+            func.LOG(self.log_tag, self.set_parsed_data.__name__,
+                     "WARNING: the critical error is possible! Please, check the <Mandatory> field of the Object.")
         object_data[const.DATA_KEYS[const.KEY_IS_MANDATORY]] = object_data[const.DATA_KEYS[const.KEY_IS_MANDATORY]] == "Mandatory"
 
         # convert the "is_multiple" value to bool
         if object_data[const.DATA_KEYS[const.KEY_IS_MULTIPLE]] not in const.OPTIONS_VARIETY:
-            print(f"{self.log_tag} The critical error is possible! Check the <MultipleInstances> field of the Object.")
+            func.LOG(self.log_tag, self.set_parsed_data.__name__,
+                     "WARNING: the critical error is possible! Check the <MultipleInstances> field of the Object.")
         object_data[const.DATA_KEYS[const.KEY_IS_MULTIPLE]] = object_data[const.DATA_KEYS[const.KEY_IS_MULTIPLE]] == "Multiple"
 
         # check and set the "versions" fields if not defined:

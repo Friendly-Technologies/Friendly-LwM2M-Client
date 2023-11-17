@@ -17,7 +17,7 @@ class ObjectGenerator:
     """Add some comments here"""
 
     def __init__(self, xml_file, xml_url):
-        self.log_tag = f"[{self.__class__.__name__}]:"
+        self.log_tag = self.__class__.__name__
         xp = object_xml_parser.ObjectXmlParser(xml_file=xml_file, xml_url=xml_url)
         self.object_data = xp.object_data
         self.resources_data = xp.resources_data
@@ -38,8 +38,8 @@ class ObjectGenerator:
         obj_name_underline_lw = obj_name_underline.lower()                      # 'lwm2m_server'
 
         obj_requirement_short = "M" if self.object_data[const.DATA_KEYS[const.KEY_IS_MANDATORY]] else "O"    # 'M' | 'O'
-        obj_version = self.object_data[const.DATA_KEYS[const.KEY_VER]].replace(".", "")           # 13
-        obj_id = self.object_data[const.DATA_KEYS[const.KEY_ID_OBJ]]                                      # 1
+        obj_version = self.object_data[const.DATA_KEYS[const.KEY_VER]].replace(".", "")                      # 13
+        obj_id = self.object_data[const.DATA_KEYS[const.KEY_ID_OBJ]]                                         # 1
         obj_name_folder = f"{obj_requirement_short.lower()}_" \
                           f"{obj_id}_" \
                           f"{obj_name_underline_lw}_"\
@@ -249,7 +249,7 @@ class ObjectGenerator:
         return prefix + postfix
 
     def generate_content_header(self, resources_enum):
-        data_str_h = func.get_file_content(const.FILE_TMPLT_IMPL_H)[1]
+        data_str_h = func.get_content_from_file(const.FILE_TMPLT_IMPL_H)[1]
         data_str_h = data_str_h.replace("__DATETIME__", DATETIME)
         data_str_h = data_str_h.replace("__IF_NOT_DEFINED_DEFINE__",    self.object_names[const.KEY_NAME_OF_FOLDER].upper())
         data_str_h = data_str_h.replace("__CLASS_NAME__",               self.object_names[const.KEY_NAME_CLASS])
@@ -259,7 +259,7 @@ class ObjectGenerator:
         return data_str_h
 
     def generate_content_cpp(self, resources_map):
-        data_str_cpp = func.get_file_content(const.FILE_TMPLT_IMPL_CPP)[1]
+        data_str_cpp = func.get_content_from_file(const.FILE_TMPLT_IMPL_CPP)[1]
         data_str_cpp = data_str_cpp.replace("__DATETIME__", DATETIME)
         data_str_cpp = data_str_cpp.replace("__OBJ_FOLDER__", self.object_names[const.KEY_NAME_OF_FOLDER])
         data_str_cpp = data_str_cpp.replace("__F_SERVER_OPERATION_NOTIFIER__",
@@ -274,7 +274,7 @@ class ObjectGenerator:
         return data_str_cpp
 
     def generate_content_cmake_list(self):
-        content = func.get_file_content(const.FILE_TMPLT_CMAKE)[1]
+        content = func.get_content_from_file(const.FILE_TMPLT_CMAKE)[1]
         content = content.replace("__DATETIME__",   DATETIME)
         content = content.replace("__OBJ_DEFINE__", self.object_names[const.KEY_NAME_DEFINE])
         content = content.replace("__CLASS_NAME__", self.object_names[const.KEY_NAME_CLASS])
@@ -285,7 +285,7 @@ class ObjectGenerator:
         is_multiple = "MULTIPLE" if self.object_data[const.DATA_KEYS[const.KEY_IS_MULTIPLE]] else "SINGLE"
         is_mandatory = "MANDATORY" if self.object_data[const.DATA_KEYS[const.KEY_IS_MANDATORY]] else "OPTIONAL"
 
-        content = func.get_file_content(const.FILE_TMPLT_INFO)[1]
+        content = func.get_content_from_file(const.FILE_TMPLT_INFO)[1]
         content = content.replace("__DATETIME__", DATETIME)
         content = content.replace("<<IF_DEF_DIRECTIVE>>",   self.object_names[const.KEY_NAME_UNDERLINE])
         content = content.replace("__UPNAME__",             self.object_names[const.KEY_NAME_UNDERLINE])
@@ -308,7 +308,7 @@ class ObjectGenerator:
             if resource["Mandatory"] == "OPTIONAL":
                 defines += f"""#define {resource['Define']} 0\n"""
 
-        content = func.get_file_content(const.FILE_TMPLT_CONFIG)[1]
+        content = func.get_content_from_file(const.FILE_TMPLT_CONFIG)[1]
         content = content.replace("__DATETIME__",           DATETIME)
         content = content.replace("<<IF_DEF_DIRECTIVE>>",   self.object_names[const.KEY_NAME_UNDERLINE])
         content = content.replace("__OBJ_DEFINE__",         self.object_names[const.KEY_NAME_DEFINE])
@@ -329,11 +329,12 @@ class ObjectGenerator:
         object_class_name = self.object_names[const.KEY_NAME_CLASS]
 
 
-        obj_dict = {const.KEY_IS_MANDATORY: self.object_data[const.DATA_KEYS[const.KEY_IS_MANDATORY]],
-                    const.KEY_NAME:         self.object_data[const.DATA_KEYS[const.KEY_NAME]],
-                    const.KEY_ID_OBJ:       self.object_data[const.DATA_KEYS[const.KEY_ID_OBJ]],
+        obj_dict = {const.KEY_NAME:         self.object_data[const.DATA_KEYS[const.KEY_NAME]],
+                    const.KEY_ID:           self.object_data[const.DATA_KEYS[const.KEY_ID_OBJ]],
+                    const.KEY_VER:          self.object_data[const.DATA_KEYS[const.KEY_VER]],
                     const.KEY_VER_LWM2M:    self.object_data[const.DATA_KEYS[const.KEY_VER_LWM2M]],
-                    const.KEY_VER:          self.object_data[const.DATA_KEYS[const.KEY_VER]]}
+                    const.KEY_IS_MANDATORY: self.object_data[const.DATA_KEYS[const.KEY_IS_MANDATORY]],
+                    const.KEY_IS_MULTIPLE:  self.object_data[const.DATA_KEYS[const.KEY_IS_MULTIPLE]]}
 
         obj_names = {const.KEY_NAME_CLASS:      self.object_names[const.KEY_NAME_CLASS],
                      const.KEY_NAME_CAMELCASE:  self.object_names[const.KEY_NAME_CAMELCASE],
@@ -344,23 +345,13 @@ class ObjectGenerator:
                      const.KEY_FILE_IMPL_CPP:    f"{object_class_name}.cpp",
                      const.KEY_FILE_IMPL_CONFIG: f"{object_class_name}Config.h",
                      const.KEY_FILE_IMPL_INFO:   f"{object_class_name}Info.h",
-                     const.KEY_FILE_IMPL_CMAKE:  f"CMakeLists.txt"}
+                     const.KEY_FILE_IMPL_CMAKE:  f"{const.FILE_CMAKE_LISTS}"}
 
         dictionary[const.KEY_DICT_OBJ_META] = obj_dict
         dictionary[const.KEY_DICT_OBJ_NAMES] = obj_names
         dictionary[const.KEY_DICT_OBJ_FILES] = obj_files
 
         return json.dumps(dictionary, indent=4)
-
-    def create_folder(self):
-        try:
-            os.mkdir(self.object_names[const.KEY_NAME_OF_FOLDER])
-        except FileExistsError:
-            pass
-
-    def create_file(self, filename, filetype, content):
-        file = filename if filetype == "" else f"{filename}.{filetype}"
-        func.create_file(f"./{self.object_names[const.KEY_NAME_OF_FOLDER]}/{file}", content)
 
     def object_code_generate(self):
         resources_enum, resources_map = self.get_map_of_resources(self.resources_data)
@@ -372,16 +363,18 @@ class ObjectGenerator:
         generated_obj_integration_data = self.generate_obj_integration_data()
 
         name_class = self.object_names[const.KEY_NAME_CLASS]
+        json_file = const.FILE_OBJ_METADATA
 
-        self.create_folder()
+        folder = self.object_names[const.KEY_NAME_OF_FOLDER]
+        func.create_folder(folder)
 
-        self.create_file(f"{name_class}",       "h",    generated_header)
-        self.create_file(f"{name_class}Info",   "h",    generated_info_header)
-        self.create_file(f"{name_class}Config", "h",    generated_config)
-        self.create_file(f"{name_class}",       "cpp",  generated_cpp_file)
-        self.create_file(f"CMakeLists",         "txt",  generated_cmake_list)
-
-        self.create_file(const.FILE_OBJ_METADATA, "", generated_obj_integration_data)
+        func.create_file(f"{folder}/{name_class}.h",            generated_header)
+        func.create_file(f"{folder}/{name_class}Info.h",        generated_info_header)
+        func.create_file(f"{folder}/{name_class}Config.h",      generated_config)
+        func.create_file(f"{folder}/{name_class}.cpp",          generated_cpp_file)
+        func.create_file(f"{folder}/{const.FILE_CMAKE_LISTS}",  generated_cmake_list)
+        func.create_file(f"{folder}/{json_file}",               generated_obj_integration_data)
+        func.LOG(self.log_tag, "", f"the Object {self.object_names[const.KEY_NAME_CLASS]} generated successfully")
 
 
 if __name__ == "__main__":

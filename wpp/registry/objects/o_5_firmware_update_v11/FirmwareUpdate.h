@@ -135,6 +135,9 @@ protected:
 	 */
 	void userOperationNotifier(ResOp::TYPE type, const ResLink &resId) override;
 
+	/* --------------- Code_h block 3 start --------------- */
+	/* --------------- Code_h block 3 end --------------- */
+
 private:
 	/* --------------- Class private methods --------------- */
 	/*
@@ -148,7 +151,7 @@ private:
 	 */	
 	void resourcesInit();
 	
-	/* --------------- Code_h block 3 start --------------- */
+	/* --------------- Code_h block 4 start --------------- */
 	void changeUpdRes(UpdRes res);
 	void changeState(State state);
 	void resetStateMachine();
@@ -171,14 +174,15 @@ private:
 	void startDeferUpdateGuard();
 	void stopDeferUpdateGuard();
 	#endif
-	/* --------------- Code_h block 3 end --------------- */
+	/* --------------- Code_h block 4 end --------------- */
 
 private:
-	/* --------------- Code_h block 4 start --------------- */
+	/* --------------- Class private properties --------------- */
+	/* --------------- Code_h block 5 start --------------- */
 	#if RES_5_13
 	WppTaskQueue::task_id_t _deferUpdateTaskId;
 	#endif
-	/* --------------- Code_h block 4 end --------------- */
+	/* --------------- Code_h block 5 end --------------- */
 };
 
 } /* namespace wpp */

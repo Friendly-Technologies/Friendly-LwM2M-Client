@@ -485,8 +485,8 @@ uint8_t Instance::blockWrite(lwm2m_uri_t * uri, lwm2m_media_type_t format, uint8
 	WPP_LOGD_ARG(TAG_WPP_INST, "Block write parameters: %d:%d:%d:%d, format: %d, len: %d, block number: %d, blockMore %d",
 								uri->objectId, uri->instanceId, uri->resourceId, uri->resourceInstanceId, format, length, blockNum, blockMore);
 	// TODO: For now is not supported writing multiple resources or whole instance at once
-	if (!LWM2M_URI_IS_SET_RESOURCE(uri)) return COAP_405_METHOD_NOT_ALLOWED;
-	ResLink resLink = {uri->resourceId, uri->resourceInstanceId};
+	if (!LWM2M_URI_IS_SET_RESOURCE(uri) || LWM2M_URI_IS_SET_RESOURCE_INSTANCE(uri)) return COAP_400_BAD_REQUEST;
+	ResLink resLink = {uri->resourceId, ID_T_MAX_VAL};
 
 	switch (format) {
     case LWM2M_CONTENT_TEXT:
@@ -501,17 +501,13 @@ uint8_t Instance::blockWrite(lwm2m_uri_t * uri, lwm2m_media_type_t format, uint8
 			size_t dataStart, dataLen;
 			lwm2m_decode_TLV(buffer, length, &dataType, &id, &dataStart, &dataLen);
 			// TODO: For now is not supported writing multiple resources or whole instance at once
-			if (dataType == LWM2M_TYPE_MULTIPLE_RESOURCE) return COAP_405_METHOD_NOT_ALLOWED;
+			if (dataType == LWM2M_TYPE_MULTIPLE_RESOURCE) return COAP_400_BAD_REQUEST;
 			serverBlockOperationNotifier(ResOp::BLOCK_WRITE, resLink, OPAQUE_T(buffer+dataStart, buffer+dataStart+dataLen), blockNum, !blockMore);
 		} else {
 			serverBlockOperationNotifier(ResOp::BLOCK_WRITE, resLink, OPAQUE_T(buffer, buffer+length), blockNum, !blockMore);
 		}
 		break;
 	}
-	#endif
-	#ifdef LWM2M_SUPPORT_SENML_JSON
-    case LWM2M_CONTENT_SENML_JSON:
-        break;
 	#endif
 	default: return COAP_405_METHOD_NOT_ALLOWED;
 	}

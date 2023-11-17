@@ -33,8 +33,7 @@ option(LWM2M_RAW_BLOCK1_REQUESTS "For low memory client devices where it is not 
                                   entirely to the user. At the moment, there are certain restrictions regarding
                                   the use of this mode, only two operations are supported BLOCK_EXECUTE without
                                   restrictions, and BLOCK_WRITE with the following restrictions: recording only
-                                  one resource if it is SINGLE or one instance of the resource if it is MULTIPLE,
-                                  recording is possible in the following formats: TEXT, OPAQUE, TLV, SENML_JSON." ON)
+                                  one SINGLE resource, recording is possible in the following formats: TEXT, OPAQUE, TLV." ON)
 if (LWM2M_RAW_BLOCK1_REQUESTS)
     set(WAKAAMA_CORE_DEFINITIONS ${WAKAAMA_CORE_DEFINITIONS} LWM2M_RAW_BLOCK1_REQUESTS=1)
 endif()

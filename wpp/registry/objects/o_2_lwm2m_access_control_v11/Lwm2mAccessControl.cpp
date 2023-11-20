@@ -74,6 +74,9 @@ void Lwm2mAccessControl::userOperationNotifier(ResOp::TYPE type, const ResLink &
 	/* --------------- Code_cpp block 8 end --------------- */
 }
 
+/* --------------- Code_cpp block 9 start --------------- */
+/* --------------- Code_cpp block 9 end --------------- */
+
 void Lwm2mAccessControl::resourcesCreate() {
 	std::vector<Resource> resources = {
 		{OBJECT_ID_0,            ResOp(ResOp::READ),              IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::INT }, 
@@ -87,7 +90,7 @@ void Lwm2mAccessControl::resourcesCreate() {
 }
 
 void Lwm2mAccessControl::resourcesInit() {
-	/* --------------- Code_cpp block 9 start --------------- */
+	/* --------------- Code_cpp block 10 start --------------- */
 	
 	resource(OBJECT_ID_0)->set(INT_T(AC_OBJ_ID_MIN));
 	resource(OBJECT_ID_0)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return AC_OBJ_ID_MIN <= value && value <= AC_OBJ_ID_MAX; });
@@ -103,10 +106,10 @@ void Lwm2mAccessControl::resourcesInit() {
 	resource(ACCESS_CONTROL_OWNER_3)->set(INT_T(AC_OWNER_MIN));
 	resource(ACCESS_CONTROL_OWNER_3)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return AC_OWNER_MIN <= value && value <= AC_OWNER_MAX; });
 
-	/* --------------- Code_cpp block 9 end --------------- */
+	/* --------------- Code_cpp block 10 end --------------- */
 }
 
-/* --------------- Code_cpp block 10 start --------------- */
-/* --------------- Code_cpp block 10 end --------------- */
+/* --------------- Code_cpp block 11 start --------------- */
+/* --------------- Code_cpp block 11 end --------------- */
 
 } /* namespace wpp */

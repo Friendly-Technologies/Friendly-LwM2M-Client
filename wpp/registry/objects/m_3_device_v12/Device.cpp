@@ -75,6 +75,9 @@ void Device::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
 	/* --------------- Code_cpp block 8 end --------------- */
 }
 
+/* --------------- Code_cpp block 9 start --------------- */
+/* --------------- Code_cpp block 9 end --------------- */
+
 void Device::resourcesCreate() {
 	std::vector<Resource> resources = {
 		#if RES_3_0                                                                                                                                                             
@@ -145,7 +148,7 @@ void Device::resourcesCreate() {
 }
 
 void Device::resourcesInit() {
-	/* --------------- Code_cpp block 9 start --------------- */
+	/* --------------- Code_cpp block 10 start --------------- */
 	#if RES_3_0                                                                                                                                                                                        
 	resource(MANUFACTURER_0)->set(STRING_T(""));
 	#endif          
@@ -247,10 +250,10 @@ void Device::resourcesInit() {
 	#if RES_3_22                                                                                                                                                                                       
 	resource(EXTDEVINFO_22)->set(OBJ_LINK_T());
 	#endif     
-	/* --------------- Code_cpp block 9 end --------------- */
+	/* --------------- Code_cpp block 10 end --------------- */
 }
 
-/* --------------- Code_cpp block 10 start --------------- */
-/* --------------- Code_cpp block 10 end --------------- */
+/* --------------- Code_cpp block 11 start --------------- */
+/* --------------- Code_cpp block 11 end --------------- */
 
 } /* namespace wpp */

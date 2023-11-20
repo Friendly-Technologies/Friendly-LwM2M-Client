@@ -66,6 +66,9 @@ void Lwm2mSecurity::userOperationNotifier(ResOp::TYPE type, const ResLink &resId
 	/* --------------- Code_cpp block 8 end --------------- */
 }
 
+/* --------------- Code_cpp block 9 start --------------- */
+/* --------------- Code_cpp block 9 end --------------- */
+
 void Lwm2mSecurity::resourcesCreate() {
 	std::vector<Resource> resources = {
 		{LWM2M_SERVER_URI_0,                  ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::STRING },   
@@ -115,7 +118,7 @@ void Lwm2mSecurity::resourcesCreate() {
 }
 
 void Lwm2mSecurity::resourcesInit() {
-	/* --------------- Code_cpp block 9 start --------------- */
+	/* --------------- Code_cpp block 10 start --------------- */
 	resource(LWM2M_SERVER_URI_0)->set(STRING_T(""));
 	resource(LWM2M_SERVER_URI_0)->setDataVerifier((VERIFY_STRING_T)[](const STRING_T& value) { return value.size() < SERVER_URI_MAX_SIZE; });
 
@@ -183,10 +186,10 @@ void Lwm2mSecurity::resourcesInit() {
 	#if RES_0_17
 	resource(OSCORE_SECURITY_MODE_17)->set(OBJ_LINK_T());                                                                                                                                                                                                                        
 	#endif  
-	/* --------------- Code_cpp block 9 end --------------- */
+	/* --------------- Code_cpp block 10 end --------------- */
 }
 
-/* --------------- Code_cpp block 10 start --------------- */
-/* --------------- Code_cpp block 10 end --------------- */
+/* --------------- Code_cpp block 11 start --------------- */
+/* --------------- Code_cpp block 11 end --------------- */
 
 } /* namespace wpp */

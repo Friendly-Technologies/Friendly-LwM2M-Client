@@ -5,7 +5,7 @@ DeviceImpl::DeviceImpl(): _reboot(false) {}
 DeviceImpl::~DeviceImpl() {}
 
 void DeviceImpl::init(Object &obj) {
-	obj.subscribe(this);
+	obj.actSubscribe(this);
 	wpp::Instance *inst0 = obj.createInstance(0);
 
     inst0->set(Device::REBOOT_4, (EXECUTE_T)[this](Instance& inst, ID_T resId, const OPAQUE_T& data) {

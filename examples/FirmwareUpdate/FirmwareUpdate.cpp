@@ -5,10 +5,12 @@ FirmwareUpdateImpl::FirmwareUpdateImpl(DeviceImpl &device) : _device(device) {}
 FirmwareUpdateImpl::~FirmwareUpdateImpl() {}
 
 void FirmwareUpdateImpl::init(Object &obj) {
-	obj.subscribe(this);
+	obj.actSubscribe(this);
 	wpp::Instance *inst0 = obj.createInstance(0);
-	inst0->subscribe(this);
-
+	inst0->eventSubscribe(this);
+    #ifdef LWM2M_RAW_BLOCK1_REQUESTS
+    inst0->blockOpSubscribe(this);
+    #endif
 	inst0->set(FirmwareUpdate::UPDATE_2, (EXECUTE_T)[this](Instance& inst, ID_T id, const OPAQUE_T& data) {
 		cout << "FirmwareUpdate: execute UPDATE_2" << endl;
 		this->update(inst);
@@ -55,6 +57,14 @@ void FirmwareUpdateImpl::instEvent(Instance &inst, EVENT_ID_T eventId) {
     }
 }
 
+#ifdef LWM2M_RAW_BLOCK1_REQUESTS
+void FirmwareUpdateImpl::resourceBlockWrite(Instance &inst, const ResLink &resource, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock) {
+    if (resource.resId != FirmwareUpdate::PACKAGE_0) return;
+    cout << "FwUpdateImpl: resourceBlockWrite: len->" << buff.size() << ", blockNum: " << blockNum << ", isLastBlock:" << isLastBlock << endl;
+    writeToFile(getFileName(), buff);
+}
+#endif
+
 FirmwareUpdate::UpdRes FirmwareUpdateImpl::getLastUpdResult() {
     return FirmwareUpdate::R_FW_UPD_SUCCESS;
 }
@@ -75,7 +85,18 @@ void FirmwareUpdateImpl::update(Instance& inst) {
     }
     #endif
 
+    #ifndef LWM2M_RAW_BLOCK1_REQUESTS
+    const OPAQUE_T *fwData = NULL;
+    inst.getPtr(FirmwareUpdate::PACKAGE_0, &fwData);
+    if (fwData) writeToFile(getFileName(), *fwData);
+    #endif
+
+    _device.requestReboot();
+}
+
+string FirmwareUpdateImpl::getFileName() {
     STRING_T fileName = "test";
+
     #if RES_5_6 && RES_5_7
     STRING_T pkgName, pkgVersion;
     inst.get(FirmwareUpdate::PKGNAME_6, pkgName);
@@ -84,18 +105,14 @@ void FirmwareUpdateImpl::update(Instance& inst) {
     #endif
     fileName += ".fw";
 
-    const OPAQUE_T *fwData = NULL;
-    inst.getPtr(FirmwareUpdate::PACKAGE_0, &fwData);
-    if (fwData && !fwData->empty()) this->saveToFile(fileName, fwData);
-
-    _device.requestReboot();
+    return fileName;
 }
 
-void FirmwareUpdateImpl::saveToFile(STRING_T fileName, const OPAQUE_T *buff) {
-    if (buff == NULL) return;
+void FirmwareUpdateImpl::writeToFile(STRING_T fileName, const OPAQUE_T &buff) {
+    if (buff.empty()) return;
 
-    std::ofstream file(fileName, std::ios::binary);
+    ofstream file(fileName, ios::binary | ios::app);
     if (!file.is_open()) return;
-    file.write(reinterpret_cast<const char*>(buff->data()), buff->size());
+    file.write(reinterpret_cast<const char*>(buff.data()), buff.size());
     file.close();
 }

@@ -3,6 +3,9 @@
 
 #include "ResOp.h"
 #include "InstOpObserver.h"
+#ifdef LWM2M_RAW_BLOCK1_REQUESTS
+#include "InstBlockOpObserver.h"
+#endif
 #include "InstEventObserver.h"
 
 namespace wpp {
@@ -15,24 +18,39 @@ public:
 	 * Subscribers will be notified about the write, delete, replace
 	 * and execute of instance resources initiated by server.
 	 */
-	void subscribe(InstOpObserver *observer) {
+	void opSubscribe(InstOpObserver *observer) {
         if (!observer) return;
         if (std::find(_opObservers.begin(), _opObservers.end(), observer) == _opObservers.end()) 
             _opObservers.push_back(observer);
     }
-	void unsubscribe(InstOpObserver *observer) {
+	void opUnsubscribe(InstOpObserver *observer) {
         _opObservers.erase(std::find(_opObservers.begin(), _opObservers.end(), observer));
     }
+
+    #ifdef LWM2M_RAW_BLOCK1_REQUESTS
+    /*
+	 * Subscribers will be notified about the block write
+	 * and block execute of instance resources initiated by server.
+	 */
+    void blockOpSubscribe(InstBlockOpObserver *observer) {
+        if (!observer) return;
+        if (std::find(_blockOpObservers.begin(), _blockOpObservers.end(), observer) == _blockOpObservers.end()) 
+            _blockOpObservers.push_back(observer);
+    }
+	void blockOpUnsubscribe(InstBlockOpObserver *observer) {
+        _blockOpObservers.erase(std::find(_blockOpObservers.begin(), _blockOpObservers.end(), observer));
+    }
+    #endif
 
     /*
 	 * Subscribers will be notified about the custom instance events.
 	 */
-    void subscribe(InstEventObserver *observer) {
+    void eventSubscribe(InstEventObserver *observer) {
         if (!observer) return;
         if (std::find(_eventObservers.begin(), _eventObservers.end(), observer) == _eventObservers.end()) 
             _eventObservers.push_back(observer);
     }
-	void unsubscribe(InstEventObserver *observer) {
+	void eventUnsubscribe(InstEventObserver *observer) {
         _eventObservers.erase(std::find(_eventObservers.begin(), _eventObservers.end(), observer));
     }
 
@@ -61,12 +79,31 @@ protected:
         }
     }
 
+    #ifdef LWM2M_RAW_BLOCK1_REQUESTS
+    void blockOperationNotify(Instance &inst, const ResLink &resId, ResOp::TYPE type, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock) {
+        for(InstBlockOpObserver *observer : _blockOpObservers) {
+            switch (type) {
+            case ResOp::BLOCK_WRITE: 
+                observer->resourceBlockWrite(inst, resId, buff, blockNum, isLastBlock);
+                break;
+            case ResOp::BLOCK_EXECUTE:
+                observer->resourceBlockExecute(inst, resId, buff, blockNum, isLastBlock);
+                break;
+            default: break;
+            }
+        }
+    }
+    #endif
+
     void eventNotify(Instance &inst, EVENT_ID_T eventId) {
         for(InstEventObserver *observer : _eventObservers) observer->instEvent(inst, eventId);
     }
 
 private:
     std::vector<InstOpObserver*> _opObservers;
+    #ifdef LWM2M_RAW_BLOCK1_REQUESTS
+    std::vector<InstBlockOpObserver*> _blockOpObservers;
+    #endif
     std::vector<InstEventObserver*> _eventObservers;
 };
 

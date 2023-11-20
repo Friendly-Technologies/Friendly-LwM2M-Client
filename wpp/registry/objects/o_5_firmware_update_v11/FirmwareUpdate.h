@@ -53,7 +53,7 @@ public:
 	/* --------------- Code_h block 1 start --------------- */
 	enum Event: EVENT_ID_T {
 		E_URI_DOWNLOADIN = 0,
-		E_PKG_DOWNLOADIN,
+		E_PKG_DOWNLOADING,
 		E_DOWNLOADED,
 		E_RESET
 	};
@@ -135,6 +135,12 @@ protected:
 	 */
 	void userOperationNotifier(ResOp::TYPE type, const ResLink &resId) override;
 
+	/* --------------- Code_h block 3 start --------------- */
+	#ifdef LWM2M_RAW_BLOCK1_REQUESTS
+	void serverBlockOperationNotifier(ResOp::TYPE type, const ResLink &resId, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock) override;
+	#endif
+	/* --------------- Code_h block 3 end --------------- */
+
 private:
 	/* --------------- Class private methods --------------- */
 	/*
@@ -148,7 +154,7 @@ private:
 	 */	
 	void resourcesInit();
 	
-	/* --------------- Code_h block 3 start --------------- */
+	/* --------------- Code_h block 4 start --------------- */
 	void changeUpdRes(UpdRes res);
 	void changeState(State state);
 	void resetStateMachine();
@@ -171,14 +177,15 @@ private:
 	void startDeferUpdateGuard();
 	void stopDeferUpdateGuard();
 	#endif
-	/* --------------- Code_h block 3 end --------------- */
+	/* --------------- Code_h block 4 end --------------- */
 
 private:
-	/* --------------- Code_h block 4 start --------------- */
+	/* --------------- Class private properties --------------- */
+	/* --------------- Code_h block 5 start --------------- */
 	#if RES_5_13
 	WppTaskQueue::task_id_t _deferUpdateTaskId;
 	#endif
-	/* --------------- Code_h block 4 end --------------- */
+	/* --------------- Code_h block 5 end --------------- */
 };
 
 } /* namespace wpp */

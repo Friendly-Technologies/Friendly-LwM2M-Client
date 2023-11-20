@@ -66,6 +66,9 @@ protected:
 	 */
 	void userOperationNotifier(ResOp::TYPE type, const ResLink &resId) override;
 
+	/* --------------- Code_h block 3 start --------------- */
+	/* --------------- Code_h block 3 end --------------- */
+
 private:
 	/* --------------- Class private methods --------------- */
 	/*
@@ -79,12 +82,13 @@ private:
 	 */	
 	void resourcesInit();
 	
-	/* --------------- Code_h block 3 start --------------- */
-	/* --------------- Code_h block 3 end --------------- */
-
-private:
 	/* --------------- Code_h block 4 start --------------- */
 	/* --------------- Code_h block 4 end --------------- */
+
+private:
+	/* --------------- Class private properties --------------- */
+	/* --------------- Code_h block 5 start --------------- */
+	/* --------------- Code_h block 5 end --------------- */
 };
 
 } /* namespace wpp */

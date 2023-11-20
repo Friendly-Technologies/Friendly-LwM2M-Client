@@ -9,7 +9,7 @@ ConnectivityMonitoringImpl::ConnectivityMonitoringImpl() {}
 ConnectivityMonitoringImpl::~ConnectivityMonitoringImpl() {}
 
 void ConnectivityMonitoringImpl::init(Object &obj) {
-	obj.subscribe(this);
+	obj.actSubscribe(this);
 	wpp::Instance *inst0 = obj.createInstance(0);
 
     STRING_T ip;

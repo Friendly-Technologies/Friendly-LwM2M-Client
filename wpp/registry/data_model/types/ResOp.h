@@ -12,15 +12,21 @@ public:
 	enum TYPE: uint16_t {
         NONE = 0,
 	    READ = 1,
+		/* When server updates a resource instance value */
 	    WRITE_UPD = 2,
+		/* When server updates a resource value */
 		WRITE_REPLACE_RES = 4,
+		/* When the server replaces all resources in the 
+		 * instance with its values, it possible replaces
+		 * even read-only resources.
+		 */
 		WRITE_REPLACE_INST = 8,
 		WRITE = WRITE_UPD | WRITE_REPLACE_RES | WRITE_REPLACE_INST,
 	    EXECUTE = 16,
 	    DISCOVER = 32,
 		DELETE = 64,
-	    BLOCK1_WRITE = 128,
-	    BLOCK1_EXECUTE = 256,
+	    BLOCK_WRITE = 128,
+	    BLOCK_EXECUTE = 256,
 	};
 
 public:
@@ -32,8 +38,8 @@ public:
     inline bool isExecute() const { return _flags & EXECUTE; }
     inline bool isDiscover() const { return _flags & DISCOVER; }
 	inline bool isDelete() const { return _flags & DELETE; }
-    inline bool isBlock1Write() const { return _flags & BLOCK1_WRITE; }
-    inline bool isBlock1Execute() const { return _flags & BLOCK1_EXECUTE; }
+    inline bool isBlockWrite() const { return _flags & BLOCK_WRITE; }
+    inline bool isBlockExecute() const { return _flags & BLOCK_EXECUTE; }
     inline uint16_t getFlags() const { return _flags; }
     inline std::vector<TYPE> asVector() const {
     	uint32_t flags = _flags;

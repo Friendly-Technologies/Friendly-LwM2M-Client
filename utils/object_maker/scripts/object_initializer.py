@@ -85,14 +85,14 @@ class ObjectInitializer:
         func.create_file(f"{register_name}/{register_name}.h", content)
         return True
 
-    def generate_cpp(self, instances_txt, callbacks_txt, is_subscribed):
+    def generate_cpp(self, instances_txt, callbacks_txt, obj_subscribes_txt):
         errcode, content = func.get_content_from_file(const.FILE_TMPLT_INIT_CPP)
         if not errcode:
             return False
         register_name = self.object_data_dict[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]
         content = content.replace("__CALLBACKS__", callbacks_txt)
         content = content.replace("__INSTANCES__", instances_txt)
-        content = content.replace("__SUBSCRB_1__", "obj.subscribe(this);" if is_subscribed else "")
+        content = content.replace("__SUBSCRB_1__", obj_subscribes_txt)
         content = content.replace("__CLASS_NAME__", register_name)
         func.create_file(f"{register_name}/{register_name}.cpp", content)
         return True
@@ -252,7 +252,7 @@ class ObjectInitializer:
         # [print(i) for i in data]
         return data
 
-    def create_instances(self, obj, is_subscribe):
+    def create_instances(self, obj, types_enabled):
         name = self.object_data_dict[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_CLASS]
         folder = self.object_data_dict["object_folder"]
         file_h = self.object_data_dict[const.KEY_DICT_OBJ_FILES][const.KEY_FILE_IMPL_H]
@@ -289,7 +289,10 @@ class ObjectInitializer:
             instance_name = f"inst{instances_counter}"
             instance_id = instance[const.KEY_ID]
             result += f"\n\twpp::Instance *{instance_name} = obj.createInstance({instance_id});\n"
-            result += f"\tinst{instances_counter}.subscribe(this);\n" if is_subscribe else ""
+            if types_enabled["type3"]:
+                result += f"\tinst{instances_counter}.opSubscribe(this);\n"
+            elif types_enabled["type4"]:
+                result += f"\tinst{instances_counter}.eventSubscribe(this);\n"
             for resource_dict in resources_merged:
                 resources_value = resource_dict[const.KEY_VALUE]
                 resources_type = resource_dict[const.KEY_TYPE]
@@ -302,6 +305,14 @@ class ObjectInitializer:
                 value = self.transform_types_of_value(resources_value, resources_type)
                 result += f'\t{instance_name}->set({name}::{resource_dict[const.KEY_NAME]}, {value});\n'
             instances_counter += 1
+        return True, result
+
+    def create_obj_subscribe(self, types_enabled):
+        result = ""
+        if types_enabled["type1"]:
+            result += f"\tobj.opSubscribe(this);\n"
+        elif types_enabled["type2"]:
+            result += f"\tobj.actSubscribe(this);\n"
         return True, result
 
     def define_types_enabled(self, object_dict):
@@ -415,22 +426,24 @@ class ObjectInitializer:
             # header stuff:
             types_enabled = self.define_types_enabled(initialization_data_item)
 
-            is_subscribe_1 = types_enabled["type1"] or types_enabled["type2"]
-            is_subscribe_2 = types_enabled["type3"] or types_enabled["type4"]
-
             includes_txt = self.create_includes(types_enabled)
             inheritance_txt = self.create_inheritance(types_enabled)
             if not self.generate_header(includes_txt, inheritance_txt, callbacks_txt_h):
                 errcode = 1
                 return errcode
             # cpp stuff:
-            errcode, instances_txt = self.create_instances(initialization_data_item, is_subscribe_2)
+            errcode, instances_txt = self.create_instances(initialization_data_item, types_enabled)
+            if not errcode:
+                func.LOG(self.log_tag, self.initialize.__name__, f"Operation interrupted.")
+                errcode = 1
+                return errcode
+            errcode, obj_subscribes_txt = self.create_obj_subscribe(types_enabled)
             if not errcode:
                 func.LOG(self.log_tag, self.initialize.__name__, f"Operation interrupted.")
                 errcode = 1
                 return errcode
 
-            if not self.generate_cpp(instances_txt, callbacks_txt_cpp, is_subscribe_1):
+            if not self.generate_cpp(instances_txt, callbacks_txt_cpp, obj_subscribes_txt):
                 errcode = 1
                 return errcode
             func.LOG(self.log_tag, self.initialize.__name__,

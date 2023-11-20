@@ -66,6 +66,9 @@ void Lwm2mServer::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) 
 	/* --------------- Code_cpp block 8 end --------------- */
 }
 
+/* --------------- Code_cpp block 9 start --------------- */
+/* --------------- Code_cpp block 9 end --------------- */
+
 void Lwm2mServer::resourcesCreate() {
 	std::vector<Resource> resources = {
 		{SHORT_SERVER_ID_0,                               ResOp(ResOp::READ),              IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::INT },      
@@ -135,7 +138,7 @@ void Lwm2mServer::resourcesCreate() {
 }
 
 void Lwm2mServer::resourcesInit() {
-	/* --------------- Code_cpp block 9 start --------------- */
+	/* --------------- Code_cpp block 10 start --------------- */
 	// TODO: The most part of the server resources logic must be implemented
 	// on wakaama core level, because the Server is only a state holder and
 	// at this level, it does not have the required information for doing
@@ -233,10 +236,10 @@ void Lwm2mServer::resourcesInit() {
 	#if RES_1_23                                                                                                                                                                                                                             
 	resource(MUTE_SEND_23)->set(false);
 	#endif 
-	/* --------------- Code_cpp block 9 end --------------- */
+	/* --------------- Code_cpp block 10 end --------------- */
 }
 
-/* --------------- Code_cpp block 10 start --------------- */
-/* --------------- Code_cpp block 10 end --------------- */
+/* --------------- Code_cpp block 11 start --------------- */
+/* --------------- Code_cpp block 11 end --------------- */
 
 } /* namespace wpp */

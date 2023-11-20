@@ -20,12 +20,12 @@ public:
 	 * Subscribers will be notified about the creation
 	 * and deletion of object instances initiated by server.
 	 */
-	void subscribe(ObjOpObserver *observer) {
+	void opSubscribe(ObjOpObserver *observer) {
         if (!observer) return;
         if (std::find(_opObservers.begin(), _opObservers.end(), observer) == _opObservers.end()) 
             _opObservers.push_back(observer);
     }
-	void unsubscribe(ObjOpObserver *observer) {
+	void opUnsubscribe(ObjOpObserver *observer) {
         _opObservers.erase(std::find(_opObservers.begin(), _opObservers.end(), observer));
     }
 
@@ -33,12 +33,12 @@ public:
 	 * Subscribers will be notified about required restor
      * action for object.
 	 */
-	void subscribe(ObjActObserver *observer) {
+	void actSubscribe(ObjActObserver *observer) {
         if (!observer) return;
         if (std::find(_actObservers.begin(), _actObservers.end(), observer) == _actObservers.end()) 
             _actObservers.push_back(observer);
     }
-	void unsubscribe(ObjActObserver *observer) {
+	void actUnsubscribe(ObjActObserver *observer) {
         _actObservers.erase(std::find(_actObservers.begin(), _actObservers.end(), observer));
     }
     
@@ -46,7 +46,7 @@ protected:
     /*
 	 * Notify observers about operation
 	 */
-	void observerNotify(Object &obj, ID_T instanceId, InstOp::TYPE type) {
+	void operationNotify(Object &obj, ID_T instanceId, InstOp::TYPE type) {
         for(ObjOpObserver* observer : _opObservers) {
             if (type == InstOp::CREATE) {
                 observer->instanceCreated(obj, instanceId);

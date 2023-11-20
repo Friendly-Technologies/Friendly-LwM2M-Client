@@ -5,7 +5,7 @@ Lwm2mAccessControlImpl::Lwm2mAccessControlImpl() {}
 Lwm2mAccessControlImpl::~Lwm2mAccessControlImpl() {}
 
 void Lwm2mAccessControlImpl::init(Object &obj) {
-	obj.subscribe(this);
+	obj.actSubscribe(this);
 	wpp::Instance *inst0 = obj.createInstance(0);
 	inst0->set(Lwm2mAccessControl::OBJECT_ID_0, INT_T(35464));
 	inst0->set(Lwm2mAccessControl::OBJECT_INSTANCE_ID_1, INT_T(35464));

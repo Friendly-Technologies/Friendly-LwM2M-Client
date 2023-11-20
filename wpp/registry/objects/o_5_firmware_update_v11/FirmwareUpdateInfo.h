@@ -33,6 +33,9 @@ inline const ObjectInfo FIRMWARE_UPDATE_OBJ_INFO = {
 			InstOp::DELETE),
 	ResOp(	ResOp::READ|
 			ResOp::WRITE|
+			#ifdef LWM2M_RAW_BLOCK1_REQUESTS
+			ResOp::BLOCK_WRITE|
+			#endif
 			ResOp::DISCOVER|
 			ResOp::EXECUTE|
 			ResOp::DELETE),

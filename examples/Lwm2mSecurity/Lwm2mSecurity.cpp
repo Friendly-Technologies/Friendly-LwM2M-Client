@@ -5,7 +5,7 @@ Lwm2mSecurityImpl::Lwm2mSecurityImpl() {}
 Lwm2mSecurityImpl::~Lwm2mSecurityImpl() {}
 
 void Lwm2mSecurityImpl::init(Object &obj) {
-	obj.subscribe(this);
+	obj.actSubscribe(this);
 	wpp::Instance *inst0 = obj.createInstance(0);
 
 	#if LWM2M_BOOTSTRAP

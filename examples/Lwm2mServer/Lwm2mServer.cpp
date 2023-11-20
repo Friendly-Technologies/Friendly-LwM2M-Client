@@ -6,7 +6,7 @@ Lwm2mServerImpl::Lwm2mServerImpl() {}
 Lwm2mServerImpl::~Lwm2mServerImpl() {}
 
 void Lwm2mServerImpl::init(Object &obj) {
-	obj.subscribe(this);
+	obj.actSubscribe(this);
 	wpp::Instance *inst0 = obj.createInstance(0);
 	inst0->set(Lwm2mServer::SHORT_SERVER_ID_0, INT_T(123));
 	inst0->set(Lwm2mServer::BINDING_7, WPP_BINDING_UDP);

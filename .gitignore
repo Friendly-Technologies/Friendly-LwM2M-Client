@@ -2,3 +2,7 @@
 /utils/object_maker/.idea
 /utils/object_maker/__pycache__
 /utils/object_maker/scripts/__pycache__
+/tests/CMakeFiles/
+/tests/CMakeCache.txt
+/tests/cmake_install.cmake
+/tests/Makefile

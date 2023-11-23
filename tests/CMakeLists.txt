@@ -4,10 +4,10 @@ cmake_minimum_required(VERSION 3.12)
 project(WaakamaPlus CXX)
 
 # Include Catch2                                            
-set(CATCH2_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/Сatch2/catch.hpp")
+set(CATCH2_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/catch2/")
 
 # Serching all files with *.cpp tyoe in folders and subfolders
-file(GLOB_RECURSE TEST_SOURCES "./*Test.cpp")
+file(GLOB_RECURSE TEST_SOURCES "./*Test.cpp" "catch_amalgamated.cpp")
 
 # Create executable file for tests
 add_executable(Catch2Tests ${TEST_SOURCES})

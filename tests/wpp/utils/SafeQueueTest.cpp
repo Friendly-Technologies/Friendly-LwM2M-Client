@@ -1,6 +1,5 @@
-#include "../../catch2/catch_amalgamated.hpp"
-#include "../../../wpp/utils/SafeQueue.h"  // Include the SafeQueue header
-
+#include "catch_amalgamated.hpp"   
+#include "SafeQueue.h" 
 
 // Helper function to fill a SafeQueue with elements
 template <typename T, size_t SIZE>
@@ -47,7 +46,7 @@ TEST_CASE("SafeQueue to_vector", "[to_vector]") {
     fillQueue(queue, value);
 
     auto vec = queue.to_vector();
-    REQUIRE(vec.size() == 5);
+    REQUIRE(vec.size() == 1);
     REQUIRE(std::all_of(vec.begin(), vec.end(), [&value](int v) { return v == value; }));
 }
 

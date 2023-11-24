@@ -66,6 +66,7 @@ TEST_CASE("InstOp", "[InstOp]") {
         InstOp op3(InstOp::TYPE::DELETE | InstOp::TYPE::BLOCK1_CREATE);
 
         REQUIRE(op1.isCompatible(op2));
+        REQUIRE_FALSE(op2.isCompatible(op1));
         REQUIRE_FALSE(op1.isCompatible(op3));
     }
 

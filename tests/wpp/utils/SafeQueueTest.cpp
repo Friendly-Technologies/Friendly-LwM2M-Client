@@ -1,5 +1,5 @@
-#include "catch_amalgamated.hpp"   
-#include "SafeQueue.h" 
+#include "catch_amalgamated.hpp"
+#include "SafeQueue.h"
 
 // Helper function to fill a SafeQueue with elements
 template <typename T, size_t SIZE>

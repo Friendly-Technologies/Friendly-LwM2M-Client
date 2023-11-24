@@ -145,4 +145,52 @@ TEST_CASE("ResOp", "[ResOp]") {
                 REQUIRE(op.getFlags() == 64);
     }
 
+    SECTION("isCompatible Function") {
+        ResOp op1(ResOp::TYPE::NONE        | ResOp::TYPE::WRITE);
+        ResOp op2(ResOp::TYPE::WRITE       | ResOp::TYPE::EXECUTE);
+        ResOp op3(ResOp::TYPE::DISCOVER    | ResOp::TYPE::DELETE);
+
+        REQUIRE(op1.isCompatible(op2));
+        REQUIRE_FALSE(op2.isCompatible(op1));
+        REQUIRE_FALSE(op1.isCompatible(op3) | op2.isCompatible(op3));
+    }
+
+    SECTION("asVector Function") {
+        ResOp op(
+            ResOp::TYPE::NONE           |
+            ResOp::TYPE::READ           |
+            ResOp::TYPE::WRITE          |
+            ResOp::TYPE::EXECUTE        |
+            ResOp::TYPE::DISCOVER       |
+            ResOp::TYPE::DELETE         |
+            ResOp::TYPE::BLOCK_EXECUTE  |
+            ResOp::TYPE::BLOCK_WRITE);
+        std::vector<ResOp::TYPE> result = op.asVector();
+
+        REQUIRE(result.size() == 9);
+        REQUIRE(result[0] == ResOp::TYPE::READ);
+        REQUIRE(result[1] == ResOp::TYPE::WRITE_UPD);
+        REQUIRE(result[2] == ResOp::TYPE::WRITE_REPLACE_RES);
+        REQUIRE(result[3] == ResOp::TYPE::WRITE_REPLACE_INST);
+        REQUIRE(result[4] == ResOp::TYPE::EXECUTE);
+        REQUIRE(result[5] == ResOp::TYPE::DISCOVER);
+        REQUIRE(result[6] == ResOp::TYPE::DELETE);
+        REQUIRE(result[7] == ResOp::TYPE::BLOCK_WRITE);
+        REQUIRE(result[8] == ResOp::TYPE::BLOCK_EXECUTE);
+    }
+
+    SECTION("asVector2 Function") {
+        ResOp op(
+            ResOp::TYPE::READ               |
+            ResOp::TYPE::WRITE_UPD          |
+            ResOp::TYPE::WRITE_REPLACE_INST |
+            ResOp::TYPE::BLOCK_WRITE);
+        std::vector<ResOp::TYPE> result = op.asVector();
+
+        REQUIRE(result.size() == 4);
+        REQUIRE(result[0] == ResOp::TYPE::READ);
+        REQUIRE(result[1] == ResOp::TYPE::WRITE_UPD);
+        REQUIRE(result[2] == ResOp::TYPE::WRITE_REPLACE_INST);
+        REQUIRE(result[3] == ResOp::TYPE::BLOCK_WRITE);
+    }
 }

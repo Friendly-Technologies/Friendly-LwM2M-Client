@@ -30,7 +30,7 @@ namespace wpp {
  * more abstract methods with algorithm encapsulation, it is not important. It is important
  * that the developer is responsible for notifying the core about resource changes, if the value
  * of any of the resources changes bypassing the Instance::get()/set() methods, then the developer
- * must immediately call the method WppClient::notifyValueChanged() or the one that encapsulates
+ * must immediately call the method WppClient::notifyServerResChanged() or the one that encapsulates
  * this call. It is necessary to notify about the change for all resources except those marked as EXECUTE.
  * 
  * @note From server side, empty resource == undefined resource.
@@ -111,9 +111,9 @@ public:
 
 protected: /* Interface that can be used by derived class */
 	/**
- 	 * @brief Notify core about resource value change.
+ 	 * @brief Notify server about resource value change.
 	 */
-	void notifyValueChanged(const ResLink &resId);
+	void notifyServerResChanged(const ResLink &resId);
 	/**
  	 * @brief This method return list with resources that has been instantiated.
 	 * If resources does not exist then return empty list.
@@ -202,7 +202,7 @@ bool Instance::set(const ResLink &resId, const T &value)  {
 
 	const ResLink &link = res->isMultiple()? resId : ResLink {resId.resId,};
 	userOperationNotifier(ResOp::WRITE_UPD, link);
-	notifyValueChanged(link);
+	notifyServerResChanged(link);
 
 	return true;
 }
@@ -223,7 +223,7 @@ bool Instance::setMove(const ResLink &resId, const T &value) {
 
 	const ResLink &link = res->isMultiple()? resId : ResLink {resId.resId,};
 	userOperationNotifier(ResOp::WRITE_UPD, link);
-	notifyValueChanged(link);
+	notifyServerResChanged(link);
 
 	return true;
 }

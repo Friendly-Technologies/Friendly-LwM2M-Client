@@ -154,9 +154,9 @@ void FirmwareUpdate::userOperationNotifier(ResOp::TYPE type, const ResLink &resI
 			switch (state) {
 			case S_IDLE:
 				resource(PACKAGE_0)->set(OPAQUE_T());
-				notifyValueChanged({PACKAGE_0,});
+				notifyServerResChanged({PACKAGE_0,});
 				resource(PACKAGE_URI_1)->set(STRING_T(""));
-				notifyValueChanged({PACKAGE_URI_1,});
+				notifyServerResChanged({PACKAGE_URI_1,});
 				changeUpdRes(R_INITIAL);
 				break;
 			case S_DOWNLOADED:
@@ -203,9 +203,9 @@ void FirmwareUpdate::userOperationNotifier(ResOp::TYPE type, const ResLink &resI
 			case R_UNSUPPORTED_PROTOCOL:
 			case R_FW_UPD_CANCELLED: {
 				resource(PACKAGE_0)->set(OPAQUE_T());
-				notifyValueChanged({PACKAGE_0,});
+				notifyServerResChanged({PACKAGE_0,});
 				resource(PACKAGE_URI_1)->set(STRING_T(""));
-				notifyValueChanged({PACKAGE_URI_1,});
+				notifyServerResChanged({PACKAGE_URI_1,});
 				changeState(S_IDLE);
 			}
 			default: break;
@@ -281,14 +281,14 @@ void FirmwareUpdate::resourcesInit() {
 		return false;
 	});
 	resource(PACKAGE_URI_1)->set(STRING_T(""));
-	resource(PACKAGE_URI_1)->setDataVerifier((VERIFY_STRING_T)[this](const STRING_T& value) { return this->isUriValid(value); });
+	resource(PACKAGE_URI_1)->setDataVerifier((VERIFY_STRING_T)[this](const STRING_T& value) { return isUriValid(value); });
 	resource(UPDATE_2)->set((EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
 	resource(STATE_3)->set(INT_T(S_IDLE));
 	resource(STATE_3)->setDataVerifier((VERIFY_INT_T)[this](const INT_T& value) { 
-		if (!this->isNewStateValid(State(value))) return false;
+		if (!isNewStateValid(State(value))) return false;
 		#if RES_5_12
-		this->resource(LAST_STATE_CHANGE_TIME_12)->set((TIME_T)WppPlatform::getTime());
-		this->notifyValueChanged({LAST_STATE_CHANGE_TIME_12,});
+		resource(LAST_STATE_CHANGE_TIME_12)->set((TIME_T)WppPlatform::getTime());
+		notifyServerResChanged({LAST_STATE_CHANGE_TIME_12,});
 		#endif
 		return true;
 	});
@@ -298,7 +298,7 @@ void FirmwareUpdate::resourcesInit() {
 		#if RES_5_13
 		if (value == R_FW_UPD_DEFERRED) {
 			UINT_T deferPeriod;
-			this->resource(MAXIMUM_DEFER_PERIOD_13)->get(deferPeriod);
+			resource(MAXIMUM_DEFER_PERIOD_13)->get(deferPeriod);
 			if (deferPeriod == DEFER_NOT_ALLWED) return false;
 		}
 		#else
@@ -337,19 +337,19 @@ void FirmwareUpdate::resourcesInit() {
 /* --------------- Code_cpp block 11 start --------------- */
 void FirmwareUpdate::changeUpdRes(UpdRes res) {
 	resource(UPDATE_RESULT_5)->set(INT_T(res));
-	notifyValueChanged({UPDATE_RESULT_5,});
+	notifyServerResChanged({UPDATE_RESULT_5,});
 }
 
 void FirmwareUpdate::changeState(State state) {
 	resource(STATE_3)->set(INT_T(state));
-	notifyValueChanged({STATE_3,});
+	notifyServerResChanged({STATE_3,});
 }
 
 void FirmwareUpdate::resetStateMachine() {
 	resource(PACKAGE_0)->set(OPAQUE_T());
-	notifyValueChanged({PACKAGE_0,});
+	notifyServerResChanged({PACKAGE_0,});
 	resource(PACKAGE_URI_1)->set(STRING_T(""));
-	notifyValueChanged({PACKAGE_URI_1,});
+	notifyServerResChanged({PACKAGE_URI_1,});
 	changeState(S_IDLE);
 	changeUpdRes(R_INITIAL);
 }

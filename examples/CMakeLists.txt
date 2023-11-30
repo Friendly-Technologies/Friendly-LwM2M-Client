@@ -1,5 +1,5 @@
 # Project's name
-project(WakaamaPlusTest CXX)
+project(WakaamaPlusExample CXX)
 
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 17)
@@ -48,33 +48,33 @@ if (OBJ_O_5_FIRMWARE_UPDATE_V11)
     add_subdirectory(FirmwareUpdate)
 endif()
 
-# message(STATUS "WakaamaPlusTest:INCLUDES: ${INCLUDES}")
-# message(STATUS "WakaamaPlusTest:SOURCES: ${SOURCES}")
-# message(STATUS "WakaamaPlusTest:COMPILE_DEFINITIONS: ${COMPILE_DEFINITIONS}")
+# message(STATUS "WakaamaPlusExample:INCLUDES: ${INCLUDES}")
+# message(STATUS "WakaamaPlusExample:SOURCES: ${SOURCES}")
+# message(STATUS "WakaamaPlusExample:COMPILE_DEFINITIONS: ${COMPILE_DEFINITIONS}")
 
-add_executable(WakaamaPlusTest ${SOURCES})
+add_executable(WakaamaPlusExample ${SOURCES})
 # List of directories that will be set for compiler with key -I
-target_include_directories(WakaamaPlusTest PUBLIC ${INCLUDES})
+target_include_directories(WakaamaPlusExample PUBLIC ${INCLUDES})
 # List of preprocessor defines that will be set for compiler with key -D
-target_compile_definitions(WakaamaPlusTest PUBLIC ${COMPILE_DEFINITIONS})
+target_compile_definitions(WakaamaPlusExample PUBLIC ${COMPILE_DEFINITIONS})
 
 # Link with Wpp library
-target_link_libraries(WakaamaPlusTest Wpp pthread)
+target_link_libraries(WakaamaPlusExample Wpp pthread)
 # Add tiny dtls src
 if (WITH_UDP_DTLS)
     include(../2305-Wakaama/examples/shared/tinydtls.cmake)
-    target_sources_tinydtls(WakaamaPlusTest)
+    target_sources_tinydtls(WakaamaPlusExample)
 endif()
 
 # Generate a .bin file 
-add_custom_command(TARGET WakaamaPlusTest POST_BUILD
-                   COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:WakaamaPlusTest> $<TARGET_FILE_DIR:WakaamaPlusTest>/WakaamaPlusTest.bin
+add_custom_command(TARGET WakaamaPlusExample POST_BUILD
+                   COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:WakaamaPlusExample> $<TARGET_FILE_DIR:WakaamaPlusExample>/WakaamaPlusExample.bin
                    COMMENT "Creating binary file")
 # Generate a .hex file 
-add_custom_command(TARGET WakaamaPlusTest POST_BUILD
-                   COMMAND ${CMAKE_OBJCOPY} -O ihex $<TARGET_FILE:WakaamaPlusTest> $<TARGET_FILE_DIR:WakaamaPlusTest>/WakaamaPlusTest.hex
+add_custom_command(TARGET WakaamaPlusExample POST_BUILD
+                   COMMAND ${CMAKE_OBJCOPY} -O ihex $<TARGET_FILE:WakaamaPlusExample> $<TARGET_FILE_DIR:WakaamaPlusExample>/WakaamaPlusExample.hex
                    COMMENT "Creating hex file")
 # Get information about size compiled program
-add_custom_command(TARGET WakaamaPlusTest POST_BUILD
-                   COMMAND size $<TARGET_FILE:WakaamaPlusTest>
+add_custom_command(TARGET WakaamaPlusExample POST_BUILD
+                   COMMAND size $<TARGET_FILE:WakaamaPlusExample>
                    COMMENT "Compiled program size")

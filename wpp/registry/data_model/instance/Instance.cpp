@@ -332,7 +332,7 @@ uint8_t Instance::createEmptyLwm2mDataArray(std::vector<Resource*> resources, lw
 	return COAP_NO_ERROR;
 }
 
-uint8_t Instance::read(int *numData, lwm2m_data_t **dataArray) {
+uint8_t Instance::readAsServer(int *numData, lwm2m_data_t **dataArray) {
 	// TODO: Read-Composite Operation for now not supported
 	bool readAllAvailableRes = *numData == 0;
 	WPP_LOGD_ARG(TAG_WPP_INST, "Read %d:%d, readAllAvailableRes: %d, numData: %d", _id.objId, _id.objInstId, readAllAvailableRes, *numData);
@@ -375,7 +375,7 @@ uint8_t Instance::read(int *numData, lwm2m_data_t **dataArray) {
 	return COAP_205_CONTENT;
 }
 
-uint8_t Instance::write(int numData, lwm2m_data_t *dataArray, lwm2m_write_type_t writeType) {
+uint8_t Instance::writeAsServer(int numData, lwm2m_data_t *dataArray, lwm2m_write_type_t writeType) {
 	// TODO: Write-Composite Operation for now not supported
 
 	// TODO: According to the documentation, optional resources can be missing when a write
@@ -417,7 +417,7 @@ uint8_t Instance::write(int numData, lwm2m_data_t *dataArray, lwm2m_write_type_t
 	return COAP_204_CHANGED;
 }
 
-uint8_t Instance::execute(ID_T resId, uint8_t * buffer, int length) {
+uint8_t Instance::executeAsServer(ID_T resId, uint8_t * buffer, int length) {
 	WPP_LOGD_ARG(TAG_WPP_INST, "Execute %d:%d:%d, buffer length: %d", _id.objId, _id.objInstId, resId, length);
 	uint8_t errCode = COAP_NO_ERROR;
 	Resource *res = getValidatedResForExecute(resId, errCode);
@@ -439,7 +439,7 @@ uint8_t Instance::execute(ID_T resId, uint8_t * buffer, int length) {
 	return execute(*this, resId, OPAQUE_T(buffer, buffer + length))? COAP_204_CHANGED : COAP_405_METHOD_NOT_ALLOWED;
 }
 
-uint8_t Instance::discover(int * numData, lwm2m_data_t ** dataArray) {
+uint8_t Instance::discoverAsServer(int * numData, lwm2m_data_t ** dataArray) {
 	bool discoverAllAvailableRes = *numData == 0;
 	WPP_LOGD_ARG(TAG_WPP_INST, "Discover %d:%d, discoverAllAvailableRes: %d, numData: %d", _id.objId, _id.objInstId, discoverAllAvailableRes, *numData);
 	if (discoverAllAvailableRes) {
@@ -481,7 +481,7 @@ uint8_t Instance::discover(int * numData, lwm2m_data_t ** dataArray) {
 }
 
 #ifdef LWM2M_RAW_BLOCK1_REQUESTS
-uint8_t Instance::blockWrite(lwm2m_uri_t * uri, lwm2m_media_type_t format, uint8_t * buffer, int length, uint32_t blockNum, uint8_t blockMore) {
+uint8_t Instance::blockWriteAsServer(lwm2m_uri_t * uri, lwm2m_media_type_t format, uint8_t * buffer, int length, uint32_t blockNum, uint8_t blockMore) {
 	WPP_LOGD_ARG(TAG_WPP_INST, "Block write parameters: %d:%d:%d:%d, format: %d, len: %d, block number: %d, blockMore %d",
 								uri->objectId, uri->instanceId, uri->resourceId, uri->resourceInstanceId, format, length, blockNum, blockMore);
 	// TODO: For now is not supported writing multiple resources or whole instance at once
@@ -523,7 +523,7 @@ uint8_t Instance::blockWrite(lwm2m_uri_t * uri, lwm2m_media_type_t format, uint8
 	return blockMore? COAP_231_CONTINUE : COAP_204_CHANGED;
 }
 
-uint8_t Instance::blockExecute(lwm2m_uri_t * uri, uint8_t * buffer, int length, uint32_t blockNum, uint8_t blockMore) {
+uint8_t Instance::blockExecuteAsServer(lwm2m_uri_t * uri, uint8_t * buffer, int length, uint32_t blockNum, uint8_t blockMore) {
 	WPP_LOGD_ARG(TAG_WPP_INST, "Block execute parameters: %d:%d:%d, len: %d, block number: %d, blockMoreL %d", uri->objectId, uri->instanceId, uri->resourceId, length, blockNum, blockMore);
 	serverBlockOperationNotifier(ResOp::BLOCK_EXECUTE, {uri->resourceId, uri->resourceInstanceId}, OPAQUE_T(buffer, buffer+length), blockNum, !blockMore);
 	return blockMore? COAP_231_CONTINUE : COAP_204_CHANGED;

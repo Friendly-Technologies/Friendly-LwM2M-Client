@@ -37,9 +37,7 @@ namespace wpp {
  */
 
 class Instance: public InstSubject {
-friend class Object;
-
-public: /* Interface that can be used by user */
+public:
 	Instance(lwm2m_context_t &context, const OBJ_LINK_T &id): _context(context), _id(id) {}
 	virtual ~Instance() {}
 
@@ -48,10 +46,10 @@ public: /* Interface that can be used by user */
 	Instance& operator=(const Instance&) = delete;
 	Instance& operator=(Instance&&) = delete;
 
+	/* ------------- User operation methods ------------- */
 	OBJ_LINK_T getLink() const { return _id; }
 	OBJ_ID getObjectID() const { return (OBJ_ID)_id.objId; }
 	ID_T getInstanceID() const { return _id.objInstId; }
-
 	/**
  	 * @brief Sets resource value
 	 */
@@ -95,6 +93,21 @@ public: /* Interface that can be used by user */
 	 * possible. Because instantiated resources must have at least one instance.
 	 */
 	bool remove(const ResLink &resId);
+
+	/* ------------- Server operation methods ------------- */
+	/**
+ 	 * @brief This methods is called by the core when the server wants to read,
+	 * write, discover, execute the value of the resource. User should not
+	 * call this methods directly.
+	 */
+	uint8_t readAsServer(int * numDataP, lwm2m_data_t ** dataArray);
+	uint8_t writeAsServer(int numData, lwm2m_data_t * dataArray, lwm2m_write_type_t writeType);
+	uint8_t executeAsServer(ID_T resId, uint8_t * buffer, int length);
+	uint8_t discoverAsServer(int * numDataP, lwm2m_data_t ** dataArray);
+	#ifdef LWM2M_RAW_BLOCK1_REQUESTS
+	uint8_t blockWriteAsServer(lwm2m_uri_t * uri, lwm2m_media_type_t format, uint8_t * buffer, int length, uint32_t blockNum, uint8_t blockMore);
+	uint8_t blockExecuteAsServer(lwm2m_uri_t * uri, uint8_t * buffer, int length, uint32_t blockNum, uint8_t blockMore);
+	#endif
 
 protected: /* Interface that can be used by derived class */
 	/**
@@ -163,15 +176,6 @@ private: /* Interface used by Object or Instance class */
 	uint8_t resourceRead(lwm2m_data_t &data, Resource &res);
 	Resource* getValidatedResForExecute(ID_T resId, uint8_t &errCode);
 	uint8_t createEmptyLwm2mDataArray(std::vector<Resource*> resources, lwm2m_data_t **dataArray, int *numData);
-	/* ------------- Server operation methods ------------- */
-	uint8_t read(int * numDataP, lwm2m_data_t ** dataArray);
-	uint8_t write(int numData, lwm2m_data_t * dataArray, lwm2m_write_type_t writeType);
-	uint8_t execute(ID_T resId, uint8_t * buffer, int length);
-	uint8_t discover(int * numDataP, lwm2m_data_t ** dataArray);
-	#ifdef LWM2M_RAW_BLOCK1_REQUESTS
-	uint8_t blockWrite(lwm2m_uri_t * uri, lwm2m_media_type_t format, uint8_t * buffer, int length, uint32_t blockNum, uint8_t blockMore);
-	uint8_t blockExecute(lwm2m_uri_t * uri, uint8_t * buffer, int length, uint32_t blockNum, uint8_t blockMore);
-	#endif
 
 protected:
 	lwm2m_context_t &_context;

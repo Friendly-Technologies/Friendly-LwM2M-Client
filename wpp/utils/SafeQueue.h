@@ -1,10 +1,14 @@
-// TODO: Add lable taht this code belongs SinaiR&D
-#ifndef INC_SAFE_QUEUE_H_
-#define INC_SAFE_QUEUE_H_
+#ifndef SAFE_QUEUE_H_
+#define SAFE_QUEUE_H_
 
 #include <string.h>
 #include <vector>
+
+#define SAFE_QUEUE_USE_STD_MUTEX	1
+
+#if SAFE_QUEUE_USE_STD_MUTEX
 #include <mutex>
+#endif
 
 #define SAFE_QUEUE_DEF_ELEM_CNT	0x01
 
@@ -12,9 +16,9 @@
  * This class is a simple implementation of a queue that does not use dynamic memory
  * and copy data to intenal buffer with memcpy.
  * The problem it solves is the following: it is necessary to have a container that
- * allows adding and removing elements independently by different streams. This
+ * allows adding and removing elements independently by different streams/ISR. This
  * container is protected from the simultaneous call of the push/pop method from
- * different threads, and allows the simultaneous call of push and pop from different
+ * the same threads, and allows the simultaneous call of push and pop from different
  * threads without internal blocking, that is, if an interruption occurred that interrupted
  * the removal process, it can easily perform addition or vice versa. For example, if
  * there is an interrupt in which you need to add an element to the queue and there is
@@ -27,10 +31,7 @@
 template <typename T, size_t SIZE>
 class SafeQueue {
 public:
-	SafeQueue() {
-		__push_guard.unlock();
-		__pop_guard.unlock();
-	}
+	SafeQueue() {}
 
 	bool push(const T * const data, size_t elements_cnt = SAFE_QUEUE_DEF_ELEM_CNT);
 	bool pop(size_t elements_cnt = SAFE_QUEUE_DEF_ELEM_CNT);
@@ -73,8 +74,10 @@ private:
 	inline bool __check_add_ability(size_t elements_cnt = SAFE_QUEUE_DEF_ELEM_CNT);
 
 private:
+	#if SAFE_QUEUE_USE_STD_MUTEX
 	std::mutex __push_guard;
 	std::mutex __pop_guard;
+	#endif
 	size_t __front_i = 0x00, __back_i = 0x00, __counter = 0x00;
 	T __buffer[SIZE];
 };
@@ -84,11 +87,15 @@ private:
 
 template <typename T, size_t SIZE>
 bool SafeQueue<T, SIZE>::push(const T * const data, size_t elements_cnt) {
+	#if SAFE_QUEUE_USE_STD_MUTEX
 	if (!__push_guard.try_lock()) return false;
+	#endif
 
 	/* Check __buffer available space */
 	if (!elements_cnt || __check_add_ability(elements_cnt) == false) {
+		#if SAFE_QUEUE_USE_STD_MUTEX
 		__push_guard.unlock();
+		#endif
 		return false;
 	}
 
@@ -98,31 +105,42 @@ bool SafeQueue<T, SIZE>::push(const T * const data, size_t elements_cnt) {
 	}
 	__counter += elements_cnt;
 
+	#if SAFE_QUEUE_USE_STD_MUTEX
 	__push_guard.unlock();
+	#endif
+
 	return true;
 }
 
 template <typename T, size_t SIZE>
 bool SafeQueue<T, SIZE>::pop(size_t elements_cnt) {
+	#if SAFE_QUEUE_USE_STD_MUTEX
 	if (!__pop_guard.try_lock()) return false;
+	#endif
 
 	/* Maybe the __buffer available elements not enough */
 	if (__check_remove_ability(elements_cnt) == false) { 
+		#if SAFE_QUEUE_USE_STD_MUTEX
 		__pop_guard.unlock();
+		#endif
 		return false;
 	}
 
 	__front_i = __get_next_front_index(elements_cnt);
 	__counter -= elements_cnt;
 
+	#if SAFE_QUEUE_USE_STD_MUTEX
 	__pop_guard.unlock();
+	#endif
 	return true;
 }
 
 template <typename T, size_t SIZE>
 std::vector<T> SafeQueue<T, SIZE>::to_vector(size_t elements_cnt) {
+	#if SAFE_QUEUE_USE_STD_MUTEX
 	std::lock_guard<std::mutex> push_guard(__push_guard);
 	std::lock_guard<std::mutex> pop_guard(__pop_guard);
+	#endif
 
 	/* Maybe the __buffer available elements not enough */
 	if (!elements_cnt || elements_cnt > size()) return std::vector<T>();
@@ -164,43 +182,61 @@ T* SafeQueue<T, SIZE>::at(size_t i) {
 
 template <typename T, size_t SIZE>
 bool SafeQueue<T, SIZE>::front(T* data) {
+	#if SAFE_QUEUE_USE_STD_MUTEX
 	if (!__pop_guard.try_lock()) return false;
+	#endif
 
 	if (!data || is_empty()) {
+		#if SAFE_QUEUE_USE_STD_MUTEX
 		__pop_guard.unlock();
+		#endif
 		return false;
 	}
 	memcpy((uint8_t *)data, (uint8_t *)(__buffer + __front_i), sizeof(T));
 
+	#if SAFE_QUEUE_USE_STD_MUTEX
 	__pop_guard.unlock();
+	#endif
 	return true;
 }
 
 template <typename T, size_t SIZE>
 bool SafeQueue<T, SIZE>::back(T* data) {
+	#if SAFE_QUEUE_USE_STD_MUTEX
 	if (!__push_guard.try_lock()) return false;
+	#endif
 
 	if (!data || is_empty()) {
+		#if SAFE_QUEUE_USE_STD_MUTEX
 		__push_guard.unlock();
+		#endif
 		return false;
 	}
 	memcpy((uint8_t *)data, (uint8_t *)(__buffer + __back_i), sizeof(T));
 
+	#if SAFE_QUEUE_USE_STD_MUTEX
 	__push_guard.unlock();
+	#endif
 	return true;
 }
 
 template <typename T, size_t SIZE>
 bool SafeQueue<T, SIZE>::at(size_t i, T* data) {
+	#if SAFE_QUEUE_USE_STD_MUTEX
 	if (!__pop_guard.try_lock()) return false;
+	#endif
 
 	if (!data || is_empty() || i >= size()) {
+		#if SAFE_QUEUE_USE_STD_MUTEX
 		__pop_guard.unlock();
+		#endif
 		return false;
 	}
 	memcpy((uint8_t *)data, (uint8_t *)(__buffer + ((__front_i + i) % SIZE)), sizeof(T));
 
+	#if SAFE_QUEUE_USE_STD_MUTEX
 	__pop_guard.unlock();
+	#endif
 	return true;
 }
 
@@ -265,4 +301,4 @@ bool SafeQueue<T, SIZE>::__check_add_ability(size_t elements_cnt) {
 	return (SIZE - size()) >= elements_cnt;
 }
 
-#endif /* INC_SAFE_QUEUE_H_ */
+#endif /* SAFE_QUEUE_H_ */

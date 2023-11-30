@@ -73,7 +73,8 @@ WppClient* WppClient::takeOwnershipBlocking() {
 
 void WppClient::giveOwnership() {
 	// WPP_LOGD(TAG_WPP_CLIENT, "Giving ownership of client instance");
-    _clientGuard.unlock();
+	_clientGuard.try_lock();
+	_clientGuard.unlock();
 }
 
 

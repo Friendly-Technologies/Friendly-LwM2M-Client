@@ -11,10 +11,7 @@ WppTaskQueue WppTaskQueue::_instance;
 std::mutex WppTaskQueue::_handleTaskGuard;
 std::mutex WppTaskQueue::_taskQueueGuard;
 
-WppTaskQueue::WppTaskQueue() {
-	_handleTaskGuard.unlock();
-	_taskQueueGuard.unlock();
-}
+WppTaskQueue::WppTaskQueue() {}
 
 WppTaskQueue::~WppTaskQueue() {
 	std::lock_guard<std::mutex> handleLock(_handleTaskGuard);

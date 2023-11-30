@@ -5,7 +5,7 @@ project(WakaamaPlusTest CXX)
 set(CMAKE_CXX_STANDARD 17)
 
 # Include file with compiler config
-include(../wpp/config/compiler_config.cmake)
+include(../wpp/configs/compiler_config.cmake)
 
 # Compiler options
 add_compile_options(

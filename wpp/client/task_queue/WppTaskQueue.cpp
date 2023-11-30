@@ -49,7 +49,7 @@ WppTaskQueue::task_id_t WppTaskQueue::addTask(ctx_t ctx, time_t delaySec, task_t
 	return newTask;
 }
 
-WppTaskQueue::task_id_t WppTaskQueue::addTaskWithCopy(ctx_t ctx, size_t size, time_t delaySec, task_t task) {
+WppTaskQueue::task_id_t WppTaskQueue::addTaskWithCopy(const ctx_t ctx, size_t size, time_t delaySec, task_t task) {
 	if (!ctx || !size || delaySec < WPP_TASK_MIN_DELAY_S || WPP_TASK_MAX_DELAY_S < delaySec) return WPP_ERR_TASK_ID;
 
 	std::lock_guard<std::mutex> lock(_taskQueueGuard);

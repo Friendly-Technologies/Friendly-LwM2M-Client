@@ -5,7 +5,7 @@ project(Wpp CXX)
 set(CMAKE_CXX_STANDARD 17)
 
 # Include file with compiler config
-include(config/compiler_config.cmake)
+include(configs/compiler_config.cmake)
 
 # Variables that will be filled in subdirectories
 set(WPP_SOURCES "")
@@ -13,8 +13,8 @@ set(WPP_INCLUDES "")
 set(WPP_DEFINITIONS "")
 
 # Include file with wpp config
-include(config/wpp_config.cmake)
-include(config/objects_config.cmake)
+include(configs/wpp_config.cmake)
+include(configs/objects_config.cmake)
 # Include file with wakaama core config
 include(../wakaama_core/WakaamaCore.cmake)
 

@@ -14,12 +14,11 @@
 
 #include "types.h"
 
-#define WPP_TASK_DEF_CTX	  NULL
-
 #define WPP_TASK_MIN_DELAY_S  (time_t)1
 #define WPP_TASK_DEF_DELAY_S  (time_t)10
 #define WPP_TASK_MAX_DELAY_S  (time_t)(0xFFFFFFF)
 
+#define WPP_TASK_DEF_CTX	  NULL
 #define WPP_ERR_TASK_ID 	  NULL
 
 namespace wpp {
@@ -44,8 +43,6 @@ class WppClient;
  * from tasks.
  */
 class WppTaskQueue {
-	friend class WppClient;
-
 public:
 	using task_id_t = void *;
 	using ctx_t = void *;
@@ -100,9 +97,11 @@ public:
 	 * Add task to queue, ctx passed to task by pointer without copy.
 	 *
 	 * @val ctx - User data ptr that will be passed to task, without coping.
+	 * 			  User must guarantee the validity of the context during the
+	 * 			  entire existence of the task.
 	 * @val delaySec - Min time after which task will be run first time, and 
-	 * 			    time beatween next calls of this task while it returns false.
-	 * 				Minimum value is WPP_TASK_MIN_DELAY_S, max value is WPP_TASK_MAX_DELAY_S.
+	 * 			       time beatween next calls of this task while it returns false.
+	 * 				   Minimum value is WPP_TASK_MIN_DELAY_S, max value is WPP_TASK_MAX_DELAY_S.
 	 * @val task - Task for execute, while task returns false it will be called
 	 * 			   with specified delay, after returning true task deleted from
 	 * 			   queue.
@@ -117,17 +116,20 @@ public:
 	 * @val ctx - Ptr to user data that will be copied and passed to task.
 	 * @val size - User data size that will be copied.
 	 * @val delaySec - Min time after which task will be run first time, and 
-	 * 			    time beatween next calls of this task while it returns false.
-	 * 				Minimum value is WPP_TASK_MIN_DELAY_S, max value is WPP_TASK_MAX_DELAY_S.
+	 * 			       time beatween next calls of this task while it returns false.
+	 * 				   Minimum value is WPP_TASK_MIN_DELAY_S, max value is WPP_TASK_MAX_DELAY_S.
 	 * @val task - Task for execute, while task returns false it will be called,
 	 * 			   with specified delay,after returning true task deleted from
 	 * 			   the queue, and relese allocated memory for ctx.
 	 * @return id of created task or WPP_ERR_TASK_ID
 	 */
-	static task_id_t addTaskWithCopy(ctx_t ctx, size_t size, time_t delaySec, task_t task);
+	static task_id_t addTaskWithCopy(const ctx_t ctx, size_t size, time_t delaySec, task_t task);
 
 	/**
 	 * Returns count of tasks in the queue.
+	 * Tasks count does not immediately updated 
+	 * after request to remove task.
+	 * 
 	 */
 	static size_t getTaskCnt();
 
@@ -179,9 +181,7 @@ public:
 	 */
 	static void requestToRemoveEachTask();
 
-private:
 	/**
-	 * 
 	 * Execute each task in the queue and delete it from queue if task returns false 
 	 * or task state is SHOULD_BE_DELETED.
 	 * @return time in sec to next task execution, if tasks are not exist then returns
@@ -189,6 +189,7 @@ private:
 	 */
 	static time_t handleEachTask(WppClient& clien);
 
+private:
 	/**
 	 * Deletes from list task with state SHOULD_BE_DELETED.
 	 */

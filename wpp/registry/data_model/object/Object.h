@@ -18,10 +18,12 @@
 
 namespace wpp {
 
-/*
- * Object<T> is class that implements manipulation with Instance interface class and his inheritors.
+/**
+ * @class Object
+ * @brief The Object class implements manipulation with Instance interface class and its inheritors.
+ * 
  * The main target of this class is to encapsulate operations like instance create and delete, binding
- * instance callbacks to core interface, for avoid multiple definition of this mechanism in instance
+ * instance callbacks to the core interface, to avoid multiple definitions of this mechanism in instance
  * implementation classes.
  */
 class Object : public ObjSubject {
@@ -32,45 +34,240 @@ private:
 	Object& operator=(Object&&) = delete;
 
 public:
-    Object(lwm2m_context_t &context, const ObjectInfo &info);
+	/**
+	 * @brief Constructs an Object instance.
+	 * 
+	 * @param context The lwm2m_context_t object.
+	 * @param info The ObjectInfo object.
+	 */
+	Object(lwm2m_context_t &context, const ObjectInfo &info);
+
+	/**
+	 * @brief Destroys the Object instance.
+	 */
 	virtual ~Object();
 
-    /* ------------- Object management ------------- */
-    OBJ_ID getObjectID() const;
+	/* ------------- Object management ------------- */
+
+	/**
+	 * @brief Gets the object ID.
+	 * 
+	 * @return The object ID.
+	 */
+	OBJ_ID getObjectID() const;
+
+	/**
+	 * @brief Gets the object information.
+	 * 
+	 * @return The ObjectInfo object.
+	 */
 	const ObjectInfo& getObjectInfo() const;
+
+	/**
+	 * @brief Gets the lwm2m_object_t object.
+	 * 
+	 * @return The lwm2m_object_t object.
+	 */
 	lwm2m_object_t& getLwm2mObject();
-    void clear();
+
+	/**
+	 * @brief Clears the object.
+	 */
+	void clear();
+
+	/**
+	 * @brief Restores the object.
+	 */
 	void restore();
 
-    /* ------------- Object instance management ------------- */
+	/* ------------- Object instance management ------------- */
+
+	/**
+	 * @brief Creates an instance of the object.
+	 * 
+	 * @param instanceID The instance ID.
+	 * @return A pointer to the created Instance object.
+	 */
 	virtual Instance* createInstance(ID_T instanceID = ID_T_MAX_VAL) = 0;
+
+	/**
+	 * @brief Removes an instance of the object.
+	 * 
+	 * @param instanceID The instance ID.
+	 * @return True if the instance was successfully removed, false otherwise.
+	 */
 	bool removeInstance(ID_T instanceID);
+
+	/**
+	 * @brief Gets an instance of the object.
+	 * 
+	 * @param instanceID The instance ID.
+	 * @return A pointer to the Instance object.
+	 */
 	Instance* instance(ID_T instanceID = 0);
-	const std::vector<Instance*> & getInstances();
-    size_t instanceCnt();
+
+	/**
+	 * @brief Gets all instances of the object.
+	 * 
+	 * @return A vector of pointers to the Instance objects.
+	 */
+	const std::vector<Instance*>& getInstances();
+
+	/**
+	 * @brief Gets the number of instances of the object.
+	 * 
+	 * @return The number of instances.
+	 */
+	size_t instanceCnt();
+
+	/**
+	 * @brief Checks if an instance exists.
+	 * 
+	 * @param instanceID The instance ID.
+	 * @return True if the instance exists, false otherwise.
+	 */
 	bool isInstanceExist(ID_T instanceID);
 
 protected:
+	/**
+	 * @brief Gets the iterator to the instance.
+	 * 
+	 * @param instanceID The instance ID.
+	 * @return The iterator to the instance.
+	 */
 	std::vector<Instance*>::iterator getInstIter(ID_T instanceID);
+
+	/**
+	 * @brief Gets the first available instance ID.
+	 * 
+	 * @return The first available instance ID.
+	 */
 	ID_T getFirstAvailableInstanceID();
 
-    /* ------------- Lwm2m core callback ------------- */
+	/* ------------- Lwm2m core callback ------------- */
+
+	/**
+	 * @brief The read callback function for the Lwm2m core.
+	 * 
+	 * @param contextP The lwm2m_context_t object.
+	 * @param instanceId The instance ID.
+	 * @param numDataP The number of data.
+	 * @param dataArrayP The data array.
+	 * @param objectP The lwm2m_object_t object.
+	 * @return The result of the read operation.
+	 */
 	static uint8_t read_clb(lwm2m_context_t * contextP, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP);
+
+	/**
+	 * @brief The write callback function for the Lwm2m core.
+	 * 
+	 * @param contextP The lwm2m_context_t object.
+	 * @param instanceId The instance ID.
+	 * @param numData The number of data.
+	 * @param dataArray The data array.
+	 * @param objectP The lwm2m_object_t object.
+	 * @param writeType The write type.
+	 * @return The result of the write operation.
+	 */
 	static uint8_t write_clb(lwm2m_context_t * contextP, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP, lwm2m_write_type_t writeType);
+
+	/**
+	 * @brief The execute callback function for the Lwm2m core.
+	 * 
+	 * @param contextP The lwm2m_context_t object.
+	 * @param instanceId The instance ID.
+	 * @param resId The resource ID.
+	 * @param buffer The buffer.
+	 * @param length The length.
+	 * @param objectP The lwm2m_object_t object.
+	 * @return The result of the execute operation.
+	 */
 	static uint8_t execute_clb(lwm2m_context_t * contextP, ID_T instanceId, ID_T resId, uint8_t * buffer, int length, lwm2m_object_t * objectP);
+
+	/**
+	 * @brief The discover callback function for the Lwm2m core.
+	 * 
+	 * @param contextP The lwm2m_context_t object.
+	 * @param instanceId The instance ID.
+	 * @param numDataP The number of data.
+	 * @param dataArrayP The data array.
+	 * @param objectP The lwm2m_object_t object.
+	 * @return The result of the discover operation.
+	 */
 	static uint8_t discover_clb(lwm2m_context_t * contextP, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP);
+
+	/**
+	 * @brief The create callback function for the Lwm2m core.
+	 * 
+	 * @param contextP The lwm2m_context_t object.
+	 * @param instanceId The instance ID.
+	 * @param numData The number of data.
+	 * @param dataArray The data array.
+	 * @param objectP The lwm2m_object_t object.
+	 * @return The result of the create operation.
+	 */
 	static uint8_t create_clb(lwm2m_context_t * contextP, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP);
+
+	/**
+	 * @brief The delete callback function for the Lwm2m core.
+	 * 
+	 * @param contextP The lwm2m_context_t object.
+	 * @param instanceId The instance ID.
+	 * @param objectP The lwm2m_object_t object.
+	 * @return The result of the delete operation.
+	 */
 	static uint8_t delete_clb(lwm2m_context_t * contextP, ID_T instanceId, lwm2m_object_t * objectP);
+
 #ifdef LWM2M_RAW_BLOCK1_REQUESTS
+	/**
+	 * @brief The block create callback function for the Lwm2m core.
+	 * 
+	 * @param contextP The lwm2m_context_t object.
+	 * @param uriP The lwm2m_uri_t object.
+	 * @param format The media type format.
+	 * @param buffer The buffer.
+	 * @param length The length.
+	 * @param objectP The lwm2m_object_t object.
+	 * @param block_num The block number.
+	 * @param block_more The block more flag.
+	 * @return The result of the block create operation.
+	 */
 	static uint8_t blockCcreate_clb(lwm2m_context_t * contextP, lwm2m_uri_t * uriP, lwm2m_media_type_t format, uint8_t * buffer, int length, lwm2m_object_t * objectP, uint32_t block_num, uint8_t block_more);
+
+	/**
+	 * @brief The block write callback function for the Lwm2m core.
+	 * 
+	 * @param contextP The lwm2m_context_t object.
+	 * @param uriP The lwm2m_uri_t object.
+	 * @param format The media type format.
+	 * @param buffer The buffer.
+	 * @param length The length.
+	 * @param objectP The lwm2m_object_t object.
+	 * @param block_num The block number.
+	 * @param block_more The block more flag.
+	 * @return The result of the block write operation.
+	 */
 	static uint8_t blockWrite_clb(lwm2m_context_t * contextP, lwm2m_uri_t * uriP, lwm2m_media_type_t format, uint8_t * buffer, int length, lwm2m_object_t * objectP, uint32_t block_num, uint8_t block_more);
+
+	/**
+	 * @brief The block execute callback function for the Lwm2m core.
+	 * 
+	 * @param contextP The lwm2m_context_t object.
+	 * @param uriP The lwm2m_uri_t object.
+	 * @param buffer The buffer.
+	 * @param length The length.
+	 * @param objectP The lwm2m_object_t object.
+	 * @param block_num The block number.
+	 * @param block_more The block more flag.
+	 * @return The result of the block execute operation.
+	 */
 	static uint8_t blockExecute_clb(lwm2m_context_t * contextP, lwm2m_uri_t * uriP, uint8_t * buffer, int length, lwm2m_object_t * objectP, uint32_t block_num, uint8_t block_more);
 #endif
 
 protected:
 	std::vector<Instance*> _instances;
 	lwm2m_context_t &_context;
-    lwm2m_object_t _lwm2m_object;
+	lwm2m_object_t _lwm2m_object;
 	ObjectInfo _objInfo;
 };
 

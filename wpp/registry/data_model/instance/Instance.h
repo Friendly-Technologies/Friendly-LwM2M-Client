@@ -17,8 +17,9 @@
 #include "InstSubject.h"
 
 namespace wpp {
-/*
- * Instance is interface class that implements manipulation with derived class resources.
+
+/**
+ * @brief Instance is interface class that implements manipulation with derived class resources.
  * The main target of this class is to encapsulate operations like resource write and read by core, for avoid
  * multiple definition of this mechanism in instance implementation classes. And give generalised
  * interface to resources for core(server).
@@ -32,8 +33,9 @@ namespace wpp {
  * must immediately call the method WppClient::notifyValueChanged() or the one that encapsulates
  * this call. It is necessary to notify about the change for all resources except those marked as EXECUTE.
  * 
- * Note: From server side, empty resource == undefined resource.
+ * @note From server side, empty resource == undefined resource.
  */
+
 class Instance: public InstSubject {
 friend class Object;
 
@@ -50,36 +52,36 @@ public: /* Interface that can be used by user */
 	OBJ_ID getObjectID() const { return (OBJ_ID)_id.objId; }
 	ID_T getInstanceID() const { return _id.objInstId; }
 
-	/*
-	 * Sets resource value
+	/**
+ 	 * @brief Sets resource value
 	 */
 	template<typename T>
 	bool set(ID_T resId, const T &value);
 	template<typename T>
 	bool set(const ResLink &resId, const T &value);
-	/*
-	 * Sets resource value by moving user data to resource to avoid extra copy
+	/**
+ 	 * @brief Sets resource value by moving user data to resource to avoid extra copy
 	 */
 	template<typename T>
 	bool setMove(ID_T resId, const T &value);
 	template<typename T>
 	bool setMove(const ResLink &resId, const T &value);
-	/*
-	 * Returns copy of resource value
+	/**
+ 	 * @brief Returns copy of resource value
 	 */
 	template<typename T>
 	bool get(ID_T resId, T &value);
 	template<typename T>
 	bool get(const ResLink &resId, T &value);
-	/*
-	 * Returns const ptr to resource data for avoid extra copy
+	/**
+ 	 * @brief Returns const ptr to resource data for avoid extra copy
 	 */
 	template<typename T>
 	bool getPtr(ID_T resId, const T **value);
 	template<typename T>
 	bool getPtr(const ResLink &resId, const T **value);
-	/*
-	 * It is quite dangerous to leave a resource without instances,
+	/**
+ 	 * @brief It is quite dangerous to leave a resource without instances,
 	 * because when the server tries to read its value, the server
 	 * will not receive anything if the resource is SINGLE, but if
 	 * the resource is MANDATORY, then it will generally lead to
@@ -87,38 +89,38 @@ public: /* Interface that can be used by user */
 	 * set the value of the resource.
 	 */
 	bool clear(ID_T resId);
-	/*
-	 * Remove resource instance if resource is multiple and instance exists,
+	/**
+ 	 * @brief Remove resource instance if resource is multiple and instance exists,
 	 * if the resource is SINGLE or it has the last instance remove is not
 	 * possible. Because instantiated resources must have at least one instance.
 	 */
 	bool remove(const ResLink &resId);
 
 protected: /* Interface that can be used by derived class */
-	/*
-	 * Notify core about resource value change.
+	/**
+ 	 * @brief Notify core about resource value change.
 	 */
 	void notifyValueChanged(const ResLink &resId);
-	/*
-	 * This method return list with resources that has been instantiated.
+	/**
+ 	 * @brief This method return list with resources that has been instantiated.
 	 * If resources does not exist then return empty list.
 	 */
 	std::vector<Resource *> getInstantiatedResList();
 	std::vector<Resource *> getInstantiatedResList(const ResOp& filter);
-	/*
-	 * This method return iterator for resource if it exists.
+	/**
+ 	 * @brief This method return iterator for resource if it exists.
 	 * If resources does not exist then return empty list.
 	 */
 	std::vector<Resource>::iterator resource(ID_T resId);
 
 protected: /* Interface that must be implemented by derived class */
-	/*
-	 * This method must be implemented by derived class.
+	/**
+ 	 * @brief This method must be implemented by derived class.
 	 * Reset all resources values and internal state to default.
 	 */
 	virtual void setDefaultState() = 0;
-	/*
-	 * This method must be implemented by the derived class, and handle
+	/**
+ 	 * @brief This method must be implemented by the derived class, and handle
 	 * information about resource operation (READ, WRITE_UPD, WRITE_REPLACE_INST,
 	 * WRITE_REPLACE_RES, EXECUTE, DISCOVER). Called by Instance after 
 	 * resource operation performed by SERVER if the operation is  
@@ -126,15 +128,15 @@ protected: /* Interface that must be implemented by derived class */
 	 * if the operation is EXECUTE then called before this operation.
 	 */
 	virtual void serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) = 0;
-	/*
-	 * This method must be implemented by the derived class, and handle
+	/**
+ 	 * @brief This method must be implemented by the derived class, and handle
      * information about resource operation (READ, WRITE_UPD, DELETE).
 	 * Called by Instance after resource operation performed by the USER.
 	 */
 	virtual void userOperationNotifier(ResOp::TYPE type, const ResLink &resId) = 0;
 	#ifdef LWM2M_RAW_BLOCK1_REQUESTS
-	/*
-	 * This method must be implemented by the derived class, and handle
+	/**
+ 	 * @brief This method must be implemented by the derived class, and handle
 	 * information about resource block operation (BLOCK_WRITE, BLOCK_EXECUTE).
 	 * During block operation resource value is not changed, instead user
 	 * dirrectly handle block data. Also, the EXECUTE_T resource is not
@@ -146,10 +148,10 @@ protected: /* Interface that must be implemented by derived class */
 	virtual void serverBlockOperationNotifier(ResOp::TYPE type, const ResLink &resId, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock);
 	#endif
 
-private: /* Interface used by Object<T> or Instance class */
+private: /* Interface used by Object or Instance class */
 	/* ------------- Compatibility with core data structure ------------- */
-	/*
-	 * This methods can be used for convert resource to lwm2m_data_t
+	/**
+ 	 * @brief This methods can be used for convert resource to lwm2m_data_t
 	 * structure representation, or fill resource with lwm2m_data_t data.
 	 */
 	bool resourceToLwm2mData(Resource &res, ID_T instanceId, lwm2m_data_t &data);
@@ -179,8 +181,8 @@ protected:
 };
 
 /* ---------- Implementation of template methods ----------*/
-/*
- * Sets resource value
+/**
+ * @brief Sets resource value
  */
 template<typename T>
 bool Instance::set(ID_T resId, const T &value) { 
@@ -201,8 +203,8 @@ bool Instance::set(const ResLink &resId, const T &value)  {
 	return true;
 }
 
-/*
- * Sets resource value by moving user data to resource to avoid extra copy
+/**
+ * @brief Sets resource value by moving user data to resource to avoid extra copy
  */
 template<typename T>
 bool Instance::setMove(ID_T resId, const T &value) {
@@ -222,8 +224,8 @@ bool Instance::setMove(const ResLink &resId, const T &value) {
 	return true;
 }
 
-/*
- * Returns copy of resource value
+/**
+ * @brief Returns copy of resource value
  */
 template<typename T>
 bool Instance::get(ID_T resId, T &value) {
@@ -243,8 +245,8 @@ bool Instance::get(const ResLink &resId, T &value) {
 	return true;
 }
 
-/*
- * Returns const ptr to resource data for avoid extra copy
+/**
+ * @brief Returns const ptr to resource data for avoid extra copy
  */
 template<typename T>
 bool Instance::getPtr(ID_T resId, const T **value) {

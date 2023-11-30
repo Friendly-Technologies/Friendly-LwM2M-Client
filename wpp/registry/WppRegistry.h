@@ -38,7 +38,17 @@
 /* ---------- Optional objects include block end ---------- */
 
 namespace wpp {
+
 // TODO: Split mandatory and optional registers
+/**
+ * @brief The WppRegistry class represents a registry for managing LWM2M objects.
+ * 
+ * This class provides functionality to register, deregister, and access LWM2M objects.
+ * It also allows checking if an object is registered or exists in the registry.
+ * The registry can contain both mandatory and optional objects.
+ * 
+ * @note This class is not copyable or movable.
+ */
 class WppRegistry {
 public:
 	WppRegistry(lwm2m_context_t &context);
@@ -49,11 +59,44 @@ public:
 	WppRegistry& operator=(const WppRegistry&) = delete;
 	WppRegistry& operator=(WppRegistry&&) = delete;
 
+	/**
+	 * @brief Registers an Object in the registry.
+	 *
+	 * @param object The Object to register.
+	 * @return True if the registration is successful, false otherwise.
+	 */
 	bool registerObj(Object &object);
+
+	/**
+	 * @brief Deregisters an Object from the registry.
+	 *
+	 * @param object The Object to deregister.
+	 * @return True if the deregistration is successful, false otherwise.
+	 */
 	bool deregisterObj(Object &object);
+
+	/**
+	 * @brief Checks if an Object is registered in the registry.
+	 *
+	 * @param object The Object to check.
+	 * @return True if the Object is registered, false otherwise.
+	 */
 	bool isObjRegistered(Object &object);
+
+	/**
+	 * @brief Checks if an Object with the given objId exists in the registry.
+	 *
+	 * @param objId The ID of the Object to check.
+	 * @return True if the Object exists, false otherwise.
+	 */
 	bool isObjExist(OBJ_ID objId);
 
+	/**
+	 * @brief Retrieves a pointer to the Object with the given objId.
+	 *
+	 * @param objId The ID of the Object to retrieve.
+	 * @return A pointer to the Object if found, nullptr otherwise.
+	 */
 	Object *object(OBJ_ID objId);
 
 	/* ---------- Mandatory objects prototype block begin ---------- */

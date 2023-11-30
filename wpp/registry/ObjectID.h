@@ -5,6 +5,12 @@
 
 namespace wpp {
 
+/**
+ * @brief Enumeration of object IDs in the WakaamaPlus library.
+ * 
+ * This enumeration represents the object IDs used in the WakaamaPlus library.
+ * It includes both mandatory and optional object IDs.
+ */
 enum class OBJ_ID: ID_T {
 	/* ---------- Mandatory objects ID block begin ---------- */
 	#ifdef OBJ_M_3_DEVICE_V12
@@ -19,8 +25,6 @@ enum class OBJ_ID: ID_T {
 	/* ---------- Mandatory objects ID block end ---------- */
 
 	/* ---------- Optional objects ID block begin ---------- */
-	ACL = 2,
-	FIRMWARE_UPD = 5,
 	#ifdef OBJ_O_4_CONNECTIVITY_MONITORING_V13
 	CONNECTIVITY_MONITORING = 4,
 	#endif

@@ -29,11 +29,10 @@
  */
 namespace wpp {
 
+class WppClient;
 class Lwm2mSecurity;
 
 class WppConnection {
-	friend class WppClient;
-	
 public:
 	using SESSION_T = void*;
 
@@ -142,16 +141,15 @@ public:
 	 */
 	uint16_t getDataBlockSize();
 
-private:
 	/**
 	 * @brief Processes the packets in the packet queue.
 	 * 
-	 * This method is called by the ownershiped WppClient in its loop() method if the packet queue contains at least one packet.
+	 * This method is called by the WppClient in its loop() method if the packet queue contains at least one packet.
 	 * It processes all the packets found in the queue. If an error occurs during the processing of a packet, it is deleted.
 	 * 
-	 * @param context The lwm2m_context_t object used for packet processing.
+	 * @param client The WppClient object used for packet processing.
 	 */
-	void handlePacketsInQueue(lwm2m_context_t &context);
+	void handlePacketsInQueue(WppClient &client);
 
 private:
 	SafeQueue<Packet, WPP_CONN_I_PACKETS_QUEUE_SIZE> packets;

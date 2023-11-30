@@ -116,6 +116,12 @@ public:
 	lwm2m_client_state_t getState();
 
 	/**
+	 * @brief Gets the LwM2M context associated with the WppClient.
+	 * @return The LwM2M context object.
+	 */
+	lwm2m_context_t & getContext();
+
+	/**
 	 * @brief Processes the state of the Wakaama core.
 	 * This function performs the necessary work by the Wakaama core, such as (re)sending packets,
 	 * handles received packets from servers, and created tasks.
@@ -156,12 +162,6 @@ private:
 	 * @brief Closes the LwM2M context.
 	 */
 	void lwm2mContextClose();
-
-	/**
-	 * @brief Gets the LwM2M context associated with the WppClient.
-	 * @return The LwM2M context object.
-	 */
-	lwm2m_context_t & getContext();
 
 	/**
 	 * @brief Configures the LwM2M client with the specified endpoint name, MSISDN, and alternative path.

@@ -92,13 +92,17 @@ lwm2m_client_state_t WppClient::getState() {
 	return _lwm2m_context->state;
 }
 
+lwm2m_context_t & WppClient::getContext() {
+	return *_lwm2m_context;
+}
+
 time_t WppClient::loop() {
 	// Max sleep time
 	time_t sleepTimeSec = _maxSleepTimeSec;
 
 	WPP_LOGD(TAG_WPP_CLIENT, "Handling server packets if they exists");
 	// Handles packets retreived from server
-	if (connection().getPacketQueueSize()) connection().handlePacketsInQueue(getContext());
+	if (connection().getPacketQueueSize()) connection().handlePacketsInQueue(*this);
 
 	WPP_LOGD(TAG_WPP_CLIENT, "Handling wpp tasks if they exists");
 	// Handles Wpp tasks in the WppClient context and return next call interval
@@ -148,10 +152,6 @@ bool WppClient::lwm2mContextOpen() {
 void WppClient::lwm2mContextClose() {
 	lwm2m_close(_lwm2m_context);
 	_lwm2m_context = NULL;
-}
-
-lwm2m_context_t & WppClient::getContext() {
-	return *_lwm2m_context;
 }
 
 bool WppClient::lwm2mConfigure(const std::string &endpointName, const std::string &msisdn, const std::string &altPath) {

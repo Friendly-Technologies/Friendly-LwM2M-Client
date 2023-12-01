@@ -1,20 +1,24 @@
-// TODO: Add lable taht this code belongs SinaiR&D
-#ifndef INC_SAFE_QUEUE_H_
-#define INC_SAFE_QUEUE_H_
+#ifndef SAFE_QUEUE_H_
+#define SAFE_QUEUE_H_
 
 #include <string.h>
 #include <vector>
-#include <mutex>
+#include <WppGuard.h>
+
+#define SQ_GUARD_CREATE(name)		WppGuard name
+#define SQ_GUARD_LOCK(name)			name.lock()
+#define SQ_GUARD_UNLOCK(name)		name.unlock()
+#define SQ_GUARD_TRY_LOCK(name)		name.try_lock()
 
 #define SAFE_QUEUE_DEF_ELEM_CNT	0x01
 
-/*
- * This class is a simple implementation of a queue that does not use dynamic memory
+/**
+ * @brief This class is a simple implementation of a queue that does not use dynamic memory
  * and copy data to intenal buffer with memcpy.
  * The problem it solves is the following: it is necessary to have a container that
- * allows adding and removing elements independently by different streams. This
+ * allows adding and removing elements independently by different streams/ISR. This
  * container is protected from the simultaneous call of the push/pop method from
- * different threads, and allows the simultaneous call of push and pop from different
+ * the same threads, and allows the simultaneous call of push and pop from different
  * threads without internal blocking, that is, if an interruption occurred that interrupted
  * the removal process, it can easily perform addition or vice versa. For example, if
  * there is an interrupt in which you need to add an element to the queue and there is
@@ -27,10 +31,7 @@
 template <typename T, size_t SIZE>
 class SafeQueue {
 public:
-	SafeQueue() {
-		__push_guard.unlock();
-		__pop_guard.unlock();
-	}
+	SafeQueue() {}
 
 	bool push(const T * const data, size_t elements_cnt = SAFE_QUEUE_DEF_ELEM_CNT);
 	bool pop(size_t elements_cnt = SAFE_QUEUE_DEF_ELEM_CNT);
@@ -38,15 +39,15 @@ public:
 	// TODO Add ability converting vector to SafeQueue 'from_vector(std::vector<T>)'
 	std::vector<T> to_vector(size_t elements_cnt = SAFE_QUEUE_DEF_ELEM_CNT);
 
-	/*
-	 * front/back/at(index) They do not guarantee that the pointer
+	/**
+	 * @brief front/back/at(index) They do not guarantee that the pointer
 	 * to the data after the return will still be correct
 	 */
 	T* front();
 	T* back();
 	T* at(size_t i);
-	/*
-	 * Can guarantee the integrity of the data and ensures that it
+	/**
+	 * @brief Can guarantee the integrity of the data and ensures that it
 	 * corresponds to what was written to the queue. The user needs
 	 * to pass a pointer to the memory allocated for this type.
 	 */
@@ -62,7 +63,7 @@ public:
 
 private:
 	/**
-	 * Before calling these method, validate items count in the queue
+	 * @brief Before calling these method, validate items count in the queue
 	 */
 	inline size_t __get_next_front_index(size_t elements_cnt = SAFE_QUEUE_DEF_ELEM_CNT);
 	inline size_t __get_next_back_index(size_t elements_cnt = SAFE_QUEUE_DEF_ELEM_CNT);
@@ -73,8 +74,8 @@ private:
 	inline bool __check_add_ability(size_t elements_cnt = SAFE_QUEUE_DEF_ELEM_CNT);
 
 private:
-	std::mutex __push_guard;
-	std::mutex __pop_guard;
+	SQ_GUARD_CREATE(__push_guard);
+	SQ_GUARD_CREATE(__pop_guard);
 	size_t __front_i = 0x00, __back_i = 0x00, __counter = 0x00;
 	T __buffer[SIZE];
 };
@@ -84,11 +85,11 @@ private:
 
 template <typename T, size_t SIZE>
 bool SafeQueue<T, SIZE>::push(const T * const data, size_t elements_cnt) {
-	if (!__push_guard.try_lock()) return false;
+	if (!SQ_GUARD_TRY_LOCK(__push_guard)) return false;
 
 	/* Check __buffer available space */
 	if (!elements_cnt || __check_add_ability(elements_cnt) == false) {
-		__push_guard.unlock();
+		SQ_GUARD_UNLOCK(__push_guard);
 		return false;
 	}
 
@@ -98,40 +99,44 @@ bool SafeQueue<T, SIZE>::push(const T * const data, size_t elements_cnt) {
 	}
 	__counter += elements_cnt;
 
-	__push_guard.unlock();
+	SQ_GUARD_UNLOCK(__push_guard);
 	return true;
 }
 
 template <typename T, size_t SIZE>
 bool SafeQueue<T, SIZE>::pop(size_t elements_cnt) {
-	if (!__pop_guard.try_lock()) return false;
+	if (!SQ_GUARD_TRY_LOCK(__pop_guard)) return false;
 
 	/* Maybe the __buffer available elements not enough */
 	if (__check_remove_ability(elements_cnt) == false) { 
-		__pop_guard.unlock();
+		SQ_GUARD_UNLOCK(__pop_guard);
 		return false;
 	}
 
 	__front_i = __get_next_front_index(elements_cnt);
 	__counter -= elements_cnt;
 
-	__pop_guard.unlock();
+	SQ_GUARD_UNLOCK(__pop_guard);
 	return true;
 }
 
 template <typename T, size_t SIZE>
 std::vector<T> SafeQueue<T, SIZE>::to_vector(size_t elements_cnt) {
-	std::lock_guard<std::mutex> push_guard(__push_guard);
-	std::lock_guard<std::mutex> pop_guard(__pop_guard);
+	SQ_GUARD_LOCK(__push_guard);
+	SQ_GUARD_LOCK(__pop_guard);
 
 	/* Maybe the __buffer available elements not enough */
-	if (!elements_cnt || elements_cnt > size()) return std::vector<T>();
+	if (!elements_cnt || elements_cnt > size()) {
+		SQ_GUARD_UNLOCK(__push_guard);
+		SQ_GUARD_UNLOCK(__pop_guard);
+		return std::vector<T>();
+	}
 
 	size_t end_of_range_index = __get_next_index(__front_i, elements_cnt);
 	uint8_t is_out_of_range = __front_i >= end_of_range_index;
 
-	/*
-	 * Available two potential situations:
+	/**
+	 * @brief Available two potential situations:
 	 * 1) Elements range placed between __front_i and SIZE
 	 * 2) Elements range placed between __front_i -> SIZE and 0 -> end_of_range_index
 	 *
@@ -141,6 +146,8 @@ std::vector<T> SafeQueue<T, SIZE>::to_vector(size_t elements_cnt) {
 	std::vector<T> converted (__buffer + __front_i, (is_out_of_range)? __buffer + SIZE : __buffer + end_of_range_index);
 	if (is_out_of_range) converted.insert(converted.end(), __buffer, __buffer + end_of_range_index);
 
+	SQ_GUARD_UNLOCK(__push_guard);
+	SQ_GUARD_UNLOCK(__pop_guard);
 	return converted;
 }
 
@@ -164,43 +171,43 @@ T* SafeQueue<T, SIZE>::at(size_t i) {
 
 template <typename T, size_t SIZE>
 bool SafeQueue<T, SIZE>::front(T* data) {
-	if (!__pop_guard.try_lock()) return false;
+	if (!SQ_GUARD_TRY_LOCK(__pop_guard)) return false;
 
 	if (!data || is_empty()) {
-		__pop_guard.unlock();
+		SQ_GUARD_UNLOCK(__pop_guard);
 		return false;
 	}
 	memcpy((uint8_t *)data, (uint8_t *)(__buffer + __front_i), sizeof(T));
 
-	__pop_guard.unlock();
+	SQ_GUARD_UNLOCK(__pop_guard);
 	return true;
 }
 
 template <typename T, size_t SIZE>
 bool SafeQueue<T, SIZE>::back(T* data) {
-	if (!__push_guard.try_lock()) return false;
+	if (!SQ_GUARD_TRY_LOCK(__push_guard)) return false;
 
 	if (!data || is_empty()) {
-		__push_guard.unlock();
+		SQ_GUARD_UNLOCK(__push_guard);
 		return false;
 	}
 	memcpy((uint8_t *)data, (uint8_t *)(__buffer + __back_i), sizeof(T));
 
-	__push_guard.unlock();
+	SQ_GUARD_UNLOCK(__push_guard);
 	return true;
 }
 
 template <typename T, size_t SIZE>
 bool SafeQueue<T, SIZE>::at(size_t i, T* data) {
-	if (!__pop_guard.try_lock()) return false;
+	if (!SQ_GUARD_TRY_LOCK(__pop_guard)) return false;
 
 	if (!data || is_empty() || i >= size()) {
-		__pop_guard.unlock();
+		SQ_GUARD_UNLOCK(__pop_guard);
 		return false;
 	}
 	memcpy((uint8_t *)data, (uint8_t *)(__buffer + ((__front_i + i) % SIZE)), sizeof(T));
 
-	__pop_guard.unlock();
+	SQ_GUARD_UNLOCK(__pop_guard);
 	return true;
 }
 
@@ -265,4 +272,4 @@ bool SafeQueue<T, SIZE>::__check_add_ability(size_t elements_cnt) {
 	return (SIZE - size()) >= elements_cnt;
 }
 
-#endif /* INC_SAFE_QUEUE_H_ */
+#endif /* SAFE_QUEUE_H_ */

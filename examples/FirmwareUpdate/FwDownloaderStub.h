@@ -19,7 +19,6 @@ class FwDownloaderStub {
 public:
     FwDownloaderStub() {
         _terminateThread = false;
-        _jobGuard.unlock();
 
         _downloadingThread = new thread([this]() {
             while (!this->_terminateThread) {

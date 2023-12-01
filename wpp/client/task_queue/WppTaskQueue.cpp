@@ -8,17 +8,14 @@
 namespace wpp {
 
 WppTaskQueue WppTaskQueue::_instance;
-std::mutex WppTaskQueue::_handleTaskGuard;
-std::mutex WppTaskQueue::_taskQueueGuard;
+WppGuard WppTaskQueue::_handleTaskGuard;
+WppGuard WppTaskQueue::_taskQueueGuard;
 
-WppTaskQueue::WppTaskQueue() {
-	_handleTaskGuard.unlock();
-	_taskQueueGuard.unlock();
-}
+WppTaskQueue::WppTaskQueue() {}
 
 WppTaskQueue::~WppTaskQueue() {
-	std::lock_guard<std::mutex> handleLock(_handleTaskGuard);
-	std::lock_guard<std::mutex> queueLock(_taskQueueGuard);
+	_handleTaskGuard.lock();
+	_taskQueueGuard.lock();
 
 	for (auto task : _tasks) {
 		if (task->ctxSize > 0) {
@@ -28,6 +25,9 @@ WppTaskQueue::~WppTaskQueue() {
 		delete task;
 	}
 	_tasks.clear();
+
+	_handleTaskGuard.unlock();
+	_taskQueueGuard.unlock();
 }
 
 /* ------------- Tasks management ------------- */
@@ -38,7 +38,7 @@ WppTaskQueue::task_id_t WppTaskQueue::addTask(time_t delaySec, task_t task) {
 WppTaskQueue::task_id_t WppTaskQueue::addTask(ctx_t ctx, time_t delaySec, task_t task) {
 	if (delaySec < WPP_TASK_MIN_DELAY_S || WPP_TASK_MAX_DELAY_S < delaySec) return WPP_ERR_TASK_ID;
 
-	std::lock_guard<std::mutex> lock(_taskQueueGuard);
+	_taskQueueGuard.lock();
 
 	TaskInfo *newTask = new TaskInfo;
 	newTask->task = task;
@@ -49,13 +49,14 @@ WppTaskQueue::task_id_t WppTaskQueue::addTask(ctx_t ctx, time_t delaySec, task_t
 	newTask->state = IDLE;
 
 	_instance._tasks.push_back(newTask);
+	_taskQueueGuard.unlock();
 	return newTask;
 }
 
-WppTaskQueue::task_id_t WppTaskQueue::addTaskWithCopy(ctx_t ctx, size_t size, time_t delaySec, task_t task) {
+WppTaskQueue::task_id_t WppTaskQueue::addTaskWithCopy(const ctx_t ctx, size_t size, time_t delaySec, task_t task) {
 	if (!ctx || !size || delaySec < WPP_TASK_MIN_DELAY_S || WPP_TASK_MAX_DELAY_S < delaySec) return WPP_ERR_TASK_ID;
 
-	std::lock_guard<std::mutex> lock(_taskQueueGuard);
+	_taskQueueGuard.lock();
 
 	TaskInfo *newTask = new TaskInfo;
 	newTask->task = task;
@@ -67,6 +68,7 @@ WppTaskQueue::task_id_t WppTaskQueue::addTaskWithCopy(ctx_t ctx, size_t size, ti
 	newTask->state = IDLE;
 
 	_instance._tasks.push_back(newTask);
+	_taskQueueGuard.unlock();
 	return newTask;
 }
 
@@ -75,52 +77,78 @@ size_t WppTaskQueue::getTaskCnt() {
 }
 
 bool WppTaskQueue::isTaskExist(task_id_t id) {
-	std::lock_guard<std::mutex> lock(_taskQueueGuard);
+	_taskQueueGuard.lock();
 
 	auto task = std::find(_instance._tasks.begin(), _instance._tasks.end(), (TaskInfo *)id);
-	return task != _instance._tasks.end();
+	bool isExist = task != _instance._tasks.end();
+
+	_taskQueueGuard.unlock();
+	return isExist;
 }
 
 bool WppTaskQueue::isTaskIdle(task_id_t id) {
-	std::lock_guard<std::mutex> lock(_taskQueueGuard);
+	_taskQueueGuard.lock();
 
 	auto task = std::find(_instance._tasks.begin(), _instance._tasks.end(), (TaskInfo *)id);
-	if (task == _instance._tasks.end()) return false;
-	return (*task)->state & IDLE;
+	if (task == _instance._tasks.end()) {
+		_taskQueueGuard.unlock();
+		return false;
+	}
+	bool isIdle = (*task)->state & IDLE;
+
+	_taskQueueGuard.unlock();
+	return isIdle;
 }
 
 bool WppTaskQueue::isTaskExecuting(task_id_t id) {
-	std::lock_guard<std::mutex> lock(_taskQueueGuard);
+	_taskQueueGuard.lock();
 
 	auto task = std::find(_instance._tasks.begin(), _instance._tasks.end(), (TaskInfo *)id);
-	if (task == _instance._tasks.end()) return false;
-	return (*task)->state & EXECUTING;
+	if (task == _instance._tasks.end()) {
+		_taskQueueGuard.unlock();
+		return false;
+	}
+	bool isExecuting = (*task)->state & EXECUTING;
+
+	_taskQueueGuard.unlock();
+	return isExecuting;
 }
 
 bool WppTaskQueue::isTaskShouldBeDeleted(task_id_t id) {
-	std::lock_guard<std::mutex> lock(_taskQueueGuard);
+	_taskQueueGuard.lock();
 
 	auto task = std::find(_instance._tasks.begin(), _instance._tasks.end(), (TaskInfo *)id);
-	if (task == _instance._tasks.end()) return false;
-	return (*task)->state & SHOULD_BE_DELETED;
+	if (task == _instance._tasks.end()) {
+		_taskQueueGuard.unlock();
+		return false;
+	}
+	bool isShouldBeDeleted = (*task)->state & SHOULD_BE_DELETED;
+
+	_taskQueueGuard.unlock();
+	return isShouldBeDeleted;
 }
 
 void WppTaskQueue::requestToRemoveTask(task_id_t id) {
-	std::lock_guard<std::mutex> queueLock(_taskQueueGuard);
+	_taskQueueGuard.lock();
 
 	auto task = std::find(_instance._tasks.begin(), _instance._tasks.end(), (TaskInfo *)id);
-	if (task == _instance._tasks.end()) return;
-	
+	if (task == _instance._tasks.end()) {
+		_taskQueueGuard.unlock();
+		return;
+	}
 	(*task)->state = (TaskState)((*task)->state | SHOULD_BE_DELETED);
+
+	_taskQueueGuard.unlock();
 }
 
 void WppTaskQueue::requestToRemoveEachTask() {
-	std::lock_guard<std::mutex> queueLock(_taskQueueGuard);
+	_taskQueueGuard.lock();
 	for (auto task : _instance._tasks) task->state = (TaskState)(task->state | SHOULD_BE_DELETED);
+	_taskQueueGuard.unlock();
 }
 
 time_t WppTaskQueue::handleEachTask(WppClient& clien) {
-	std::lock_guard<std::mutex> handleLock(_handleTaskGuard);
+	_handleTaskGuard.lock();
 
 	_taskQueueGuard.lock();
 	// We create copy for be sure that adding new task not corrupted begin()
@@ -155,11 +183,13 @@ time_t WppTaskQueue::handleEachTask(WppClient& clien) {
 	}
 
 	_instance.deleteFinishedTasks();
-	return _instance.updateNextCallTimeForTasks();
+	time_t nextCallInterval = _instance.updateNextCallTimeForTasks();
+	_handleTaskGuard.unlock();
+	return nextCallInterval;
 }
 
 void WppTaskQueue::deleteFinishedTasks() {
-	std::lock_guard<std::mutex> queueLock(_taskQueueGuard);
+	_taskQueueGuard.lock();
 	for (auto task = _tasks.begin(); task != _tasks.end();) {
 		if (((*task)->state & SHOULD_BE_DELETED) == 0) {
 			task++;
@@ -172,16 +202,18 @@ void WppTaskQueue::deleteFinishedTasks() {
 		delete (*task);
 		task = _tasks.erase(task);
 	}
+	_taskQueueGuard.unlock();
 }
 
 
 time_t WppTaskQueue::updateNextCallTimeForTasks() {
-	std::lock_guard<std::mutex> queueLock(_taskQueueGuard);
+	_taskQueueGuard.lock();
 	time_t nextCallInterval = WPP_TASK_MAX_DELAY_S;
 	for (auto task: _tasks) {
 		time_t taskCallInterval = std::max(task->nextCallTime - WppPlatform::getTime(), (time_t)0);
 		if (taskCallInterval < nextCallInterval) nextCallInterval = taskCallInterval;
 	}
+	_taskQueueGuard.unlock();
 	return nextCallInterval;
 }
 

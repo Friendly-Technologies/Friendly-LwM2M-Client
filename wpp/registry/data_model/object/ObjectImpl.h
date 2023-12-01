@@ -12,18 +12,49 @@
 
 namespace wpp {
 
+/**
+ * @class ObjectImpl
+ * @brief The ObjectImpl class is a template class that represents an implementation of an object in the Wakaama library.
+ * @tparam T The type of the object.
+ *
+ * The ObjectImpl class provides functionality for creating and managing instances of the object.
+ * It inherits from the Object class and overrides its methods to provide the implementation specific to the object type.
+ * The ObjectImpl class is intended to be used as a base class for implementing custom objects in the Wakaama library.
+ */
 template<typename T>
 class ObjectImpl : public Object {
 public:
-    ObjectImpl(lwm2m_context_t &context, const ObjectInfo &info): Object(context, info) {}
-	~ObjectImpl() {}
+	/**
+	 * @brief Constructs an ObjectImpl object.
+	 * @param context The lwm2m_context_t object.
+	 * @param info The ObjectInfo object.
+	 */
+	ObjectImpl(lwm2m_context_t &context, const ObjectInfo &info): Object(context, info) {}
+	~ObjectImpl() {};
 
-/* ------------- ObjectImpl instance management ------------- */
+	/* ------------- ObjectImpl instance management ------------- */
+
+	/**
+	 * @brief Creates a new instance of the object.
+	 * @param instanceID The ID of the instance to create. Defaults to ID_T_MAX_VAL.
+	 * @return A pointer to the created instance of general type, or nullptr if the instance could not be created.
+	 */
 	Instance* createInstance(ID_T instanceID = ID_T_MAX_VAL) override;
-    T* createInstanceImpl(ID_T instanceID = ID_T_MAX_VAL);
-    T* instanceImpl(ID_T instanceID = 0);
-};
 
+	/**
+	 * @brief Creates a new instance of the object.
+	 * @param instanceID The ID of the instance to create. Defaults to ID_T_MAX_VAL.
+	 * @return A pointer to the created instance of specialized type, or nullptr if the instance could not be created.
+	 */
+	T* createInstanceImpl(ID_T instanceID = ID_T_MAX_VAL);
+
+	/**
+	 * @brief Returns the instance of the object with the specified ID.
+	 * @param instanceID The ID of the instance to retrieve. Defaults to 0.
+	 * @return A pointer to the instance specialized type, or nullptr if the instance does not exist.
+	 */
+	T* instanceImpl(ID_T instanceID = 0);
+};
 
 /* ---------- Implementation of methods ----------*/
 template<typename T>

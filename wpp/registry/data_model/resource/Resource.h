@@ -2,7 +2,6 @@
 #define WPP_RESOURCE_H
 
 #include <unordered_map>
-#include <mutex>
 #include <type_traits>
 #include <variant>
 
@@ -17,26 +16,57 @@
 
 namespace wpp {
 
-/*
- * TODO: For now resource took to many memory, the main consumers are string and unordered_map
+/**
+ * @brief The Resource class in the wpp namespace is a comprehensive and flexible
+ * class designed to handle different types of data within a resource-oriented
+ * architecture. It offers a range of functionalities including storing, retrieving,
+ * and validating various data types, as well as managing multiple instances of a resource. 
+ * 
+ * This class provides methods for managing and manipulating a resource, including
+ * getting and setting resource metadata, checking resource parameters, managing
+ * resource data, and managing verifiers for the resource data.
+ * 
+ * The Resource class contains public subtypes, such as the DATA_T type for storing
+ * data of various types, the ResInst struct for representing a resource instance,
+ * and the DATA_VERIFIER_T type for storing data validation functions.
+ * 
+ * The Resource class also provides public methods for common usage, such as
+ * constructors, assignment operators, and methods for retrieving resource metadata.
+ * 
+ * Additionally, the Resource class provides helpful methods for checking resource
+ * parameters, managing resource data, and managing verifiers. These methods include
+ * checking the validity of the data type, checking the validity of a data value,
+ * checking the validity of a data verifier, checking the validity of an operation,
+ * checking the possibility of an instance ID, checking the existence of an instance,
+ * checking the compatibility of a type ID, checking if the resource is empty,
+ * retrieving the number of resource instances, and getting the available IDs of
+ * resource instances.
+ * 
+ * The Resource class also provides methods for managing resource data, including
+ * generating prototypes for getting and setting data of various supported types,
+ * disabling implicit conversions, setting data values, getting data values, and
+ * getting pointers to data values.
+ * 
+ * Furthermore, the Resource class provides methods for removing resource instances,
+ * clearing all instances, and setting the data verifier for the resource.
  */
 class Resource {
 public: /* ---------- Public subtypes ----------*/
-	/*
-	 * Universal type for data
+	/**
+ 	 * @brief Universal type for data
 	 */
 	using DATA_T = std::variant<BOOL_T, INT_T, UINT_T, FLOAT_T, OPAQUE_T, OBJ_LINK_T, STRING_T, EXECUTE_T>;
 
-	/*
-	 * Type for resource instance
+	/**
+ 	 * @brief Type for resource instance
 	 */
 	struct ResInst {
 		ID_T id;
 		DATA_T data;
 	};
 
-	/*
-	 * Universal type for data validation functions
+	/**
+ 	 * @brief Universal type for data validation functions
 	 */
 	using DATA_VERIFIER_T = std::variant<VERIFY_INT_T, VERIFY_UINT_T, VERIFY_FLOAT_T, VERIFY_OPAQUE_T, VERIFY_BOOL_T,
 										  VERIFY_OBJ_LINK_T, VERIFY_STRING_T, VERIFY_EXECUTE_T/*, VERIFY_CORE_LINK_T*/>; // VERIFY_CORE_LINK_T the same as VERIFY_STRING_T therefore we use only VERIFY_STRING_T
@@ -70,14 +100,14 @@ public: /* ---------- Public methods for common usage ----------*/
 	bool isTypeIdCompatible(TYPE_ID type) const;
 	bool isEmpty() const;
 	size_t instanceCnt() const;
-	/*
-	 * Returns vector with available ids of resource instances 
+	/**
+ 	 * @brief Returns vector with available ids of resource instances 
 	 */
 	const std::vector<ID_T> getInstIds() const;
 
 	/* ---------- Methods for manage resource data ----------*/
-	/*
-	 * Generating prototypes of get/set/ptr for each supported type
+	/**
+ 	 * @brief Generating prototypes of get/set/ptr for each supported type
 	 * The data that will be set through returned ptr() must be manualy
 	 * validated with using isDataValueValid()
 	 */
@@ -90,8 +120,8 @@ public: /* ---------- Public methods for common usage ----------*/
 	RES_METHODS_PROT_SET_FOR(STRING_T);
 	RES_METHODS_PROT_SET_FOR(EXECUTE_T);
 
-    /*
-     * Disabling implicit conversions
+    /**
+ 	 * @brief Disabling implicit conversions
      */
     template<typename T>
     bool set(const T &value, ID_T resInstId = SINGLE_INSTANCE_ID) = delete;
@@ -102,15 +132,15 @@ public: /* ---------- Public methods for common usage ----------*/
 	template<typename T>
 	bool ptr(T **value, ID_T resInstId = SINGLE_INSTANCE_ID)  = delete;
 
-	/*
-	 * Remove resource instance if resource is multiple and instance exists,
+	/**
+ 	 * @brief Remove resource instance if resource is multiple and instance exists,
 	 * if the resource is SINGLE or it has the last instance remove is not
 	 * possible. Because instantiated resources must have at least one instance.
 	 */
 	bool remove(ID_T resInstId);
 
-	/*
-	 * Remove all instances.
+	/**
+ 	 * @brief Remove all instances.
 	 */
 	bool clear();
 

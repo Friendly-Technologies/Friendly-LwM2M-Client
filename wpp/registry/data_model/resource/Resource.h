@@ -2,7 +2,6 @@
 #define WPP_RESOURCE_H
 
 #include <unordered_map>
-#include <mutex>
 #include <type_traits>
 #include <variant>
 

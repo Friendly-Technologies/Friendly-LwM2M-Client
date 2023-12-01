@@ -10,12 +10,12 @@
 
 #include <string>
 #include <functional>
-#include <mutex>
 
 #include "liblwm2m.h"
 #include "types.h"
 #include "WppRegistry.h"
 #include "WppConnection.h"
+#include "WppGuard.h"
 
 #define WPP_CLIENT_MAX_SLEEP_TIME_S	30
 
@@ -174,7 +174,7 @@ private:
 
 private:
 	static WppClient *_client;
-	static std::mutex _clientGuard;
+	static WppGuard _clientGuard;
 
 	WppConnection &_connection;
 	WppRegistry *_registry;

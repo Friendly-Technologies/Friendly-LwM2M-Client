@@ -8,9 +8,7 @@
 #ifndef WPP_REGISTRY_H_
 #define WPP_REGISTRY_H_
 
-#include <mutex>
 #include <vector>
-
 #include "ObjectImpl.h"
 
 /* ---------- Mandatory objects include block begin ---------- */

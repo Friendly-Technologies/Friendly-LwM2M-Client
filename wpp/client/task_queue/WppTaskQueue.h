@@ -10,9 +10,9 @@
 
 #include <list>
 #include <functional>
-#include <mutex>
 
 #include "types.h"
+#include "WppGuard.h"
 
 #define WPP_TASK_MIN_DELAY_S  (time_t)1
 #define WPP_TASK_DEF_DELAY_S  (time_t)10
@@ -203,8 +203,8 @@ private:
 
 private:
 	static WppTaskQueue	_instance;
-	static std::mutex _handleTaskGuard;
-	static std::mutex _taskQueueGuard;
+	static WppGuard _handleTaskGuard;
+	static WppGuard _taskQueueGuard;
 	/**
 	 * @brief Adding, removing and moving the elements within the list or
 	 * across several lists does not invalidate the iterators or

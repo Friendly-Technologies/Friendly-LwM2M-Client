@@ -14,7 +14,7 @@
 namespace wpp {
 
 WppClient *WppClient::_client = NULL;
-std::mutex WppClient::_clientGuard;
+WppGuard WppClient::_clientGuard;
 
 WppClient::WppClient(WppConnection &connection, time_t maxSleepTimeSec): _connection(connection), _maxSleepTimeSec(maxSleepTimeSec) {
 	lwm2mContextOpen();

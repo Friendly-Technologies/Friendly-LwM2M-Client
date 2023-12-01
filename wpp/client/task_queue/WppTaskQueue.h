@@ -202,9 +202,9 @@ private:
 	time_t updateNextCallTimeForTasks();
 
 private:
-	static WppTaskQueue	_instance;
 	static WppGuard _handleTaskGuard;
 	static WppGuard _taskQueueGuard;
+	static WppTaskQueue	_instance;
 	/**
 	 * @brief Adding, removing and moving the elements within the list or
 	 * across several lists does not invalidate the iterators or

@@ -173,8 +173,8 @@ private:
 	bool lwm2mConfigure(const std::string &endpointName, const std::string &msisdn, const std::string &altPath);
 
 private:
-	static WppClient *_client;
 	static WppGuard _clientGuard;
+	static WppClient *_client;
 
 	WppConnection &_connection;
 	WppRegistry *_registry;

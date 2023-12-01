@@ -200,7 +200,7 @@ void Device::resourcesInit() {
 	resource(RESET_ERROR_CODE_12)->set((EXECUTE_T)[this](Instance& inst, ID_T resId, const OPAQUE_T& buff) { 
 		resource(ERROR_CODE_11)->clear();
 		resource(ERROR_CODE_11)->set((INT_T)NO_ERROR);
-		notifyValueChanged({ERROR_CODE_11,});
+		notifyServerResChanged({ERROR_CODE_11,});
 		return true;
 	});
 	#endif
@@ -210,7 +210,7 @@ void Device::resourcesInit() {
 	_currentTimeTaskId = WppTaskQueue::addTask(1, [this](WppClient &client, WppTaskQueue::ctx_t ctx) -> bool {
 		TIME_T currentTime = WppPlatform::getTime();
 		this->resource(CURRENT_TIME_13)->set(currentTime);
-		this->notifyValueChanged({CURRENT_TIME_13,});
+		this->notifyServerResChanged({CURRENT_TIME_13,});
 		return false;
 	});
 	#endif                                                                                                                                                                                                              

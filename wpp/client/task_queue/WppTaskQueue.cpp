@@ -7,9 +7,10 @@
 
 namespace wpp {
 
-WppTaskQueue WppTaskQueue::_instance;
-WppGuard WppTaskQueue::_handleTaskGuard;
 WppGuard WppTaskQueue::_taskQueueGuard;
+WppGuard WppTaskQueue::_handleTaskGuard;
+WppTaskQueue WppTaskQueue::_instance;
+
 
 WppTaskQueue::WppTaskQueue() {}
 

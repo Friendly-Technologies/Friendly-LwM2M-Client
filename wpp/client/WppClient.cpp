@@ -13,8 +13,8 @@
 
 namespace wpp {
 
-WppClient *WppClient::_client = NULL;
 WppGuard WppClient::_clientGuard;
+WppClient *WppClient::_client = NULL;
 
 WppClient::WppClient(WppConnection &connection, time_t maxSleepTimeSec): _connection(connection), _maxSleepTimeSec(maxSleepTimeSec) {
 	lwm2mContextOpen();

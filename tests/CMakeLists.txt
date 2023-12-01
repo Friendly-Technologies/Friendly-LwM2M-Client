@@ -13,7 +13,7 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-instr-generate -
 
 # Serching all files with *.cpp type in folders and subfolders
 file(GLOB_RECURSE TEST_SOURCES "./*Test.cpp" "catch_amalgamated.cpp")
-file(GLOB_RECURSE SOURCES "../examples/platform/Platform.cpp")
+file(GLOB_RECURSE SOURCES "../examples/platform/Platform.cpp" "../examples/platform/Guard.cpp")
 file(GLOB_RECURSE LISTENING "../wpp/*")
 
 # Create executable file for tests
@@ -28,6 +28,7 @@ target_include_directories(Catch2Tests PRIVATE ${CATCH2_INCLUDE_DIR})
 
 # Add coverage target
 add_custom_target(coverage
+
     COMMAND llvm-profdata merge -sparse default.profraw -o default.profdata
     COMMAND llvm-cov show
             -format=text
@@ -46,15 +47,18 @@ add_custom_target(coverage
 )
 
 # Add a custom command to run the executable and generate coverage	
-add_custom_command(TARGET Catch2Tests POST_BUILD
+add_custom_target( run_tests    
     COMMAND Catch2Tests && make coverage
-    COMMAND cat ./coverage/index.txt | grep TOTAL
+    COMMAND cat coverage/index.txt | grep -E 'Filename|TOTAL' | column -t 
 )
-
-# Add a custom target that depends on the custom command
-add_custom_target(run_tests
-    DEPENDS Catch2Tests
+ 
+add_custom_command(OUTPUT run_my_app.sh POST_BUILD
+    COMMAND echo "#!/bin/bash"    >  run_my_app.sh
+    COMMAND echo "make run_tests" >> run_my_app.sh
+    COMMAND chmod +x run_my_app.sh
+    COMMAND ./run_my_app.sh
 )
+# add_custom_target(global_target ALL DEPENDS run_my_app.sh)
 
-# Alias to make the target more user-friendly
-add_custom_target(run DEPENDS run_tests)
+# file(GLOB_RECURSE SCRIPT "../_build/*run_my_app.sh")
+# target_include_directories(Catch2Tests PRIVATE ${SCRIPT})

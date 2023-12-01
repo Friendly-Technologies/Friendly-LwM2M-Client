@@ -184,6 +184,7 @@ public:
 	/**
 	 * @brief Execute each task in the queue and delete it from queue if task returns false 
 	 * or task state is SHOULD_BE_DELETED. This method is called by the WppClient in its loop() method.
+	 * But it can be also called by the user if he wants to process immediately.
 	 * @return time in sec to next task execution, if tasks are not exist then returns
 	 *   	   WPP_TASK_MAX_DELAY_S.
 	 */

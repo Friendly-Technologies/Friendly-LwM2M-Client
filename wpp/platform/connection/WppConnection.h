@@ -146,6 +146,7 @@ public:
 	 * 
 	 * This method is called by the WppClient in its loop() method if the packet queue contains at least one packet.
 	 * It processes all the packets found in the queue. If an error occurs during the processing of a packet, it is deleted.
+	 * But it can be also called by the user if he wants to process immediately.
 	 * 
 	 * @param client The WppClient object used for packet processing.
 	 */

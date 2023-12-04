@@ -1,38 +1,38 @@
 /*
- * ObjectImpl.h
+ * ObjectSpec.h
  *
  *  Created on: 10 Jul 2023
  *      Author: valentin
  */
 
-#ifndef WPP_OBJECT_IMPL_H_
-#define WPP_OBJECT_IMPL_H_
+#ifndef WPP_OBJECT_SPEC_H_
+#define WPP_OBJECT_SPEC_H_
 
 #include "Object.h"
 
 namespace wpp {
 
 /**
- * @class ObjectImpl
- * @brief The ObjectImpl class is a template class that represents an implementation of an object in the Wakaama library.
+ * @class ObjectSpec
+ * @brief The ObjectSpec class is a template class that represents an implementation of an object in the Wakaama library.
  * @tparam T The type of the object.
  *
- * The ObjectImpl class provides functionality for creating and managing instances of the object.
+ * The ObjectSpec class provides functionality for creating and managing instances of the object.
  * It inherits from the Object class and overrides its methods to provide the implementation specific to the object type.
- * The ObjectImpl class is intended to be used as a base class for implementing custom objects in the Wakaama library.
+ * The ObjectSpec class is intended to be used as a base class for implementing custom objects in the Wakaama library.
  */
 template<typename T>
-class ObjectImpl : public Object {
+class ObjectSpec : public Object {
 public:
 	/**
-	 * @brief Constructs an ObjectImpl object.
+	 * @brief Constructs an ObjectSpec object.
 	 * @param context The lwm2m_context_t object.
 	 * @param info The ObjectInfo object.
 	 */
-	ObjectImpl(lwm2m_context_t &context, const ObjectInfo &info): Object(context, info) {}
-	~ObjectImpl() {};
+	ObjectSpec(lwm2m_context_t &context, const ObjectInfo &info): Object(context, info) {}
+	~ObjectSpec() {};
 
-	/* ------------- ObjectImpl instance management ------------- */
+	/* ------------- ObjectSpec instance management ------------- */
 
 	/**
 	 * @brief Creates a new instance of the object.
@@ -46,19 +46,19 @@ public:
 	 * @param instanceID The ID of the instance to create. Defaults to ID_T_MAX_VAL.
 	 * @return A pointer to the created instance of specialized type, or nullptr if the instance could not be created.
 	 */
-	T* createInstanceImpl(ID_T instanceID = ID_T_MAX_VAL);
+	T* createInstanceSpec(ID_T instanceID = ID_T_MAX_VAL);
 
 	/**
 	 * @brief Returns the instance of the object with the specified ID.
 	 * @param instanceID The ID of the instance to retrieve. Defaults to 0.
 	 * @return A pointer to the instance specialized type, or nullptr if the instance does not exist.
 	 */
-	T* instanceImpl(ID_T instanceID = 0);
+	T* instanceSpec(ID_T instanceID = 0);
 };
 
 /* ---------- Implementation of methods ----------*/
 template<typename T>
-Instance* ObjectImpl<T>::createInstance(ID_T instanceId) {
+Instance* ObjectSpec<T>::createInstance(ID_T instanceId) {
 	// If object is single and instance has already exist, then we can not create new one and return NULL
 	if (getObjectInfo().isSingle == IS_SINGLE::SINGLE && instanceCnt() != 0) {
 		WPP_LOGW_ARG(TAG_WPP_OBJ, "Not possible to create instance %d:%d, object is single", getObjectID(), instanceId);
@@ -88,16 +88,16 @@ Instance* ObjectImpl<T>::createInstance(ID_T instanceId) {
 }
 
 template<typename T>
-T* ObjectImpl<T>::createInstanceImpl(ID_T instanceID) {
+T* ObjectSpec<T>::createInstanceSpec(ID_T instanceID) {
     Instance *inst = createInstance(instanceID);
     return inst? static_cast<T*>(inst) : NULL;
 }
 
 template<typename T>
-T* ObjectImpl<T>::instanceImpl(ID_T instanceID) {
+T* ObjectSpec<T>::instanceSpec(ID_T instanceID) {
     Instance *inst = instance(instanceID);
     return inst? static_cast<T*>(inst) : NULL;
 }
 
 } // namespace wpp
-#endif /* WPP_OBJECT_IMPL_H_ */
+#endif /* WPP_OBJECT_SPEC_H_ */

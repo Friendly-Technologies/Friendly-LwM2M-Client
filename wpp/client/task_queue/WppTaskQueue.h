@@ -26,6 +26,9 @@ namespace wpp {
 class WppClient;
 
 /**
+ * @class WppTaskQueue
+ * @brief Represents a task queue for Wakaama Plus.
+ * 
  * The queue of tasks does not guarantee timely calling of a task
  * with a fixed delay, all tasks in the queue are processed sequentially,
  * it is only guaranteed that the task will be called after the specified
@@ -41,6 +44,8 @@ class WppClient;
  * 
  * The implementation is completely thread-safe and allows calling its methods
  * from tasks.
+ * 
+ * @note The WppTaskQueue class is a singleton.
  */
 class WppTaskQueue {
 public:

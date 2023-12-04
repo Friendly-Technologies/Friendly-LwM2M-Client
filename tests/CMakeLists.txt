@@ -19,6 +19,8 @@ file(GLOB_RECURSE LISTENING "../wpp/*")
 # Create executable file for tests
 add_executable(Catch2Tests ${SOURCES} ${TEST_SOURCES})
 
+# add_executable(Catch2Tests33 ${SOURCES} ${TEST_SOURCES})
+
 # Include library
 target_link_options(Catch2Tests PRIVATE -Wl,--whole-archive -Wl,--no-whole-archive)
 target_link_libraries(Catch2Tests Wpp pthread)
@@ -27,8 +29,8 @@ target_link_libraries(Catch2Tests Wpp pthread)
 target_include_directories(Catch2Tests PRIVATE ${CATCH2_INCLUDE_DIR})
 
 # Add coverage target
-add_custom_target(coverage
-
+add_custom_target(coverage_llvm-cov
+    
     COMMAND llvm-profdata merge -sparse default.profraw -o default.profdata
     COMMAND llvm-cov show
             -format=text
@@ -44,21 +46,20 @@ add_custom_target(coverage
             -show-expansions
             -output-dir=coverage
             Catch2Tests ${LISTENING}
+    
+    COMMAND cat coverage/index.txt | grep -E 'Filename|TOTAL' | column -t
 )
 
-# Add a custom command to run the executable and generate coverage	
-add_custom_target( run_tests    
-    COMMAND Catch2Tests && make coverage
-    COMMAND cat coverage/index.txt | grep -E 'Filename|TOTAL' | column -t 
+add_custom_target(tests_catch2
+    COMMAND Catch2Tests --list-tests
+    COMMAND Catch2Tests
 )
- 
-add_custom_command(OUTPUT run_my_app.sh POST_BUILD
-    COMMAND echo "#!/bin/bash"    >  run_my_app.sh
-    COMMAND echo "make run_tests" >> run_my_app.sh
-    COMMAND chmod +x run_my_app.sh
-    COMMAND ./run_my_app.sh
-)
-# add_custom_target(global_target ALL DEPENDS run_my_app.sh)
 
-# file(GLOB_RECURSE SCRIPT "../_build/*run_my_app.sh")
-# target_include_directories(Catch2Tests PRIVATE ${SCRIPT})
+add_custom_target(statick-anylizer_cppcheck
+    COMMAND cppcheck --language=c++ --std=c++17 --enable=all --force ./../../wpp/* --output-file=cppchect_report.txt --file-filter=*.cpp --file-filter=*.h
+)
+
+add_custom_command(TARGET Catch2Tests POST_BUILD
+    COMMAND cppcheck --language=c++ --std=c++17 --enable=all --force ./../../wpp/* --output-file=cppchect_report.txt --file-filter=*.cpp --file-filter=*.h
+)
+

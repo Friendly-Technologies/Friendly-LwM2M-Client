@@ -16,7 +16,7 @@ if [ -x "$(command -v docker)" ]; then
     # command
 else
     echo "Install docker"
-    sudo apt-get update
+    sudo apt update
     sudo apt install docker.io -y
 fi
 

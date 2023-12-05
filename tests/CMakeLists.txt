@@ -60,9 +60,10 @@ add_custom_command(TARGET Catch2Tests POST_BUILD
             -show-expansions
             -output-dir=coverage
             Catch2Tests ${LISTENING}
-    COMMAND cat coverage/index.txt | grep -E 'Filename|TOTAL' | column -t
     COMMAND ${CMAKE_COMMAND} -E echo "---###---"
+    COMMAND cp ./../../tests/tests.sh ./tests.sh
+    COMMAND chmod +x ./tests.sh
+    COMMAND ./tests.sh
     COMMAND ${CMAKE_COMMAND} -E echo "Coverage determination gcov"
     COMMAND ${CMAKE_COMMAND} -E echo "---###---"
-
 )

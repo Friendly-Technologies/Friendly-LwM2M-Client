@@ -8,5 +8,5 @@ project(WakaamaPlus)
 add_subdirectory(wpp)
 # Add subdirectory with examples targets
 add_subdirectory(examples)
-
+# Add subdirectory with Catch2 tests
 add_subdirectory(tests)

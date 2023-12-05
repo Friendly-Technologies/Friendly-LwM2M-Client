@@ -13,13 +13,11 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-instr-generate -
 
 # Serching all files with *.cpp type in folders and subfolders
 file(GLOB_RECURSE TEST_SOURCES "./*Test.cpp" "catch_amalgamated.cpp")
-file(GLOB_RECURSE SOURCES "../examples/platform/Platform.cpp" "../examples/platform/Guard.cpp")
-file(GLOB_RECURSE LISTENING "../wpp/*")
+file(GLOB_RECURSE SOURCES "Platform.cpp" "Guard.cpp")
+file(GLOB_RECURSE LISTENING "../wpp/*.cpp" "../wpp/*.h")
 
 # Create executable file for tests
 add_executable(Catch2Tests ${SOURCES} ${TEST_SOURCES})
-
-# add_executable(Catch2Tests33 ${SOURCES} ${TEST_SOURCES})
 
 # Include library
 target_link_options(Catch2Tests PRIVATE -Wl,--whole-archive -Wl,--no-whole-archive)
@@ -28,9 +26,25 @@ target_link_libraries(Catch2Tests Wpp pthread)
 # Include Catch2 library for test executable file
 target_include_directories(Catch2Tests PRIVATE ${CATCH2_INCLUDE_DIR})
 
-# Add coverage target
-add_custom_target(coverage_llvm-cov
-    
+# Add static analyzer target for cppcheck
+add_custom_command(TARGET Catch2Tests PRE_BUILD
+    COMMAND cppcheck --language=c++ --std=c++17 --enable=all --force ./../../wpp/* --output-file=cppchect_report.txt --file-filter=*.cpp --file-filter=*.h
+    COMMAND ${CMAKE_COMMAND} -E echo "---###---"
+    COMMAND ${CMAKE_COMMAND} -E echo "Static analyzer cppcheck"
+    COMMAND ${CMAKE_COMMAND} -E echo "---###---"
+    )
+
+# Add tests target for Catch2
+add_custom_command(TARGET Catch2Tests POST_BUILD
+    COMMAND Catch2Tests --list-tests
+    COMMAND Catch2Tests
+    COMMAND ${CMAKE_COMMAND} -E echo "---###---"
+    COMMAND ${CMAKE_COMMAND} -E echo "Running tests catch2"
+    COMMAND ${CMAKE_COMMAND} -E echo "---###---"
+)
+
+# Add coverage target for llvm-cov
+add_custom_command(TARGET Catch2Tests POST_BUILD
     COMMAND llvm-profdata merge -sparse default.profraw -o default.profdata
     COMMAND llvm-cov show
             -format=text
@@ -46,20 +60,9 @@ add_custom_target(coverage_llvm-cov
             -show-expansions
             -output-dir=coverage
             Catch2Tests ${LISTENING}
-    
     COMMAND cat coverage/index.txt | grep -E 'Filename|TOTAL' | column -t
-)
+    COMMAND ${CMAKE_COMMAND} -E echo "---###---"
+    COMMAND ${CMAKE_COMMAND} -E echo "Coverage determination gcov"
+    COMMAND ${CMAKE_COMMAND} -E echo "---###---"
 
-add_custom_target(tests_catch2
-    COMMAND Catch2Tests --list-tests
-    COMMAND Catch2Tests
 )
-
-add_custom_target(statick-anylizer_cppcheck
-    COMMAND cppcheck --language=c++ --std=c++17 --enable=all --force ./../../wpp/* --output-file=cppchect_report.txt --file-filter=*.cpp --file-filter=*.h
-)
-
-add_custom_command(TARGET Catch2Tests POST_BUILD
-    COMMAND cppcheck --language=c++ --std=c++17 --enable=all --force ./../../wpp/* --output-file=cppchect_report.txt --file-filter=*.cpp --file-filter=*.h
-)
-

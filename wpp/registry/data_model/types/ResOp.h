@@ -36,8 +36,10 @@ public:
 	    EXECUTE = 16,               /**< Execute operation */
 	    DISCOVER = 32,              /**< Discover operation */
 		DELETE = 64,                /**< Delete operation */
-	    BLOCK_WRITE = 128,          /**< Block write operation */
+	    #if LWM2M_RAW_BLOCK1_REQUESTS
+		BLOCK_WRITE = 128,          /**< Block write operation */
 	    BLOCK_EXECUTE = 256,        /**< Block execute operation */
+		#endif
 	};
 
 public:
@@ -101,6 +103,7 @@ public:
 	 */
 	inline bool isDelete() const { return _flags & DELETE; }
 
+	#if LWM2M_RAW_BLOCK1_REQUESTS
 	/**
 	 * @brief Checks if the ResOp object represents a block write operation.
 	 * 
@@ -114,6 +117,7 @@ public:
 	 * @return true if the object represents a block execute operation, false otherwise.
 	 */
 	inline bool isBlockExecute() const { return _flags & BLOCK_EXECUTE; }
+	#endif
 
 	/**
 	 * @brief Retrieves the flags representing the operations.

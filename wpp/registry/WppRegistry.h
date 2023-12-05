@@ -9,7 +9,7 @@
 #define WPP_REGISTRY_H_
 
 #include <vector>
-#include "ObjectImpl.h"
+#include "ObjectSpec.h"
 
 /* ---------- Mandatory objects include block begin ---------- */
 #if OBJ_M_3_DEVICE_V12
@@ -99,25 +99,25 @@ public:
 
 	/* ---------- Mandatory objects prototype block begin ---------- */
 	#if OBJ_M_3_DEVICE_V12
-	ObjectImpl<Device> & device();
+	ObjectSpec<Device> & device();
 	#endif
 	#if OBJ_M_1_LWM2M_SERVER_V11
-	ObjectImpl<Lwm2mServer> & lwm2mServer();
+	ObjectSpec<Lwm2mServer> & lwm2mServer();
 	#endif
 	#if OBJ_M_0_LWM2M_SECURITY_V11
-	ObjectImpl<Lwm2mSecurity> & lwm2mSecurity();
+	ObjectSpec<Lwm2mSecurity> & lwm2mSecurity();
 	#endif
 	/* ---------- Mandatory objects prototype block end ---------- */
 
 	/* ---------- Optional objects prototype block begin ---------- */
 	#if OBJ_O_4_CONNECTIVITY_MONITORING_V13
-	ObjectImpl<ConnectivityMonitoring> & connectivityMonitoring();
+	ObjectSpec<ConnectivityMonitoring> & connectivityMonitoring();
 	#endif
 	#if OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
-	ObjectImpl<Lwm2mAccessControl> & lwm2mAccessControl();
+	ObjectSpec<Lwm2mAccessControl> & lwm2mAccessControl();
 	#endif
 	#if OBJ_O_5_FIRMWARE_UPDATE_V11
-	ObjectImpl<FirmwareUpdate> & firmwareUpdate();
+	ObjectSpec<FirmwareUpdate> & firmwareUpdate();
 	#endif
 	/* ---------- Optional objects prototype block end ---------- */
 

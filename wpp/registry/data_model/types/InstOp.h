@@ -6,9 +6,9 @@
 #include "types.h"
 
 /**
- * @brief The InstOp struct represents an instruction operation.
+ * @brief The InstOp struct represents an instance operation.
  * 
- * This struct defines the different types of operations that can be performed on an instruction.
+ * This struct defines the different types of operations that can be performed on an instnce.
  * The operations include CREATE, DELETE, and BLOCK1_CREATE.
  * 
  * The InstOp struct provides methods to check the supported types of operations,
@@ -22,13 +22,15 @@ namespace wpp {
 struct InstOp {
 public:
 	/**
-	 * @brief The TYPE enum represents the different types of instruction operations.
+	 * @brief The TYPE enum represents the different types of instnce operations.
 	 */
 	enum TYPE: uint8_t {
 		NONE = 0,           /**< No operation */
 		CREATE = 1,         /**< Create operation */
 	    DELETE = 2,         /**< Delete operation */
+		#if LWM2M_RAW_BLOCK1_REQUESTS
 	    BLOCK1_CREATE = 4,  /**< Block1 create operation */
+		#endif
 	};
 
 public:
@@ -69,12 +71,14 @@ public:
 	 */
 	inline bool isDelete() const { return _flags & DELETE; }
 
+	#if LWM2M_RAW_BLOCK1_REQUESTS
 	/**
 	 * @brief Checks if the operation is of type BLOCK1_CREATE.
 	 * 
 	 * @return true if the operation is of type BLOCK1_CREATE, false otherwise.
 	 */
 	inline bool isBlockCreate() const { return _flags & BLOCK1_CREATE; }
+	#endif
 
 	/**
 	 * @brief Retrieves the flags associated with the operation.

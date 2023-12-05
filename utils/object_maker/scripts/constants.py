@@ -70,7 +70,7 @@ KEY_OPERATIONS = "operations"
 KEY_DEFINE_RES = "res_define"
 
 TYPE_OPERATION = "ResOp"
-TYPE_OBJECT = "ObjectImpl"
+TYPE_OBJECT = "ObjectSpec"
 
 # there is a map between terms used in program, and terms used in LwM2M below:
 DATA_KEYS = {KEY_NAME:          "Name",

@@ -10,6 +10,8 @@ set(CATCH2_INCLUDE_DIR "catch2/")
 # Set compiler flags for coverage
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-instr-generate -fcoverage-mapping")
+# Add file with wpp lib configs
+include(../wpp/wpp.cmake)
 
 # Serching all files with *.cpp type in folders and subfolders
 file(GLOB_RECURSE TEST_SOURCES "./*Test.cpp" "catch_amalgamated.cpp")
@@ -18,10 +20,8 @@ file(GLOB_RECURSE LISTENING "../wpp/*.cpp" "../wpp/*.h")
 
 # Create executable file for tests
 add_executable(Catch2Tests ${SOURCES} ${TEST_SOURCES})
-
-# Include library
-target_link_options(Catch2Tests PRIVATE -Wl,--whole-archive -Wl,--no-whole-archive)
-target_link_libraries(Catch2Tests Wpp pthread)
+# Link wpp sources to tests
+target_link_wpp(Catch2Tests)
 
 # Include Catch2 library for test executable file
 target_include_directories(Catch2Tests PRIVATE ${CATCH2_INCLUDE_DIR})

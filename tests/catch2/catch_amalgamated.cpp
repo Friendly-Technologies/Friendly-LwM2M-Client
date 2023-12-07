@@ -3758,20 +3758,19 @@ namespace Catch {
 #include <exception>
 
 namespace Catch {
-// not used. by Viacheslav
-    // namespace {
-    //     static std::string tryTranslators(
-    //         std::vector<
-    //             Detail::unique_ptr<IExceptionTranslator const>> const& translators ) {
-    //         if ( translators.empty() ) {
-    //             std::rethrow_exception( std::current_exception() );
-    //         } else {
-    //             return translators[0]->translate( translators.begin() + 1,
-    //                                               translators.end() );
-    //         }
-    //     }
+    namespace {
+        static std::string tryTranslators(
+            std::vector<
+                Detail::unique_ptr<IExceptionTranslator const>> const& translators ) {
+            if ( translators.empty() ) {
+                std::rethrow_exception( std::current_exception() );
+            } else {
+                return translators[0]->translate( translators.begin() + 1,
+                                                  translators.end() );
+            }
+        }
 
-    // }
+    }
 
     ExceptionTranslatorRegistry::~ExceptionTranslatorRegistry() {
     }
@@ -3796,10 +3795,9 @@ namespace Catch {
 
         // First we try user-registered translators. If none of them can
         // handle the exception, it will be rethrown handled by our defaults.
-// not used. by Viacheslav
-        // try {
-        //     return tryTranslators(m_translators);
-        // }
+        try {
+            return tryTranslators(m_translators);
+        }
         // To avoid having to handle TFE explicitly everywhere, we just
         // rethrow it so that it goes back up the caller.
         catch( TestFailureException& ) {

@@ -10,6 +10,9 @@ include(../wpp/wpp.cmake)
 # Include file with compiler config
 include(../wpp/configs/compiler_config.cmake)
 
+# Compiler options
+add_compile_options(-Wno-unused-function)
+
 # Set compiler flags for coverage
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-instr-generate -fcoverage-mapping")

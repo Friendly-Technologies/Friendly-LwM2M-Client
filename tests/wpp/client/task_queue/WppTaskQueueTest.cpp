@@ -17,8 +17,8 @@ TEST_CASE("WppTaskQueue Methods", "[WppTaskQueue]") {
         // Assert
         REQUIRE(WppTaskQueue::isTaskExist(taskId));
         REQUIRE(WppTaskQueue::isTaskIdle(taskId));
-        REQUIRE_FALSE(WppTaskQueue::isTaskExecuting(taskId));
-        REQUIRE_FALSE(WppTaskQueue::isTaskShouldBeDeleted(taskId));
+        REQUIRE_FALSE(WppTaskQueue::isTaskExecuting(taskId2));
+        REQUIRE_FALSE(WppTaskQueue::isTaskShouldBeDeleted(taskId3));
         REQUIRE(WppTaskQueue::getTaskCnt()==3);
     }
 

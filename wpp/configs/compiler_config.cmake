@@ -1,7 +1,7 @@
 # Build options
-option(BUILD_WITH_EXCEPTIONS "Enable support of Exceptions" OFF)
-option(BUILD_WITH_RTTI "Enable support of RTTI" OFF)
-option(BUILD_FOR_64_BIT "Build for 64-bit system or 32-bit" ON)
+option(WPP_BUILD_WITH_EXCEPTIONS "Enable support of Exceptions" OFF)
+option(WPP_BUILD_WITH_RTTI "Enable support of RTTI" OFF)
+option(WPP_BUILD_FOR_64_BIT "Build for 64-bit system or 32-bit" ON)
 
 # Position-independent code is code that can execute
 # properly regardless of where in memory it is located.
@@ -31,7 +31,7 @@ add_compile_options(
 )
 
 # Build for system type
-if (BUILD_FOR_64_BIT)
+if (WPP_BUILD_FOR_64_BIT)
     message(STATUS "Building for 64 bit system")
     add_compile_options(-m64)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -m64")
@@ -42,7 +42,7 @@ else()
 endif()
 
 # Exceptions comiler options
-if (BUILD_WITH_EXCEPTIONS)
+if (WPP_BUILD_WITH_EXCEPTIONS)
     message(STATUS "Exceptions are supported")
     add_compile_options(-fexceptions)
 else()
@@ -51,7 +51,7 @@ else()
 endif()
 
 # RTTI comiler options
-if (BUILD_WITH_RTTI)
+if (WPP_BUILD_WITH_RTTI)
     message(STATUS "RTTI is supported")
     add_compile_options(-frtti)
 else()

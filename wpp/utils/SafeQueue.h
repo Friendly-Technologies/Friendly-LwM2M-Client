@@ -178,6 +178,13 @@ public:
 	bool at(size_t i, T* data);
 
 	/**
+	 * @brief Clears the queue.
+	 * 
+	 * @note Can not be simultaneously called with pop(), to_vector(), front(T*), back(T*), at(T*).
+	 */
+	void clear();
+
+	/**
 	 * @brief Checks if the queue is empty.
 	 * 
 	 * @return true if the queue is empty, false otherwise.
@@ -358,6 +365,11 @@ bool SafeQueue<T, SIZE>::at(size_t i, T* data) {
 
 	SQ_GUARD_UNLOCK(_pop_guard);
 	return true;
+}
+
+template <typename T, size_t SIZE>
+void SafeQueue<T, SIZE>::clear() {
+	pop(size());
 }
 
 template <typename T, size_t SIZE>

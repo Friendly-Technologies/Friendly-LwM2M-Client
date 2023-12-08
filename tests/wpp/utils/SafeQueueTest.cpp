@@ -1,6 +1,5 @@
 #include "catch_amalgamated.hpp"
 #include "SafeQueue.h"
-#include <iostream>
 
 TEST_CASE("SafeQueue Constructor", "[constructor]") {
     SafeQueue<int, 5> queue;
@@ -201,7 +200,7 @@ TEST_CASE("SafeQueue element access", "[front][back][at]") {
     }
 }
 
-TEST_CASE("SafeQueue state checks", "[is_empty][is_full][size][empty_size][element_size]") {
+TEST_CASE("SafeQueue state checks", "[is_empty][is_full][size][available_space][element_size]") {
     SafeQueue<int, 5> queue;
     int values[5] = {1, 2, 3, 4, 5};
 
@@ -227,12 +226,12 @@ TEST_CASE("SafeQueue state checks", "[is_empty][is_full][size][empty_size][eleme
         REQUIRE(queue.size() == 4);
     }
 
-    SECTION("Check empty size") {
-        REQUIRE(queue.empty_size() == 5);
+    SECTION("Check available space") {
+        REQUIRE(queue.available_space() == 5);
         REQUIRE(queue.push(values, 3));
-        REQUIRE(queue.empty_size() == 2);
+        REQUIRE(queue.available_space() == 2);
         REQUIRE(queue.push(values, 2));
-        REQUIRE(queue.empty_size() == 0);
+        REQUIRE(queue.available_space() == 0);
     }
 
     SECTION("Check element size") {

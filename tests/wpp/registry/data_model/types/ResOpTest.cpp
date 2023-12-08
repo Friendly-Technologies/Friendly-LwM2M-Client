@@ -13,16 +13,20 @@ TEST_CASE("ResOp", "[ResOp]") {
         REQUIRE_FALSE(op.isDelete());        
         REQUIRE_FALSE(op.isExecute());
         REQUIRE_FALSE(op.isDiscover());
+#ifdef LWM2M_RAW_BLOCK1_REQUESTS
         REQUIRE_FALSE(op.isBlockWrite());
         REQUIRE_FALSE(op.isBlockExecute());
+#endif
         REQUIRE_FALSE(op.isSupported(ResOp::TYPE::NONE));
         REQUIRE_FALSE(op.isSupported(ResOp::TYPE::READ));
         REQUIRE_FALSE(op.isSupported(ResOp::TYPE::WRITE));
         REQUIRE_FALSE(op.isSupported(ResOp::TYPE::DELETE));
         REQUIRE_FALSE(op.isSupported(ResOp::TYPE::EXECUTE));
         REQUIRE_FALSE(op.isSupported(ResOp::TYPE::DISCOVER));
+#ifdef LWM2M_RAW_BLOCK1_REQUESTS
         REQUIRE_FALSE(op.isSupported(ResOp::TYPE::BLOCK_WRITE));
         REQUIRE_FALSE(op.isSupported(ResOp::TYPE::BLOCK_EXECUTE));
+#endif
     }
 
     SECTION("isRead Function") {
@@ -36,8 +40,10 @@ TEST_CASE("ResOp", "[ResOp]") {
         REQUIRE_FALSE(op.isDelete());
         REQUIRE_FALSE(op.isExecute());
         REQUIRE_FALSE(op.isDiscover());
+#ifdef LWM2M_RAW_BLOCK1_REQUESTS
         REQUIRE_FALSE(op.isBlockWrite());
         REQUIRE_FALSE(op.isBlockExecute());
+#endif
     }
 
     SECTION("isWrite(WRITE_UPD) Function") {
@@ -82,8 +88,10 @@ TEST_CASE("ResOp", "[ResOp]") {
         REQUIRE_FALSE(op.isDelete());
         REQUIRE_FALSE(op.isExecute());
         REQUIRE_FALSE(op.isDiscover());
+#ifdef LWM2M_RAW_BLOCK1_REQUESTS
         REQUIRE_FALSE(op.isBlockWrite());
         REQUIRE_FALSE(op.isBlockExecute());
+#endif
         REQUIRE_FALSE((op.getFlags() == 2));
         REQUIRE_FALSE((op.getFlags() == 8));
     }
@@ -98,8 +106,10 @@ TEST_CASE("ResOp", "[ResOp]") {
         REQUIRE_FALSE(op.isWrite());
         REQUIRE_FALSE(op.isDelete());
         REQUIRE_FALSE(op.isDiscover());
+#ifdef LWM2M_RAW_BLOCK1_REQUESTS
         REQUIRE_FALSE(op.isBlockWrite());
         REQUIRE_FALSE(op.isBlockExecute());
+#endif
     }
     SECTION("isDiscover Function") {
         ResOp op(ResOp::TYPE::DISCOVER);
@@ -112,8 +122,10 @@ TEST_CASE("ResOp", "[ResOp]") {
         REQUIRE_FALSE(op.isWrite());
         REQUIRE_FALSE(op.isExecute());
         REQUIRE_FALSE( op.isDelete());
+#ifdef LWM2M_RAW_BLOCK1_REQUESTS
         REQUIRE_FALSE(op.isBlockWrite());
         REQUIRE_FALSE(op.isBlockExecute());
+#endif
     }
     SECTION("isDelete Function") {
         ResOp op(ResOp::TYPE::DELETE);
@@ -126,9 +138,13 @@ TEST_CASE("ResOp", "[ResOp]") {
         REQUIRE_FALSE(op.isWrite());
         REQUIRE_FALSE(op.isExecute());
         REQUIRE_FALSE(op.isDiscover());
+#ifdef LWM2M_RAW_BLOCK1_REQUESTS
         REQUIRE_FALSE(op.isBlockWrite());
         REQUIRE_FALSE(op.isBlockExecute());
+#endif
     }
+
+#ifdef LWM2M_RAW_BLOCK1_REQUESTS
    SECTION("isBlockWrite Function") {
         ResOp op(ResOp::TYPE::BLOCK_WRITE);
 
@@ -157,7 +173,7 @@ TEST_CASE("ResOp", "[ResOp]") {
         REQUIRE_FALSE(op.isDiscover());
         REQUIRE_FALSE(op.isBlockWrite());
     }
-
+#endif
     SECTION("EXECUTE|WRITE Function") {
         ResOp op(ResOp::TYPE::EXECUTE | ResOp::TYPE::WRITE);
 
@@ -172,6 +188,7 @@ TEST_CASE("ResOp", "[ResOp]") {
         REQUIRE(op.isWrite());
         REQUIRE(op.getFlags() == 5);
     }
+#ifdef LWM2M_RAW_BLOCK1_REQUESTS
     SECTION("DISCOVER|BLOCK_EXECUTE Function") {
         ResOp op(ResOp::TYPE::DISCOVER | ResOp::TYPE::BLOCK_EXECUTE);
 
@@ -186,6 +203,7 @@ TEST_CASE("ResOp", "[ResOp]") {
         REQUIRE(op.isDelete());
         REQUIRE(op.getFlags() == 200);
     }
+#endif
     SECTION("DELETE with duplicates TYPE Function") {
         ResOp op(ResOp::TYPE::DELETE | ResOp::TYPE::DELETE | ResOp::TYPE::DELETE);
                 REQUIRE(op.getFlags() == 64);
@@ -209,12 +227,17 @@ TEST_CASE("ResOp", "[ResOp]") {
             ResOp::TYPE::WRITE          |
             ResOp::TYPE::EXECUTE        |
             ResOp::TYPE::DISCOVER       |
-            ResOp::TYPE::DELETE         |
+#ifdef LWM2M_RAW_BLOCK1_REQUESTS
             ResOp::TYPE::BLOCK_EXECUTE  |
-            ResOp::TYPE::BLOCK_WRITE);
+            ResOp::TYPE::BLOCK_WRITE    |
+#endif
+            ResOp::TYPE::DELETE);
         std::vector<ResOp::TYPE> result = op.asVector();
-
+#ifdef LWM2M_RAW_BLOCK1_REQUESTS
         REQUIRE(result.size() == 9);
+#else
+        REQUIRE(result.size() == 7);
+#endif
         REQUIRE(result[0] == ResOp::TYPE::READ);
         REQUIRE(result[1] == ResOp::TYPE::WRITE_UPD);
         REQUIRE(result[2] == ResOp::TYPE::WRITE_REPLACE_RES);
@@ -222,22 +245,31 @@ TEST_CASE("ResOp", "[ResOp]") {
         REQUIRE(result[4] == ResOp::TYPE::EXECUTE);
         REQUIRE(result[5] == ResOp::TYPE::DISCOVER);
         REQUIRE(result[6] == ResOp::TYPE::DELETE);
+#ifdef LWM2M_RAW_BLOCK1_REQUESTS
         REQUIRE(result[7] == ResOp::TYPE::BLOCK_WRITE);
         REQUIRE(result[8] == ResOp::TYPE::BLOCK_EXECUTE);
+#endif
     }
 
     SECTION("asVector2 Function") {
         ResOp op(
             ResOp::TYPE::READ               |
             ResOp::TYPE::WRITE_UPD          |
-            ResOp::TYPE::WRITE_REPLACE_INST |
-            ResOp::TYPE::BLOCK_WRITE);
+#ifdef LWM2M_RAW_BLOCK1_REQUESTS
+            ResOp::TYPE::BLOCK_WRITE        |
+#endif
+            ResOp::TYPE::WRITE_REPLACE_INST);
         std::vector<ResOp::TYPE> result = op.asVector();
-
+#ifdef LWM2M_RAW_BLOCK1_REQUESTS
         REQUIRE(result.size() == 4);
+#else
+        REQUIRE(result.size() == 3);
+#endif
         REQUIRE(result[0] == ResOp::TYPE::READ);
         REQUIRE(result[1] == ResOp::TYPE::WRITE_UPD);
         REQUIRE(result[2] == ResOp::TYPE::WRITE_REPLACE_INST);
+#ifdef LWM2M_RAW_BLOCK1_REQUESTS
         REQUIRE(result[3] == ResOp::TYPE::BLOCK_WRITE);
+#endif
     }
 }

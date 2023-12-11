@@ -1,5 +1,32 @@
+/**
+ * @file SafeQueue.h
+ * @version 1.0.1
+ * @ref https://github.com/VSkoshchuk/SafeQueue
+ * 
+ * Copyright (c) 2023 VSkoshchuk skoschuk999@gmail.com
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+
 #ifndef SAFE_QUEUE_H_
 #define SAFE_QUEUE_H_
+
 
 #include <string.h>
 #include <vector>
@@ -49,8 +76,12 @@
 
 
 /**
- * @brief This class is a simple implementation of a queue that does not use dynamic memory
- * and copy data to intenal buffer with memcpy.
+ * @brief SafeQueue is an implementation of the thread/IRQ safe queue that does not
+ * use dynamic memory, and can perform sumultaneously pop() and push() without any
+ * blocking, that alows use this implementation as data container in the critical
+ * sections, or threads and IRQ where it is impossible to wait for access to the 
+ * container and data loss is unacceptable. Developed with a focus on embedded systems.
+ * 
  * The problem it solves is the following: it is necessary to have a container that
  * allows adding and removing elements independently by different streams/ISR. This
  * container is protected from the simultaneous call of the push/pop method from

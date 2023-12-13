@@ -13,6 +13,6 @@ include(configs/compiler_config.cmake)
 include(wpp.cmake)
 
 # Creating target as static library
-add_library(Wpp STATIC ${WPP_SOURCES})
+add_library(Wpp STATIC)
 # Link Wpp sources
 target_link_wpp(Wpp)

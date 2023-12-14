@@ -33,24 +33,24 @@ Resource::Resource(ID_T id, const ResOp &operation, IS_SINGLE isSingle, IS_MANDA
 	_id(id), _operation(operation), _isSingle(isSingle), _isMandatory(isMandatory), _typeID(dataType) {
 }
 
-Resource::Resource(const Resource& resource) {
-	_id = resource._id;
-	_operation = resource._operation;
-	_isSingle = resource._isSingle;
-	_isMandatory = resource._isMandatory;
-	_typeID = resource._typeID;
-	_instances = resource._instances;
-	_dataVerifier = resource._dataVerifier;
-}
+Resource::Resource(const Resource& resource)
+    : _id(resource._id), 
+      _operation(resource._operation), 
+      _isSingle(resource._isSingle), 
+      _isMandatory(resource._isMandatory),
+      _typeID(resource._typeID),
+      _instances(resource._instances),
+      _dataVerifier(resource._dataVerifier) 
+{}
 
-Resource::Resource(Resource&& resource) {
-	_id = resource._id;
-	_operation = resource._operation;
-	_isSingle = resource._isSingle;
-	_isMandatory = resource._isMandatory;
-	_typeID = resource._typeID;
-	_instances = std::move(resource._instances);
-	_dataVerifier = resource._dataVerifier;
+Resource::Resource(Resource&& resource)
+	: _id(resource._id), 
+      _operation(resource._operation), 
+      _isSingle(resource._isSingle), 
+      _isMandatory(resource._isMandatory),
+      _typeID(resource._typeID),
+      _instances(std::move(resource._instances)),
+      _dataVerifier(resource._dataVerifier) {
 	resource.clear();
 }
 
@@ -149,7 +149,8 @@ size_t Resource::instanceCnt() const {
 
 const std::vector<ID_T> Resource::getInstIds() const {
 	std::vector<ID_T> ids;
-	for (auto inst : _instances) ids.push_back(inst.id);
+	ids.reserve(_instances.size());
+	std::transform(_instances.begin(), _instances.end(), std::back_inserter(ids), [](const auto& inst) { return inst.id; });
 	return ids;
 }
 

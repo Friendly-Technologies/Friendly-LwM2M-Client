@@ -46,12 +46,23 @@ public:
 		std::string altPath; /**< The alternative path of the client. */
 	};
 
+private:
 	/**
 	 * @brief Constructs a WppClient object with the given connection and maximum sleep time.
 	 * @param connection The WppConnection object to be associated with the client.
 	 * @param maxSleepTime The maximum sleep time in seconds.
 	 */
 	WppClient(WppConnection &connection, time_t maxSleepTime);
+	
+	/**
+	 * @brief Unused constructors of WppClient.
+	 */
+	WppClient(const WppClient&) = delete;
+	WppClient(WppClient&&) = delete;
+	WppClient& operator=(const WppClient&) = delete;
+	WppClient& operator=(WppClient&&) = delete;
+
+public:
 	~WppClient();
 
 	/* ------------- WppClient management ------------- */

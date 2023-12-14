@@ -33,25 +33,24 @@ Resource::Resource(ID_T id, const ResOp &operation, IS_SINGLE isSingle, IS_MANDA
 	_id(id), _operation(operation), _isSingle(isSingle), _isMandatory(isMandatory), _typeID(dataType) {
 }
 
-Resource::Resource(const Resource& resource)
-    : _id(resource._id), 
-      _operation(resource._operation), 
-      _isSingle(resource._isSingle), 
-      _isMandatory(resource._isMandatory),
-      _typeID(resource._typeID),
-      _instances(resource._instances),
-      _dataVerifier(resource._dataVerifier) 
-{}
+Resource::Resource(const Resource& resource) {
+	_id = resource._id;
+	_operation = resource._operation;
+	_isSingle = resource._isSingle;
+	_isMandatory = resource._isMandatory;
+	_typeID = resource._typeID;
+	_instances = resource._instances;
+	_dataVerifier = resource._dataVerifier;
+}
 
-Resource::Resource(Resource&& resource)
-	: _id(resource._id), 
-      _operation(resource._operation), 
-      _isSingle(resource._isSingle), 
-      _isMandatory(resource._isMandatory),
-      _typeID(resource._typeID),
-      _instances(std::move(resource._instances)),
-      _dataVerifier(resource._dataVerifier) {
-	resource.clear();
+Resource::Resource(Resource&& resource) {
+	_id = resource._id;
+	_operation = resource._operation;
+	_isSingle = resource._isSingle;
+	_isMandatory = resource._isMandatory;
+	_typeID = resource._typeID;
+	_instances = std::move(resource._instances);
+	_dataVerifier = resource._dataVerifier;
 }
 
 Resource& Resource::operator=(const Resource& resource) {

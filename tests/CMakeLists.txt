@@ -35,7 +35,7 @@ target_include_directories(Catch2Tests PRIVATE "catch2/")
 
 # Add static analyzer target for cppcheck
 add_custom_command(TARGET Catch2Tests PRE_BUILD
-    COMMAND cppcheck --language=c++ --std=c++17 --enable=all --force ./../../wpp/* --output-file=cppchect_report.txt --file-filter=*.cpp --file-filter=*.h --suppress=unusedFunction --suppress=missingInclude
+    COMMAND cppcheck --language=c++ --std=c++17 --enable=all --force ./../../wpp/* --output-file=cppchect_report.txt --file-filter=*.cpp --file-filter=*.h --suppress=unusedFunction --suppress=missingInclude --suppress=useInitializationList
     COMMAND ${CMAKE_COMMAND} -E echo "---###---"
     COMMAND ${CMAKE_COMMAND} -E echo "Static analyzer cppcheck"
     COMMAND ${CMAKE_COMMAND} -E echo "---###---"

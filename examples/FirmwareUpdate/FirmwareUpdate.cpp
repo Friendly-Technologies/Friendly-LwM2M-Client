@@ -19,10 +19,9 @@ void FirmwareUpdateImpl::init(Object &obj) {
 	inst0->set(FirmwareUpdate::STATE_3, (INT_T)FirmwareUpdate::S_IDLE);
 	inst0->set(FirmwareUpdate::UPDATE_RESULT_5, (INT_T)getLastUpdResult());
     #if RES_5_8
-    inst0->set(FirmwareUpdate::FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8, (INT_T)FirmwareUpdate::COAP);
-    inst0->set({FirmwareUpdate::FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8, 1}, (INT_T)FirmwareUpdate::COAPS);
+    inst0->set(FirmwareUpdate::FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8, (INT_T)FirmwareUpdate::HTTP);
     #endif
-    inst0->set(FirmwareUpdate::FIRMWARE_UPDATE_DELIVERY_METHOD_9, (INT_T)FirmwareUpdate::PUSH);
+    inst0->set(FirmwareUpdate::FIRMWARE_UPDATE_DELIVERY_METHOD_9, (INT_T)FirmwareUpdate::BOTH);
 	#if RES_5_10
 	inst0->set(FirmwareUpdate::CANCEL_10, (EXECUTE_T)[this](Instance& inst, ID_T id, const OPAQUE_T& data) {
 		cout << "FirmwareUpdate: execute CANCEL_10" << endl;
@@ -90,8 +89,6 @@ void FirmwareUpdateImpl::update(Instance& inst) {
     inst.getPtr(FirmwareUpdate::PACKAGE_0, &fwData);
     if (fwData) writeToFile(getFileName(), *fwData);
     #endif
-
-    _device.requestReboot();
 }
 
 string FirmwareUpdateImpl::getFileName() {

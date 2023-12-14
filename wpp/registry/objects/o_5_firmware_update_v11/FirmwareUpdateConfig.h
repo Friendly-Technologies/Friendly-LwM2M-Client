@@ -9,8 +9,8 @@
 #if OBJ_O_5_FIRMWARE_UPDATE_V11
 
 /* --------------- Config block 0 start --------------- */
-#define RES_5_6 0
-#define RES_5_7 0
+#define RES_5_6 1
+#define RES_5_7 1
 #define RES_5_8 1
 #define RES_5_10 0
 #define RES_5_11 0

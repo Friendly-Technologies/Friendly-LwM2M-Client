@@ -117,8 +117,6 @@ void FirmwareUpdate::serverOperationNotifier(ResOp::TYPE type, const ResLink &re
 				#if RES_5_13
 				stopDeferUpdateGuard();
 				#endif
-				changeUpdRes(R_INITIAL);
-				changeState(S_UPDATING);
 			}
 			break;
 		}

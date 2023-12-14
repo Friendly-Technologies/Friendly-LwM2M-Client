@@ -6,18 +6,24 @@
 #include <chrono>
 #include <mutex>
 #include <functional>
+#include <curl/curl.h>
 
 using namespace std;
 
-class FwDownloaderStub {
+static size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream) {
+    size_t written = fwrite(ptr, size, nmemb, stream);
+    return written;
+}
+
+class FwDownloaderHttp {
     struct DownloadJob {
-        string uri = "";
+        string url = "";
         function<void(string)> downloadedClb;
         bool downloading = false;
     };
 
 public:
-    FwDownloaderStub() {
+    FwDownloaderHttp() {
         _terminateThread = false;
 
         _downloadingThread = new thread([this]() {
@@ -26,31 +32,45 @@ public:
                 if (_terminateThread) continue;
 
                 this->_jobGuard.lock();
-                string uri = this->_job.uri;
+                string url = this->_job.url;
                 function<void(string)> downloadedClb = this->_job.downloadedClb;
                 this->_jobGuard.unlock();
-                cout << "Start downloading from uri: " << uri << endl;
+                string file = "test_http.fw";
+                cout << "Start downloading from url: " << url << endl;
                 
-                int cnt = 10;
-                while (--cnt && this->_job.downloading) {
-                    cout << "Downloading..." << endl;
-                    this_thread::sleep_for(chrono::seconds(1));
-                }
+                CURL *curl;
+                FILE *fp;
+                CURLcode res;
 
-                if (!this->_job.downloading) {
-                    cout << "Downloading is canceled" << endl;
-                    continue;
+                curl = curl_easy_init();
+                if (curl) {
+                    fp = fopen(file.c_str(), "wb");
+                    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+                    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+                    curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+                    res = curl_easy_perform(curl);
+
+                    /* Check for errors */
+                    if (res != CURLE_OK) {
+                        cout << "curl_easy_perform() failed: " << curl_easy_strerror(res) << endl;
+                    }
+
+                    /* Cleanup */
+                    fclose(fp);
+                    curl_easy_cleanup(curl);
+                } else {
+                    cout << "curl_easy_init() failed" << endl;
                 }
                 
                 cout << "Downloading is compleated" << endl;
-                downloadedClb("Downloaded file name");
+                downloadedClb("test_http.fw");
                 _job.downloading = false;
             }
             cout << "Downloading thread is terminated" << endl;
         });
     }
 
-    ~FwDownloaderStub() {
+    ~FwDownloaderHttp() {
         _terminateThread = true;
         cancelDownloading();
         if (_downloadingThread) {
@@ -61,10 +81,10 @@ public:
         }
     }
 
-	void startDownloading(string uri, function<void(string)> downloadedClb) {
+	void startDownloading(string url, function<void(string)> downloadedClb) {
         // TODO befor starting download check if not already downloading
         _jobGuard.lock();
-        _job = {uri, downloadedClb, true};
+        _job = {url, downloadedClb, true};
         _jobGuard.unlock();
     }
 

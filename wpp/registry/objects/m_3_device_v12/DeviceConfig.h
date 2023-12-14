@@ -12,6 +12,7 @@
 #define RES_3_0 1
 #define RES_3_1 1
 #define RES_3_2 1
+#define RES_3_3 1
 #define RES_3_13 1
 /* --------------- Config block 0 end --------------- */
 

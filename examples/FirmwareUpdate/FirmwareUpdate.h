@@ -11,14 +11,14 @@
 #include "Device.h"
 #include "WppTaskQueue.h"
 
-#include "FwDownloaderStub.h"
+#include "FwDownloaderHttp.h"
 
 using namespace wpp;
 using namespace std;
 
 class FirmwareUpdateImpl: public wpp::ObjActObserver, public wpp::InstEventObserver, public wpp::InstBlockOpObserver {
 public:
-    FirmwareUpdateImpl(DeviceImpl &device);
+    FirmwareUpdateImpl();
     ~FirmwareUpdateImpl();
 
     void init(Object &obj);
@@ -33,12 +33,11 @@ private:
     FirmwareUpdate::UpdRes getLastUpdResult();
     void fwIsDownloaded();
     void update(Instance& inst);
-    string getFileName();
+    string getFileName(Instance& inst);
     void writeToFile(STRING_T fileName, const OPAQUE_T &buff);
 
 private:
-    FwDownloaderStub _downloader;
-    DeviceImpl &_device;
+    FwDownloaderHttp _downloader;
 };
 
 #endif // FIRMWARE_UPDATE_H_

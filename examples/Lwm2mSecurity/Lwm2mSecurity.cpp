@@ -13,7 +13,7 @@ void Lwm2mSecurityImpl::init(Object &obj) {
         inst0->set(Lwm2mSecurity::BOOTSTRAP_SERVER_1, true);
         inst0->set(Lwm2mSecurity::CLIENT_HOLD_OFF_TIME_11, (INT_T)10);
     #else
-        string url = "coaps://leshan.eclipseprojects.io:";//"coap://eu.iot.avsystem.cloud:"; //"coaps://leshan.eclipseprojects.io:";
+        string url = "coaps://demodm.friendly-tech.com:";//"coap://eu.iot.avsystem.cloud:"; //"coaps://leshan.eclipseprojects.io:";
         #if DTLS_WITH_PSK
             url += "5684";
             string pskId = "SINAI_TEST_DEV_ID";

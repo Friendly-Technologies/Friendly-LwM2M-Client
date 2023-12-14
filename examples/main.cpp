@@ -48,7 +48,7 @@ int main() {
 	Lwm2mAccessControlImpl accessCtrl;
 	#endif
 	#if OBJ_O_5_FIRMWARE_UPDATE_V11
-	FirmwareUpdateImpl fwUpd(device);
+	FirmwareUpdateImpl fwUpd;
 	#endif
 
 	// Client initialization

@@ -15,9 +15,9 @@ void DeviceImpl::init(Object &obj) {
     });
     inst0->set(Device::ERROR_CODE_11, (INT_T)Device::NO_ERROR);
     inst0->set(Device::SUPPORTED_BINDING_AND_MODES_16, WPP_BINDING_UDP);
-    inst0->set(Device::MANUFACTURER_0, (STRING_T)"Open Mobile Alliance");
+    inst0->set(Device::MANUFACTURER_0, (STRING_T)"Wakaama Plus");
     inst0->set(Device::MODEL_NUMBER_1, (STRING_T)"Lightweight M2M Client");
-    inst0->set(Device::SERIAL_NUMBER_2, (STRING_T)"345000123");
+    inst0->set(Device::SERIAL_NUMBER_2, (STRING_T)"0123456789");
 }
 
 void DeviceImpl::objectRestore(Object &object) {

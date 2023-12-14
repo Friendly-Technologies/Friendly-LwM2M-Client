@@ -179,7 +179,8 @@ void FirmwareUpdate::userOperationNotifier(ResOp::TYPE type, const ResLink &resI
 			resource(UPDATE_RESULT_5)->get(res);
 			switch (res) {
 			case R_FW_UPD_SUCCESS:
-				changeState(S_IDLE);
+				resetStateMachine();
+				changeUpdRes(R_FW_UPD_SUCCESS);
 				break;
 			#if RES_5_13
 			case R_FW_UPD_DEFERRED: {

@@ -51,7 +51,6 @@ Resource::Resource(Resource&& resource) {
 	_typeID = resource._typeID;
 	_instances = std::move(resource._instances);
 	_dataVerifier = resource._dataVerifier;
-	resource.clear();
 }
 
 Resource& Resource::operator=(const Resource& resource) {
@@ -149,7 +148,8 @@ size_t Resource::instanceCnt() const {
 
 const std::vector<ID_T> Resource::getInstIds() const {
 	std::vector<ID_T> ids;
-	for (auto inst : _instances) ids.push_back(inst.id);
+	ids.reserve(_instances.size());
+	std::transform(_instances.begin(), _instances.end(), std::back_inserter(ids), [](const auto& inst) { return inst.id; });
 	return ids;
 }
 

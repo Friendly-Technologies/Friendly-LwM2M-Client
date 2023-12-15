@@ -80,7 +80,7 @@ size_t WppTaskQueue::getTaskCnt() {
 bool WppTaskQueue::isTaskExist(task_id_t id) {
 	_taskQueueGuard.lock();
 
-	auto task = std::find(_instance._tasks.begin(), _instance._tasks.end(), (TaskInfo *)id);
+	auto task = std::find(_instance._tasks.begin(), _instance._tasks.end(), static_cast<TaskInfo*>(id));
 	bool isExist = task != _instance._tasks.end();
 
 	_taskQueueGuard.unlock();
@@ -90,7 +90,7 @@ bool WppTaskQueue::isTaskExist(task_id_t id) {
 bool WppTaskQueue::isTaskIdle(task_id_t id) {
 	_taskQueueGuard.lock();
 
-	auto task = std::find(_instance._tasks.begin(), _instance._tasks.end(), (TaskInfo *)id);
+	auto task = std::find(_instance._tasks.begin(), _instance._tasks.end(), static_cast<TaskInfo*>(id));
 	if (task == _instance._tasks.end()) {
 		_taskQueueGuard.unlock();
 		return false;
@@ -104,7 +104,7 @@ bool WppTaskQueue::isTaskIdle(task_id_t id) {
 bool WppTaskQueue::isTaskExecuting(task_id_t id) {
 	_taskQueueGuard.lock();
 
-	auto task = std::find(_instance._tasks.begin(), _instance._tasks.end(), (TaskInfo *)id);
+	auto task = std::find(_instance._tasks.begin(), _instance._tasks.end(), static_cast<TaskInfo*>(id));
 	if (task == _instance._tasks.end()) {
 		_taskQueueGuard.unlock();
 		return false;
@@ -118,7 +118,7 @@ bool WppTaskQueue::isTaskExecuting(task_id_t id) {
 bool WppTaskQueue::isTaskShouldBeDeleted(task_id_t id) {
 	_taskQueueGuard.lock();
 
-	auto task = std::find(_instance._tasks.begin(), _instance._tasks.end(), (TaskInfo *)id);
+	auto task = std::find(_instance._tasks.begin(), _instance._tasks.end(), static_cast<TaskInfo*>(id));
 	if (task == _instance._tasks.end()) {
 		_taskQueueGuard.unlock();
 		return false;
@@ -132,7 +132,7 @@ bool WppTaskQueue::isTaskShouldBeDeleted(task_id_t id) {
 void WppTaskQueue::requestToRemoveTask(task_id_t id) {
 	_taskQueueGuard.lock();
 
-	auto task = std::find(_instance._tasks.begin(), _instance._tasks.end(), (TaskInfo *)id);
+	auto task = std::find(_instance._tasks.begin(), _instance._tasks.end(), static_cast<TaskInfo*>(id));
 	if (task == _instance._tasks.end()) {
 		_taskQueueGuard.unlock();
 		return;

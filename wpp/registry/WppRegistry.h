@@ -49,7 +49,7 @@ namespace wpp {
  */
 class WppRegistry {
 public:
-	WppRegistry(lwm2m_context_t &context);
+	explicit WppRegistry(lwm2m_context_t &context);
 	~WppRegistry();
 
 	WppRegistry(const WppRegistry&) = delete;

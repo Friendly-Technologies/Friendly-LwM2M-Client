@@ -118,13 +118,18 @@ TEST_CASE("SafeQueue to_vector", "[to_vector]") {
 
     SECTION("Convert not empty queue to vector") {
         int values[7] = {1, 2, 3, 4, 5, 6, 7};
-        REQUIRE(queue.push(values, 5));
-        REQUIRE(queue.size() == 5);
-        for (int i = 0; i < 5; ++i) {
+        REQUIRE(queue.push(values, 4));
+        REQUIRE(queue.size() == 4);
+        for (int i = 0; i < 4; ++i) {
             REQUIRE(*queue.at(i) == values[i]);
         }
         
-        auto vec = queue.to_vector(5);
+        auto vec = queue.to_vector(4);
+        REQUIRE(vec.size() == 4);
+        REQUIRE(std::equal(vec.begin(), vec.end(), values));
+
+        REQUIRE(queue.push(values + 4));
+        vec = queue.to_vector(5);
         REQUIRE(vec.size() == 5);
         REQUIRE(std::equal(vec.begin(), vec.end(), values));
 
@@ -142,28 +147,37 @@ TEST_CASE("SafeQueue to_vector", "[to_vector]") {
 
 TEST_CASE("SafeQueue element access", "[front][back][at]") {
     SafeQueue<int, 5> queue;
+     SafeQueue<int, 6> notFullQueue;
     int values[5] = {1, 2, 3, 4, 5};
     REQUIRE(queue.push(values, 5));
+    REQUIRE(notFullQueue.push(values, 5));
 
     SECTION("Access front element by ptr") {
         REQUIRE(*queue.front() == 1);
+        REQUIRE(*notFullQueue.front() == 1);
     }
 
     SECTION("Access back element by ptr") {
         REQUIRE(*queue.back() == 5);
+        REQUIRE(*notFullQueue.back() == 5);
     }
 
     SECTION("Access element at index by ptr") {
         REQUIRE(*queue.at(3) == 4);
+        REQUIRE(*notFullQueue.at(3) == 4);
     }
 
     SECTION("Access element at out of range index by ptr") {
         REQUIRE(queue.at(256) == NULL);
+        REQUIRE(notFullQueue.at(256) == NULL);
     }
 
     SECTION("Access front element by value") {
         int value = 0;
         REQUIRE(queue.front(&value));
+        REQUIRE(value == 1);
+        value = 0;
+        REQUIRE(notFullQueue.front(&value));
         REQUIRE(value == 1);
     }
 
@@ -171,17 +185,24 @@ TEST_CASE("SafeQueue element access", "[front][back][at]") {
         int value = 0;
         REQUIRE(queue.back(&value));
         REQUIRE(value == 5);
+        value = 0;
+        REQUIRE(notFullQueue.back(&value));
+        REQUIRE(value == 5);
     }
 
     SECTION("Access element at index by value") {
         int value = 0;
         REQUIRE(queue.at(3, &value));
         REQUIRE(value == 4);
+        value = 0;
+        REQUIRE(notFullQueue.at(3, &value));
+        REQUIRE(value == 4);
     }
 
     SECTION("Access element at out of range index by value") {
         int value = 0;
         REQUIRE_FALSE(queue.at(256, &value));
+        REQUIRE_FALSE(notFullQueue.at(256, &value));
     }
 
     SECTION("Access element in empty queue by ptr") {

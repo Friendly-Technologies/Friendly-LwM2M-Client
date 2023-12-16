@@ -148,7 +148,7 @@ void WppTaskQueue::requestToRemoveEachTask() {
 	_taskQueueGuard.unlock();
 }
 
-time_t WppTaskQueue::handleEachTask(WppClient& clien) {
+time_t WppTaskQueue::handleEachTask(WppClient& client) {
 	_handleTaskGuard.lock();
 
 	_taskQueueGuard.lock();
@@ -170,7 +170,7 @@ time_t WppTaskQueue::handleEachTask(WppClient& clien) {
 		// Here state can be changed to SHOULD_BE_DELETED but it is
 		// not matter becouse we have already set EXECUTING state look
 		// at description of requestToRemoveTask() and requestToRemoveEachTask()
-		bool isFinished = task->task(clien, task->ctx);
+		bool isFinished = task->task(client, task->ctx);
 
 		// Be sure that we do not override SHOULD_BE_DELETED state
 		_taskQueueGuard.lock();

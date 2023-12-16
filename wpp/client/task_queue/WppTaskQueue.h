@@ -14,8 +14,8 @@
 #include "types.h"
 #include "WppGuard.h"
 
-#define WPP_TASK_MIN_DELAY_S  (time_t)1
-#define WPP_TASK_DEF_DELAY_S  (time_t)10
+#define WPP_TASK_MIN_DELAY_S  (time_t)0
+#define WPP_TASK_DEF_DELAY_S  (time_t)1
 #define WPP_TASK_MAX_DELAY_S  (time_t)(0xFFFFFFF)
 
 #define WPP_TASK_DEF_CTX	  NULL

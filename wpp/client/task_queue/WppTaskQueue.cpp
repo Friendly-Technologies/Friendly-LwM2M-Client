@@ -15,20 +15,7 @@ WppTaskQueue WppTaskQueue::_instance;
 WppTaskQueue::WppTaskQueue() {}
 
 WppTaskQueue::~WppTaskQueue() {
-	_handleTaskGuard.lock();
-	_taskQueueGuard.lock();
-
-	for (auto task : _tasks) {
-		if (task->ctxSize > 0) {
-			delete[] (uint8_t *)(task->ctx);
-			task->ctxSize = 0;
-		}
-		delete task;
-	}
-	_tasks.clear();
-
-	_handleTaskGuard.unlock();
-	_taskQueueGuard.unlock();
+	hardReset();
 }
 
 /* ------------- Tasks management ------------- */
@@ -145,6 +132,23 @@ void WppTaskQueue::requestToRemoveTask(task_id_t id) {
 void WppTaskQueue::requestToRemoveEachTask() {
 	_taskQueueGuard.lock();
 	for (auto task : _instance._tasks) task->state = (TaskState)(task->state | SHOULD_BE_DELETED);
+	_taskQueueGuard.unlock();
+}
+
+void WppTaskQueue::hardReset() {
+	_handleTaskGuard.lock();
+	_taskQueueGuard.lock();
+
+	for (auto task : _instance._tasks) {
+		if (task->ctxSize > 0) {
+			delete[] (uint8_t *)(task->ctx);
+			task->ctxSize = 0;
+		}
+		delete task;
+	}
+	_instance._tasks.clear();
+
+	_handleTaskGuard.unlock();
 	_taskQueueGuard.unlock();
 }
 

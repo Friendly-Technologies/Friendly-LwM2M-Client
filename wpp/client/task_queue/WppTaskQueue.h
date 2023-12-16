@@ -187,6 +187,12 @@ public:
 	static void requestToRemoveEachTask();
 
 	/**
+	 * @brief Blocks task handling, calls of other methods, and deletes all tasks
+	 * from the queue, after that returns control over the queue.
+	 */
+	static void hardReset();
+
+	/**
 	 * @brief Execute each task in the queue and delete it from queue if task returns false 
 	 * or task state is SHOULD_BE_DELETED. This method is called by the WppClient in its loop() method.
 	 * But it can be also called by the user if he wants to process immediately.

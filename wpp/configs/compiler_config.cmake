@@ -48,6 +48,7 @@ if (WPP_BUILD_WITH_EXCEPTIONS)
 else()
     message(STATUS "Exceptions are not supported")
     add_compile_options(-fno-exceptions)
+    add_compile_options(-fno-asynchronous-unwind-tables)
 endif()
 
 # RTTI comiler options

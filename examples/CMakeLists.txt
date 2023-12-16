@@ -20,6 +20,11 @@ add_compile_options(
 # Generating .map file
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Map=output.map")
 
+# Find the libcurl package
+find_package(CURL REQUIRED)
+# Include directories
+include_directories(${CURL_INCLUDE_DIR})
+
 # Variables that will be filled in subdirectories
 set(SOURCES main.cpp)
 set(INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/)
@@ -59,7 +64,7 @@ target_include_directories(WakaamaPlusExample PUBLIC ${INCLUDES})
 target_compile_definitions(WakaamaPlusExample PUBLIC ${COMPILE_DEFINITIONS})
 
 # Link with Wpp library
-target_link_libraries(WakaamaPlusExample Wpp pthread)
+target_link_libraries(WakaamaPlusExample Wpp pthread ${CURL_LIBRARIES})
 # Add tiny dtls src
 if (WITH_UDP_DTLS)
     include(../2305-Wakaama/examples/shared/tinydtls.cmake)

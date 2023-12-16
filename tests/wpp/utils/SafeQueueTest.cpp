@@ -246,3 +246,16 @@ TEST_CASE("SafeQueue state checks", "[is_empty][is_full][size][available_space][
         REQUIRE(queue.element_size() == sizeof(int));
     }
 }
+
+TEST_CASE("SafeQueue clear", "[clear]") {
+    SafeQueue<int, 5> queue;
+    int values[5] = {1, 2, 3, 4, 5};
+    REQUIRE(queue.push(values, 5));
+    REQUIRE(queue.size() == 5);
+    REQUIRE_FALSE(queue.is_empty());
+    queue.clear();
+    REQUIRE(queue.is_empty());
+    REQUIRE(queue.size() == 0);
+}
+
+/// TODO: add tests for check thread safety

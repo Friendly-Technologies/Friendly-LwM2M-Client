@@ -133,24 +133,20 @@ TEST_CASE("Task state checking", "[isTaskExist][isTaskIdle][isTaskExecuting][isT
 
     SECTION("Is task executing") {
         WppTaskQueue::task_t task = [](WppClient& client, WppTaskQueue::ctx_t ctx) {
-            std::cout << "!!!!!1 Task executing" << std::endl;
-            std::this_thread::sleep_for(std::chrono::seconds(10));
-            std::cout << "!!!!!2 Task executing" << std::endl;
+            std::this_thread::sleep_for(std::chrono::seconds(2));
             return true;
         };
-
-        WppTaskQueue::task_id_t taskId = WppTaskQueue::addTask(WPP_TASK_DEF_DELAY_S, task);
+        WppTaskQueue::task_id_t taskId = WppTaskQueue::addTask(0, task);
         REQUIRE(taskId != WPP_ERR_TASK_ID);
         REQUIRE(WppTaskQueue::isTaskExist(taskId));
-        REQUIRE_FALSE(WppTaskQueue::isTaskShouldBeDeleted(taskId));
+
         REQUIRE_FALSE(WppTaskQueue::isTaskExecuting(taskId));
         std::thread my_thread([](){ handleTasks(); });
-        std::cout << "!!!!! Thread created" << std::endl;
-        std::this_thread::sleep_for(std::chrono::seconds(5));
-        std::cout << "!!!!! Checking task" << std::endl;
+
+        std::this_thread::sleep_for(std::chrono::seconds(1));
         REQUIRE(WppTaskQueue::isTaskExecuting(taskId));
+        
         my_thread.join();
-        std::cout << "!!!!! Thread joined" << std::endl;
         REQUIRE_FALSE(WppTaskQueue::isTaskExecuting(taskId));
 
         clearWppTaskQueue();

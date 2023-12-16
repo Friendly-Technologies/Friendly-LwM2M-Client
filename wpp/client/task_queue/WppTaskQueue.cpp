@@ -30,7 +30,7 @@ WppTaskQueue::task_id_t WppTaskQueue::addTask(ctx_t ctx, time_t delaySec, task_t
 
 	TaskInfo *newTask = new TaskInfo;
 	newTask->task = task;
-	newTask->delaySec = std::max(delaySec, WPP_TASK_MIN_DELAY_S);
+	newTask->delaySec = delaySec;
 	newTask->nextCallTime = WppPlatform::getTime() + newTask->delaySec;
 	newTask->ctx = ctx;
 	newTask->ctxSize = 0;
@@ -48,7 +48,7 @@ WppTaskQueue::task_id_t WppTaskQueue::addTaskWithCopy(const ctx_t ctx, size_t si
 
 	TaskInfo *newTask = new TaskInfo;
 	newTask->task = task;
-	newTask->delaySec = std::max(delaySec, WPP_TASK_MIN_DELAY_S);
+	newTask->delaySec = delaySec;
 	newTask->nextCallTime = WppPlatform::getTime() + newTask->delaySec;
 	newTask->ctx = new uint8_t[size];
 	memcpy(newTask->ctx, ctx, size);

@@ -22,10 +22,12 @@ public:
     int instanceDeletingCount = 0;
 
     void instanceCreated(Object &object, ID_T instanceId) override {
+        ObjOpObserver::instanceCreated(object, instanceId);
         instanceCreatedCount++;
     }
 
     void instanceDeleting(Object &object, ID_T instanceId) override {
+        ObjOpObserver::instanceDeleting(object, instanceId);
         instanceDeletingCount++;
     }
 };

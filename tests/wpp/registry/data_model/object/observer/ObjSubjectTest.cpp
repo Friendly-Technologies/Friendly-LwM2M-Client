@@ -80,6 +80,12 @@ TEST_CASE("ObjSubject subscribe/unsubscribe", "[opSubscribe][opUnsubscribe][actS
         obj.observerDoAction(obj, ObjSubject::RESTORE);
         REQUIRE(actObserver.objectRestoreCount == 2);
     }
+}
+
+TEST_CASE("ObjSubject operation notify and request for action", "[operationNotify][observerDoAction]") {
+    Object obj;
+    ObjOpObserverTest opObserver;
+    ObjActObserverTest actObserver;
 
     SECTION("Operation notify") {
         obj.opSubscribe(&opObserver);

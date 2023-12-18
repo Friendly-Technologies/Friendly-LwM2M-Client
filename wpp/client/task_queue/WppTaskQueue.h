@@ -14,8 +14,8 @@
 #include "types.h"
 #include "WppGuard.h"
 
-#define WPP_TASK_MIN_DELAY_S  (time_t)1
-#define WPP_TASK_DEF_DELAY_S  (time_t)10
+#define WPP_TASK_MIN_DELAY_S  (time_t)0
+#define WPP_TASK_DEF_DELAY_S  (time_t)1
 #define WPP_TASK_MAX_DELAY_S  (time_t)(0xFFFFFFF)
 
 #define WPP_TASK_DEF_CTX	  NULL
@@ -185,6 +185,12 @@ public:
 	 * completed by polling the isTaskExecuting() method.
 	 */
 	static void requestToRemoveEachTask();
+
+	/**
+	 * @brief Blocks task handling, calls of other methods, and deletes all tasks
+	 * from the queue, after that returns control over the queue.
+	 */
+	static void hardReset();
 
 	/**
 	 * @brief Execute each task in the queue and delete it from queue if task returns false 

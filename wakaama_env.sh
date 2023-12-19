@@ -31,9 +31,10 @@ clang-format-$CLANG_VERSION \
 clang-tools-$CLANG_VERSION \
 lldb-$CLANG_VERSION \
 $CLANG \
-cppcheck
-llvm
-libcurl4-openssl-dev"
+cppcheck \
+llvm \
+libcurl4-openssl-dev
+cmake"
 
 ptools="\
 cmake-format \

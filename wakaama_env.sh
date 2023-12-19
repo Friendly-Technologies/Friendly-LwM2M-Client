@@ -33,7 +33,7 @@ lldb-$CLANG_VERSION \
 $CLANG \
 cppcheck \
 llvm \
-libcurl4-openssl-dev
+libcurl4-openssl-dev \
 cmake"
 
 ptools="\

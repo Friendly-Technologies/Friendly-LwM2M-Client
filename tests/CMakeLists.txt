@@ -17,9 +17,6 @@ add_compile_options(-Wno-unused-function)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-instr-generate -fcoverage-mapping")
 
-# Set build type to Release Catch2Tests works correctly only in Release mode
-set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
-
 # Serching all files with *.cpp type in folders and subfolders
 file(GLOB_RECURSE SOURCES "Platform.cpp" "Guard.cpp")
 file(GLOB_RECURSE TEST_SOURCES "./*Test.cpp" "catch_amalgamated.cpp")

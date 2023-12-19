@@ -47,7 +47,8 @@
 		"cmake.touchbar.advanced": {},
 		"cmake.configureOnOpen": true,
 		"cmake.useProjectStatusView": true,
-		"cmake.cmakeCommunicationMode": "automatic"
+		"cmake.cmakeCommunicationMode": "automatic",
+		"cmake.cmakePath": "cmake"
 	},
 	"extensions": {
 		"recommendations": ["ms-vscode.cpptools-extension-pack", "vadimcn.vscode-lldb"]

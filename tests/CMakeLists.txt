@@ -26,9 +26,21 @@ file(GLOB_RECURSE LISTENING "../wpp/*")
 # Create executable file for tests
 add_executable(Catch2Tests ${SOURCES} ${TEST_SOURCES})
 
+# Set the compilation configuration for this target into the release mode.
+# This is due to the fact that the Debug mode cannot be launched due to the
+# peculiarities of testing such components as WppTaskQueue, InstSubject,
+# ObjSubject, ..., which require the creation of stub classes for WppClient,
+# Object, Instance. And it seems that in the Debug mode, two implementation
+# conflicts with each other leading to segmentation fault.
+target_compile_options(Catch2Tests PRIVATE
+    $<$<OR:$<CONFIG:Debug>,$<CONFIG:Release>,$<CONFIG:RelWithDebInfo>,$<CONFIG:MinSizeRel>>:
+    -O3 -DNDEBUG>  # Replace with your desired release flags
+)
+
 # Link wpp sources to tests
 target_link_wpp(Catch2Tests)
-
+# Link pthread library to tests
+target_link_libraries(Catch2Tests pthread)
 # Include Catch2 library for test executable file
 target_include_directories(Catch2Tests PRIVATE "catch2/")
 

@@ -9,6 +9,11 @@ set(CMAKE_CXX_STANDARD 17)
 
 # Include file with compiler config
 include(configs/compiler_config.cmake)
+# Include file with Wakaama core config
+include(configs/wakaama_config.cmake)
+# Include file with wpp config
+include(configs/wpp_config.cmake)
+include(configs/objects_config.cmake)
 # Include file with Wpp configs
 include(wpp.cmake)
 

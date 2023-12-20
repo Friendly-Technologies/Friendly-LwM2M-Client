@@ -1,6 +1,7 @@
 # This file is used to build wpp library as part of other project
 # It is not used to build wpp as standalone library, compilation
-# options and configs must be set in parent project
+# options must be set in parent project. For apply user properties 
+# user must set them as target_compile_definitions.
 
 set(WPP_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}")
 

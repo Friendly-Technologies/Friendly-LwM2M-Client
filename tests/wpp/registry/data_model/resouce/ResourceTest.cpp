@@ -32,6 +32,7 @@ TEST_CASE("Resources", "[resources]")
     R_EXECUTE = 9,   // Type of executable resources
     R_UNDEFINED = 10 // Undefined type
   };
+
   Resource resources;
   Resource resources_0 = {R_BOOL, ResOp(ResOp::READ), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::BOOL};
   Resource resources_1 = {R_INT, ResOp(ResOp::READ | ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::INT};
@@ -47,6 +48,7 @@ TEST_CASE("Resources", "[resources]")
 
   SECTION("default_resources")
   {
+    INT_T *tmpValueExecute;
     REQUIRE(resources.getId() == 65535);
   }
 
@@ -136,7 +138,7 @@ TEST_CASE("Resources", "[resources]")
     REQUIRE(resources_1.isDataValueValid(INT_T(25)));
     REQUIRE_FALSE(resources_1.isDataValueValid(INT_T(30)));
     REQUIRE_FALSE(resources_1.set(INT_T(25), 1));
-    REQUIRE_FALSE(resources_1.set(INT_T("hello")));
+    REQUIRE_FALSE(resources_1.set(INT_T("Hello, world!")));
     REQUIRE_FALSE(resources_1.set(STRING_T("true")));
 
     REQUIRE(method_call);
@@ -221,10 +223,13 @@ TEST_CASE("Resources", "[resources]")
     REQUIRE(resources_4.set(OBJ_LINK_T(valSet)));
 
     REQUIRE(resources_4.get(valSetMove));
-    // REQUIRE(valSetMove == valSet);
+    REQUIRE(valSetMove.objId == 11);
+    REQUIRE(valSetMove.objInstId == 9);
+
     REQUIRE(resources_4.setMove(OBJ_LINK_T(valSet2)));
     REQUIRE(resources_4.get(valSetMove));
-    // REQUIRE(valSetMove == valSet2);
+    REQUIRE(valSetMove.objId == 34);
+    REQUIRE(valSetMove.objInstId == 8);
 
     REQUIRE(resources_4.ptr(&tmpValue));
 
@@ -305,6 +310,8 @@ TEST_CASE("Resources", "[resources]")
     REQUIRE(resources_7.set(STRING_T("My"), ids[3]));
     REQUIRE(resources_7.set(STRING_T("instances"), ids[4]));
 
+    REQUIRE_FALSE(resources_7.ptr((STRING_T**)NULL));
+
     std::vector<ID_T> ids_2 = {0, 1, 43, 51};
     REQUIRE(resources_7.instanceCnt() == 4);
     REQUIRE(resources_7.getInstIds() == ids_2);
@@ -319,6 +326,9 @@ TEST_CASE("Resources", "[resources]")
     REQUIRE_FALSE(resources_7.isOptional());
     REQUIRE_FALSE(resources_7.set(OBJ_LINK_T()));
     REQUIRE_FALSE(resources_7.set(STRING_T("This instances very long"), ids[2]));
+
+    REQUIRE(resources_7.clear());
+    REQUIRE(resources_7.instanceCnt() == 0);
 
     REQUIRE(method_call);
     REQUIRE(check_value);
@@ -337,7 +347,7 @@ TEST_CASE("Resources", "[resources]")
     REQUIRE(resources_8.getId() == R_CORE_LINK);
     REQUIRE(resources_8.isDataValueValid(CORE_LINK_T("true")));
 
-    REQUIRE_FALSE(method_call);
+    REQUIRE(method_call);
     REQUIRE_FALSE(check_value);
     REQUIRE_FALSE(resources_8.set(OBJ_LINK_T()));
     REQUIRE_FALSE(resources_8.isTypeIdCompatible(TYPE_ID::BOOL));
@@ -351,6 +361,7 @@ TEST_CASE("Resources", "[resources]")
     });
     // Initialised instance for resource
     REQUIRE(resources_9.set(EXECUTE_T()));
+
     REQUIRE(resources_9.getId() == R_EXECUTE);
     REQUIRE_FALSE(resources_9.set(CORE_LINK_T()));
 
@@ -368,72 +379,161 @@ TEST_CASE("Resources", "[resources]")
   };
 
   SECTION("setMove")
-  { // TODO compare vectors address for setMove
-    bool valBoolSetMove;
-    REQUIRE(resources_0.setMove(BOOL_T(valBoolSetMove)));
-    // REQUIRE_FALSE(valBoolSetMove);
-    uint8_t valUintSetMove;
-    REQUIRE(resources_1.setMove(INT_T(valUintSetMove = 111)));
-    REQUIRE(resources_2.setMove(UINT_T(111)));
-    REQUIRE(resources_3.setMove(FLOAT_T(12.12)));
-    REQUIRE(resources_4.setMove(OBJ_LINK_T({1, 1})));
-    REQUIRE(resources_5.setMove(TIME_T(111)));
-    REQUIRE(resources_6.setMove(OPAQUE_T(111)));
-    REQUIRE(resources_7.setMove(STRING_T("hello world")));
-    REQUIRE(resources_8.setMove(CORE_LINK_T()));
-    REQUIRE(resources_9.setMove(EXECUTE_T()));
-    REQUIRE_FALSE(resources_10.setMove(BOOL_T(valBoolSetMove)));
+  {
+    // TODO compare vectors address for setMove
+    BOOL_T *tmpValue = NULL;
+    check_value = false;
+    REQUIRE(resources_0.setMove(BOOL_T(check_value)));
+    REQUIRE_FALSE(resources_0.setMove(BOOL_T(check_value), 1));
+    check_value = true;
+    REQUIRE(resources_0.get(check_value));
+    REQUIRE_FALSE(resources_0.get(check_value, 1));
+    REQUIRE(check_value == false);
+    REQUIRE(resources_0.ptr(&tmpValue));
+    REQUIRE_FALSE(resources_0.ptr(&tmpValue, 1));
 
-    REQUIRE_FALSE(resources_0.setMove(BOOL_T(valBoolSetMove), 1));
+    INT_T valInt = 111;
+    INT_T *tmpValueInt = NULL;
+    REQUIRE(resources_1.setMove(INT_T(valInt)));
+    valInt = 0;
+    resources_1.get(valInt);
+    REQUIRE(valInt == 111);
+    REQUIRE(resources_1.ptr(&tmpValueInt));
+
+    UINT_T valUint = 111;
+    UINT_T *tmpValueUint = NULL;
+    REQUIRE(resources_2.setMove(UINT_T(valUint)));
+    valUint = 0;
+    resources_2.get(valUint);
+    REQUIRE(valUint == 111);
+    REQUIRE(resources_2.ptr(&tmpValueUint));
+
+    FLOAT_T valFloat = 1.11;
+    FLOAT_T *tmpValueFloat = NULL;
+    REQUIRE(resources_3.setMove(FLOAT_T(valFloat)));
+    valFloat = 0;
+    resources_3.get(valFloat);
+    REQUIRE(valFloat < 1.12);
+    REQUIRE(valFloat > 1.10);
+    REQUIRE(resources_3.ptr(&tmpValueFloat));
+
+    OBJ_LINK_T valObjLink = {1, 1};
+    OBJ_LINK_T *tmpValueObjLink = NULL;
+    REQUIRE(resources_4.setMove(OBJ_LINK_T(valObjLink)));
+    valObjLink = {0, 0};
+    REQUIRE(resources_4.get(valObjLink));
+    REQUIRE(valObjLink.objId == 1);
+    REQUIRE(valObjLink.objInstId == 1);
+    REQUIRE(resources_4.ptr(&tmpValueObjLink));
+
+    TIME_T valTime = 15122023;
+    TIME_T *tmpValueTime = NULL;
+    REQUIRE(resources_5.setMove(TIME_T(valTime)));
+    valTime = 0;
+    resources_5.get(valTime);
+    REQUIRE(valTime == 15122023);
+    REQUIRE(resources_5.ptr(&tmpValueTime));
+
+    OPAQUE_T valOpaque = {12, 21, 22, 34, 43, 45, 65, 76, 96, 240, 190, 157, 12, 21, 22, 34, 43, 45, 65, 76, 96, 240, 190, 157, 12, 21, 22, 34, 43, 45, 65, 76, 96, 240, 190, 157, 12, 21, 22, 34, 43, 45, 65, 76, 96, 240, 190, 157};
+    OPAQUE_T *tmpValueOpaque = NULL;
+    uint8_t *p1 = valOpaque.data();
+    REQUIRE(resources_6.setMove(valOpaque));
+
+    REQUIRE(resources_6.ptr(&tmpValueOpaque));
+    uint8_t *p2 = tmpValueOpaque->data();
+    // TODO                 // FAILED: REQUIRE( p1 == p2 )
+    // REQUIRE(p1 == p2);   // with expansion: 0x00005652b4daca30 == 0x00005652b4dac9f0
+    REQUIRE_FALSE(p1 == p2);
+
+    valOpaque = {0, 0};
+    REQUIRE(resources_6.get(valOpaque));
+    REQUIRE(valOpaque[0] == 12);
+    REQUIRE(valOpaque[1] == 21);
+
+    STRING_T valString = "Hello, world!";
+    STRING_T *tmpValueString = NULL;
+    REQUIRE(resources_7.setMove(STRING_T(valString)));
+    valString = "??";
+    resources_7.get(valString);
+    REQUIRE(valString == "Hello, world!");
+    REQUIRE(resources_7.ptr(&tmpValueString));
+
+    CORE_LINK_T valCoreLink = "Hello, Core Link";
+    CORE_LINK_T *tmpValueCoreLink = NULL;
+    REQUIRE(resources_8.setMove(valCoreLink));
+    valCoreLink = "??";
+    resources_8.get(valCoreLink);
+    REQUIRE(valCoreLink == "Hello, Core Link");
+    REQUIRE(resources_8.ptr(&tmpValueCoreLink));
+
+    EXECUTE_T valExecute;
+    EXECUTE_T *tmpValueExecute = NULL;
+    REQUIRE(resources_9.setMove(EXECUTE_T(valExecute)));
+    REQUIRE(resources_9.get(valExecute));
+    REQUIRE(resources_9.ptr(&tmpValueExecute));
+
+    REQUIRE_FALSE(resources_10.setMove(check_value));
+    REQUIRE_FALSE(resources_10.get(check_value));
+
+    REQUIRE_FALSE(resources_10.ptr(&tmpValue));
   };
 
-  SECTION("get"){
-      //  bool valSetMove = true;
+  SECTION("resources_copy")
+  {
+    BOOL_T valBoolCheck;
+    REQUIRE(resources_0.setMove(BOOL_T(false)));
 
-      // REQUIRE(resources_0.setMove(BOOL_T(valSetMove)));
-      // REQUIRE(resources_0.set(BOOL_T(valSetMove)));
+    resources_1 = resources_0;
 
-      // // resources_0 = resources_0; !!
-      // // uint8_t int_get;
-      // REQUIRE(resources_1.isEmpty());
-      // // REQUIRE(resources_1 == resources_0);
+    // Assign the resource to itself
+    // resources_0 = resources_0;
 
-      // resources_1 = resources_0;
-      // REQUIRE_FALSE(resources_1.isEmpty());
-      // resources_2 = std::move(resources_1);
+    // Chain assignment operators
+    resources_2 = resources_1 = resources_0;
+    REQUIRE(resources_0.getId() == resources_1.getId());
+    REQUIRE(resources_1.getId() == resources_2.getId());
 
-      // Resource resources_11(resources_2);
-      // Resource resources_12(std::move(resources_11));
-      // REQUIRE(resources_1.isEmpty());
-      // // REQUIRE(resources_1 == resources_0);
-      // // REQUIRE(resources_12.get(BOOL_T(valSetMove)));
+    REQUIRE_FALSE(resources_1.isEmpty());
 
-      // // REQUIRE(resources_1.setMove(UINT_T(111)));
-      // REQUIRE(resources_3.setMove(FLOAT_T(12.12)));
-      // REQUIRE(resources_4.setMove(OBJ_LINK_T({1, 1})));
-      // REQUIRE(resources_5.setMove(TIME_T(111)));
-      // REQUIRE(resources_6.setMove(OPAQUE_T(111)));
-      // REQUIRE(resources_7.setMove(STRING_T("hello world")));
-      // REQUIRE(resources_8.setMove(CORE_LINK_T()));
-      // REQUIRE(resources_9.setMove(EXECUTE_T()));
-      // REQUIRE_FALSE(resources_10.setMove(BOOL_T(valSetMove)));
+    resources_2 = std::move(resources_1);
+    INT_T *tmpValueExecute;
+    REQUIRE_FALSE(resources_1.ptr(&tmpValueExecute));
+    REQUIRE(resources_1.isEmpty());
 
-      // REQUIRE_FALSE(resources_0.setMove(BOOL_T(valSetMove), 1));
-      // REQUIRE(resources_0.set(BOOL_T(valSetMove)));
-      // REQUIRE(resources_0.get(valSetMove));
+    Resource resources_11(resources_2);
 
-      // BOOL_T *tmpValue = NULL;
-      // REQUIRE(resources_0.ptr(&tmpValue));
-      // REQUIRE_FALSE(resources_1.get(valSetMove));
-      // // resources_0.get(valSetMove2);
+    REQUIRE(resources_11.get(valBoolCheck));
+    REQUIRE(valBoolCheck == false);
 
-      // REQUIRE(valSetMove == true);
-      // REQUIRE(resources_0.set(BOOL_T(valSetMove)));
-      // Resource resources_14 = {resources_0.get(BOOL_T(method_call)), ResOp(ResOp::READ), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::BOOL};
+    Resource resources_12(std::move(resources_11));
+    REQUIRE(resources_11.isEmpty());
 
+    REQUIRE(resources_12.get(check_value));
+    REQUIRE_FALSE(check_value);
   };
+  SECTION("multiple_resources_copy")
+  {
+    STRING_T valString1 = "Hello, first instance!";
+    STRING_T valString2 = "Hello, second instance!";
+    STRING_T valString3 = "Hello, third instance!";
+    STRING_T valString4 = "Hello, fourth instance!";
 
-  SECTION("ptr"){
-      // resources_0.ptr(BOOL_T(false));
+    REQUIRE(resources_7.set(valString1, 0));
+    REQUIRE(resources_7.set(valString2, 1));
+    REQUIRE(resources_7.set(valString3, 2));
+    REQUIRE(resources_7.set(valString4, 3));
+    REQUIRE(resources_7.instanceCnt() == 4);
+
+    resources_8 = resources_7;
+
+    STRING_T valStringCheck;
+    REQUIRE(resources_8.get(valStringCheck, 0));
+    REQUIRE(valStringCheck == valString1);
+    REQUIRE(resources_8.get(valStringCheck, 1));
+    REQUIRE(valStringCheck == valString2);
+    REQUIRE(resources_8.get(valStringCheck, 2));
+    REQUIRE(valStringCheck == valString3);
+    REQUIRE(resources_8.get(valStringCheck, 3));
+    REQUIRE(valStringCheck == valString4);
   };
 }

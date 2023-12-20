@@ -4,7 +4,50 @@
 
 set(WPP_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}")
 
+# Function to check if a compile definition is set to 1 for WPP_TARGET
+# Arguments:
+#   - TARGET_NAME: The target to check the compile definitions on
+#   - DEFINITION_TO_CHECK: The compile definition to look for
+#   - RESULT_VAR: The variable to store the result (TRUE or FALSE)
+function(check_target_definition TARGET DEFINITION_TO_CHECK RESULT_VAR)
+    # Get the compile definitions for the target
+    get_target_property(TARGET_COMPILE_DEFINITIONS ${TARGET} COMPILE_DEFINITIONS)
+
+    # Initialize result variable
+    set(${RESULT_VAR} FALSE PARENT_SCOPE)
+
+    # Loop through each definition and check if the desired definition is set to 1
+    foreach(DEFINITION ${TARGET_COMPILE_DEFINITIONS})
+        if(DEFINITION STREQUAL "${DEFINITION_TO_CHECK}=1")
+            set(${RESULT_VAR} TRUE PARENT_SCOPE)
+            break()
+        endif()
+    endforeach()
+endfunction()
+
+# Function to check if a compile definition is set to 1 for WPP_TARGET
+# Arguments:
+#   - DEFINITION_TO_CHECK: The compile definition to look for
+#   - RESULT_VAR: The variable to store the result (TRUE or FALSE)
+function(wpp_check_definition DEFINITION_TO_CHECK RESULT_VAR)
+    # Get the compile definitions for the target
+    get_target_property(TARGET_COMPILE_DEFINITIONS ${WPP_TARGET} COMPILE_DEFINITIONS)
+
+    # Initialize result variable
+    set(${RESULT_VAR} FALSE PARENT_SCOPE)
+
+    # Loop through each definition and check if the desired definition is set to 1
+    foreach(DEFINITION ${TARGET_COMPILE_DEFINITIONS})
+        if(DEFINITION STREQUAL "${DEFINITION_TO_CHECK}=1")
+            set(${RESULT_VAR} TRUE PARENT_SCOPE)
+            break()
+        endif()
+    endforeach()
+endfunction()
+
 function(target_link_wpp target)
+    # Save wpp target name to local variable for later use in subdirectories
+    set(WPP_TARGET ${target})
     # Variables that will be filled in subdirectories
     set(WPP_SOURCES "")
     set(WPP_INCLUDES "")

@@ -1,5 +1,7 @@
 # This CMakeLists.txt file is used to build Wpp as static library
-# with predefined configs in the configs directory
+# with predefined configs in the configs directory but user can use
+# build wpp as purt of own target with own configs by including wpp.cmake,
+# in this case user can set wpp properties through target_compile_definitions.
 
 # Project's name
 project(Wpp CXX)

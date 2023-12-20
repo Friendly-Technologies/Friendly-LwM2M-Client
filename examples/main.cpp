@@ -12,13 +12,13 @@
 #include "Lwm2mSecurity.h"
 #include "Device.h"
 #include "Connection.h"
-#if OBJ_O_4_CONNECTIVITY_MONITORING_V13
+#ifdef OBJ_O_4_CONNECTIVITY_MONITORING_V13
 #include "ConnectivityMonitoring.h"
 #endif
-#if OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
+#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
 #include "Lwm2mAccessControl.h"
 #endif
-#if OBJ_O_5_FIRMWARE_UPDATE_V11
+#ifdef OBJ_O_5_FIRMWARE_UPDATE_V11
 #include "FirmwareUpdate.h"
 #endif
 
@@ -41,13 +41,13 @@ int main() {
 	Lwm2mServerImpl server;
 	Lwm2mSecurityImpl security;
 	DeviceImpl device;
-	#if OBJ_O_4_CONNECTIVITY_MONITORING_V13
+	#ifdef OBJ_O_4_CONNECTIVITY_MONITORING_V13
 	ConnectivityMonitoringImpl conn_mon;
 	#endif
-	#if OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
+	#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
 	Lwm2mAccessControlImpl accessCtrl;
 	#endif
-	#if OBJ_O_5_FIRMWARE_UPDATE_V11
+	#ifdef OBJ_O_5_FIRMWARE_UPDATE_V11
 	FirmwareUpdateImpl fwUpd;
 	#endif
 
@@ -71,17 +71,17 @@ int main() {
 	security.init(registry.lwm2mSecurity());
 	cout << endl << "---- Initialization wpp Device ----" << endl;
 	device.init(registry.device());
-	#if OBJ_O_4_CONNECTIVITY_MONITORING_V13
+	#ifdef OBJ_O_4_CONNECTIVITY_MONITORING_V13
 	cout << endl << "---- Initialization wpp ConnectivityMonitoring ----" << endl;
 	conn_mon.init(registry.connectivityMonitoring());
 	registry.registerObj(registry.connectivityMonitoring());
 	#endif
-	#if OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
+	#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
 	cout << endl << "---- Initialization wpp AccessControl ----" << endl;
 	accessCtrl.init(registry.lwm2mAccessControl());
 	registry.registerObj(registry.lwm2mAccessControl());
 	#endif
-	#if OBJ_O_5_FIRMWARE_UPDATE_V11
+	#ifdef OBJ_O_5_FIRMWARE_UPDATE_V11
 	cout << endl << "---- Initialization wpp FirmwareUpdate ----" << endl;
 	fwUpd.init(registry.firmwareUpdate());
 	registry.registerObj(registry.firmwareUpdate());

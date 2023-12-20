@@ -4,7 +4,7 @@
 
 set(WPP_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}")
 
-# Function to check if a compile definition is set to 1 for WPP_TARGET
+# Function to check if a compile definition is set for WPP_TARGET
 # Arguments:
 #   - TARGET_NAME: The target to check the compile definitions on
 #   - DEFINITION_TO_CHECK: The compile definition to look for
@@ -16,16 +16,16 @@ function(check_target_definition TARGET DEFINITION_TO_CHECK RESULT_VAR)
     # Initialize result variable
     set(${RESULT_VAR} FALSE PARENT_SCOPE)
 
-    # Loop through each definition and check if the desired definition is set to 1
+    # Loop through each definition and check if the desired definition is set
     foreach(DEFINITION ${TARGET_COMPILE_DEFINITIONS})
-        if(DEFINITION STREQUAL "${DEFINITION_TO_CHECK}=1")
+        if(DEFINITION STREQUAL "${DEFINITION_TO_CHECK}")
             set(${RESULT_VAR} TRUE PARENT_SCOPE)
             break()
         endif()
     endforeach()
 endfunction()
 
-# Function to check if a compile definition is set to 1 for WPP_TARGET
+# Function to check if a compile definition is set for WPP_TARGET
 # Arguments:
 #   - DEFINITION_TO_CHECK: The compile definition to look for
 #   - RESULT_VAR: The variable to store the result (TRUE or FALSE)
@@ -36,9 +36,9 @@ function(wpp_check_definition DEFINITION_TO_CHECK RESULT_VAR)
     # Initialize result variable
     set(${RESULT_VAR} FALSE PARENT_SCOPE)
 
-    # Loop through each definition and check if the desired definition is set to 1
+    # Loop through each definition and check if the desired definition is set
     foreach(DEFINITION ${TARGET_COMPILE_DEFINITIONS})
-        if(DEFINITION STREQUAL "${DEFINITION_TO_CHECK}=1")
+        if(DEFINITION STREQUAL "${DEFINITION_TO_CHECK}")
             set(${RESULT_VAR} TRUE PARENT_SCOPE)
             break()
         endif()

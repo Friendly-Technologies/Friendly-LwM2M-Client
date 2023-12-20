@@ -8,7 +8,7 @@
 
 #include "ObjectInfo.h"
 
-#if OBJ_M_3_DEVICE_V12
+#ifdef OBJ_M_3_DEVICE_V12
 
 namespace wpp {
 

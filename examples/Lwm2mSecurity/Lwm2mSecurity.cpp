@@ -8,7 +8,7 @@ void Lwm2mSecurityImpl::init(Object &obj) {
 	obj.actSubscribe(this);
 	wpp::Instance *inst0 = obj.createInstance(0);
 
-	#if LWM2M_BOOTSTRAP
+	#ifdef LWM2M_BOOTSTRAP
         string url = "coap://demodm.friendly-tech.com:5680";
         inst0->set(Lwm2mSecurity::BOOTSTRAP_SERVER_1, true);
         inst0->set(Lwm2mSecurity::CLIENT_HOLD_OFF_TIME_11, (INT_T)10);

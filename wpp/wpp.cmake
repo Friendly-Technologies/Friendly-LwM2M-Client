@@ -5,8 +5,15 @@
 set(WPP_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}")
 
 function(target_link_wpp target)
+    # Variables that will be filled in subdirectories
+    set(WPP_SOURCES "")
+    set(WPP_INCLUDES "")
+
     # Include file with wakaama core config
     include(${WPP_DIRECTORY}/wakaama.cmake)
+
+    # Link wakaama that implements core functionality to Wpp
+    target_link_wakaama(${target})
 
     # Add subdiretories with sources
     add_subdirectory(${WPP_DIRECTORY}/client client)
@@ -14,16 +21,11 @@ function(target_link_wpp target)
     add_subdirectory(${WPP_DIRECTORY}/platform platform)
     add_subdirectory(${WPP_DIRECTORY}/utils utils)
 
+    # Include wpp sources
+    target_sources(${target} PUBLIC ${WPP_SOURCES})
+    # Include wpp headers
+    target_include_directories(${target} PUBLIC ${WPP_INCLUDES})
+
     # message(STATUS "Wpp:WPP_INCLUDES: ${WPP_INCLUDES}")
     # message(STATUS "Wpp:WPP_SOURCES: ${WPP_SOURCES}")
-    # message(STATUS "Wpp:WPP_DEFINITIONS: ${WPP_DEFINITIONS}")
-
-    # Link Wakaama that implements core functionality to Wpp
-    target_link_wakaama(${target})
-    # Add wakama core configs
-    target_compile_definitions(${target} PUBLIC ${WPP_DEFINITIONS})
-    # Include wakaama core sources
-    target_sources(${target} PUBLIC ${WPP_SOURCES})
-    # Make liblwm2m.h visible for users of target
-    target_include_directories(${target} PUBLIC ${WPP_INCLUDES})
 endfunction()

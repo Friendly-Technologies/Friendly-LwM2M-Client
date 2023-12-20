@@ -15,20 +15,7 @@ WppTaskQueue WppTaskQueue::_instance;
 WppTaskQueue::WppTaskQueue() {}
 
 WppTaskQueue::~WppTaskQueue() {
-	_handleTaskGuard.lock();
-	_taskQueueGuard.lock();
-
-	for (auto task : _tasks) {
-		if (task->ctxSize > 0) {
-			delete[] (uint8_t *)(task->ctx);
-			task->ctxSize = 0;
-		}
-		delete task;
-	}
-	_tasks.clear();
-
-	_handleTaskGuard.unlock();
-	_taskQueueGuard.unlock();
+	hardReset();
 }
 
 /* ------------- Tasks management ------------- */
@@ -43,7 +30,7 @@ WppTaskQueue::task_id_t WppTaskQueue::addTask(ctx_t ctx, time_t delaySec, task_t
 
 	TaskInfo *newTask = new TaskInfo;
 	newTask->task = task;
-	newTask->delaySec = std::max(delaySec, WPP_TASK_MIN_DELAY_S);
+	newTask->delaySec = delaySec;
 	newTask->nextCallTime = WppPlatform::getTime() + newTask->delaySec;
 	newTask->ctx = ctx;
 	newTask->ctxSize = 0;
@@ -61,7 +48,7 @@ WppTaskQueue::task_id_t WppTaskQueue::addTaskWithCopy(const ctx_t ctx, size_t si
 
 	TaskInfo *newTask = new TaskInfo;
 	newTask->task = task;
-	newTask->delaySec = std::max(delaySec, WPP_TASK_MIN_DELAY_S);
+	newTask->delaySec = delaySec;
 	newTask->nextCallTime = WppPlatform::getTime() + newTask->delaySec;
 	newTask->ctx = new uint8_t[size];
 	memcpy(newTask->ctx, ctx, size);
@@ -148,7 +135,24 @@ void WppTaskQueue::requestToRemoveEachTask() {
 	_taskQueueGuard.unlock();
 }
 
-time_t WppTaskQueue::handleEachTask(WppClient& clien) {
+void WppTaskQueue::hardReset() {
+	_handleTaskGuard.lock();
+	_taskQueueGuard.lock();
+
+	for (auto task : _instance._tasks) {
+		if (task->ctxSize > 0) {
+			delete[] (uint8_t *)(task->ctx);
+			task->ctxSize = 0;
+		}
+		delete task;
+	}
+	_instance._tasks.clear();
+
+	_handleTaskGuard.unlock();
+	_taskQueueGuard.unlock();
+}
+
+time_t WppTaskQueue::handleEachTask(WppClient& client) {
 	_handleTaskGuard.lock();
 
 	_taskQueueGuard.lock();
@@ -170,7 +174,7 @@ time_t WppTaskQueue::handleEachTask(WppClient& clien) {
 		// Here state can be changed to SHOULD_BE_DELETED but it is
 		// not matter becouse we have already set EXECUTING state look
 		// at description of requestToRemoveTask() and requestToRemoveEachTask()
-		bool isFinished = task->task(clien, task->ctx);
+		bool isFinished = task->task(client, task->ctx);
 
 		// Be sure that we do not override SHOULD_BE_DELETED state
 		_taskQueueGuard.lock();

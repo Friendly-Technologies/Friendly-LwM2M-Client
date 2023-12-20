@@ -8,7 +8,7 @@
 
 #include "ObjectInfo.h"
 
-#if OBJ_O_5_FIRMWARE_UPDATE_V11
+#ifdef OBJ_O_5_FIRMWARE_UPDATE_V11
 
 namespace wpp {
 

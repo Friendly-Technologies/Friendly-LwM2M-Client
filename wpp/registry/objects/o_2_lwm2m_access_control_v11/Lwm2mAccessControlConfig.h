@@ -6,7 +6,7 @@
 #ifndef WPP_LWM2M_ACCESS_CONTROL_CONFIG_H
 #define WPP_LWM2M_ACCESS_CONTROL_CONFIG_H
 
-#if OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
+#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
 
 /* --------------- Config block 0 start --------------- */
 #define RES_2_2 0

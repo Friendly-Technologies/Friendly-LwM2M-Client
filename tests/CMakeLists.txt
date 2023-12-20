@@ -4,11 +4,15 @@ project(Catch2Test CXX)
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 17)
 
-# Add file with wpp lib configs
-include(../wpp/wpp.cmake)
 
 # Include file with compiler config
 include(../wpp/configs/compiler_config.cmake)
+# Include file with Wakaama core config
+include(../wpp/configs/wakaama_config.cmake)
+# Include file with wpp object configs
+include(../wpp/configs/objects_config.cmake)
+# Add file with wpp lib configs
+include(../wpp/wpp.cmake)
 
 # Compiler options
 add_compile_options(-Wno-unused-function)
@@ -25,6 +29,8 @@ file(GLOB_RECURSE LISTENING "../wpp/*")
 
 # Create executable file for tests
 add_executable(Catch2Tests ${SOURCES} ${TEST_SOURCES})
+# Set properties
+target_compile_definitions(Catch2Tests PUBLIC ${WPP_DEFINITIONS})
 
 # Set the compilation configuration for this target into the release mode.
 # This is due to the fact that the Debug mode cannot be launched due to the

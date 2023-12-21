@@ -8,7 +8,7 @@
 
 #include "ObjectInfo.h"
 
-#if OBJ_O_4_CONNECTIVITY_MONITORING_V13
+#ifdef OBJ_O_4_CONNECTIVITY_MONITORING_V13
 
 namespace wpp {
 

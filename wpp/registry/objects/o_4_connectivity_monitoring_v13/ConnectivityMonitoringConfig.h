@@ -6,7 +6,7 @@
 #ifndef WPP_CONNECTIVITY_MONITORING_CONFIG_H
 #define WPP_CONNECTIVITY_MONITORING_CONFIG_H
 
-#if OBJ_O_4_CONNECTIVITY_MONITORING_V13
+#ifdef OBJ_O_4_CONNECTIVITY_MONITORING_V13
 
 /* --------------- Config block 0 start --------------- */
 #define RES_4_3 0

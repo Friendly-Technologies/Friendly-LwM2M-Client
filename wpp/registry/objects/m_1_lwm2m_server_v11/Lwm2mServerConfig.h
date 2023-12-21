@@ -6,7 +6,7 @@
 #ifndef WPP_LWM2M_SERVER_CONFIG_H
 #define WPP_LWM2M_SERVER_CONFIG_H
 
-#if OBJ_M_1_LWM2M_SERVER_V11
+#ifdef OBJ_M_1_LWM2M_SERVER_V11
 
 /* --------------- Config block 0 start --------------- */
 #define RES_1_2 0

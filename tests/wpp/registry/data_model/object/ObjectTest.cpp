@@ -1,6 +1,7 @@
 #include "catch_amalgamated.hpp"
 #include "ObjectSpec.h"
 #include "Instance.h"
+#include <cstring>
 
 using namespace wpp;
 
@@ -50,8 +51,58 @@ public:
     }
 };
 
-TEST_CASE("Object constructing/destructing", "[Object][ObjectSpec]") {
+TEST_CASE("Object: constructing/destucting and getting infor", "[Object][ObjectSpec][getObjectID][getLwm2mObject][getObjectInfo][instanceCnt]") {
     SECTION("Constructor") {
         ObjectSpecMock obj(mockContext, mockInfo);
+
+		REQUIRE(obj.getObjectID() == OBJ_ID::MAX_ID);
+
+		REQUIRE(std::strcmp(obj.getObjectInfo().name, "Test Object") == 0);
+		REQUIRE(obj.getObjectInfo().objID == OBJ_ID::MAX_ID);
+		REQUIRE(std::strcmp(obj.getObjectInfo().urn, "urn:oma:lwm2m:oma:123:1") == 0);
+		REQUIRE(obj.getObjectInfo().lwm2mVersion.minor == 0);
+		REQUIRE(obj.getObjectInfo().lwm2mVersion.major == 1);
+		REQUIRE(obj.getObjectInfo().objVersion.minor == 0);
+		REQUIRE(obj.getObjectInfo().objVersion.major == 1);
+		REQUIRE(obj.getObjectInfo().isSingle == IS_SINGLE::MULTIPLE);
+		REQUIRE(obj.getObjectInfo().isMandatory == IS_MANDATORY::OPTIONAL);
+		REQUIRE(obj.getObjectInfo().instOperation.getFlags() == InstOp(InstOp::CREATE | InstOp::DELETE).getFlags());
+		REQUIRE(obj.getObjectInfo().resOperation.getFlags() == ResOp(ResOp::READ|
+													ResOp::WRITE|
+													ResOp::DISCOVER|
+													ResOp::EXECUTE|
+													ResOp::DELETE).getFlags());
+
+		lwm2m_object_t lwm2mObj = obj.getLwm2mObject();
+		REQUIRE(lwm2mObj.objID == (ID_T)OBJ_ID::MAX_ID);
+		REQUIRE(lwm2mObj.instanceList == NULL);
+		REQUIRE(lwm2mObj.versionMajor == 1);
+		REQUIRE(lwm2mObj.versionMinor == 0);
+		REQUIRE(lwm2mObj.userData == &obj);
+		REQUIRE(lwm2mObj.readFunc != NULL);
+		REQUIRE(lwm2mObj.discoverFunc != NULL);
+		REQUIRE(lwm2mObj.writeFunc != NULL);
+		REQUIRE(lwm2mObj.executeFunc != NULL);
+		REQUIRE(lwm2mObj.createFunc != NULL);
+		REQUIRE(lwm2mObj.deleteFunc != NULL);
+
+		ObjectInfo constrainedObjInfo = mockInfo;
+		constrainedObjInfo.resOperation = ResOp(ResOp::NONE);
+		constrainedObjInfo.instOperation = InstOp(InstOp::NONE);
+		ObjectSpecMock constrainedObj(mockContext, constrainedObjInfo);
+		lwm2m_object_t constrainedLwm2mObj = constrainedObj.getLwm2mObject();
+		REQUIRE(constrainedLwm2mObj.userData == &constrainedObj);
+		REQUIRE(constrainedLwm2mObj.readFunc == NULL);
+		REQUIRE(constrainedLwm2mObj.discoverFunc == NULL);
+		REQUIRE(constrainedLwm2mObj.writeFunc == NULL);
+		REQUIRE(constrainedLwm2mObj.executeFunc == NULL);
+		REQUIRE(constrainedLwm2mObj.createFunc == NULL);
+		REQUIRE(constrainedLwm2mObj.deleteFunc == NULL);
     }
+
+	SECTION("Object: Destructor") {
+		ObjectSpecMock obj(mockContext, mockInfo);
+		REQUIRE(obj.createInstance(0) != NULL);
+		REQUIRE(obj.instanceCnt() == 1);
+	}
 }

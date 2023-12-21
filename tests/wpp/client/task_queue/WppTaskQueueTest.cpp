@@ -28,7 +28,7 @@ static WppTaskQueue::task_t createDummyTask() {
     return [](WppClient&, WppTaskQueue::ctx_t) { return true; };
 }
 
-TEST_CASE("Task creating", "[addTask][addTaskWithCopy]") {
+TEST_CASE("WppTaskQueue: Task creating", "[addTask][addTaskWithCopy]") {
     char str[] = "Hello, world!";
     REQUIRE(WppTaskQueue::getTaskCnt() == 0);
 
@@ -75,7 +75,7 @@ TEST_CASE("Task creating", "[addTask][addTaskWithCopy]") {
     }
 }
 
-TEST_CASE("Task removing", "[requestToRemoveTask][requestToRemoveEachTask][hardReset]") {
+TEST_CASE("WppTaskQueue: Task removing", "[requestToRemoveTask][requestToRemoveEachTask][hardReset]") {
     REQUIRE(WppTaskQueue::getTaskCnt() == 0);
 
     SECTION("Remove Task") {
@@ -130,7 +130,7 @@ TEST_CASE("Task removing", "[requestToRemoveTask][requestToRemoveEachTask][hardR
     }
 }
 
-TEST_CASE("Task state checking", "[isTaskExist][isTaskIdle][isTaskExecuting][isTaskShouldBeDeleted]") {
+TEST_CASE("WppTaskQueue: Task state checking", "[isTaskExist][isTaskIdle][isTaskExecuting][isTaskShouldBeDeleted]") {
     REQUIRE(WppTaskQueue::getTaskCnt() == 0);
 
     SECTION("Is task exist") {
@@ -181,7 +181,7 @@ TEST_CASE("Task state checking", "[isTaskExist][isTaskIdle][isTaskExecuting][isT
     }
 }
 
-TEST_CASE("Task executing") {
+TEST_CASE("WppTaskQueue: Task executing") {
     REQUIRE(WppTaskQueue::getTaskCnt() == 0);
 
     SECTION("Task with null context") {
@@ -276,7 +276,7 @@ TEST_CASE("Task executing") {
     }
 }
 
-TEST_CASE("Error Handling and Edge Cases") {
+TEST_CASE("WppTaskQueue: Error Handling and Edge Cases") {
     char str[] = "Hello, world!";
     WppTaskQueue::task_id_t taskId;
     REQUIRE(WppTaskQueue::getTaskCnt() == 0);

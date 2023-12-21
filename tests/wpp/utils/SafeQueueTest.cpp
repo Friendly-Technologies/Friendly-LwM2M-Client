@@ -1,13 +1,13 @@
 #include "catch_amalgamated.hpp"
 #include "SafeQueue.h"
 
-TEST_CASE("SafeQueue Constructor", "[constructor]") {
+TEST_CASE("SafeQueue: Constructor", "[constructor]") {
     SafeQueue<int, 5> queue;
     REQUIRE(queue.is_empty());
     REQUIRE(queue.size() == 0);
 }
 
-TEST_CASE("SafeQueue push and pop", "[push][pop]") {
+TEST_CASE("SafeQueue: push and pop", "[push][pop]") {
     SafeQueue<int, 5> queue;
     int values[5] = {1, 2, 3, 4, 5};
 
@@ -107,7 +107,7 @@ TEST_CASE("SafeQueue push and pop", "[push][pop]") {
     }
 }
 
-TEST_CASE("SafeQueue to_vector", "[to_vector]") {
+TEST_CASE("SafeQueue: to_vector", "[to_vector]") {
     SafeQueue<int, 5> queue;
 
     SECTION("Convert empty queue to vector") {
@@ -145,7 +145,7 @@ TEST_CASE("SafeQueue to_vector", "[to_vector]") {
     }
 }
 
-TEST_CASE("SafeQueue element access", "[front][back][at]") {
+TEST_CASE("SafeQueue: element access", "[front][back][at]") {
     SafeQueue<int, 5> queue;
      SafeQueue<int, 6> notFullQueue;
     int values[5] = {1, 2, 3, 4, 5};
@@ -221,7 +221,7 @@ TEST_CASE("SafeQueue element access", "[front][back][at]") {
     }
 }
 
-TEST_CASE("SafeQueue state checks", "[is_empty][is_full][size][available_space][element_size]") {
+TEST_CASE("SafeQueue: state checks", "[is_empty][is_full][size][available_space][element_size]") {
     SafeQueue<int, 5> queue;
     int values[5] = {1, 2, 3, 4, 5};
 
@@ -268,7 +268,7 @@ TEST_CASE("SafeQueue state checks", "[is_empty][is_full][size][available_space][
     }
 }
 
-TEST_CASE("SafeQueue clear", "[clear]") {
+TEST_CASE("SafeQueue: clear", "[clear]") {
     SafeQueue<int, 5> queue;
     int values[5] = {1, 2, 3, 4, 5};
     REQUIRE(queue.push(values, 5));

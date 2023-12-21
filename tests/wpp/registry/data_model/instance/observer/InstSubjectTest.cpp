@@ -79,7 +79,7 @@ public:
 
 }
 
-TEST_CASE("InstSubject subscribe/unsubscribe", "[opSubscribe][opUnsubscribe][blockOpSubscribe][blockOpUnsubscribe][eventSubscribe][eventUnsubscribe]") {
+TEST_CASE("InstSubject: subscribe/unsubscribe", "[opSubscribe][opUnsubscribe][blockOpSubscribe][blockOpUnsubscribe][eventSubscribe][eventUnsubscribe]") {
     Instance inst;
     InstOpObserverTest opObserver;
     InstEventObserverTest eventObserver;
@@ -138,7 +138,7 @@ TEST_CASE("InstSubject subscribe/unsubscribe", "[opSubscribe][opUnsubscribe][blo
     #endif
 }
 
-TEST_CASE("InstSubject operations and events notifying", "[operationNotify][blockOperationNotify][eventNotify]") {
+TEST_CASE("InstSubject: operations and events notifying", "[operationNotify][blockOperationNotify][eventNotify]") {
     Instance inst;
     InstOpObserverTest opObserver;
     InstEventObserverTest eventObserver;

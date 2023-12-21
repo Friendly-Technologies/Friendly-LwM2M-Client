@@ -99,8 +99,8 @@ using VERIFY_OPAQUE_T    = std::function<bool(const OPAQUE_T&)>;
 using VERIFY_BOOL_T 	 = std::function<bool(const BOOL_T&)>;
 using VERIFY_OBJ_LINK_T  = std::function<bool(const OBJ_LINK_T&)>;
 using VERIFY_STRING_T    = std::function<bool(const STRING_T&)>;
-using VERIFY_EXECUTE_T   = std::function<bool(const EXECUTE_T)>;
-using VERIFY_CORE_LINK_T = std::function<bool(const CORE_LINK_T)>;
+using VERIFY_EXECUTE_T   = std::function<bool(const EXECUTE_T &)>;
+using VERIFY_CORE_LINK_T = std::function<bool(const CORE_LINK_T &)>;
 
 enum class PRIORITY: uint8_t {
 	HIGH,

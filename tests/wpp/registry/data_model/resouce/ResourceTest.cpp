@@ -4,6 +4,14 @@
 
 using namespace wpp;
 
+namespace wpp {
+  class Instance {
+  public:
+    Instance() {}
+    ~Instance() {}
+  };
+}
+
 TEST_CASE("Resources", "[resources]")
 {
 #define MIN_SIZE 10
@@ -48,7 +56,6 @@ TEST_CASE("Resources", "[resources]")
 
   SECTION("default_resources")
   {
-    INT_T *tmpValueExecute;
     REQUIRE(resources.getId() == 65535);
   }
 
@@ -62,7 +69,7 @@ TEST_CASE("Resources", "[resources]")
       method_call = true;
       return value == false;
     });
-
+    REQUIRE(check_value);
     REQUIRE(resources_0.isEmpty());
     REQUIRE(resources_0.instanceCnt() == 0);
     REQUIRE_FALSE(resources_0.get(valSetMove));
@@ -73,10 +80,11 @@ TEST_CASE("Resources", "[resources]")
     REQUIRE(resources_0.get(valSetMove));
     REQUIRE_FALSE(valSetMove);
     valSetMove = true;
-    REQUIRE(resources_0.setMove(BOOL_T(false)));
+    BOOL_T valSet = false;
+    REQUIRE(resources_0.setMove(valSet));
     REQUIRE(resources_0.get(valSetMove));
     REQUIRE_FALSE(valSetMove);
-    REQUIRE_FALSE(resources_0.setMove(BOOL_T(false), 1));
+    REQUIRE_FALSE(resources_0.setMove(valSet, 1));
     REQUIRE(resources_0.ptr(&tmpValue));
 
     REQUIRE(resources_0.isSingle());
@@ -85,8 +93,8 @@ TEST_CASE("Resources", "[resources]")
     REQUIRE(resources_0.instanceCnt() == 1);
     REQUIRE(resources_0.getInstIds() == ids);
     REQUIRE(resources_0.getOperation().isRead());
-    REQUIRE(resources_0.isInstanceExist(R_BOOL));
-    REQUIRE(resources_0.isInstanceIdPossible(R_BOOL));
+    REQUIRE(resources_0.isInstanceExist(0));
+    REQUIRE(resources_0.isInstanceIdPossible(0));
     REQUIRE(resources_0.getTypeId() == TYPE_ID::BOOL);
     REQUIRE(resources_0.isOperationValid(ResOp::READ));
     REQUIRE(resources_0.isTypeIdCompatible(TYPE_ID::BOOL));
@@ -96,20 +104,20 @@ TEST_CASE("Resources", "[resources]")
     REQUIRE_FALSE(resources_0.isDataValueValid(INT_T(55)));
     REQUIRE_FALSE(resources_0.isDataValueValid(2));
     REQUIRE(method_call);
-    REQUIRE(check_value);
-
     REQUIRE_FALSE(resources_0.isEmpty());
     REQUIRE_FALSE(resources_0.isMultiple());
     REQUIRE_FALSE(resources_0.isOptional());
-    REQUIRE_FALSE(resources_0.remove(R_BOOL));
+    REQUIRE_FALSE(resources_0.remove(0));
     REQUIRE_FALSE(resources_0.set(STRING_T("true")));
     REQUIRE_FALSE(resources_0.getOperation().isWrite());
-    REQUIRE_FALSE(resources_0.isInstanceExist(R_UNDEFINED));
+    REQUIRE_FALSE(resources_0.isInstanceExist(255));
+
     REQUIRE_FALSE(resources_0.isOperationValid(ResOp::WRITE));
     REQUIRE_FALSE(resources_0.isTypeIdCompatible(TYPE_ID::INT));
 
     REQUIRE(resources_0.clear());
-    REQUIRE_FALSE(resources_0.isInstanceExist(R_BOOL));
+    REQUIRE_FALSE(resources_0.isInstanceExist(0));
+    REQUIRE(resources_0.instanceCnt() == 0);
   };
 
   SECTION("int_resources_1")
@@ -122,27 +130,30 @@ TEST_CASE("Resources", "[resources]")
       method_call = true;
       return INT_MIN_VALUE < value && value < INT_MAX_VALUE;
     });
+    REQUIRE(check_value);
+    
     // Initialised instance for resource
     REQUIRE(resources_1.set(INT_T(valSet)));
 
     REQUIRE(resources_1.get(valSetMove));
     REQUIRE(valSetMove == valSet);
     valSetMove = 0;
-    REQUIRE(resources_1.setMove(INT_T(valSet + 1)));
+    INT_T valSet2 = valSet + 1;
+    REQUIRE(resources_1.setMove(valSet2));
+
     REQUIRE(resources_1.get(valSetMove));
     REQUIRE(valSetMove == valSet + 1);
 
     REQUIRE(resources_1.ptr(&tmpValue));
+    REQUIRE(*tmpValue == valSet + 1);
 
     REQUIRE(resources_1.getId() == R_INT);
     REQUIRE(resources_1.isDataValueValid(INT_T(25)));
     REQUIRE_FALSE(resources_1.isDataValueValid(INT_T(30)));
     REQUIRE_FALSE(resources_1.set(INT_T(25), 1));
-    REQUIRE_FALSE(resources_1.set(INT_T("Hello, world!")));
     REQUIRE_FALSE(resources_1.set(STRING_T("true")));
 
     REQUIRE(method_call);
-    REQUIRE(check_value);
   };
 
   SECTION("uint_resources_2")
@@ -155,13 +166,16 @@ TEST_CASE("Resources", "[resources]")
       method_call = true;
       return INT_MIN_VALUE < value && value < INT_MAX_VALUE;
     });
+    REQUIRE(check_value);
+
     // Initialised instance for resource
     REQUIRE(resources_2.set(UINT_T(valSet)));
 
     REQUIRE(resources_2.get(valSetMove));
     REQUIRE(valSetMove == valSet);
     valSetMove = 0;
-    REQUIRE(resources_2.setMove(UINT_T(valSet + 1)));
+    UINT_T valSet2 = valSet + 1;
+    REQUIRE(resources_2.setMove(valSet2));
     REQUIRE(resources_2.get(valSetMove));
     REQUIRE(valSetMove == valSet + 1);
 
@@ -174,7 +188,6 @@ TEST_CASE("Resources", "[resources]")
     REQUIRE_FALSE(resources_2.set(UINT_T(31)));
 
     REQUIRE(method_call);
-    REQUIRE(check_value);
   };
 
   SECTION("float_resources_3")
@@ -187,13 +200,16 @@ TEST_CASE("Resources", "[resources]")
       method_call = true;
       return FLOAT_MIN_VALUE < value && value < FLOAT_MAX_VALUE;
     });
+    REQUIRE(check_value);
+    
     // Initialised instance for resource
     REQUIRE(resources_3.set(FLOAT_T(valSet)));
 
     REQUIRE(resources_3.get(valSetMove));
     REQUIRE(valSetMove > 2.5);
     valSetMove = 0;
-    REQUIRE(resources_3.setMove(FLOAT_T(valSet + 1.132)));
+    FLOAT_T valSet2 = valSet + 1.132;
+    REQUIRE(resources_3.setMove(valSet2));
     REQUIRE(resources_3.get(valSetMove));
     REQUIRE(valSetMove > 3.64);
 
@@ -205,7 +221,6 @@ TEST_CASE("Resources", "[resources]")
     REQUIRE_FALSE(resources_3.set(UINT_T(25)));
 
     REQUIRE(method_call);
-    REQUIRE(check_value);
   };
 
   SECTION("obj_link_resources_4")
@@ -219,6 +234,8 @@ TEST_CASE("Resources", "[resources]")
       method_call = true;
       return value.objId < MAX_SIZE && value.objInstId < MIN_SIZE;
     });
+    REQUIRE(check_value);
+
     // Initialised instance for resource
     REQUIRE(resources_4.set(OBJ_LINK_T(valSet)));
 
@@ -226,7 +243,8 @@ TEST_CASE("Resources", "[resources]")
     REQUIRE(valSetMove.objId == 11);
     REQUIRE(valSetMove.objInstId == 9);
 
-    REQUIRE(resources_4.setMove(OBJ_LINK_T(valSet2)));
+    OBJ_LINK_T valSet3 = valSet2;
+    REQUIRE(resources_4.setMove(valSet3));
     REQUIRE(resources_4.get(valSetMove));
     REQUIRE(valSetMove.objId == 34);
     REQUIRE(valSetMove.objInstId == 8);
@@ -238,7 +256,6 @@ TEST_CASE("Resources", "[resources]")
     REQUIRE_FALSE(resources_4.set(OBJ_LINK_T({106, 2})));
 
     REQUIRE(method_call);
-    REQUIRE(check_value);
   };
 
   SECTION("time_resources_5")
@@ -253,7 +270,8 @@ TEST_CASE("Resources", "[resources]")
     REQUIRE(resources_5.get(valSetMove));
     REQUIRE(valSetMove == valSet);
     valSetMove = 0;
-    REQUIRE(resources_5.setMove(TIME_T(valSet + 27)));
+    TIME_T valSet2 = valSet + 27;
+    REQUIRE(resources_5.setMove(valSet2));
     REQUIRE(resources_5.get(valSetMove));
     REQUIRE(valSetMove == valSet + 27);
 
@@ -269,6 +287,7 @@ TEST_CASE("Resources", "[resources]")
   {
     OPAQUE_T valSet = {11, 9, 24, 31};
     OPAQUE_T valSet2 = {34, 8, 9, 24, 31, 67};
+    OPAQUE_T valSetCheck = {34, 8, 9, 24, 31, 67};
     OPAQUE_T valSetMove = {0, 0};
     OPAQUE_T *tmpValue = NULL;
 
@@ -276,16 +295,20 @@ TEST_CASE("Resources", "[resources]")
       method_call = true;
       return 1 <= value.size() && value.size() <= 150;
     });
+    REQUIRE(check_value);
+
     // Initialised instance for resource
     REQUIRE(resources_6.set(OPAQUE_T(valSet)));
 
     REQUIRE(resources_6.get(valSetMove));
     REQUIRE(valSetMove == valSet);
-    REQUIRE(resources_6.setMove(OPAQUE_T(valSet2)));
+    OPAQUE_T valSet3 = valSet2;
+    REQUIRE(resources_6.setMove(valSet3));
     REQUIRE(resources_6.get(valSetMove));
     REQUIRE(valSetMove == valSet2);
 
     REQUIRE(resources_6.ptr(&tmpValue));
+    REQUIRE(valSetCheck == *tmpValue);
 
     REQUIRE(resources_6.getId() == R_OPAQUE);
     REQUIRE_FALSE(resources_6.set(INT_T(25)));
@@ -293,7 +316,6 @@ TEST_CASE("Resources", "[resources]")
     REQUIRE_FALSE(resources_6.set(OPAQUE_T(151)));
 
     REQUIRE(method_call);
-    REQUIRE(check_value);
   };
 
   SECTION("string_resources_7")
@@ -302,6 +324,8 @@ TEST_CASE("Resources", "[resources]")
       method_call = true;
       return value.size() < STRING_MAX_SIZE;
     });
+    REQUIRE(check_value);
+
     ids = {0, 1, 2, 43, 51};
 
     // Initialised instance for resource
@@ -331,15 +355,15 @@ TEST_CASE("Resources", "[resources]")
     REQUIRE(resources_7.instanceCnt() == 0);
 
     REQUIRE(method_call);
-    REQUIRE(check_value);
   };
 
   SECTION("core_link_resources_8")
   {
     check_value = resources_8.setDataVerifier((VERIFY_CORE_LINK_T)[&method_call](const CORE_LINK_T &value) {
       method_call = true;
-      return 0;
+      return true;
     });
+    REQUIRE(check_value);
 
     REQUIRE(resources_8.set(STRING_T("true")));
     REQUIRE(resources_8.set(CORE_LINK_T("true")));
@@ -348,7 +372,6 @@ TEST_CASE("Resources", "[resources]")
     REQUIRE(resources_8.isDataValueValid(CORE_LINK_T("true")));
 
     REQUIRE(method_call);
-    REQUIRE_FALSE(check_value);
     REQUIRE_FALSE(resources_8.set(OBJ_LINK_T()));
     REQUIRE_FALSE(resources_8.isTypeIdCompatible(TYPE_ID::BOOL));
   };
@@ -359,8 +382,23 @@ TEST_CASE("Resources", "[resources]")
       method_call = true;
       return 1;
     });
+    REQUIRE(check_value);
+
+    Instance inst;
+    int execute_call = 0;
+    EXECUTE_T exe = [&execute_call](Instance &inst, ID_T id, const OPAQUE_T& data) {
+      execute_call++;
+      return true;
+    };
+    exe(inst, 0, OPAQUE_T());
+    REQUIRE(execute_call == 1);
+
     // Initialised instance for resource
-    REQUIRE(resources_9.set(EXECUTE_T()));
+    REQUIRE(resources_9.set(exe));
+    EXECUTE_T exeCheck;
+    REQUIRE(resources_9.get(exeCheck));
+    REQUIRE(exeCheck(inst, 0, OPAQUE_T()));
+    REQUIRE(execute_call == 2);
 
     REQUIRE(resources_9.getId() == R_EXECUTE);
     REQUIRE_FALSE(resources_9.set(CORE_LINK_T()));
@@ -383,8 +421,10 @@ TEST_CASE("Resources", "[resources]")
     // TODO compare vectors address for setMove
     BOOL_T *tmpValue = NULL;
     check_value = false;
-    REQUIRE(resources_0.setMove(BOOL_T(check_value)));
-    REQUIRE_FALSE(resources_0.setMove(BOOL_T(check_value), 1));
+    BOOL_T valBool = check_value;
+    REQUIRE(resources_0.setMove(valBool));
+    REQUIRE_FALSE(resources_0.setMove(valBool, 1));
+
     check_value = true;
     REQUIRE(resources_0.get(check_value));
     REQUIRE_FALSE(resources_0.get(check_value, 1));
@@ -394,7 +434,9 @@ TEST_CASE("Resources", "[resources]")
 
     INT_T valInt = 111;
     INT_T *tmpValueInt = NULL;
-    REQUIRE(resources_1.setMove(INT_T(valInt)));
+    INT_T valInt2 = valInt;
+    REQUIRE(resources_1.setMove(valInt2));
+
     valInt = 0;
     resources_1.get(valInt);
     REQUIRE(valInt == 111);
@@ -402,7 +444,9 @@ TEST_CASE("Resources", "[resources]")
 
     UINT_T valUint = 111;
     UINT_T *tmpValueUint = NULL;
-    REQUIRE(resources_2.setMove(UINT_T(valUint)));
+    UINT_T valUint2 = valUint;
+    REQUIRE(resources_2.setMove(valUint2));
+
     valUint = 0;
     resources_2.get(valUint);
     REQUIRE(valUint == 111);
@@ -410,7 +454,9 @@ TEST_CASE("Resources", "[resources]")
 
     FLOAT_T valFloat = 1.11;
     FLOAT_T *tmpValueFloat = NULL;
-    REQUIRE(resources_3.setMove(FLOAT_T(valFloat)));
+    FLOAT_T valFloat2 = valFloat;
+    REQUIRE(resources_3.setMove(valFloat2));
+
     valFloat = 0;
     resources_3.get(valFloat);
     REQUIRE(valFloat < 1.12);
@@ -419,7 +465,9 @@ TEST_CASE("Resources", "[resources]")
 
     OBJ_LINK_T valObjLink = {1, 1};
     OBJ_LINK_T *tmpValueObjLink = NULL;
-    REQUIRE(resources_4.setMove(OBJ_LINK_T(valObjLink)));
+    OBJ_LINK_T valObjLink2 = valObjLink;
+    REQUIRE(resources_4.setMove(valObjLink2));
+
     valObjLink = {0, 0};
     REQUIRE(resources_4.get(valObjLink));
     REQUIRE(valObjLink.objId == 1);
@@ -428,7 +476,9 @@ TEST_CASE("Resources", "[resources]")
 
     TIME_T valTime = 15122023;
     TIME_T *tmpValueTime = NULL;
-    REQUIRE(resources_5.setMove(TIME_T(valTime)));
+    TIME_T valTime2 = valTime;
+    REQUIRE(resources_5.setMove(valTime2));
+
     valTime = 0;
     resources_5.get(valTime);
     REQUIRE(valTime == 15122023);
@@ -438,12 +488,9 @@ TEST_CASE("Resources", "[resources]")
     OPAQUE_T *tmpValueOpaque = NULL;
     uint8_t *p1 = valOpaque.data();
     REQUIRE(resources_6.setMove(valOpaque));
-
     REQUIRE(resources_6.ptr(&tmpValueOpaque));
     uint8_t *p2 = tmpValueOpaque->data();
-    // TODO                 // FAILED: REQUIRE( p1 == p2 )
-    // REQUIRE(p1 == p2);   // with expansion: 0x00005652b4daca30 == 0x00005652b4dac9f0
-    REQUIRE_FALSE(p1 == p2);
+    REQUIRE(p1 == p2);
 
     valOpaque = {0, 0};
     REQUIRE(resources_6.get(valOpaque));
@@ -452,7 +499,8 @@ TEST_CASE("Resources", "[resources]")
 
     STRING_T valString = "Hello, world!";
     STRING_T *tmpValueString = NULL;
-    REQUIRE(resources_7.setMove(STRING_T(valString)));
+    STRING_T valString2 = valString;
+    REQUIRE(resources_7.setMove(valString2));
     valString = "??";
     resources_7.get(valString);
     REQUIRE(valString == "Hello, world!");
@@ -468,7 +516,8 @@ TEST_CASE("Resources", "[resources]")
 
     EXECUTE_T valExecute;
     EXECUTE_T *tmpValueExecute = NULL;
-    REQUIRE(resources_9.setMove(EXECUTE_T(valExecute)));
+    EXECUTE_T valExecute2 = valExecute;
+    REQUIRE(resources_9.setMove(valExecute2));
     REQUIRE(resources_9.get(valExecute));
     REQUIRE(resources_9.ptr(&tmpValueExecute));
 
@@ -481,7 +530,8 @@ TEST_CASE("Resources", "[resources]")
   SECTION("resources_copy")
   {
     BOOL_T valBoolCheck;
-    REQUIRE(resources_0.setMove(BOOL_T(false)));
+    BOOL_T valBool = false;
+    REQUIRE(resources_0.setMove(valBool));
 
     resources_1 = resources_0;
 

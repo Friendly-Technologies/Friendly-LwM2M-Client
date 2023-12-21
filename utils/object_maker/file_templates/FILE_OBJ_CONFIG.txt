@@ -6,7 +6,7 @@
 #ifndef WPP_<<IF_DEF_DIRECTIVE>>_CONFIG_H
 #define WPP_<<IF_DEF_DIRECTIVE>>_CONFIG_H
 
-#if __OBJ_DEFINE__
+#ifdef __OBJ_DEFINE__
 
 /* --------------- Config block 0 start --------------- */
 __RES_DEFINES__

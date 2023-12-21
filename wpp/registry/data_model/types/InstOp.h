@@ -28,7 +28,7 @@ public:
 		NONE = 0,           /**< No operation */
 		CREATE = 1,         /**< Create operation */
 	    DELETE = 2,         /**< Delete operation */
-		#if LWM2M_RAW_BLOCK1_REQUESTS
+		#ifdef LWM2M_RAW_BLOCK1_REQUESTS
 	    BLOCK1_CREATE = 4,  /**< Block1 create operation */
 		#endif
 	};
@@ -71,7 +71,7 @@ public:
 	 */
 	inline bool isDelete() const { return _flags & DELETE; }
 
-	#if LWM2M_RAW_BLOCK1_REQUESTS
+	#ifdef LWM2M_RAW_BLOCK1_REQUESTS
 	/**
 	 * @brief Checks if the operation is of type BLOCK1_CREATE.
 	 * 

@@ -75,26 +75,26 @@ class ObjectIntegrator:
             f"""option({obj_name_define} """ \
             f""""Include {"mandatory" if obj_is_mandatory else "optional"} """ \
             f"""{obj_name_class} object in the build" {"ON" if obj_is_mandatory else "OFF"})\n""" \
-            f"""if ({obj_name_define})\n\tset(WPP_DEFINITIONS ${{WPP_DEFINITIONS}} {obj_name_define}=1)""" \
+            f"""if ({obj_name_define})\n\tset(WPP_DEFINITIONS ${{WPP_DEFINITIONS}} {obj_name_define})""" \
             f"""\nendif()\n"""
 
         content_reg_h_include = \
-            f"""#if {obj_name_define}\n""" \
+            f"""#ifdef {obj_name_define}\n""" \
             f"""#include "{self.folder_name}/{obj_name_class}.h"\n""" \
             f"""#endif\n"""
 
         content_reg_h_prototype = \
-            f"""\t#if {obj_name_define}\n\t""" \
+            f"""\t#ifdef {obj_name_define}\n\t""" \
             f"""{type_obj}<{obj_name_class}> & {obj_name_camelcase}();\n\t""" \
             f"""#endif\n"""
 
         content_reg_cpp_init = \
-            f"""\t# if {obj_name_define}\n""" \
+            f"""\t#if {obj_name_define}\n""" \
             f"""\t_objects.push_back(new {type_obj}<{obj_name_class}>(_context, {obj_name_underline}_OBJ_INFO));\n""" \
             f"""\t#endif\n"""
 
         content_reg_cpp_method = \
-            f"""# if {obj_name_define}\n""" \
+            f"""#if {obj_name_define}\n""" \
             f"""{type_obj}<{obj_name_class}> & WppRegistry::{obj_name_camelcase}() {{\n\t""" \
             f"""return *static_cast<{type_obj}<{obj_name_class}>*>(object(OBJ_ID::{obj_name_underline}));\n}}\n#endif\n"""
 

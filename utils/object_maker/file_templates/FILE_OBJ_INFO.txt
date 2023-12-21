@@ -8,7 +8,7 @@
 
 #include "ObjectInfo.h"
 
-#if __OBJ_DEFINE__
+#ifdef __OBJ_DEFINE__
 
 namespace wpp {
 

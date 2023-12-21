@@ -12,25 +12,25 @@
 #include "ObjectSpec.h"
 
 /* ---------- Mandatory objects include block begin ---------- */
-#if OBJ_M_3_DEVICE_V12
+#ifdef OBJ_M_3_DEVICE_V12
 #include "m_3_device_v12/Device.h"
 #endif
-#if OBJ_M_1_LWM2M_SERVER_V11
+#ifdef OBJ_M_1_LWM2M_SERVER_V11
 #include "m_1_lwm2m_server_v11/Lwm2mServer.h"
 #endif
-#if OBJ_M_0_LWM2M_SECURITY_V11
+#ifdef OBJ_M_0_LWM2M_SECURITY_V11
 #include "m_0_lwm2m_security_v11/Lwm2mSecurity.h"
 #endif
 /* ---------- Mandatory objects include block end ---------- */
 
 /* ---------- Optional objects include block begin ---------- */
-#if OBJ_O_4_CONNECTIVITY_MONITORING_V13
+#ifdef OBJ_O_4_CONNECTIVITY_MONITORING_V13
 #include "o_4_connectivity_monitoring_v13/ConnectivityMonitoring.h"
 #endif
-#if OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
+#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
 #include "o_2_lwm2m_access_control_v11/Lwm2mAccessControl.h"
 #endif
-#if OBJ_O_5_FIRMWARE_UPDATE_V11
+#ifdef OBJ_O_5_FIRMWARE_UPDATE_V11
 #include "o_5_firmware_update_v11/FirmwareUpdate.h"
 #endif
 /* ---------- Optional objects include block end ---------- */
@@ -98,25 +98,25 @@ public:
 	Object *object(OBJ_ID objId);
 
 	/* ---------- Mandatory objects prototype block begin ---------- */
-	#if OBJ_M_3_DEVICE_V12
+	#ifdef OBJ_M_3_DEVICE_V12
 	ObjectSpec<Device> & device();
 	#endif
-	#if OBJ_M_1_LWM2M_SERVER_V11
+	#ifdef OBJ_M_1_LWM2M_SERVER_V11
 	ObjectSpec<Lwm2mServer> & lwm2mServer();
 	#endif
-	#if OBJ_M_0_LWM2M_SECURITY_V11
+	#ifdef OBJ_M_0_LWM2M_SECURITY_V11
 	ObjectSpec<Lwm2mSecurity> & lwm2mSecurity();
 	#endif
 	/* ---------- Mandatory objects prototype block end ---------- */
 
 	/* ---------- Optional objects prototype block begin ---------- */
-	#if OBJ_O_4_CONNECTIVITY_MONITORING_V13
+	#ifdef OBJ_O_4_CONNECTIVITY_MONITORING_V13
 	ObjectSpec<ConnectivityMonitoring> & connectivityMonitoring();
 	#endif
-	#if OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
+	#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
 	ObjectSpec<Lwm2mAccessControl> & lwm2mAccessControl();
 	#endif
-	#if OBJ_O_5_FIRMWARE_UPDATE_V11
+	#ifdef OBJ_O_5_FIRMWARE_UPDATE_V11
 	ObjectSpec<FirmwareUpdate> & firmwareUpdate();
 	#endif
 	/* ---------- Optional objects prototype block end ---------- */

@@ -1,6 +1,7 @@
 option(WPP_ENABLE_LOGS "Enable logs for WakaamaPlus" ON)
 if (WPP_ENABLE_LOGS)
-    set(WPP_DEFINITIONS ${WPP_DEFINITIONS} WPP_ENABLE_LOGS=1)
+    set(WPP_DEFINITIONS ${WPP_DEFINITIONS} WPP_ENABLE_LOGS)
+    set(WPP_DEFINITIONS ${WPP_DEFINITIONS} WPP_LOGS_LEVEL=0)
 endif()
 
 # Share defines with target

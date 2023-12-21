@@ -6,7 +6,7 @@
 #ifndef WPP_LWM2M_SECURITY_CONFIG_H
 #define WPP_LWM2M_SECURITY_CONFIG_H
 
-#if OBJ_M_0_LWM2M_SECURITY_V11
+#ifdef OBJ_M_0_LWM2M_SECURITY_V11
 
 /* --------------- Config block 0 start --------------- */
 #define RES_0_10 1

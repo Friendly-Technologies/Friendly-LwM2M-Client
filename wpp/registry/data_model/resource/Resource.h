@@ -10,7 +10,7 @@
 #include "types.h"
 
 #define RES_METHODS_PROT_SET_FOR(_TYPE_) bool set(const _TYPE_ &value, ID_T resInstId = SINGLE_INSTANCE_ID); \
-										 bool setMove(const _TYPE_ &value, ID_T resInstId = SINGLE_INSTANCE_ID); \
+										 bool setMove(_TYPE_ &value, ID_T resInstId = SINGLE_INSTANCE_ID); \
 								   		 bool get(_TYPE_ &value, ID_T resInstId = SINGLE_INSTANCE_ID) const; \
 								   		 bool ptr(_TYPE_ **value, ID_T resInstId = SINGLE_INSTANCE_ID)
 
@@ -126,7 +126,7 @@ public: /* ---------- Public methods for common usage ----------*/
     template<typename T>
     bool set(const T &value, ID_T resInstId = SINGLE_INSTANCE_ID) = delete;
 	template<typename T>
-	bool setMove(const T &value, ID_T resInstId = SINGLE_INSTANCE_ID) = delete;
+	bool setMove(T &value, ID_T resInstId = SINGLE_INSTANCE_ID) = delete;
 	template<typename T>
 	bool get(T &value, ID_T resInstId = SINGLE_INSTANCE_ID) const  = delete;
 	template<typename T>
@@ -154,7 +154,7 @@ private:
 	bool _set(const T &value, ID_T resInstId);
 
 	template<typename T>
-	bool _setMove(const T &value, ID_T resInstId);
+	bool _setMove(T &value, ID_T resInstId);
 	
 	template<typename T>
 	bool _get(T &value, ID_T resInstId) const;
@@ -196,7 +196,7 @@ bool Resource::_set(const T &value, ID_T resInstId) {
 }
 
 template<typename T>
-bool Resource::_setMove(const T &value, ID_T resInstId) {
+bool Resource::_setMove(T &value, ID_T resInstId) {
 	if (!isInstanceIdPossible(resInstId)) return false;
 	if (!isDataValueValid(value)) return false;
 

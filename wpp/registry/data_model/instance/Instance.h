@@ -61,9 +61,9 @@ public:
  	 * @brief Sets resource value by moving user data to resource to avoid extra copy
 	 */
 	template<typename T>
-	bool setMove(ID_T resId, const T &value);
+	bool setMove(ID_T resId, T &value);
 	template<typename T>
-	bool setMove(const ResLink &resId, const T &value);
+	bool setMove(const ResLink &resId, T &value);
 	/**
  	 * @brief Returns copy of resource value
 	 */
@@ -211,12 +211,12 @@ bool Instance::set(const ResLink &resId, const T &value)  {
  * @brief Sets resource value by moving user data to resource to avoid extra copy
  */
 template<typename T>
-bool Instance::setMove(ID_T resId, const T &value) {
+bool Instance::setMove(ID_T resId, T &value) {
 	return setMove({resId, SINGLE_INSTANCE_ID}, value);
 }
 
 template<typename T>
-bool Instance::setMove(const ResLink &resId, const T &value) {
+bool Instance::setMove(const ResLink &resId, T &value) {
 	auto res = resource(resId.resId);
 	if (res == _resources.end()) return false;
 	if (!res->setMove(value, resId.resInstId)) return false;

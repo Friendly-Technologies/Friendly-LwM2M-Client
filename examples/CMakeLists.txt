@@ -38,38 +38,41 @@ if (WITH_UDP_DTLS)
     # set(COMPILE_DEFINITIONS ${COMPILE_DEFINITIONS} DTLS_WITH_RPK)
 endif()
 
+add_executable(WakaamaPlusExample)
+# Link with Wpp library
+target_link_libraries(WakaamaPlusExample Wpp pthread ${CURL_LIBRARIES})
+# List of preprocessor defines that will be set for compiler with key -D
+target_compile_definitions(WakaamaPlusExample PUBLIC ${COMPILE_DEFINITIONS})
+
 # Add subdiretories with sources
 add_subdirectory(platform)
 add_subdirectory(Lwm2mServer)
 add_subdirectory(Lwm2mSecurity)
 add_subdirectory(Device)
-if (OBJ_O_4_CONNECTIVITY_MONITORING_V13)
+if(OBJ_O_4_CONNECTIVITY_MONITORING_V13)
     add_subdirectory(ConnectivityMonitoring)
 endif()
-if (OBJ_O_2_LWM2M_ACCESS_CONTROL_V11)
+if(OBJ_O_2_LWM2M_ACCESS_CONTROL_V11)
     add_subdirectory(Lwm2mAccessControl)
 endif()
-if (OBJ_O_5_FIRMWARE_UPDATE_V11)
+if(OBJ_O_5_FIRMWARE_UPDATE_V11)
     add_subdirectory(FirmwareUpdate)
 endif()
 
-# message(STATUS "WakaamaPlusExample:INCLUDES: ${INCLUDES}")
-# message(STATUS "WakaamaPlusExample:SOURCES: ${SOURCES}")
-# message(STATUS "WakaamaPlusExample:COMPILE_DEFINITIONS: ${COMPILE_DEFINITIONS}")
-
-add_executable(WakaamaPlusExample ${SOURCES})
+# Include sources
+target_sources(WakaamaPlusExample PUBLIC ${SOURCES})
 # List of directories that will be set for compiler with key -I
 target_include_directories(WakaamaPlusExample PUBLIC ${INCLUDES})
-# List of preprocessor defines that will be set for compiler with key -D
-target_compile_definitions(WakaamaPlusExample PUBLIC ${COMPILE_DEFINITIONS})
 
-# Link with Wpp library
-target_link_libraries(WakaamaPlusExample Wpp pthread ${CURL_LIBRARIES})
 # Add tiny dtls src
 if (WITH_UDP_DTLS)
     include(../2305-Wakaama/examples/shared/tinydtls.cmake)
     target_sources_tinydtls(WakaamaPlusExample)
 endif()
+
+# message(STATUS "WakaamaPlusExample:INCLUDES: ${INCLUDES}")
+# message(STATUS "WakaamaPlusExample:SOURCES: ${SOURCES}")
+# message(STATUS "WakaamaPlusExample:COMPILE_DEFINITIONS: ${COMPILE_DEFINITIONS}")
 
 # Generate a .bin file 
 add_custom_command(TARGET WakaamaPlusExample POST_BUILD

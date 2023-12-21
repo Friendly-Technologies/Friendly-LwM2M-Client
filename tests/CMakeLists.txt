@@ -4,11 +4,14 @@ project(Catch2Test CXX)
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 17)
 
-# Add file with wpp lib configs
-include(../wpp/wpp.cmake)
-
 # Include file with compiler config
 include(../wpp/configs/compiler_config.cmake)
+# Include file with Wakaama core config
+include(../wpp/configs/wakaama_config.cmake)
+# Include file with wpp object configs
+include(../wpp/configs/objects_config.cmake)
+# Add file with wpp lib configs
+include(../wpp/wpp.cmake)
 
 # Compiler options
 add_compile_options(-Wno-unused-function)
@@ -25,6 +28,14 @@ file(GLOB_RECURSE LISTENING "../wpp/*")
 
 # Create executable file for tests
 add_executable(Catch2Tests ${SOURCES} ${TEST_SOURCES})
+# Set properties
+target_compile_definitions(Catch2Tests PUBLIC ${WPP_DEFINITIONS})
+# Link wpp sources to tests
+target_link_wpp(Catch2Tests)
+# Link pthread library to tests
+target_link_libraries(Catch2Tests pthread)
+# Include Catch2 library for test executable file
+target_include_directories(Catch2Tests PRIVATE "catch2/")
 
 # Set the compilation configuration for this target into the release mode.
 # This is due to the fact that the Debug mode cannot be launched due to the
@@ -36,14 +47,6 @@ target_compile_options(Catch2Tests PRIVATE
     $<$<OR:$<CONFIG:Debug>,$<CONFIG:Release>,$<CONFIG:RelWithDebInfo>,$<CONFIG:MinSizeRel>>:
     -O3 -DNDEBUG>  # Replace with your desired release flags
 )
-
-# Link wpp sources to tests
-target_link_wpp(Catch2Tests)
-# Link pthread library to tests
-target_link_libraries(Catch2Tests pthread)
-# Include Catch2 library for test executable file
-target_include_directories(Catch2Tests PRIVATE "catch2/")
-
 
 # Add static analyzer target for cppcheck
 add_custom_command(TARGET Catch2Tests PRE_BUILD

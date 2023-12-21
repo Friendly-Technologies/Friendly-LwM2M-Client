@@ -8,7 +8,7 @@
 
 #include "ObjectInfo.h"
 
-#if OBJ_M_0_LWM2M_SECURITY_V11
+#ifdef OBJ_M_0_LWM2M_SECURITY_V11
 
 namespace wpp {
 

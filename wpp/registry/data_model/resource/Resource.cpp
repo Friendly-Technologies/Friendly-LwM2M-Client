@@ -11,7 +11,7 @@
 bool Resource::set(const _TYPE_ &value, ID_T resInstId) {					\
 	return _set(value, resInstId);											\
 }																			\
-bool Resource::setMove(const _TYPE_ &value, ID_T resInstId) {				\
+bool Resource::setMove(_TYPE_ &value, ID_T resInstId) {				\
 	return _setMove(value, resInstId);										\
 }																			\
 bool Resource::get(_TYPE_ &value, ID_T resInstId) const {					\
@@ -189,7 +189,8 @@ bool Resource::isDataVerifierValid(const DATA_VERIFIER_T &verifier) const {
 	else if (std::holds_alternative<VERIFY_FLOAT_T>(verifier) && std::get<VERIFY_FLOAT_T>(verifier)) return _typeID == TYPE_ID::FLOAT;
 	else if (std::holds_alternative<VERIFY_OPAQUE_T>(verifier) && std::get<VERIFY_OPAQUE_T>(verifier)) return _typeID == TYPE_ID::OPAQUE;
 	else if (std::holds_alternative<VERIFY_OBJ_LINK_T>(verifier) && std::get<VERIFY_OBJ_LINK_T>(verifier)) return _typeID == TYPE_ID::OBJ_LINK;
-	else if (std::holds_alternative<VERIFY_STRING_T>(verifier) && std::get<VERIFY_STRING_T>(verifier)) return _typeID == TYPE_ID::STRING;
+	// VERIFY_CORE_LINK_T the same as VERIFY_STRING_T therefore we use only VERIFY_STRING_T
+	else if (std::holds_alternative<VERIFY_STRING_T>(verifier) && std::get<VERIFY_STRING_T>(verifier)) return _typeID == TYPE_ID::STRING || _typeID == TYPE_ID::CORE_LINK;
 	else if (std::holds_alternative<VERIFY_EXECUTE_T>(verifier) && std::get<VERIFY_EXECUTE_T>(verifier)) return _typeID == TYPE_ID::EXECUTE;
 	else return false;
 }

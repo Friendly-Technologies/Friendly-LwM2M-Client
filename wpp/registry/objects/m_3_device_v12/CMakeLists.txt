@@ -1,7 +1,8 @@
 # Generated on: 2023-11-02 16:38:01
 # Created by: SinaiR&D
 
-if(OBJ_M_3_DEVICE_V12)
+wpp_check_definition("OBJ_M_3_DEVICE_V12" is_defined)
+if(is_defined)
 	# Update SOURCES variable from parent scope.
 	set(WPP_SOURCES ${WPP_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/Device.cpp)
 

@@ -44,7 +44,7 @@ public:
 
 using namespace wpp;
 
-TEST_CASE("ObjSubject subscribe/unsubscribe", "[opSubscribe][opUnsubscribe][actSubscribe][actUnsubscribe]") {
+TEST_CASE("ObjSubject: subscribe/unsubscribe", "[opSubscribe][opUnsubscribe][actSubscribe][actUnsubscribe]") {
     Object obj;
     ObjOpObserverTest opObserver;
     ObjActObserverTest actObserver;
@@ -82,7 +82,7 @@ TEST_CASE("ObjSubject subscribe/unsubscribe", "[opSubscribe][opUnsubscribe][actS
     }
 }
 
-TEST_CASE("ObjSubject operation notify and request for action", "[operationNotify][observerDoAction]") {
+TEST_CASE("ObjSubject: operation notify and request for action", "[operationNotify][observerDoAction]") {
     Object obj;
     ObjOpObserverTest opObserver;
     ObjActObserverTest actObserver;

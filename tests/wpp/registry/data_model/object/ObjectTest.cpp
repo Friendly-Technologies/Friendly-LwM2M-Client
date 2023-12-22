@@ -38,23 +38,52 @@ public:
 	ObjectSpecMock(lwm2m_context_t &context, const ObjectInfo &info): ObjectSpec(context, info) {}
 	~ObjectSpecMock() {};
 
-	Instance* createInstance(ID_T instanceID) override {
+	Instance* createInstance(ID_T instanceID = ID_T_MAX_VAL) override {
         return ObjectSpec::createInstance(instanceID);
     }
 
-    InstanceMock* createInstanceSpec(ID_T instanceID) {
+    InstanceMock* createInstanceSpec(ID_T instanceID = ID_T_MAX_VAL) {
         return ObjectSpec::createInstanceSpec(instanceID);
     }
 
-    InstanceMock* instanceSpec(ID_T instanceID) {
+    InstanceMock* instanceSpec(ID_T instanceID = 0) {
         return ObjectSpec::instanceSpec(instanceID);
+    }
+
+	lwm2m_context_t *getContext() {
+		return &_context;
+	}
+};
+
+class ObjOpObserverTest : public ObjOpObserver {
+public:
+    int instanceCreatedCount = 0;
+    int instanceDeletingCount = 0;
+
+    void instanceCreated(Object &object, ID_T instanceId) override {
+        ObjOpObserver::instanceCreated(object, instanceId);
+        instanceCreatedCount++;
+    }
+
+    void instanceDeleting(Object &object, ID_T instanceId) override {
+        ObjOpObserver::instanceDeleting(object, instanceId);
+        instanceDeletingCount++;
     }
 };
 
-TEST_CASE("Object: constructing/destucting and getting infor", "[Object][ObjectSpec][getObjectID][getLwm2mObject][getObjectInfo][instanceCnt]") {
-    SECTION("Constructor") {
-        ObjectSpecMock obj(mockContext, mockInfo);
+class ObjActObserverTest : public ObjActObserver {
+public:
+    int objectRestoreCount = 0;
 
+    void objectRestore(Object &object) override {
+        objectRestoreCount++;
+    }
+};
+
+TEST_CASE("Object: constructing/destucting and getting infor", "[Object][ObjectSpec][getObjectID][getLwm2mObject][getObjectInfo]") {
+	ObjectSpecMock obj(mockContext, mockInfo);
+
+    SECTION("Constructor") {
 		REQUIRE(obj.getObjectID() == OBJ_ID::MAX_ID);
 
 		REQUIRE(std::strcmp(obj.getObjectInfo().name, "Test Object") == 0);
@@ -101,8 +130,207 @@ TEST_CASE("Object: constructing/destucting and getting infor", "[Object][ObjectS
     }
 
 	SECTION("Object: Destructor") {
-		ObjectSpecMock obj(mockContext, mockInfo);
 		REQUIRE(obj.createInstance(0) != NULL);
 		REQUIRE(obj.instanceCnt() == 1);
 	}
+}
+
+TEST_CASE("Object: instance creating/removing", "[createInstance][createInstanceSpec][removeInstance][clear][instanceCnt][isInstanceExist][restore]") {
+	ObjectSpecMock obj(mockContext, mockInfo);
+	ObjActObserverTest actObserver;
+	obj.actSubscribe(&actObserver);
+
+	SECTION("createInstance") {
+		REQUIRE(obj.createInstance(0) != NULL);
+		REQUIRE(obj.instanceCnt() == 1);
+		REQUIRE(obj.isInstanceExist(0));
+		REQUIRE(obj.createInstance(0) == NULL);
+		REQUIRE(obj.instanceCnt() == 1);
+		REQUIRE(obj.createInstance(1) != NULL);
+		REQUIRE(obj.instanceCnt() == 2);
+		REQUIRE(obj.isInstanceExist(1));
+		REQUIRE(obj.createInstance(1) == NULL);
+		REQUIRE(obj.instanceCnt() == 2);
+
+		Instance *instance = obj.createInstance();
+		REQUIRE(instance != NULL);
+		REQUIRE(obj.isInstanceExist(2));
+		REQUIRE(obj.instanceCnt() == 3);
+		REQUIRE(instance->getInstanceID() == 2);
+
+		REQUIRE(obj.createInstance(4) != NULL);
+		REQUIRE(obj.instanceCnt() == 4);
+		instance = obj.createInstance();
+		REQUIRE(instance != NULL);
+		REQUIRE(obj.instanceCnt() == 5);
+		REQUIRE(instance->getInstanceID() == 5);
+
+		ObjectInfo constrainedObjInfo = mockInfo;
+		constrainedObjInfo.isSingle = IS_SINGLE::SINGLE;
+		ObjectSpecMock constrainedObj(mockContext, constrainedObjInfo);
+		REQUIRE(constrainedObj.createInstance(0) != NULL);
+		REQUIRE(constrainedObj.instanceCnt() == 1);
+		REQUIRE(constrainedObj.createInstance(2) == NULL);
+		REQUIRE(constrainedObj.instanceCnt() == 1);
+		REQUIRE(constrainedObj.createInstance() == NULL);
+		REQUIRE(constrainedObj.instanceCnt() == 1);
+	}
+
+	SECTION("createInstanceSpec") {
+		InstanceMock *instance = obj.createInstanceSpec(0);
+		REQUIRE(instance != NULL);
+		REQUIRE(obj.instanceCnt() == 1);
+		REQUIRE(instance->getInstanceID() == 0);
+		REQUIRE(obj.createInstanceSpec(0) == NULL);
+	}
+
+	SECTION("removeInstance") {
+		REQUIRE(obj.createInstance(0) != NULL);
+		REQUIRE(obj.createInstance(1) != NULL);
+		REQUIRE(obj.createInstance(2) != NULL);
+		REQUIRE(obj.createInstance(3) != NULL);
+		REQUIRE(obj.createInstance(4) != NULL);
+
+		REQUIRE_FALSE(obj.removeInstance(5));
+		REQUIRE(obj.instanceCnt() == 5);
+		REQUIRE_FALSE(obj.removeInstance(ID_T_MAX_VAL));
+		REQUIRE(obj.instanceCnt() == 5);
+
+		REQUIRE(obj.removeInstance(0));
+		REQUIRE_FALSE(obj.isInstanceExist(0));
+		REQUIRE(obj.instanceCnt() == 4);
+		REQUIRE_FALSE(obj.removeInstance(0));
+		REQUIRE(obj.instanceCnt() == 4);
+		REQUIRE(obj.removeInstance(1));
+		REQUIRE_FALSE(obj.isInstanceExist(1));
+		REQUIRE(obj.instanceCnt() == 3);
+		REQUIRE(obj.removeInstance(2));
+		REQUIRE_FALSE(obj.isInstanceExist(2));
+		REQUIRE(obj.instanceCnt() == 2);
+		REQUIRE(obj.removeInstance(3));
+		REQUIRE_FALSE(obj.isInstanceExist(3));
+		REQUIRE(obj.instanceCnt() == 1);
+		REQUIRE(obj.removeInstance(4));
+		REQUIRE_FALSE(obj.isInstanceExist(4));
+		REQUIRE(obj.instanceCnt() == 0);
+	}
+
+	SECTION("clear") {
+		REQUIRE(obj.createInstance(0) != NULL);
+		REQUIRE(obj.createInstance(1) != NULL);
+		REQUIRE(obj.createInstance(2) != NULL);
+		REQUIRE(obj.createInstance(3) != NULL);
+		REQUIRE(obj.createInstance(4) != NULL);
+
+		obj.clear();
+		REQUIRE(obj.instanceCnt() == 0);
+	}
+
+	SECTION("restore") {
+		REQUIRE(obj.createInstance(0) != NULL);
+		REQUIRE(obj.instanceCnt() == 1);
+		obj.restore();
+		REQUIRE(obj.instanceCnt() == 1);
+		REQUIRE(actObserver.objectRestoreCount == 1);
+	}
+}
+
+TEST_CASE("Object: instance accessing", "[instance][instanceSpec][getInstances]") {
+	ObjectSpecMock obj(mockContext, mockInfo);
+	ObjActObserverTest actObserver;
+	obj.actSubscribe(&actObserver);
+
+	SECTION("instance") {
+		REQUIRE(obj.createInstance(0) != NULL);
+		REQUIRE(obj.createInstance(1) != NULL);
+		REQUIRE(obj.createInstance(2) != NULL);
+		REQUIRE(obj.createInstance(3) != NULL);
+		REQUIRE(obj.createInstance(4) != NULL);
+
+		REQUIRE(obj.instance(0) != NULL);
+		REQUIRE(obj.instance(1) != NULL);
+		REQUIRE(obj.instance(2) != NULL);
+		REQUIRE(obj.instance(3) != NULL);
+		REQUIRE(obj.instance(4) != NULL);
+		REQUIRE(obj.instance(5) == NULL);
+		REQUIRE(obj.instance(ID_T_MAX_VAL) == NULL);
+	}
+
+	SECTION("instanceSpec") {
+		REQUIRE(obj.createInstance(0) != NULL);
+		REQUIRE(obj.createInstance(1) != NULL);
+		REQUIRE(obj.createInstance(2) != NULL);
+		REQUIRE(obj.createInstance(3) != NULL);
+		REQUIRE(obj.createInstance(4) != NULL);
+
+		REQUIRE(obj.instanceSpec(0) != NULL);
+		REQUIRE(obj.instanceSpec(1) != NULL);
+		REQUIRE(obj.instanceSpec(2) != NULL);
+		REQUIRE(obj.instanceSpec(3) != NULL);
+		REQUIRE(obj.instanceSpec(4) != NULL);
+		REQUIRE(obj.instanceSpec(5) == NULL);
+		REQUIRE(obj.instanceSpec(ID_T_MAX_VAL) == NULL);
+	}
+
+	SECTION("getInstances") {
+		REQUIRE(obj.createInstance(0) != NULL);
+		REQUIRE(obj.createInstance(1) != NULL);
+		REQUIRE(obj.createInstance(2) != NULL);
+		REQUIRE(obj.createInstance(3) != NULL);
+		REQUIRE(obj.createInstance(4) != NULL);
+
+		const std::vector<Instance*> &instances = obj.getInstances();
+		REQUIRE(instances.size() == 5);
+		for (int i = 0; i < 5; i++) {
+			REQUIRE(instances[i] != NULL);
+			REQUIRE(instances[i]->getInstanceID() == i);
+		}
+	}
+}
+
+TEST_CASE("Object: internals", "[getFirstAvailableInstanceID][serverRead_clb][serverWrite_clb][serverExecute_clb][serverDiscover_clb][serverCreate_clb][serverDelete_clb]") {
+	ObjectSpecMock obj(mockContext, mockInfo);
+	ObjActObserverTest actObserver;
+	ObjOpObserverTest opObserver;
+	obj.actSubscribe(&actObserver);
+	obj.opSubscribe(&opObserver);
+
+	SECTION("getFirstAvailableInstanceID") {
+		ObjectSpecMock obj1(mockContext, mockInfo);
+		for (int i = 0; i < ID_T_MAX_VAL; i++) {
+			REQUIRE(obj1.createInstance(i) != NULL);
+		}
+		REQUIRE(obj1.instanceCnt() == ID_T_MAX_VAL);
+		REQUIRE(obj1.createInstance() == NULL);
+		REQUIRE(obj1.instanceCnt() == ID_T_MAX_VAL);
+
+		ObjectSpecMock obj2(mockContext, mockInfo);
+		REQUIRE(obj2.createInstance(0) != NULL);
+		REQUIRE(obj2.createInstance(4) != NULL);
+		for (int i = 5; i < ID_T_MAX_VAL; i++) {
+			REQUIRE(obj2.createInstance(i) != NULL);
+		}
+		REQUIRE(obj2.instanceCnt() == (ID_T_MAX_VAL - 3));
+
+		Instance *inst = obj2.createInstance();
+		REQUIRE(inst != NULL);
+		REQUIRE(inst->getInstanceID() == 1);
+		inst = obj2.createInstance();
+		REQUIRE(inst != NULL);
+		REQUIRE(inst->getInstanceID() == 2);
+		inst = obj2.createInstance();
+		REQUIRE(inst != NULL);
+		REQUIRE(inst->getInstanceID() == 3);
+
+		REQUIRE(obj2.instanceCnt() == ID_T_MAX_VAL);
+		REQUIRE(obj2.createInstance() == NULL);
+		REQUIRE(obj2.instanceCnt() == ID_T_MAX_VAL);
+	}
+
+	SECTION("serverRead_clb") {
+		lwm2m_object_t &lwm2mObj = obj.getLwm2mObject();
+		REQUIRE(obj.createInstance(0) == NULL);
+		lwm2mObj.readFunc(&mockContext, 0, NULL, NULL, &lwm2mObj);
+	}
+
 }

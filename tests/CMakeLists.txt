@@ -4,6 +4,8 @@ project(Catch2Test CXX)
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 17)
 
+set(WPP_DEFINITIONS "")
+
 # Include file with compiler config
 include(../wpp/configs/compiler_config.cmake)
 # Include file with Wakaama core config

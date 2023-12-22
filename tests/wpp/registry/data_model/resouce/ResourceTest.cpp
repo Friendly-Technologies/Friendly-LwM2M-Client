@@ -70,7 +70,6 @@ TEST_CASE("Resources", "[resources]")
       return value == false;
     });
     REQUIRE(check_value);
-
     REQUIRE(resources_0.isEmpty());
     REQUIRE(resources_0.instanceCnt() == 0);
     REQUIRE_FALSE(resources_0.get(valSetMove));
@@ -105,7 +104,6 @@ TEST_CASE("Resources", "[resources]")
     REQUIRE_FALSE(resources_0.isDataValueValid(INT_T(55)));
     REQUIRE_FALSE(resources_0.isDataValueValid(2));
     REQUIRE(method_call);
-
     REQUIRE_FALSE(resources_0.isEmpty());
     REQUIRE_FALSE(resources_0.isMultiple());
     REQUIRE_FALSE(resources_0.isOptional());
@@ -113,6 +111,7 @@ TEST_CASE("Resources", "[resources]")
     REQUIRE_FALSE(resources_0.set(STRING_T("true")));
     REQUIRE_FALSE(resources_0.getOperation().isWrite());
     REQUIRE_FALSE(resources_0.isInstanceExist(255));
+
     REQUIRE_FALSE(resources_0.isOperationValid(ResOp::WRITE));
     REQUIRE_FALSE(resources_0.isTypeIdCompatible(TYPE_ID::INT));
 
@@ -132,7 +131,7 @@ TEST_CASE("Resources", "[resources]")
       return INT_MIN_VALUE < value && value < INT_MAX_VALUE;
     });
     REQUIRE(check_value);
-
+    
     // Initialised instance for resource
     REQUIRE(resources_1.set(INT_T(valSet)));
 
@@ -141,6 +140,7 @@ TEST_CASE("Resources", "[resources]")
     valSetMove = 0;
     INT_T valSet2 = valSet + 1;
     REQUIRE(resources_1.setMove(valSet2));
+
     REQUIRE(resources_1.get(valSetMove));
     REQUIRE(valSetMove == valSet + 1);
 
@@ -201,7 +201,7 @@ TEST_CASE("Resources", "[resources]")
       return FLOAT_MIN_VALUE < value && value < FLOAT_MAX_VALUE;
     });
     REQUIRE(check_value);
-
+    
     // Initialised instance for resource
     REQUIRE(resources_3.set(FLOAT_T(valSet)));
 
@@ -424,6 +424,7 @@ TEST_CASE("Resources", "[resources]")
     BOOL_T valBool = check_value;
     REQUIRE(resources_0.setMove(valBool));
     REQUIRE_FALSE(resources_0.setMove(valBool, 1));
+
     check_value = true;
     REQUIRE(resources_0.get(check_value));
     REQUIRE_FALSE(resources_0.get(check_value, 1));
@@ -435,6 +436,7 @@ TEST_CASE("Resources", "[resources]")
     INT_T *tmpValueInt = NULL;
     INT_T valInt2 = valInt;
     REQUIRE(resources_1.setMove(valInt2));
+
     valInt = 0;
     resources_1.get(valInt);
     REQUIRE(valInt == 111);
@@ -444,6 +446,7 @@ TEST_CASE("Resources", "[resources]")
     UINT_T *tmpValueUint = NULL;
     UINT_T valUint2 = valUint;
     REQUIRE(resources_2.setMove(valUint2));
+
     valUint = 0;
     resources_2.get(valUint);
     REQUIRE(valUint == 111);
@@ -453,6 +456,7 @@ TEST_CASE("Resources", "[resources]")
     FLOAT_T *tmpValueFloat = NULL;
     FLOAT_T valFloat2 = valFloat;
     REQUIRE(resources_3.setMove(valFloat2));
+
     valFloat = 0;
     resources_3.get(valFloat);
     REQUIRE(valFloat < 1.12);
@@ -463,6 +467,7 @@ TEST_CASE("Resources", "[resources]")
     OBJ_LINK_T *tmpValueObjLink = NULL;
     OBJ_LINK_T valObjLink2 = valObjLink;
     REQUIRE(resources_4.setMove(valObjLink2));
+
     valObjLink = {0, 0};
     REQUIRE(resources_4.get(valObjLink));
     REQUIRE(valObjLink.objId == 1);
@@ -473,6 +478,7 @@ TEST_CASE("Resources", "[resources]")
     TIME_T *tmpValueTime = NULL;
     TIME_T valTime2 = valTime;
     REQUIRE(resources_5.setMove(valTime2));
+
     valTime = 0;
     resources_5.get(valTime);
     REQUIRE(valTime == 15122023);

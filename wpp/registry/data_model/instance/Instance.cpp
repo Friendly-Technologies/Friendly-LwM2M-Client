@@ -382,7 +382,8 @@ uint8_t Instance::readAsServer(int *numData, lwm2m_data_t **dataArray) {
 
 uint8_t Instance::writeAsServer(int numData, lwm2m_data_t *dataArray, lwm2m_write_type_t writeType) {
 	// TODO: Write-Composite Operation for now not supported
-	if (!numData || dataArray == NULL) return COAP_500_INTERNAL_SERVER_ERROR;
+	if (!numData) return COAP_204_CHANGED;
+	if (dataArray == NULL) return COAP_500_INTERNAL_SERVER_ERROR;
 
 	// TODO: According to the documentation, optional resources can be missing when a write
 	// or read attempt is made, allowing us to ignore a request to read/write these 

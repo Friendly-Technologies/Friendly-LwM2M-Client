@@ -290,9 +290,7 @@ TEST_CASE("Object: instance accessing", "[instance][instanceSpec][getInstances]"
 
 TEST_CASE("Object: internals", "[getFirstAvailableInstanceID][serverRead_clb][serverWrite_clb][serverExecute_clb][serverDiscover_clb][serverCreate_clb][serverDelete_clb]") {
 	ObjectSpecMock obj(mockContext, mockInfo);
-	ObjActObserverTest actObserver;
 	ObjOpObserverTest opObserver;
-	obj.actSubscribe(&actObserver);
 	obj.opSubscribe(&opObserver);
 
 	SECTION("getFirstAvailableInstanceID") {
@@ -329,8 +327,97 @@ TEST_CASE("Object: internals", "[getFirstAvailableInstanceID][serverRead_clb][se
 
 	SECTION("serverRead_clb") {
 		lwm2m_object_t &lwm2mObj = obj.getLwm2mObject();
-		REQUIRE(obj.createInstance(0) == NULL);
-		lwm2mObj.readFunc(&mockContext, 0, NULL, NULL, &lwm2mObj);
+		REQUIRE(obj.createInstance(0) != NULL);
+		REQUIRE(lwm2mObj.readFunc(&mockContext, 0, NULL, NULL, &lwm2mObj) == COAP_500_INTERNAL_SERVER_ERROR);
+		REQUIRE(lwm2mObj.readFunc(&mockContext, 1, NULL, NULL, &lwm2mObj) == COAP_404_NOT_FOUND);
 	}
 
+	SECTION("serverWrite_clb") {
+		lwm2m_object_t &lwm2mObj = obj.getLwm2mObject();
+		REQUIRE(obj.createInstance(0) != NULL);
+		REQUIRE(lwm2mObj.writeFunc(&mockContext, 0, 0, NULL, &lwm2mObj, LWM2M_WRITE_PARTIAL_UPDATE) == COAP_204_CHANGED);
+		REQUIRE(lwm2mObj.writeFunc(&mockContext, 0, 1, NULL, &lwm2mObj, LWM2M_WRITE_PARTIAL_UPDATE) == COAP_500_INTERNAL_SERVER_ERROR);
+		REQUIRE(lwm2mObj.writeFunc(&mockContext, 1, 0, NULL, &lwm2mObj, LWM2M_WRITE_PARTIAL_UPDATE) == COAP_404_NOT_FOUND);
+	}
+
+	SECTION("serverExecute_clb") {
+		lwm2m_object_t &lwm2mObj = obj.getLwm2mObject();
+		REQUIRE(obj.createInstance(0) != NULL);
+		REQUIRE(lwm2mObj.executeFunc(&mockContext, 0, 0, NULL, 0, &lwm2mObj) == COAP_404_NOT_FOUND);
+		REQUIRE(lwm2mObj.executeFunc(&mockContext, 1, 0, NULL, 0, &lwm2mObj) == COAP_404_NOT_FOUND);
+	}
+
+	SECTION("serverDiscover_clb") {
+		lwm2m_object_t &lwm2mObj = obj.getLwm2mObject();
+		REQUIRE(obj.createInstance(0) != NULL);
+		REQUIRE(lwm2mObj.discoverFunc(&mockContext, 0, NULL, NULL, &lwm2mObj) == COAP_500_INTERNAL_SERVER_ERROR);
+		REQUIRE(lwm2mObj.discoverFunc(&mockContext, 1, NULL, NULL, &lwm2mObj) == COAP_404_NOT_FOUND);
+	}
+
+	SECTION("serverCreate_clb") {
+		REQUIRE(obj.instanceCnt() == 0);
+		lwm2m_object_t &lwm2mObj = obj.getLwm2mObject();
+		REQUIRE(lwm2mObj.createFunc(&mockContext, 0, 0, NULL, &lwm2mObj) == COAP_201_CREATED);
+		REQUIRE(obj.instanceCnt() == 1);
+		REQUIRE(obj.isInstanceExist(0));
+		REQUIRE(opObserver.instanceCreatedCount == 1);
+		
+		REQUIRE(lwm2mObj.createFunc(&mockContext, 1, 0, NULL, &lwm2mObj) == COAP_201_CREATED);
+		REQUIRE(obj.instanceCnt() == 2);
+		REQUIRE(obj.isInstanceExist(1));
+		REQUIRE(opObserver.instanceCreatedCount == 2);
+
+		REQUIRE(lwm2mObj.createFunc(&mockContext, 1, 0, NULL, &lwm2mObj) == COAP_500_INTERNAL_SERVER_ERROR);
+		REQUIRE(opObserver.instanceCreatedCount == 2);
+
+		REQUIRE(opObserver.instanceDeletingCount == 0);
+		REQUIRE(lwm2mObj.createFunc(&mockContext, 2, 1, NULL, &lwm2mObj) == COAP_500_INTERNAL_SERVER_ERROR);
+		REQUIRE(obj.instanceCnt() == 2);
+		REQUIRE_FALSE(obj.isInstanceExist(2));
+		REQUIRE(opObserver.instanceCreatedCount == 3);
+		REQUIRE(opObserver.instanceDeletingCount == 1);
+	}
+
+	SECTION("serverDelete_clb") {
+		lwm2m_object_t &lwm2mObj = obj.getLwm2mObject();
+		REQUIRE(obj.createInstance(0) != NULL);
+		REQUIRE(obj.createInstance(1) != NULL);
+		REQUIRE(obj.createInstance(2) != NULL);
+		REQUIRE(obj.createInstance(3) != NULL);
+		REQUIRE(obj.createInstance(4) != NULL);
+		REQUIRE(obj.instanceCnt() == 5);
+
+		REQUIRE(lwm2mObj.deleteFunc(&mockContext, 0, &lwm2mObj) == COAP_202_DELETED);
+		REQUIRE(obj.instanceCnt() == 4);
+		REQUIRE_FALSE(obj.isInstanceExist(0));
+		REQUIRE(opObserver.instanceDeletingCount == 1);
+
+		REQUIRE(lwm2mObj.deleteFunc(&mockContext, 0, &lwm2mObj) == COAP_404_NOT_FOUND);
+		REQUIRE(obj.instanceCnt() == 4);
+		REQUIRE(opObserver.instanceDeletingCount == 1);
+
+		REQUIRE(lwm2mObj.deleteFunc(&mockContext, 1, &lwm2mObj) == COAP_202_DELETED);
+		REQUIRE(obj.instanceCnt() == 3);
+		REQUIRE_FALSE(obj.isInstanceExist(1));
+		REQUIRE(opObserver.instanceDeletingCount == 2);
+
+		REQUIRE(lwm2mObj.deleteFunc(&mockContext, 2, &lwm2mObj) == COAP_202_DELETED);
+		REQUIRE(obj.instanceCnt() == 2);
+		REQUIRE_FALSE(obj.isInstanceExist(2));
+		REQUIRE(opObserver.instanceDeletingCount == 3);
+
+		REQUIRE(lwm2mObj.deleteFunc(&mockContext, 3, &lwm2mObj) == COAP_202_DELETED);
+		REQUIRE(obj.instanceCnt() == 1);
+		REQUIRE_FALSE(obj.isInstanceExist(3));
+		REQUIRE(opObserver.instanceDeletingCount == 4);
+
+		REQUIRE(lwm2mObj.deleteFunc(&mockContext, 4, &lwm2mObj) == COAP_202_DELETED);
+		REQUIRE(obj.instanceCnt() == 0);
+		REQUIRE_FALSE(obj.isInstanceExist(4));
+		REQUIRE(opObserver.instanceDeletingCount == 5);
+
+		REQUIRE(lwm2mObj.deleteFunc(&mockContext, 5, &lwm2mObj) == COAP_404_NOT_FOUND);
+		REQUIRE(obj.instanceCnt() == 0);
+		REQUIRE(opObserver.instanceDeletingCount == 5);
+	}
 }

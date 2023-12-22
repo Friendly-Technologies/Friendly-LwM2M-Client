@@ -45,4 +45,169 @@ TEST_CASE("Instance: info", "[getLink][getObjectID][getInstanceID]") {
 
 TEST_CASE("Instance: resource access", "[set][setMove][get][getPtr][clear][remove]") {
     InstanceMock instance(mockContext, mockId);
+
+	SECTION("set") {
+		REQUIRE(instance.set(0, (STRING_T)"test1"));
+		REQUIRE(instance.set(1, (TIME_T)123));
+		REQUIRE(instance.set(2, (INT_T)123));
+		REQUIRE(instance.set({3, 0}, (STRING_T)"test2"));
+		REQUIRE(instance.set({3, 1}, (STRING_T)"test3"));
+		EXECUTE_T exec = (EXECUTE_T)[](Instance& inst, ID_T id, const OPAQUE_T& data) { return true; };
+		REQUIRE(instance.set(4, exec));
+		REQUIRE_FALSE(instance.set(5, (STRING_T)"test4"));
+	}
+
+	SECTION("setMove") {
+		STRING_T str = "test";
+		TIME_T time = 123;
+		INT_T intVal = 123;
+		REQUIRE(instance.setMove(0, str));
+		REQUIRE(instance.setMove(1, time));
+		REQUIRE(instance.setMove(2, intVal));
+		REQUIRE(instance.setMove({3, 0}, str));
+		REQUIRE(instance.setMove({3, 1}, str));
+		EXECUTE_T exec = (EXECUTE_T)[](Instance& inst, ID_T id, const OPAQUE_T& data) { return true; };
+		REQUIRE(instance.setMove(4, exec));
+		REQUIRE_FALSE(instance.setMove(5, str));
+	}
+
+	SECTION("get") {
+		STRING_T str = "test";
+		TIME_T time = 123;
+		INT_T intVal = 123;
+		REQUIRE(instance.set(0, str));
+		REQUIRE(instance.set(1, time));
+		REQUIRE(instance.set(2, intVal));
+		REQUIRE(instance.set({3, 0}, str));
+		REQUIRE(instance.set({3, 1}, str));
+		EXECUTE_T exec = (EXECUTE_T)[](Instance& inst, ID_T id, const OPAQUE_T& data) { return true; };
+		REQUIRE(instance.set(4, exec));
+
+		STRING_T strGet;
+		TIME_T timeGet;
+		INT_T intValGet;
+		EXECUTE_T execGet;
+		REQUIRE(instance.get(0, strGet));
+		REQUIRE(strGet == str);
+		REQUIRE(instance.get(1, timeGet));
+		REQUIRE(timeGet == time);
+		REQUIRE(instance.get(2, intValGet));
+		REQUIRE(intValGet == intVal);
+		strGet = "";
+		REQUIRE(instance.get({3, 0}, strGet));
+		REQUIRE(strGet == str);
+		strGet = "";
+		REQUIRE(instance.get({3, 1}, strGet));
+		REQUIRE(strGet == str);
+		REQUIRE(instance.get(4, execGet));
+		REQUIRE(execGet(instance, 4, OPAQUE_T()));
+		REQUIRE_FALSE(instance.get(5, strGet));
+	}
+
+	SECTION("getPtr") {
+		STRING_T str = "test";
+		TIME_T time = 123;
+		INT_T intVal = 123;
+		REQUIRE(instance.set(0, str));
+		REQUIRE(instance.set(1, time));
+		REQUIRE(instance.set(2, intVal));
+		REQUIRE(instance.set({3, 0}, str));
+		REQUIRE(instance.set({3, 1}, str));
+		EXECUTE_T exec = (EXECUTE_T)[](Instance& inst, ID_T id, const OPAQUE_T& data) { return true; };
+		REQUIRE(instance.set(4, exec));
+
+		const STRING_T* strGet;
+		const TIME_T* timeGet;
+		const INT_T* intValGet;
+		const EXECUTE_T* execGet;
+		REQUIRE(instance.getPtr(0, &strGet));
+		REQUIRE(*strGet == str);
+		REQUIRE(instance.getPtr(1, &timeGet));
+		REQUIRE(*timeGet == time);
+		REQUIRE(instance.getPtr(2, &intValGet));
+		REQUIRE(*intValGet == intVal);
+		strGet = nullptr;
+		REQUIRE(instance.getPtr({3, 0}, &strGet));
+		REQUIRE(*strGet == str);
+		strGet = nullptr;
+		REQUIRE(instance.getPtr({3, 1}, &strGet));
+		REQUIRE(*strGet == str);
+		REQUIRE(instance.getPtr(4, &execGet));
+		REQUIRE((*execGet)(instance, 4, OPAQUE_T()));
+		REQUIRE_FALSE(instance.getPtr(5, &strGet));
+	}
+
+	SECTION("clear") {
+		STRING_T str = "test";
+		TIME_T time = 123;
+		INT_T intVal = 123;
+		REQUIRE(instance.set(0, str));
+		REQUIRE(instance.set(1, time));
+		REQUIRE(instance.set(2, intVal));
+		REQUIRE(instance.set({3, 0}, str));
+		REQUIRE(instance.set({3, 1}, str));
+		EXECUTE_T exec = (EXECUTE_T)[](Instance& inst, ID_T id, const OPAQUE_T& data) { return true; };
+		REQUIRE(instance.set(4, exec));
+
+		STRING_T strGet;
+		TIME_T timeGet;
+		INT_T intValGet;
+		EXECUTE_T execGet;
+		REQUIRE(instance.clear(0));
+		REQUIRE_FALSE(instance.get(0, strGet));
+		REQUIRE(instance.clear(1));
+		REQUIRE_FALSE(instance.get(1, timeGet));
+		REQUIRE(instance.clear(2));
+		REQUIRE_FALSE(instance.get(2, intValGet));
+		REQUIRE(instance.clear(3));
+		REQUIRE_FALSE(instance.get({3, 0}, strGet));
+		REQUIRE_FALSE(instance.get({3, 1}, strGet));
+		REQUIRE(instance.clear(4));
+		REQUIRE_FALSE(instance.get(4, execGet));
+		REQUIRE_FALSE(instance.clear(5));
+	}
+
+	SECTION("remove") {
+		STRING_T str = "test";
+		TIME_T time = 123;
+		INT_T intVal = 123;
+		REQUIRE(instance.set(0, str));
+		REQUIRE(instance.set(1, time));
+		REQUIRE(instance.set(2, intVal));
+		REQUIRE(instance.set({3, 0}, str));
+		REQUIRE(instance.set({3, 1}, str));
+		EXECUTE_T exec = (EXECUTE_T)[](Instance& inst, ID_T id, const OPAQUE_T& data) { return true; };
+		REQUIRE(instance.set(4, exec));
+
+		STRING_T strGet;
+		TIME_T timeGet;
+		INT_T intValGet;
+		EXECUTE_T execGet;
+		REQUIRE(instance.get(0, strGet));
+		REQUIRE_FALSE(instance.remove({0,}));
+		REQUIRE(instance.get(0, strGet));
+
+		REQUIRE(instance.get(1, timeGet));
+		REQUIRE_FALSE(instance.remove({1,}));
+		REQUIRE(instance.get(1, timeGet));
+		
+		REQUIRE(instance.get(2, intValGet));
+		REQUIRE_FALSE(instance.remove({2,}));
+		REQUIRE(instance.get(2, intValGet));
+		
+		REQUIRE(instance.get({3, 0}, strGet));
+		REQUIRE(instance.get({3, 1}, strGet));
+		REQUIRE(instance.remove({3, 0}));
+		REQUIRE_FALSE(instance.get({3, 0}, strGet));
+		REQUIRE(instance.get({3, 1}, strGet));
+		
+		REQUIRE_FALSE(instance.remove({3, 1}));
+		REQUIRE(instance.get({3, 1}, strGet));
+
+		REQUIRE(instance.get(4, execGet));
+		REQUIRE_FALSE(instance.remove({4, 0}));
+		REQUIRE(instance.get(4, execGet));
+
+		REQUIRE_FALSE(instance.remove({5, 0}));
+	}	
 }

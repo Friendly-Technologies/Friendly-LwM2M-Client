@@ -27,7 +27,7 @@ bool Instance::clear(ID_T resId) {
 }
 
 bool Instance::remove(const ResLink &resId) {
-	auto res = resource(resId.resInstId);
+	auto res = resource(resId.resId);
 	if (res == _resources.end()) return false;
 
 	bool result = res->remove(resId.resInstId);

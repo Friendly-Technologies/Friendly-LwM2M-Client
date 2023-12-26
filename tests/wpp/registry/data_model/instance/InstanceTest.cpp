@@ -367,6 +367,69 @@ TEST_CASE("Instance: server operations", "[readAsServer][writeAsServer][executeA
 	}
 
 	SECTION("discoverAsServer") {
+		int numData = 0;
+		lwm2m_data_t *dataArray = NULL;
+
+		// Incorrect parameters
+		REQUIRE(instance.discoverAsServer(NULL, &dataArray) == COAP_500_INTERNAL_SERVER_ERROR);
+		REQUIRE(instance.discoverAsServer(&numData, NULL) == COAP_500_INTERNAL_SERVER_ERROR);
+
+		// Resource does not exist
+		REQUIRE(numData == 0);
+		REQUIRE(instance.serverOpDiscoverCnt == 0);
+		REQUIRE(instance.discoverAsServer(&numData, &dataArray) == COAP_500_INTERNAL_SERVER_ERROR);
+		REQUIRE(instance.serverOpDiscoverCnt == 0);
+		REQUIRE(numData == 0);
+		REQUIRE(dataArray == NULL);
 		
-	}
+		// Creating resources
+		REQUIRE(instance.set(0, (STRING_T)"test1"));
+		REQUIRE(instance.set(1, (TIME_T)123));
+		REQUIRE(instance.set(2, (INT_T)12));
+		REQUIRE(instance.set({3, 0}, (STRING_T)"test2"));
+		REQUIRE(instance.set({3, 1}, (STRING_T)"test3"));
+		EXECUTE_T exec = (EXECUTE_T)[](Instance& inst, ID_T id, const OPAQUE_T& data) { return true; };
+		REQUIRE(instance.set(4, exec));
+		
+		// Discover all resources
+		REQUIRE(numData == 0);
+		REQUIRE(instance.serverOpDiscoverCnt == 0);
+		REQUIRE(instance.discoverAsServer(&numData, &dataArray) == COAP_205_CONTENT);
+		REQUIRE(instance.serverOpDiscoverCnt == 6);
+		REQUIRE(numData == 5);
+		REQUIRE(dataArray != NULL);
+		REQUIRE(dataArray[0].id == 0);
+		REQUIRE(dataArray[1].id == 1);
+		REQUIRE(dataArray[2].id == 2);
+		REQUIRE(dataArray[3].id == 3);
+		REQUIRE(dataArray[3].type == LWM2M_TYPE_MULTIPLE_RESOURCE);
+		REQUIRE(dataArray[3].value.asChildren.count == 2);
+		REQUIRE(dataArray[3].value.asChildren.array != NULL);
+		REQUIRE(dataArray[3].value.asChildren.array[0].id == 0);
+		REQUIRE(dataArray[3].value.asChildren.array[1].id == 1);
+		REQUIRE(dataArray[4].id == 4);
+		delete dataArray;
+
+		// Discover one defined resources
+		dataArray = new lwm2m_data_t[1];
+		dataArray[0].id = 0;
+		numData = 1;
+		REQUIRE(numData == 1);
+		REQUIRE(instance.serverOpDiscoverCnt == 6);
+		REQUIRE(instance.discoverAsServer(&numData, &dataArray) == COAP_205_CONTENT);
+		REQUIRE(instance.serverOpDiscoverCnt == 7);
+		REQUIRE(numData == 1);
+		delete dataArray;
+
+		// Discover one undefined resources
+		dataArray = new lwm2m_data_t[1];
+		dataArray[0].id = 100;
+		numData = 1;
+		REQUIRE(numData == 1);
+		REQUIRE(instance.serverOpDiscoverCnt == 7);
+		REQUIRE(instance.discoverAsServer(&numData, &dataArray) == COAP_404_NOT_FOUND);
+		REQUIRE(instance.serverOpDiscoverCnt == 7);
+		REQUIRE(numData == 1);
+		delete dataArray;
+	}	
 }

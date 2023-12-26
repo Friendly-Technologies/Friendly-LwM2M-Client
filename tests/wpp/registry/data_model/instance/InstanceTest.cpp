@@ -21,11 +21,11 @@ public:
 
     InstanceMock(lwm2m_context_t &context, const OBJ_LINK_T &id): Instance(context, id) {
         std::vector<Resource> resources = {                     
-		{0, ResOp(ResOp::READ), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL, TYPE_ID::STRING },                                 
-		{1, ResOp(ResOp::READ), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL, TYPE_ID::TIME },                                       
-		{2, ResOp(ResOp::READ), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL, TYPE_ID::INT },                   
-		{3, ResOp(ResOp::READ), IS_SINGLE::MULTIPLE, IS_MANDATORY::OPTIONAL, TYPE_ID::STRING },                             
-		{4, ResOp(ResOp::EXECUTE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::EXECUTE },  
+		{0, ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL, TYPE_ID::STRING},                                 
+		{1, ResOp(ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL, TYPE_ID::TIME},                                       
+		{2, ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL, TYPE_ID::INT},                   
+		{3, ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::MULTIPLE, IS_MANDATORY::OPTIONAL, TYPE_ID::STRING},                             
+		{4, ResOp(ResOp::EXECUTE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::EXECUTE},  
 		};
 	    _resources = std::move(resources);
     }
@@ -309,6 +309,76 @@ TEST_CASE("Instance: resource access", "[set][setMove][get][getPtr][clear][remov
 
 TEST_CASE("Instance: server operations", "[readAsServer][writeAsServer][executeAsServer][discoverAsServer]") {
 	InstanceMock instance(mockContext, mockId);
+
+	SECTION("readAsServer") {
+		int numData = 0;
+		lwm2m_data_t *dataArray = NULL;
+
+		// Incorrect parameters
+		REQUIRE(instance.readAsServer(NULL, &dataArray) == COAP_500_INTERNAL_SERVER_ERROR);
+		REQUIRE(instance.readAsServer(&numData, NULL) == COAP_500_INTERNAL_SERVER_ERROR);
+
+		// Read all resources when no one resource is set
+		REQUIRE(numData == 0);
+		REQUIRE(instance.serverOpReadCnt == 0);
+		REQUIRE(instance.readAsServer(&numData, &dataArray) == COAP_500_INTERNAL_SERVER_ERROR);
+		REQUIRE(instance.serverOpReadCnt == 0);
+		REQUIRE(numData == 0);
+		REQUIRE(dataArray == NULL);
+
+		numData = 1;
+		dataArray = new lwm2m_data_t;
+		dataArray->id = 0;
+
+		// Read one resource when no one resource is set
+		REQUIRE(numData == 1);
+		REQUIRE(dataArray != NULL);
+		REQUIRE(instance.serverOpReadCnt == 0);
+		REQUIRE(instance.readAsServer(&numData, &dataArray) == COAP_404_NOT_FOUND);
+		REQUIRE(instance.serverOpReadCnt == 0);
+		REQUIRE(numData == 1);
+		REQUIRE(dataArray != NULL);
+
+		// Read one resource when read is not supported for this resource
+		dataArray->id = 1;
+		REQUIRE(instance.set(1, (TIME_T)123));
+		REQUIRE(numData == 1);
+		REQUIRE(dataArray != NULL);
+		REQUIRE(instance.serverOpReadCnt == 0);
+		REQUIRE(instance.readAsServer(&numData, &dataArray) == COAP_405_METHOD_NOT_ALLOWED);
+		REQUIRE(instance.serverOpReadCnt == 0);
+		REQUIRE(numData == 1);
+		REQUIRE(dataArray != NULL);
+
+		// Read one resource when it is not multiple
+		dataArray->id = 0;
+		dataArray->type = LWM2M_TYPE_MULTIPLE_RESOURCE;
+		REQUIRE(instance.set(0, (STRING_T)"test1"));
+		REQUIRE(numData == 1);
+		REQUIRE(dataArray != NULL);
+		REQUIRE(instance.serverOpReadCnt == 0);
+		REQUIRE(instance.readAsServer(&numData, &dataArray) == COAP_405_METHOD_NOT_ALLOWED);
+		REQUIRE(instance.serverOpReadCnt == 0);
+		REQUIRE(numData == 1);
+		REQUIRE(dataArray != NULL);
+
+		// Read one resource
+		dataArray->id = 0;
+		REQUIRE(instance.set(0, (STRING_T)"test1"));
+		REQUIRE(numData == 1);
+		REQUIRE(dataArray != NULL);
+		REQUIRE(instance.serverOpReadCnt == 0);
+		REQUIRE(instance.readAsServer(&numData, &dataArray) == COAP_205_CONTENT);
+		REQUIRE(instance.serverOpReadCnt == 1);
+		REQUIRE(numData == 1);
+		REQUIRE(dataArray != NULL);
+
+		REQUIRE(dataArray->id == 0);
+		REQUIRE(dataArray->type == LWM2M_TYPE_STRING);
+		REQUIRE(dataArray->value.asBuffer.length == 5);
+		REQUIRE(dataArray->value.asBuffer.buffer != NULL);
+		REQUIRE(strcmp((const char *)dataArray->value.asBuffer.buffer, "test1") == 0);
+	}
 
 	SECTION("executeAsServer") {
 		// Resource does not exist

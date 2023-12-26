@@ -12,6 +12,13 @@ public:
 	int userOpWriteUpdCnt = 0;
 	int userOpDeleteCnt = 0;
 
+	int serverOpReadCnt = 0;
+	int serverOpWriteUpdCnt = 0;
+	int serverOpWriteReplaceResCnt = 0;
+	int serverOpWriteReplaceInstCnt = 0;
+	int serverOpExecuteCnt = 0;
+	int serverOpDiscoverCnt = 0;
+
     InstanceMock(lwm2m_context_t &context, const OBJ_LINK_T &id): Instance(context, id) {
         std::vector<Resource> resources = {                     
 		{0, ResOp(ResOp::READ), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL, TYPE_ID::STRING },                                 
@@ -25,7 +32,30 @@ public:
 
     void setDefaultState() override {}
 
-	void serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) override {}
+	void serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) override {
+		switch (type) {
+		case ResOp::READ:
+			serverOpReadCnt++;
+			break;
+		case ResOp::WRITE_UPD:
+			serverOpWriteUpdCnt++;
+			break;
+		case ResOp::WRITE_REPLACE_RES:
+			serverOpWriteReplaceResCnt++;
+			break;
+		case ResOp::WRITE_REPLACE_INST:
+			serverOpWriteReplaceInstCnt++;
+			break;
+		case ResOp::EXECUTE:
+			serverOpExecuteCnt++;
+			break;
+		case ResOp::DISCOVER:
+			serverOpDiscoverCnt++;
+			break;
+		default:
+			break;
+		}
+	}
 
 	void userOperationNotifier(ResOp::TYPE type, const ResLink &resId) override {
 		switch (type) {
@@ -275,4 +305,68 @@ TEST_CASE("Instance: resource access", "[set][setMove][get][getPtr][clear][remov
 		REQUIRE_FALSE(instance.remove({5, 0}));
 		REQUIRE(instance.userOpDeleteCnt == 1);
 	}	
+}
+
+TEST_CASE("Instance: server operations", "[readAsServer][writeAsServer][executeAsServer][discoverAsServer]") {
+	InstanceMock instance(mockContext, mockId);
+
+	SECTION("executeAsServer") {
+		// Resource does not exist
+		REQUIRE(instance.serverOpExecuteCnt == 0);
+		REQUIRE(instance.executeAsServer(100, NULL, 0) == COAP_404_NOT_FOUND);
+		REQUIRE(instance.serverOpExecuteCnt == 0);
+
+		// Resource is not executable
+		REQUIRE(instance.set(0, (STRING_T)"test1"));
+		REQUIRE(instance.serverOpExecuteCnt == 0);
+		REQUIRE((int)instance.executeAsServer(0, NULL, 0) == (int)COAP_405_METHOD_NOT_ALLOWED);
+		REQUIRE(instance.serverOpExecuteCnt == 0);
+
+		// Resource is executable but not set
+		REQUIRE(instance.set(4, (EXECUTE_T)NULL));
+		REQUIRE(instance.serverOpExecuteCnt == 0);
+		REQUIRE(instance.executeAsServer(4, NULL, 0) == COAP_404_NOT_FOUND);
+		REQUIRE(instance.serverOpExecuteCnt == 0);
+
+		bool executed = false;
+		bool returnValue = false;
+		EXECUTE_T exec = [&executed, &returnValue](Instance& inst, ID_T id, const OPAQUE_T& data) { 
+			executed = true;
+			return returnValue; 
+		};
+		REQUIRE(instance.set(4, exec));
+
+		// Resource is executable and set but execution failed
+		REQUIRE_FALSE(returnValue);
+		REQUIRE_FALSE(executed);
+		REQUIRE(instance.serverOpExecuteCnt == 0);
+		REQUIRE(instance.executeAsServer(4, NULL, 0) == COAP_405_METHOD_NOT_ALLOWED);
+		REQUIRE(executed);
+		REQUIRE(instance.serverOpExecuteCnt == 1);
+
+		// Resource is executable and set and execution succeeded
+		returnValue = true;
+		executed = false;
+		REQUIRE(returnValue);
+		REQUIRE_FALSE(executed);
+		REQUIRE(instance.serverOpExecuteCnt == 1);
+		REQUIRE(instance.executeAsServer(4, NULL, 0) == COAP_204_CHANGED);
+		REQUIRE(executed);
+		REQUIRE(instance.serverOpExecuteCnt == 2);
+
+		// Check that data is passed to the execute function
+		OPAQUE_T dataTest = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
+		EXECUTE_T exec2 = [&instance, &dataTest](Instance& inst, ID_T id, const OPAQUE_T& data) { 
+			REQUIRE(&instance == &inst);
+			REQUIRE(id == 4);
+			REQUIRE(dataTest == data);
+			return true; 
+		};
+		REQUIRE(instance.set(4, exec));
+		REQUIRE(instance.executeAsServer(4, dataTest.data(), dataTest.size()) == COAP_204_CHANGED);
+	}
+
+	SECTION("discoverAsServer") {
+		
+	}
 }

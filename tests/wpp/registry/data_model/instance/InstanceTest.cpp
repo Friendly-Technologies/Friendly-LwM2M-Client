@@ -1,6 +1,8 @@
 #include "catch_amalgamated.hpp"
 #include "Instance.h"
 
+#include <iostream>
+
 using namespace wpp;
 
 static lwm2m_context_t mockContext = {};
@@ -309,28 +311,28 @@ TEST_CASE("Instance: resource access", "[set][setMove][get][getPtr][clear][remov
 
 TEST_CASE("Instance: server operations", "[readAsServer][writeAsServer][executeAsServer][discoverAsServer]") {
 	InstanceMock instance(mockContext, mockId);
+	int numData = 0;
+	lwm2m_data_t *dataArray = NULL;
 
-	SECTION("readAsServer") {
-		int numData = 0;
-		lwm2m_data_t *dataArray = NULL;
-
-		// Incorrect parameters
+	SECTION("readAsServer: Incorrect parameters") {
 		REQUIRE(instance.readAsServer(NULL, &dataArray) == COAP_500_INTERNAL_SERVER_ERROR);
 		REQUIRE(instance.readAsServer(&numData, NULL) == COAP_500_INTERNAL_SERVER_ERROR);
+	}
 
-		// Read all resources when no one resource is set
+	SECTION("readAsServer: Read all resources when no one resource is set") {
 		REQUIRE(numData == 0);
 		REQUIRE(instance.serverOpReadCnt == 0);
 		REQUIRE(instance.readAsServer(&numData, &dataArray) == COAP_500_INTERNAL_SERVER_ERROR);
 		REQUIRE(instance.serverOpReadCnt == 0);
 		REQUIRE(numData == 0);
 		REQUIRE(dataArray == NULL);
+	}
 
+	SECTION("readAsServer: Read one resource when no one resource is set") {
 		numData = 1;
 		dataArray = new lwm2m_data_t;
 		dataArray->id = 0;
 
-		// Read one resource when no one resource is set
 		REQUIRE(numData == 1);
 		REQUIRE(dataArray != NULL);
 		REQUIRE(instance.serverOpReadCnt == 0);
@@ -338,9 +340,15 @@ TEST_CASE("Instance: server operations", "[readAsServer][writeAsServer][executeA
 		REQUIRE(instance.serverOpReadCnt == 0);
 		REQUIRE(numData == 1);
 		REQUIRE(dataArray != NULL);
-
-		// Read one resource when read is not supported for this resource
+		
+		delete dataArray;
+	}
+	
+	SECTION("readAsServer: Read one resource when read is not supported for this resource") {
+		numData = 1;
+		dataArray = new lwm2m_data_t;
 		dataArray->id = 1;
+
 		REQUIRE(instance.set(1, (TIME_T)123));
 		REQUIRE(numData == 1);
 		REQUIRE(dataArray != NULL);
@@ -350,10 +358,17 @@ TEST_CASE("Instance: server operations", "[readAsServer][writeAsServer][executeA
 		REQUIRE(numData == 1);
 		REQUIRE(dataArray != NULL);
 
-		// Read one resource when it is not multiple
+		delete dataArray;
+	}
+	
+	SECTION("readAsServer: Read one resource when it is not multiple") {
+		numData = 1;
+		dataArray = new lwm2m_data_t;
 		dataArray->id = 0;
 		dataArray->type = LWM2M_TYPE_MULTIPLE_RESOURCE;
+		
 		REQUIRE(instance.set(0, (STRING_T)"test1"));
+
 		REQUIRE(numData == 1);
 		REQUIRE(dataArray != NULL);
 		REQUIRE(instance.serverOpReadCnt == 0);
@@ -362,13 +377,85 @@ TEST_CASE("Instance: server operations", "[readAsServer][writeAsServer][executeA
 		REQUIRE(numData == 1);
 		REQUIRE(dataArray != NULL);
 
-		// Read one resource
-		dataArray->id = 0;
+		delete dataArray;
+	}
+	
+	SECTION("readAsServer: Read two resource when one is not set") {	
+		numData = 2;
+		dataArray = new lwm2m_data_t[2];
+		dataArray[0].id = 0;
+		dataArray[1].id = 1;
+		dataArray[0].type = LWM2M_TYPE_UNDEFINED;
+		dataArray[1].type = LWM2M_TYPE_UNDEFINED;
+
 		REQUIRE(instance.set(0, (STRING_T)"test1"));
+
+		REQUIRE(numData == 2);
+		REQUIRE(dataArray != NULL);
+		REQUIRE(instance.serverOpReadCnt == 0);
+		REQUIRE((int)instance.readAsServer(&numData, &dataArray) == (int)COAP_205_CONTENT);
+		REQUIRE(instance.serverOpReadCnt == 1);
+		REQUIRE(numData == 2);
+		REQUIRE(dataArray != NULL);
+
+		REQUIRE(dataArray[0].id == 0);
+		REQUIRE(dataArray[0].type == LWM2M_TYPE_STRING);
+		REQUIRE(dataArray[0].value.asBuffer.length == 5);
+		REQUIRE(dataArray[0].value.asBuffer.buffer != NULL);
+		REQUIRE(memcmp(dataArray[0].value.asBuffer.buffer, "test1", 5) == 0);
+
+		REQUIRE(dataArray[1].id == 1);
+		REQUIRE(dataArray[1].type == LWM2M_TYPE_UNDEFINED);
+
+		delete dataArray[0].value.asBuffer.buffer;
+		delete dataArray;
+	}
+	
+	SECTION("readAsServer: Read multiple resource that is not set") {
+		numData = 1;
+		dataArray = new lwm2m_data_t[1];
+		dataArray->id = 3;
+		dataArray->type = LWM2M_TYPE_MULTIPLE_RESOURCE;
+		dataArray->value.asChildren.count = 2;
+		dataArray->value.asChildren.array = new lwm2m_data_t[2];
+		dataArray->value.asChildren.array[0].id = 0;
+		dataArray->value.asChildren.array[0].type = LWM2M_TYPE_UNDEFINED;
+		dataArray->value.asChildren.array[1].id = 1;
+		dataArray->value.asChildren.array[1].type = LWM2M_TYPE_UNDEFINED;
+
+		REQUIRE(instance.set({3, 0}, (STRING_T)"test2"));
+
 		REQUIRE(numData == 1);
 		REQUIRE(dataArray != NULL);
 		REQUIRE(instance.serverOpReadCnt == 0);
-		REQUIRE(instance.readAsServer(&numData, &dataArray) == COAP_205_CONTENT);
+		REQUIRE((int)instance.readAsServer(&numData, &dataArray) == (int)COAP_404_NOT_FOUND);
+		REQUIRE(instance.serverOpReadCnt == 0);
+		REQUIRE(numData == 1);
+		REQUIRE(dataArray != NULL);
+
+		REQUIRE(dataArray->id == 3);
+		REQUIRE(dataArray->type == LWM2M_TYPE_MULTIPLE_RESOURCE);
+		REQUIRE(dataArray->value.asChildren.count == 2);
+		REQUIRE(dataArray->value.asChildren.array != NULL);
+		REQUIRE(dataArray->value.asChildren.array[1].id == 1);
+		REQUIRE(dataArray->value.asChildren.array[1].type == LWM2M_TYPE_UNDEFINED);
+
+		delete dataArray->value.asChildren.array;
+		delete dataArray;
+	}
+	
+	SECTION("readAsServer: Read one resource") {
+		numData = 1;
+		dataArray = new lwm2m_data_t;
+		dataArray->id = 0;
+		dataArray->type = LWM2M_TYPE_UNDEFINED;
+
+		REQUIRE(instance.set(0, (STRING_T)"test1"));
+		
+		REQUIRE(numData == 1);
+		REQUIRE(dataArray != NULL);
+		REQUIRE(instance.serverOpReadCnt == 0);
+		REQUIRE((int)instance.readAsServer(&numData, &dataArray) == (int)COAP_205_CONTENT);
 		REQUIRE(instance.serverOpReadCnt == 1);
 		REQUIRE(numData == 1);
 		REQUIRE(dataArray != NULL);
@@ -377,7 +464,60 @@ TEST_CASE("Instance: server operations", "[readAsServer][writeAsServer][executeA
 		REQUIRE(dataArray->type == LWM2M_TYPE_STRING);
 		REQUIRE(dataArray->value.asBuffer.length == 5);
 		REQUIRE(dataArray->value.asBuffer.buffer != NULL);
-		REQUIRE(strcmp((const char *)dataArray->value.asBuffer.buffer, "test1") == 0);
+		REQUIRE(memcmp(dataArray->value.asBuffer.buffer, "test1", 5) == 0);
+
+		delete dataArray->value.asBuffer.buffer;
+		delete dataArray;
+	}
+	
+	SECTION("readAsServer: Read all resources") {
+		numData = 0;
+		dataArray = NULL;
+
+		REQUIRE(instance.set(0, (STRING_T)"test1"));
+		REQUIRE(instance.set(1, (TIME_T)123));
+		REQUIRE(instance.set(2, (INT_T)12));
+		REQUIRE(instance.set({3, 0}, (STRING_T)"test2"));
+		REQUIRE(instance.set({3, 1}, (STRING_T)"test3"));
+		EXECUTE_T exec = (EXECUTE_T)[](Instance& inst, ID_T id, const OPAQUE_T& data) { return true; };
+		REQUIRE(instance.set(4, exec));
+
+		REQUIRE(numData == 0);
+		REQUIRE(dataArray == NULL);
+		REQUIRE(instance.serverOpReadCnt == 0);
+		REQUIRE((int)instance.readAsServer(&numData, &dataArray) == (int)COAP_205_CONTENT);
+		REQUIRE(instance.serverOpReadCnt == 4);
+		REQUIRE(numData == 3);
+		REQUIRE(dataArray != NULL);
+
+		REQUIRE(dataArray[0].id == 0);
+		REQUIRE(dataArray[0].type == LWM2M_TYPE_STRING);
+		REQUIRE(dataArray[0].value.asBuffer.length == 5);
+		REQUIRE(dataArray[0].value.asBuffer.buffer != NULL);
+		REQUIRE(memcmp(dataArray[0].value.asBuffer.buffer, "test1", 5) == 0);
+		REQUIRE(dataArray[1].id == 2);
+		REQUIRE(dataArray[1].type == LWM2M_TYPE_INTEGER);
+		REQUIRE(dataArray[1].value.asInteger == 12);
+		REQUIRE(dataArray[2].id == 3);
+		REQUIRE(dataArray[2].type == LWM2M_TYPE_MULTIPLE_RESOURCE);
+		REQUIRE(dataArray[2].value.asChildren.count == 2);
+		REQUIRE(dataArray[2].value.asChildren.array != NULL);
+		REQUIRE(dataArray[2].value.asChildren.array[0].id == 0);
+		REQUIRE(dataArray[2].value.asChildren.array[0].type == LWM2M_TYPE_STRING);
+		REQUIRE(dataArray[2].value.asChildren.array[0].value.asBuffer.length == 5);
+		REQUIRE(dataArray[2].value.asChildren.array[0].value.asBuffer.buffer != NULL);
+		REQUIRE(memcmp(dataArray[2].value.asChildren.array[0].value.asBuffer.buffer, "test2", 5) == 0);
+		REQUIRE(dataArray[2].value.asChildren.array[1].id == 1);
+		REQUIRE(dataArray[2].value.asChildren.array[1].type == LWM2M_TYPE_STRING);
+		REQUIRE(dataArray[2].value.asChildren.array[1].value.asBuffer.length == 5);
+		REQUIRE(dataArray[2].value.asChildren.array[1].value.asBuffer.buffer != NULL);
+		REQUIRE(memcmp(dataArray[2].value.asChildren.array[1].value.asBuffer.buffer, "test3", 5) == 0);
+
+		delete dataArray[0].value.asBuffer.buffer;
+		delete dataArray[2].value.asChildren.array[0].value.asBuffer.buffer;
+		delete dataArray[2].value.asChildren.array[1].value.asBuffer.buffer;
+		delete dataArray[2].value.asChildren.array;
+		delete dataArray;
 	}
 
 	SECTION("executeAsServer") {
@@ -437,9 +577,6 @@ TEST_CASE("Instance: server operations", "[readAsServer][writeAsServer][executeA
 	}
 
 	SECTION("discoverAsServer") {
-		int numData = 0;
-		lwm2m_data_t *dataArray = NULL;
-
 		// Incorrect parameters
 		REQUIRE(instance.discoverAsServer(NULL, &dataArray) == COAP_500_INTERNAL_SERVER_ERROR);
 		REQUIRE(instance.discoverAsServer(&numData, NULL) == COAP_500_INTERNAL_SERVER_ERROR);

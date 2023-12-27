@@ -271,6 +271,16 @@ Resource* Instance::getValidatedResForRead(const lwm2m_data_t &data, uint8_t &er
 		errCode = COAP_405_METHOD_NOT_ALLOWED;
 		return NULL;
 	}
+	// If resource is multile then we should check that all instances are exists
+	if (data.type == LWM2M_TYPE_MULTIPLE_RESOURCE) {
+		for (size_t i = 0; i < data.value.asChildren.count; i++) {
+			if (!res->isInstanceExist(data.value.asChildren.array[i].id)) {
+				WPP_LOGW_ARG(TAG_WPP_INST, "Resource instance does not exist: %d:%d:%d:%d", _id.objId, _id.objInstId, data.id, data.value.asChildren.array[i].id);
+				errCode = COAP_404_NOT_FOUND;
+				return NULL;
+			}
+		}
+	}
 
 	return &(*res);
 }

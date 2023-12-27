@@ -10,6 +10,8 @@ static const OBJ_LINK_T mockId = {0 , 0};
 
 class InstanceMock : public Instance {
 public:
+	int setDefaultStateCnt = 0;
+
 	int userOpReadCnt = 0;
 	int userOpWriteUpdCnt = 0;
 	int userOpDeleteCnt = 0;
@@ -22,17 +24,33 @@ public:
 	int serverOpDiscoverCnt = 0;
 
     InstanceMock(lwm2m_context_t &context, const OBJ_LINK_T &id): Instance(context, id) {
-        std::vector<Resource> resources = {                     
+       init();
+    }
+
+	void init() {
+		std::vector<Resource> resources = {                     
 		{0, ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL, TYPE_ID::STRING},                                 
 		{1, ResOp(ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL, TYPE_ID::TIME},                                       
-		{2, ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL, TYPE_ID::INT},                   
+		{2, ResOp(ResOp::READ), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL, TYPE_ID::INT},                   
 		{3, ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::MULTIPLE, IS_MANDATORY::OPTIONAL, TYPE_ID::STRING},                             
 		{4, ResOp(ResOp::EXECUTE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::EXECUTE},  
 		};
 	    _resources = std::move(resources);
-    }
 
-    void setDefaultState() override {}
+		resource(0)->set((STRING_T)"");
+		resource(1)->set((TIME_T)123);
+		resource(2)->set((INT_T)12);
+		resource(3)->set((STRING_T)"test2", 0);
+		resource(3)->set((STRING_T)"test3", 1);
+		EXECUTE_T exec = (EXECUTE_T)[](Instance& inst, ID_T id, const OPAQUE_T& data) { return true; };
+		resource(4)->set(exec);
+	}
+
+    void setDefaultState() override {
+		_resources.clear();
+		init();
+		setDefaultStateCnt++;
+	}
 
 	void serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) override {
 		switch (type) {
@@ -320,6 +338,12 @@ TEST_CASE("Instance: server operations", "[readAsServer][writeAsServer][executeA
 	}
 
 	SECTION("readAsServer: Read all resources when no one resource is set") {
+		instance.clear(0);
+		instance.clear(1);
+		instance.clear(2);
+		instance.clear(3);
+		instance.clear(4);
+
 		REQUIRE(numData == 0);
 		REQUIRE(instance.serverOpReadCnt == 0);
 		REQUIRE(instance.readAsServer(&numData, &dataArray) == COAP_500_INTERNAL_SERVER_ERROR);
@@ -329,6 +353,12 @@ TEST_CASE("Instance: server operations", "[readAsServer][writeAsServer][executeA
 	}
 
 	SECTION("readAsServer: Read one resource when no one resource is set") {
+		instance.clear(0);
+		instance.clear(1);
+		instance.clear(2);
+		instance.clear(3);
+		instance.clear(4);
+
 		numData = 1;
 		dataArray = new lwm2m_data_t;
 		dataArray->id = 0;
@@ -412,6 +442,12 @@ TEST_CASE("Instance: server operations", "[readAsServer][writeAsServer][executeA
 	}
 	
 	SECTION("readAsServer: Read multiple resource that is not set") {
+		instance.clear(0);
+		instance.clear(1);
+		instance.clear(2);
+		instance.clear(3);
+		instance.clear(4);
+
 		numData = 1;
 		dataArray = new lwm2m_data_t[1];
 		dataArray->id = 3;
@@ -520,6 +556,253 @@ TEST_CASE("Instance: server operations", "[readAsServer][writeAsServer][executeA
 		delete dataArray;
 	}
 
+	SECTION("writeAsServer: Incorrect parameters") {
+		REQUIRE(instance.writeAsServer(0, dataArray, LWM2M_WRITE_PARTIAL_UPDATE) == COAP_204_CHANGED);
+		REQUIRE(instance.writeAsServer(1, NULL, LWM2M_WRITE_PARTIAL_UPDATE) == COAP_500_INTERNAL_SERVER_ERROR);
+	}
+
+	SECTION("writeAsServer: Write one resource that not set") {
+		instance.clear(0);
+		dataArray = new lwm2m_data_t;
+		dataArray->id = 0;
+		dataArray->type = LWM2M_TYPE_STRING;
+		REQUIRE((int)instance.writeAsServer(1, dataArray, LWM2M_WRITE_PARTIAL_UPDATE) == (int)COAP_404_NOT_FOUND);
+		delete dataArray;
+	}
+
+	SECTION("writeAsServer: Write one resource that is read only") {
+		dataArray = new lwm2m_data_t;
+		dataArray->id = 2;
+		dataArray->type = LWM2M_TYPE_INTEGER;
+		REQUIRE(instance.set(2, (INT_T)12));
+		REQUIRE((int)instance.writeAsServer(1, dataArray, LWM2M_WRITE_PARTIAL_UPDATE) == (int)COAP_405_METHOD_NOT_ALLOWED);
+		delete dataArray;
+	}
+
+	SECTION("writeAsServer: Write single resource as multiple") {
+		dataArray = new lwm2m_data_t;
+		dataArray->id = 0;
+		dataArray->type = LWM2M_TYPE_MULTIPLE_RESOURCE;
+		REQUIRE(instance.set(0, (STRING_T)"test1"));
+		REQUIRE((int)instance.writeAsServer(1, dataArray, LWM2M_WRITE_PARTIAL_UPDATE) == (int)COAP_405_METHOD_NOT_ALLOWED);
+		delete dataArray;
+	}
+
+	SECTION("writeAsServer: Write multiple resource as single") {
+		dataArray = new lwm2m_data_t;
+		dataArray->id = 3;
+		dataArray->type = LWM2M_TYPE_STRING;
+		REQUIRE(instance.set({3, 0}, (STRING_T)"test1"));
+		REQUIRE((int)instance.writeAsServer(1, dataArray, LWM2M_WRITE_PARTIAL_UPDATE) == (int)COAP_405_METHOD_NOT_ALLOWED);
+		delete dataArray;
+	}
+
+	SECTION("writeAsServer: Write several resource with one incorrect") {
+		dataArray = new lwm2m_data_t[3];
+		dataArray->id = 0;
+		dataArray->type = LWM2M_TYPE_STRING;
+		dataArray->value.asBuffer.length = 5;
+		dataArray->value.asBuffer.buffer = new uint8_t[5];
+		memcpy(dataArray->value.asBuffer.buffer, "test1", 5);
+		dataArray[1].id = 1;
+		dataArray[1].type = LWM2M_TYPE_INTEGER;
+		dataArray[1].value.asInteger = 12;
+		dataArray[2].id = 100;
+		dataArray[2].type = LWM2M_TYPE_INTEGER;
+		dataArray[2].value.asInteger = 123;
+
+
+		REQUIRE(instance.set(0, (STRING_T)""));
+		REQUIRE(instance.set(1, (INT_T)0));
+
+		REQUIRE(instance.serverOpWriteUpdCnt == 0);
+		REQUIRE((int)instance.writeAsServer(3, dataArray, LWM2M_WRITE_PARTIAL_UPDATE) == (int)COAP_204_CHANGED);
+		REQUIRE(instance.serverOpWriteUpdCnt == 2);
+		
+		STRING_T testStr;
+		REQUIRE(instance.get(0, testStr));
+		REQUIRE(testStr == "test1");
+		INT_T testInt;
+		REQUIRE(instance.get(1, testInt));
+		REQUIRE(testInt == 12);
+		REQUIRE_FALSE(instance.get(100, testInt));
+
+		delete dataArray[0].value.asBuffer.buffer;
+		delete dataArray;
+	}
+
+	SECTION("writeAsServer: Write upd one resource with incorrect data") {
+		dataArray = new lwm2m_data_t;
+		dataArray->id = 1;
+		dataArray->type = LWM2M_TYPE_STRING;
+		dataArray->value.asBuffer.length = 5;
+		dataArray->value.asBuffer.buffer = new uint8_t[5];
+		memcpy(dataArray->value.asBuffer.buffer, "test1", 5);
+
+		REQUIRE(instance.set(1, (INT_T)0));
+		REQUIRE(instance.serverOpWriteUpdCnt == 0);
+		REQUIRE((int)instance.writeAsServer(1, dataArray, LWM2M_WRITE_PARTIAL_UPDATE) == (int)COAP_400_BAD_REQUEST);
+		REQUIRE(instance.serverOpWriteUpdCnt == 0);
+		INT_T testInt;
+		REQUIRE(instance.get(1, testInt));
+		REQUIRE(testInt == 0);
+
+		delete dataArray->value.asBuffer.buffer;
+		delete dataArray;
+	}
+
+	SECTION("writeAsServer: Write replace one resource with incorrect data") {
+		dataArray = new lwm2m_data_t;
+		dataArray->id = 1;
+		dataArray->type = LWM2M_TYPE_STRING;
+		dataArray->value.asBuffer.length = 5;
+		dataArray->value.asBuffer.buffer = new uint8_t[5];
+		memcpy(dataArray->value.asBuffer.buffer, "test1", 5);
+
+		REQUIRE(instance.set(1, (INT_T)0));
+		REQUIRE(instance.serverOpWriteUpdCnt == 0);
+		REQUIRE((int)instance.writeAsServer(1, dataArray, LWM2M_WRITE_REPLACE_RESOURCES) == (int)COAP_400_BAD_REQUEST);
+		REQUIRE(instance.serverOpWriteUpdCnt == 0);
+		INT_T testInt;
+		REQUIRE(instance.get(1, testInt));
+		REQUIRE(testInt == 0);
+
+		delete dataArray->value.asBuffer.buffer;
+		delete dataArray;
+	}
+
+	SECTION("writeAsServer: Write one resource") {
+		dataArray = new lwm2m_data_t;
+		dataArray->id = 0;
+		dataArray->type = LWM2M_TYPE_STRING;
+		dataArray->value.asBuffer.length = 5;
+		dataArray->value.asBuffer.buffer = new uint8_t[5];
+		memcpy(dataArray->value.asBuffer.buffer, "test1", 5);
+
+		REQUIRE(instance.set(0, (STRING_T)""));
+		REQUIRE(instance.serverOpWriteUpdCnt == 0);
+		REQUIRE((int)instance.writeAsServer(1, dataArray, LWM2M_WRITE_PARTIAL_UPDATE) == (int)COAP_204_CHANGED);
+		REQUIRE(instance.serverOpWriteUpdCnt == 1);
+		STRING_T testStr;
+		REQUIRE(instance.get(0, testStr));
+		REQUIRE(testStr == "test1");
+
+		delete dataArray;
+	}
+
+	SECTION("writeAsServer: Write one resource replace") {
+		dataArray = new lwm2m_data_t;
+		dataArray->id = 0;
+		dataArray->type = LWM2M_TYPE_STRING;
+		dataArray->value.asBuffer.length = 5;
+		dataArray->value.asBuffer.buffer = new uint8_t[5];
+		memcpy(dataArray->value.asBuffer.buffer, "test1", 5);
+
+		REQUIRE(instance.set(0, (STRING_T)""));
+		REQUIRE(instance.serverOpWriteReplaceResCnt == 0);
+		REQUIRE((int)instance.writeAsServer(1, dataArray, LWM2M_WRITE_REPLACE_RESOURCES) == (int)COAP_204_CHANGED);
+		REQUIRE(instance.serverOpWriteReplaceResCnt == 1);
+		STRING_T testStr;
+		REQUIRE(instance.get(0, testStr));
+		REQUIRE(testStr == "test1");
+
+		delete dataArray;
+	}
+
+	SECTION("writeAsServer: Write several resource") {
+		dataArray = new lwm2m_data_t[2];
+		dataArray->id = 0;
+		dataArray->type = LWM2M_TYPE_STRING;
+		dataArray->value.asBuffer.length = 5;
+		dataArray->value.asBuffer.buffer = new uint8_t[5];
+		memcpy(dataArray->value.asBuffer.buffer, "test1", 5);
+		dataArray[1].id = 3;
+		dataArray[1].type = LWM2M_TYPE_MULTIPLE_RESOURCE;
+		dataArray[1].value.asChildren.count = 2;
+		dataArray[1].value.asChildren.array = new lwm2m_data_t[2];
+		dataArray[1].value.asChildren.array[0].id = 0;
+		dataArray[1].value.asChildren.array[0].type = LWM2M_TYPE_STRING;
+		dataArray[1].value.asChildren.array[0].value.asBuffer.length = 5;
+		dataArray[1].value.asChildren.array[0].value.asBuffer.buffer = new uint8_t[5];
+		memcpy(dataArray[1].value.asChildren.array[0].value.asBuffer.buffer, "test2", 5);
+		dataArray[1].value.asChildren.array[1].id = 1;
+		dataArray[1].value.asChildren.array[1].type = LWM2M_TYPE_STRING;
+		dataArray[1].value.asChildren.array[1].value.asBuffer.length = 5;
+		dataArray[1].value.asChildren.array[1].value.asBuffer.buffer = new uint8_t[5];
+		memcpy(dataArray[1].value.asChildren.array[1].value.asBuffer.buffer, "test3", 5);
+
+		REQUIRE(instance.set(0, (STRING_T)""));
+		REQUIRE(instance.set({3, 0}, (STRING_T)""));
+		REQUIRE(instance.set({3, 1}, (STRING_T)""));
+
+		REQUIRE(instance.serverOpWriteUpdCnt == 0);
+		REQUIRE((int)instance.writeAsServer(2, dataArray, LWM2M_WRITE_PARTIAL_UPDATE) == (int)COAP_204_CHANGED);
+		REQUIRE(instance.serverOpWriteUpdCnt == 3);
+		STRING_T testStr;
+		REQUIRE(instance.get(0, testStr));
+		REQUIRE(testStr == "test1");
+		REQUIRE(instance.get({3, 0}, testStr));
+		REQUIRE(testStr == "test2");
+		REQUIRE(instance.get({3, 1}, testStr));
+		REQUIRE(testStr == "test3");
+
+		delete dataArray[0].value.asBuffer.buffer;
+		delete dataArray[1].value.asChildren.array[0].value.asBuffer.buffer;
+		delete dataArray[1].value.asChildren.array[1].value.asBuffer.buffer;
+		delete dataArray[1].value.asChildren.array;
+		delete dataArray;
+	}
+
+	SECTION("writeAsServer: Write resource with replace instance") {		
+		dataArray = new lwm2m_data_t[4];
+		dataArray[0].id = 0;
+		dataArray[0].type = LWM2M_TYPE_STRING;
+		dataArray[0].value.asBuffer.length = 5;
+		dataArray[0].value.asBuffer.buffer = new uint8_t[5];
+		memcpy(dataArray->value.asBuffer.buffer, "test", 5);
+		dataArray[1].id = 1;
+		dataArray[1].type = LWM2M_TYPE_INTEGER;
+		dataArray[1].value.asInteger = 1;
+		dataArray[2].id = 2;
+		dataArray[2].type = LWM2M_TYPE_INTEGER;
+		dataArray[2].value.asInteger = 2;
+		dataArray[3].id = 3;
+		dataArray[3].type = LWM2M_TYPE_MULTIPLE_RESOURCE;
+		dataArray[3].value.asChildren.count = 1;
+		dataArray[3].value.asChildren.array = new lwm2m_data_t[1];
+		dataArray[3].value.asChildren.array[0].id = 0;
+		dataArray[3].value.asChildren.array[0].type = LWM2M_TYPE_STRING;
+		dataArray[3].value.asChildren.array[0].value.asBuffer.length = 5;
+		dataArray[3].value.asChildren.array[0].value.asBuffer.buffer = new uint8_t[5];
+		memcpy(dataArray[3].value.asChildren.array[0].value.asBuffer.buffer, "test", 5);
+
+		REQUIRE(instance.serverOpWriteUpdCnt == 0);
+		REQUIRE(instance.serverOpWriteReplaceResCnt == 0);
+		REQUIRE(instance.serverOpWriteReplaceInstCnt == 0);
+		REQUIRE((int)instance.writeAsServer(1, dataArray, LWM2M_WRITE_REPLACE_INSTANCE) == (int)COAP_204_CHANGED);
+		REQUIRE(instance.serverOpWriteUpdCnt == 0);
+		REQUIRE(instance.serverOpWriteReplaceResCnt == 0);
+		REQUIRE(instance.serverOpWriteReplaceInstCnt == 1);
+		STRING_T testStr;
+		REQUIRE(instance.get(0, testStr));
+		std::cout << "!!!!!! " << testStr << std::endl;
+		REQUIRE(testStr == "test");
+		TIME_T testTime;
+		REQUIRE(instance.get(1, testTime));
+		REQUIRE(testTime == 1);
+		INT_T testInt;
+		REQUIRE(instance.get(2, testInt));
+		REQUIRE(testInt == 2);
+		REQUIRE(instance.get({3, 0}, testStr));
+		REQUIRE(testStr == "test");
+		REQUIRE_FALSE(instance.get({3, 1}, testStr));
+		EXECUTE_T execGet;
+		REQUIRE_FALSE(instance.get(4, execGet));
+
+		delete dataArray->value.asBuffer.buffer;
+		delete dataArray;
+	}
+
 	SECTION("executeAsServer") {
 		// Resource does not exist
 		REQUIRE(instance.serverOpExecuteCnt == 0);
@@ -527,12 +810,12 @@ TEST_CASE("Instance: server operations", "[readAsServer][writeAsServer][executeA
 		REQUIRE(instance.serverOpExecuteCnt == 0);
 
 		// Resource is not executable
-		REQUIRE(instance.set(0, (STRING_T)"test1"));
 		REQUIRE(instance.serverOpExecuteCnt == 0);
 		REQUIRE((int)instance.executeAsServer(0, NULL, 0) == (int)COAP_405_METHOD_NOT_ALLOWED);
 		REQUIRE(instance.serverOpExecuteCnt == 0);
 
 		// Resource is executable but not set
+		instance.clear(4);
 		REQUIRE(instance.set(4, (EXECUTE_T)NULL));
 		REQUIRE(instance.serverOpExecuteCnt == 0);
 		REQUIRE(instance.executeAsServer(4, NULL, 0) == COAP_404_NOT_FOUND);
@@ -582,6 +865,11 @@ TEST_CASE("Instance: server operations", "[readAsServer][writeAsServer][executeA
 		REQUIRE(instance.discoverAsServer(&numData, NULL) == COAP_500_INTERNAL_SERVER_ERROR);
 
 		// Resource does not exist
+		instance.clear(0);
+		instance.clear(1);
+		instance.clear(2);
+		instance.clear(3);
+		instance.clear(4);
 		REQUIRE(numData == 0);
 		REQUIRE(instance.serverOpDiscoverCnt == 0);
 		REQUIRE(instance.discoverAsServer(&numData, &dataArray) == COAP_500_INTERNAL_SERVER_ERROR);

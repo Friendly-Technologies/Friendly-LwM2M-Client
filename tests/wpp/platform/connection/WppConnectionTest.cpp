@@ -38,7 +38,7 @@ TEST_CASE("WppConnection", "[wppconnection]")
 
         WppConnectionMock connection;
 
-        REQUIRE(connection.getDataBlockSize() == 1024);
+        REQUIRE(connection.getDataBlockSize() == LWM2M_COAP_DEFAULT_BLOCK_SIZE);
 
         for (uint8_t i = 0; i < sizeOfArray; i++)
         {

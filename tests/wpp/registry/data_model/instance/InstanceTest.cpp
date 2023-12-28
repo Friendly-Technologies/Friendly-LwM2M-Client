@@ -1,8 +1,6 @@
 #include "catch_amalgamated.hpp"
 #include "Instance.h"
 
-#include <iostream>
-
 using namespace wpp;
 
 static lwm2m_context_t mockContext = {};

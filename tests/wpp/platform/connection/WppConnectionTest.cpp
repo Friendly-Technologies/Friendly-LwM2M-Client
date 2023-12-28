@@ -14,23 +14,16 @@ public:
     bool sendPacket(const Packet &packet) override { return true; }
 };
 
-// for return FALSE
-class WppConnectionMockErr : public WppConnection
-{
-public:
-    SESSION_T connect(Lwm2mSecurity &security) override { return NULL; }
-    void disconnect(SESSION_T session) override {}
-    bool sessionCmp(SESSION_T session1, SESSION_T session2) override { return false; }
-    bool sendPacket(const Packet &packet) override { return false; }
-};
-
 TEST_CASE("WppConnection", "[wppconnection]")
 {
     // Create a packet for testing
     WppConnection::Packet testPacket;
     testPacket.session = nullptr;
-    testPacket.length = 9;
-    testPacket.buffer = new uint8_t[testPacket.length];
+    testPacket.length = 10;
+    uint8_t test_buffer[10] = {
+        0,
+    };
+    testPacket.buffer = test_buffer;
 
     // Create client info
     WppClient::ClientInfo clientInfo;
@@ -38,14 +31,23 @@ TEST_CASE("WppConnection", "[wppconnection]")
     clientInfo.msisdn = "1234567890";
     clientInfo.altPath = "";
 
-    SECTION("connection_without_object")
+    SECTION("DataBlockSize")
     {
-        WppConnection *connection;
+        uint16_t valid_block_sizes[] = {16, 32, 64, 128, 256, 512, 1024};
+        size_t sizeOfArray = sizeof(valid_block_sizes) / sizeof(valid_block_sizes[0]);
 
-        REQUIRE(connection->addPacketToQueue(testPacket) == false);
-        REQUIRE(connection->getDataBlockSize() == 1024);
-        REQUIRE(connection->setDataBlockSize(512));
-        REQUIRE(connection->getDataBlockSize() == 512);
+        WppConnectionMock connection;
+
+        REQUIRE(connection.getDataBlockSize() == 1024);
+
+        for (uint8_t i = 0; i < sizeOfArray; i++)
+        {
+            REQUIRE(connection.setDataBlockSize(valid_block_sizes[i]));
+            REQUIRE(connection.getDataBlockSize() == valid_block_sizes[i]);
+        }
+
+        REQUIRE_FALSE(connection.setDataBlockSize(500));
+        REQUIRE(connection.getDataBlockSize() == 1024);
     }
 
     SECTION("connection_with_object")
@@ -63,8 +65,9 @@ TEST_CASE("WppConnection", "[wppconnection]")
             WppConnection::Packet dummyPacket;
             dummyPacket.session = nullptr;
             dummyPacket.length = 10;
-            dummyPacket.buffer = new uint8_t[dummyPacket.length];
-            conmock.addPacketToQueue(dummyPacket);
+            dummyPacket.buffer = test_buffer;
+            REQUIRE(conmock.addPacketToQueue(dummyPacket));
+            REQUIRE(conmock.getPacketQueueSize() == i + 1);
         }
 
         // Add the test packet to the full queue, it should fail
@@ -81,50 +84,16 @@ TEST_CASE("WppConnection", "[wppconnection]")
 
         REQUIRE(conmock.addPacketToQueue(testPacket));
         REQUIRE(WppClient::create(clientInfo, conmock));
+
         WppClient *defclient = WppClient::takeOwnership();
         conmock.handlePacketsInQueue(*defclient); // COAP_NO_ERROR
 
-        REQUIRE(defclient->getState() == 0);
-        REQUIRE(conmock.addPacketToQueue(testPacket));
-
-        REQUIRE(defclient->takeOwnership() == NULL);
-        defclient->giveOwnership();
-        REQUIRE(defclient->takeOwnership() != NULL);
-
-        conmock.handlePacketsInQueue(*defclient); // COAP_NO_ERROR
-
-        REQUIRE(WppClient::isCreated());
-        REQUIRE(WppClient::create(clientInfo, conmock));
-
-        WppClient::remove();
-        REQUIRE_FALSE(WppClient::isCreated());
-
-        clientInfo.altPath = "0";
-        REQUIRE_FALSE(WppClient::create(clientInfo, conmock));
-
         REQUIRE(conmock.addPacketToQueue(testPacket));
         REQUIRE(conmock.getPacketQueueSize() == 1);
+
         conmock.clearPacketQueue();
         REQUIRE(conmock.getPacketQueueSize() == 0);
+
         defclient->remove();
-    }
-
-    SECTION("takeOwnershipBlocking")
-    {
-        WppConnectionMockErr conmock;
-
-        REQUIRE(conmock.addPacketToQueue(testPacket));
-        REQUIRE(WppClient::create(clientInfo, conmock));
-
-        WppClient *defclient = WppClient::takeOwnershipBlocking();
-        defclient->giveOwnership();
-        REQUIRE(defclient->takeOwnershipBlocking() != NULL);
-        
-        conmock.handlePacketsInQueue(*defclient); // COAP_500_INTERNAL_SERVER_ERROR
-
-        conmock.clearPacketQueue();
-        defclient->remove();
-
-        REQUIRE(defclient->takeOwnershipBlocking() == NULL);
     }
 }

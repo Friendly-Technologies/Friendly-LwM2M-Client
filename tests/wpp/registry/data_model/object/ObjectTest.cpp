@@ -5,8 +5,8 @@
 
 using namespace wpp;
 
-lwm2m_context_t mockContext = {};
-const ObjectInfo mockInfo = {
+static lwm2m_context_t mockContext = {};
+static const ObjectInfo mockInfo = {
     "Test Object",
 	OBJ_ID::MAX_ID,
 	"urn:oma:lwm2m:oma:123:1",

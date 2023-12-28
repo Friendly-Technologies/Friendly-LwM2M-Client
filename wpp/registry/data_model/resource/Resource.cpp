@@ -164,7 +164,7 @@ RES_METHODS_IMPL_SET_FOR(STRING_T);
 RES_METHODS_IMPL_SET_FOR(EXECUTE_T);
 
 bool Resource::remove(ID_T resInstId) {
-	if (!isInstanceExist(resInstId) || isSingle()) return false;
+	if (!isInstanceExist(resInstId) || isSingle() || instanceCnt() == 1) return false;
 	auto instForRemove = getResInstIter(resInstId);
 	_instances.erase(instForRemove);
 

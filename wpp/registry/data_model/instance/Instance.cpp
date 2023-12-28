@@ -27,7 +27,7 @@ bool Instance::clear(ID_T resId) {
 }
 
 bool Instance::remove(const ResLink &resId) {
-	auto res = resource(resId.resInstId);
+	auto res = resource(resId.resId);
 	if (res == _resources.end()) return false;
 
 	bool result = res->remove(resId.resInstId);
@@ -145,9 +145,8 @@ bool Instance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &res, ID_T
 		break;
 	}
 	case TYPE_ID::OBJ_LINK: {
-		// TODO: It is necessary to check in practice, it is not completely clear how to convert data
 		if (data.type != LWM2M_TYPE_OBJECT_LINK) return false;
-		if (!res.set(OBJ_LINK_T{ID_T_MAX_VAL, ID_T_MAX_VAL}, instanceId)) return false;
+		if (!res.set(OBJ_LINK_T{data.value.asObjLink.objectId, data.value.asObjLink.objectInstanceId}, instanceId)) return false;
 		break;
 	}
 	case TYPE_ID::OPAQUE: {
@@ -167,7 +166,6 @@ bool Instance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &res, ID_T
 		break;
 	}
 	case TYPE_ID::CORE_LINK: {
-		// TODO: It is necessary to check in practice, it is not completely clear how to convert data
 		if (data.type != LWM2M_TYPE_OPAQUE && data.type != LWM2M_TYPE_STRING && data.type != LWM2M_TYPE_CORE_LINK) return false;
 		size_t len = data.value.asBuffer.length;
 		uint8_t *buffer =  data.value.asBuffer.buffer;
@@ -270,6 +268,16 @@ Resource* Instance::getValidatedResForRead(const lwm2m_data_t &data, uint8_t &er
 		WPP_LOGW_ARG(TAG_WPP_INST, "Server can not read single resource to multiple: %d:%d:%d", _id.objId, _id.objInstId, data.id);
 		errCode = COAP_405_METHOD_NOT_ALLOWED;
 		return NULL;
+	}
+	// If resource is multile then we should check that all instances are exists
+	if (data.type == LWM2M_TYPE_MULTIPLE_RESOURCE) {
+		for (size_t i = 0; i < data.value.asChildren.count; i++) {
+			if (!res->isInstanceExist(data.value.asChildren.array[i].id)) {
+				WPP_LOGW_ARG(TAG_WPP_INST, "Resource instance does not exist: %d:%d:%d:%d", _id.objId, _id.objInstId, data.id, data.value.asChildren.array[i].id);
+				errCode = COAP_404_NOT_FOUND;
+				return NULL;
+			}
+		}
 	}
 
 	return &(*res);

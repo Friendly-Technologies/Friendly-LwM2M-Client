@@ -145,9 +145,8 @@ bool Instance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &res, ID_T
 		break;
 	}
 	case TYPE_ID::OBJ_LINK: {
-		// TODO: It is necessary to check in practice, it is not completely clear how to convert data
 		if (data.type != LWM2M_TYPE_OBJECT_LINK) return false;
-		if (!res.set(OBJ_LINK_T{ID_T_MAX_VAL, ID_T_MAX_VAL}, instanceId)) return false;
+		if (!res.set(OBJ_LINK_T{data.value.asObjLink.objectId, data.value.asObjLink.objectInstanceId}, instanceId)) return false;
 		break;
 	}
 	case TYPE_ID::OPAQUE: {
@@ -167,7 +166,6 @@ bool Instance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &res, ID_T
 		break;
 	}
 	case TYPE_ID::CORE_LINK: {
-		// TODO: It is necessary to check in practice, it is not completely clear how to convert data
 		if (data.type != LWM2M_TYPE_OPAQUE && data.type != LWM2M_TYPE_STRING && data.type != LWM2M_TYPE_CORE_LINK) return false;
 		size_t len = data.value.asBuffer.length;
 		uint8_t *buffer =  data.value.asBuffer.buffer;

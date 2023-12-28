@@ -6,7 +6,7 @@
 using namespace wpp;
 
 static lwm2m_context_t mockContext = {};
-static const OBJ_LINK_T mockId = {0 , 0};
+static const OBJ_LINK_T mockId = {0, 0};
 
 class InstanceMock : public Instance {
 public:
@@ -29,21 +29,33 @@ public:
 
 	void init() {
 		std::vector<Resource> resources = {                     
-		{0, ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL, TYPE_ID::STRING},                                 
-		{1, ResOp(ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL, TYPE_ID::TIME},                                       
-		{2, ResOp(ResOp::READ), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL, TYPE_ID::INT},                   
-		{3, ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::MULTIPLE, IS_MANDATORY::OPTIONAL, TYPE_ID::STRING},                             
-		{4, ResOp(ResOp::EXECUTE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::EXECUTE},  
+			{0, ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL, TYPE_ID::STRING},                                 
+			{1, ResOp(ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL, TYPE_ID::TIME},                                       
+			{2, ResOp(ResOp::READ), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL, TYPE_ID::TIME},                   
+			{3, ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::MULTIPLE, IS_MANDATORY::OPTIONAL, TYPE_ID::STRING},                             
+			{4, ResOp(ResOp::EXECUTE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::EXECUTE},
+			{5, ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL, TYPE_ID::UINT},   
+			{6, ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL, TYPE_ID::BOOL},
+			{7, ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL, TYPE_ID::FLOAT},
+			{8, ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL, TYPE_ID::OBJ_LINK},
+			{9, ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL, TYPE_ID::OPAQUE},
+			{10, ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL, TYPE_ID::CORE_LINK},
 		};
 	    _resources = std::move(resources);
 
-		resource(0)->set((STRING_T)"");
-		resource(1)->set((TIME_T)123);
-		resource(2)->set((INT_T)12);
-		resource(3)->set((STRING_T)"test2", 0);
-		resource(3)->set((STRING_T)"test3", 1);
+		REQUIRE(resource(0)->set((STRING_T)"test1"));
+		REQUIRE(resource(1)->set((TIME_T)123));
+		REQUIRE(resource(2)->set((INT_T)12));
+		REQUIRE(resource(3)->set((STRING_T)"test2", 0));
+		REQUIRE(resource(3)->set((STRING_T)"test3", 1));
 		EXECUTE_T exec = (EXECUTE_T)[](Instance& inst, ID_T id, const OPAQUE_T& data) { return true; };
-		resource(4)->set(exec);
+		REQUIRE(resource(4)->set(exec));
+		REQUIRE(resource(5)->set((UINT_T)12));
+		REQUIRE(resource(6)->set((BOOL_T)true));
+		REQUIRE(resource(7)->set((FLOAT_T)12.3));
+		REQUIRE(resource(8)->set(OBJ_LINK_T()));
+		REQUIRE(resource(9)->set(OPAQUE_T()));
+		REQUIRE(resource(10)->set((CORE_LINK_T)"</3/0>"));
 	}
 
     void setDefaultState() override {
@@ -270,7 +282,7 @@ TEST_CASE("Instance: resource access", "[set][setMove][get][getPtr][clear][remov
 		REQUIRE(instance.clear(4));
 		REQUIRE(instance.userOpDeleteCnt == 5);
 		REQUIRE_FALSE(instance.get(4, execGet));
-		REQUIRE_FALSE(instance.clear(5));
+		REQUIRE_FALSE(instance.clear(100));
 		REQUIRE(instance.userOpDeleteCnt == 5);
 	}
 
@@ -343,6 +355,12 @@ TEST_CASE("Instance: server operations", "[readAsServer][writeAsServer][executeA
 		instance.clear(2);
 		instance.clear(3);
 		instance.clear(4);
+		instance.clear(5);
+		instance.clear(6);
+		instance.clear(7);
+		instance.clear(8);
+		instance.clear(9);
+		instance.clear(10);
 
 		REQUIRE(numData == 0);
 		REQUIRE(instance.serverOpReadCnt == 0);
@@ -358,6 +376,12 @@ TEST_CASE("Instance: server operations", "[readAsServer][writeAsServer][executeA
 		instance.clear(2);
 		instance.clear(3);
 		instance.clear(4);
+		instance.clear(5);
+		instance.clear(6);
+		instance.clear(7);
+		instance.clear(8);
+		instance.clear(9);
+		instance.clear(10);
 
 		numData = 1;
 		dataArray = new lwm2m_data_t;
@@ -447,6 +471,12 @@ TEST_CASE("Instance: server operations", "[readAsServer][writeAsServer][executeA
 		instance.clear(2);
 		instance.clear(3);
 		instance.clear(4);
+		instance.clear(5);
+		instance.clear(6);
+		instance.clear(7);
+		instance.clear(8);
+		instance.clear(9);
+		instance.clear(10);
 
 		numData = 1;
 		dataArray = new lwm2m_data_t[1];
@@ -510,20 +540,12 @@ TEST_CASE("Instance: server operations", "[readAsServer][writeAsServer][executeA
 		numData = 0;
 		dataArray = NULL;
 
-		REQUIRE(instance.set(0, (STRING_T)"test1"));
-		REQUIRE(instance.set(1, (TIME_T)123));
-		REQUIRE(instance.set(2, (INT_T)12));
-		REQUIRE(instance.set({3, 0}, (STRING_T)"test2"));
-		REQUIRE(instance.set({3, 1}, (STRING_T)"test3"));
-		EXECUTE_T exec = (EXECUTE_T)[](Instance& inst, ID_T id, const OPAQUE_T& data) { return true; };
-		REQUIRE(instance.set(4, exec));
-
 		REQUIRE(numData == 0);
 		REQUIRE(dataArray == NULL);
 		REQUIRE(instance.serverOpReadCnt == 0);
 		REQUIRE((int)instance.readAsServer(&numData, &dataArray) == (int)COAP_205_CONTENT);
-		REQUIRE(instance.serverOpReadCnt == 4);
-		REQUIRE(numData == 3);
+		REQUIRE(instance.serverOpReadCnt == 10);
+		REQUIRE(numData == 9);
 		REQUIRE(dataArray != NULL);
 
 		REQUIRE(dataArray[0].id == 0);
@@ -548,11 +570,34 @@ TEST_CASE("Instance: server operations", "[readAsServer][writeAsServer][executeA
 		REQUIRE(dataArray[2].value.asChildren.array[1].value.asBuffer.length == 5);
 		REQUIRE(dataArray[2].value.asChildren.array[1].value.asBuffer.buffer != NULL);
 		REQUIRE(memcmp(dataArray[2].value.asChildren.array[1].value.asBuffer.buffer, "test3", 5) == 0);
-
+		REQUIRE(dataArray[3].id == 5);
+		REQUIRE(dataArray[3].type == LWM2M_TYPE_UNSIGNED_INTEGER);
+		REQUIRE(dataArray[3].value.asInteger == 12);
+		REQUIRE(dataArray[4].id == 6);
+		REQUIRE(dataArray[4].type == LWM2M_TYPE_BOOLEAN);
+		REQUIRE(dataArray[4].value.asBoolean == true);
+		REQUIRE(dataArray[5].id == 7);
+		REQUIRE(dataArray[5].type == LWM2M_TYPE_FLOAT);
+		REQUIRE((int)(dataArray[5].value.asFloat*10) == (int)123);
+		REQUIRE(dataArray[6].id == 8);
+		REQUIRE(dataArray[6].type == LWM2M_TYPE_OBJECT_LINK);
+		REQUIRE(dataArray[6].value.asObjLink.objectId == ID_T_MAX_VAL);
+		REQUIRE(dataArray[6].value.asObjLink.objectInstanceId == ID_T_MAX_VAL);
+		REQUIRE(dataArray[7].id == 9);
+		REQUIRE(dataArray[7].type == LWM2M_TYPE_OPAQUE);
+		REQUIRE(dataArray[7].value.asBuffer.length == 0);
+		REQUIRE(dataArray[7].value.asBuffer.buffer == NULL);
+		REQUIRE(dataArray[8].id == 10);
+		REQUIRE(dataArray[8].type == LWM2M_TYPE_CORE_LINK);
+		REQUIRE(dataArray[8].value.asBuffer.length == 6);
+		REQUIRE(dataArray[8].value.asBuffer.buffer != NULL);
+		REQUIRE(memcmp(dataArray[8].value.asBuffer.buffer, "</3/0>", 6) == 0);
+		
 		delete dataArray[0].value.asBuffer.buffer;
 		delete dataArray[2].value.asChildren.array[0].value.asBuffer.buffer;
 		delete dataArray[2].value.asChildren.array[1].value.asBuffer.buffer;
 		delete dataArray[2].value.asChildren.array;
+		delete dataArray[8].value.asBuffer.buffer;
 		delete dataArray;
 	}
 
@@ -757,9 +802,9 @@ TEST_CASE("Instance: server operations", "[readAsServer][writeAsServer][executeA
 		dataArray = new lwm2m_data_t[4];
 		dataArray[0].id = 0;
 		dataArray[0].type = LWM2M_TYPE_STRING;
-		dataArray[0].value.asBuffer.length = 5;
-		dataArray[0].value.asBuffer.buffer = new uint8_t[5];
-		memcpy(dataArray->value.asBuffer.buffer, "test", 5);
+		dataArray[0].value.asBuffer.length = 4;
+		dataArray[0].value.asBuffer.buffer = new uint8_t[4];
+		memcpy(dataArray->value.asBuffer.buffer, "test", 4);
 		dataArray[1].id = 1;
 		dataArray[1].type = LWM2M_TYPE_INTEGER;
 		dataArray[1].value.asInteger = 1;
@@ -772,34 +817,126 @@ TEST_CASE("Instance: server operations", "[readAsServer][writeAsServer][executeA
 		dataArray[3].value.asChildren.array = new lwm2m_data_t[1];
 		dataArray[3].value.asChildren.array[0].id = 0;
 		dataArray[3].value.asChildren.array[0].type = LWM2M_TYPE_STRING;
-		dataArray[3].value.asChildren.array[0].value.asBuffer.length = 5;
-		dataArray[3].value.asChildren.array[0].value.asBuffer.buffer = new uint8_t[5];
-		memcpy(dataArray[3].value.asChildren.array[0].value.asBuffer.buffer, "test", 5);
+		dataArray[3].value.asChildren.array[0].value.asBuffer.length = 4;
+		dataArray[3].value.asChildren.array[0].value.asBuffer.buffer = new uint8_t[4];
+		memcpy(dataArray[3].value.asChildren.array[0].value.asBuffer.buffer, "test", 4);
 
 		REQUIRE(instance.serverOpWriteUpdCnt == 0);
 		REQUIRE(instance.serverOpWriteReplaceResCnt == 0);
 		REQUIRE(instance.serverOpWriteReplaceInstCnt == 0);
-		REQUIRE((int)instance.writeAsServer(1, dataArray, LWM2M_WRITE_REPLACE_INSTANCE) == (int)COAP_204_CHANGED);
+		REQUIRE((int)instance.writeAsServer(4, dataArray, LWM2M_WRITE_REPLACE_INSTANCE) == (int)COAP_204_CHANGED);
 		REQUIRE(instance.serverOpWriteUpdCnt == 0);
 		REQUIRE(instance.serverOpWriteReplaceResCnt == 0);
 		REQUIRE(instance.serverOpWriteReplaceInstCnt == 1);
 		STRING_T testStr;
 		REQUIRE(instance.get(0, testStr));
-		std::cout << "!!!!!! " << testStr << std::endl;
-		REQUIRE(testStr == "test");
 		TIME_T testTime;
 		REQUIRE(instance.get(1, testTime));
 		REQUIRE(testTime == 1);
-		INT_T testInt;
-		REQUIRE(instance.get(2, testInt));
-		REQUIRE(testInt == 2);
+		REQUIRE(instance.get(2, testTime));
+		REQUIRE(testTime == 2);
 		REQUIRE(instance.get({3, 0}, testStr));
 		REQUIRE(testStr == "test");
 		REQUIRE_FALSE(instance.get({3, 1}, testStr));
 		EXECUTE_T execGet;
-		REQUIRE_FALSE(instance.get(4, execGet));
+		REQUIRE(instance.get(4, execGet));
 
-		delete dataArray->value.asBuffer.buffer;
+		delete dataArray[0].value.asBuffer.buffer;
+		delete dataArray[3].value.asChildren.array[0].value.asBuffer.buffer;
+		delete dataArray[3].value.asChildren.array;
+		delete dataArray;
+	}
+
+	SECTION("writeAsServer: Write all resources with replace") {		
+		dataArray = new lwm2m_data_t[10];
+		dataArray[0].id = 0;
+		dataArray[0].type = LWM2M_TYPE_STRING;
+		dataArray[0].value.asBuffer.length = 4;
+		dataArray[0].value.asBuffer.buffer = new uint8_t[4];
+		memcpy(dataArray->value.asBuffer.buffer, "test", 4);
+		dataArray[1].id = 1;
+		dataArray[1].type = LWM2M_TYPE_INTEGER;
+		dataArray[1].value.asInteger = 1;
+		dataArray[2].id = 2;
+		dataArray[2].type = LWM2M_TYPE_INTEGER;
+		dataArray[2].value.asInteger = 2;
+		dataArray[3].id = 3;
+		dataArray[3].type = LWM2M_TYPE_MULTIPLE_RESOURCE;
+		dataArray[3].value.asChildren.count = 1;
+		dataArray[3].value.asChildren.array = new lwm2m_data_t[1];
+		dataArray[3].value.asChildren.array[0].id = 0;
+		dataArray[3].value.asChildren.array[0].type = LWM2M_TYPE_STRING;
+		dataArray[3].value.asChildren.array[0].value.asBuffer.length = 4;
+		dataArray[3].value.asChildren.array[0].value.asBuffer.buffer = new uint8_t[4];
+		memcpy(dataArray[3].value.asChildren.array[0].value.asBuffer.buffer, "test", 4);
+		dataArray[4].id = 5;
+		dataArray[4].type = LWM2M_TYPE_UNSIGNED_INTEGER;
+		dataArray[4].value.asInteger = 178;
+		dataArray[5].id = 6;
+		dataArray[5].type = LWM2M_TYPE_BOOLEAN;
+		dataArray[5].value.asBoolean = false;
+		dataArray[6].id = 7;
+		dataArray[6].type = LWM2M_TYPE_FLOAT;
+		dataArray[6].value.asFloat = 11.3;
+		dataArray[7].id = 8;
+		dataArray[7].type = LWM2M_TYPE_OBJECT_LINK;
+		dataArray[7].value.asObjLink.objectId = 123;
+		dataArray[7].value.asObjLink.objectInstanceId = 456;
+		dataArray[8].id = 9;
+		dataArray[8].type = LWM2M_TYPE_STRING;
+		dataArray[8].value.asBuffer.length = 4;
+		dataArray[8].value.asBuffer.buffer = new uint8_t[4];
+		memcpy(dataArray[8].value.asBuffer.buffer, "test", 4);
+		dataArray[9].id = 10;
+		dataArray[9].type = LWM2M_TYPE_CORE_LINK;
+		dataArray[9].value.asBuffer.length = 6;
+		dataArray[9].value.asBuffer.buffer = new uint8_t[6];
+		memcpy(dataArray[9].value.asBuffer.buffer, "</1/0>", 6);
+
+		REQUIRE(instance.serverOpWriteUpdCnt == 0);
+		REQUIRE(instance.serverOpWriteReplaceResCnt == 0);
+		REQUIRE(instance.serverOpWriteReplaceInstCnt == 0);
+		REQUIRE((int)instance.writeAsServer(10, dataArray, LWM2M_WRITE_REPLACE_RESOURCES) == (int)COAP_204_CHANGED);
+		REQUIRE(instance.serverOpWriteUpdCnt == 0);
+		REQUIRE(instance.serverOpWriteReplaceResCnt == 9);
+		REQUIRE(instance.serverOpWriteReplaceInstCnt == 0);
+		STRING_T testStr;
+		REQUIRE(instance.get(0, testStr));
+		TIME_T testTime;
+		REQUIRE(instance.get(1, testTime));
+		REQUIRE(testTime == 1);
+		REQUIRE(instance.get(2, testTime));
+		REQUIRE(testTime == 12);
+		REQUIRE(instance.get({3, 0}, testStr));
+		REQUIRE(testStr == "test");
+		REQUIRE_FALSE(instance.get({3, 1}, testStr));
+		EXECUTE_T execGet;
+		REQUIRE(instance.get(4, execGet));
+		UINT_T testUInt;
+		REQUIRE(instance.get(5, testUInt));
+		REQUIRE(testUInt == 178);
+		BOOL_T testBool;
+		REQUIRE(instance.get(6, testBool));
+		REQUIRE(testBool == false);
+		FLOAT_T testFloat;
+		REQUIRE(instance.get(7, testFloat));
+		REQUIRE((int)(testFloat*10) == (int)113);
+		OBJ_LINK_T testObjLink;
+		REQUIRE(instance.get(8, testObjLink));
+		REQUIRE(testObjLink.objId == 123);
+		REQUIRE(testObjLink.objInstId == 456);
+		OPAQUE_T testOpaque;
+		REQUIRE(instance.get(9, testOpaque));
+		REQUIRE(testOpaque.size() == 4);
+		REQUIRE(memcmp(testOpaque.data(), "test", 4) == 0);
+		REQUIRE(instance.get(10, testStr));
+		REQUIRE(testStr == "</1/0>");
+
+		delete dataArray[0].value.asBuffer.buffer;
+		delete dataArray[3].value.asChildren.array[0].value.asBuffer.buffer;
+		delete dataArray[3].value.asChildren.array;
+		delete dataArray[8].value.asBuffer.buffer;
+		delete dataArray[9].value.asBuffer.buffer;
 		delete dataArray;
 	}
 
@@ -870,6 +1007,12 @@ TEST_CASE("Instance: server operations", "[readAsServer][writeAsServer][executeA
 		instance.clear(2);
 		instance.clear(3);
 		instance.clear(4);
+		instance.clear(5);
+		instance.clear(6);
+		instance.clear(7);
+		instance.clear(8);
+		instance.clear(9);
+		instance.clear(10);
 		REQUIRE(numData == 0);
 		REQUIRE(instance.serverOpDiscoverCnt == 0);
 		REQUIRE(instance.discoverAsServer(&numData, &dataArray) == COAP_500_INTERNAL_SERVER_ERROR);

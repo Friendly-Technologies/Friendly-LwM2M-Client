@@ -57,7 +57,9 @@ FirmwareUpdate::~FirmwareUpdate() {
 
 void FirmwareUpdate::setDefaultState() {
 	/* --------------- Code_cpp block 4 start --------------- */
-	void stopDeferUpdateGuard();
+	#if RES_5_13
+	stopDeferUpdateGuard();
+	#endif
 	/* --------------- Code_cpp block 4 end --------------- */
 
 	_resources.clear();

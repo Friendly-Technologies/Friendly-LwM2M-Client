@@ -2,7 +2,7 @@
 #include "WppPlatform.h"
 #include "liblwm2m.h"
 
-#ifndef WPP_LOGS_LEVEL
+#ifndef LWM2M_WITH_LOGS
 extern "C" {
     extern void lwm2m_printf(const char * format, ...);
 }

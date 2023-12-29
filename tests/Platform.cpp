@@ -6,5 +6,4 @@ time_t wpp::WppPlatform::getTime(void) {
 }
 
 void wpp::WppPlatform::print(const char * msg, va_list arg) {
-    vfprintf(stderr, msg, arg);
 }

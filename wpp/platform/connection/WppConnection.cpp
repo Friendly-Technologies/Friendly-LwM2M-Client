@@ -77,6 +77,11 @@ void WppConnection::handlePacketsInQueue(WppClient &client) {
 extern "C" {
  	/*---------- Connection bindings ----------*/
     void * lwm2m_connect_server(uint16_t secObjInstID, void * userData) {
+		if (!userData) {
+			WPP_LOGE(TAG_WPP_CONN, "User data is NULL");
+			return NULL;
+		}
+
 		wpp::WppClient *client = (wpp::WppClient *)userData;
 		WPP_LOGD_ARG(TAG_WPP_CONN, "Connecting to server: security obj ID -> %d", secObjInstID);
 		wpp::Lwm2mSecurity *security = client->registry().lwm2mSecurity().instanceSpec(secObjInstID);
@@ -96,12 +101,22 @@ extern "C" {
 	}
 
 	void lwm2m_close_connection(void * sessionH, void * userData) {
+		if (!userData) {
+			WPP_LOGE(TAG_WPP_CONN, "User data is NULL");
+			return;
+		}
+
 		wpp::WppClient *client = (wpp::WppClient *)userData;
 		WPP_LOGI_ARG(TAG_WPP_CONN, "Close connection: session ID -> 0x%x", sessionH);
-		return client->connection().disconnect(sessionH);
+		client->connection().disconnect(sessionH);
 	}
 
 	uint8_t lwm2m_buffer_send(void * sessionH, uint8_t * buffer, size_t length, void * userData) {
+		if (!userData) {
+			WPP_LOGE(TAG_WPP_CONN, "User data is NULL");
+			return COAP_500_INTERNAL_SERVER_ERROR;
+		}
+
 		wpp::WppClient *client = (wpp::WppClient *)userData;
 		WPP_LOGD_ARG(TAG_WPP_CONN, "Sending buffer to server: session -> 0x%x, size -> %d", sessionH, length);
 		bool result = client->connection().sendPacket({sessionH, length, buffer});
@@ -110,6 +125,11 @@ extern "C" {
 	}
 
 	bool lwm2m_session_is_equal(void * session1, void * session2, void * userData) {
+		if (!userData) {
+			WPP_LOGE(TAG_WPP_CONN, "User data is NULL");
+			return false;
+		}
+
 		wpp::WppClient *client = (wpp::WppClient *)userData;
 		return client->connection().sessionCmp(session1, session2);
 	}

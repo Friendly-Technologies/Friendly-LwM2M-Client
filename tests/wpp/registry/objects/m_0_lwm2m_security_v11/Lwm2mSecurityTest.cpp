@@ -1,11 +1,6 @@
 #include "catch_amalgamated.hpp"
 #include "./../../../../../wpp/registry/objects/m_0_lwm2m_security_v11/Lwm2mSecurity.h"
 
-#include "WppRegistry.h"
-#include "ObjectID.h"
-#include "Resource.h"
-#include "types.h"
-
 using namespace wpp;
 
 class Lwm2mSecurityMock : public Lwm2mSecurity

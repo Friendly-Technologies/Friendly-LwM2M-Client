@@ -3,25 +3,9 @@
 
 using namespace wpp;
 
-class Lwm2mSecurityMock : public Lwm2mSecurity
+TEST_CASE("Lwm2mSecurity", "[Lwm2mSecurity]")
 {
-public:
-    Lwm2mSecurityMock(lwm2m_context_t &context, const OBJ_LINK_T &id) : Lwm2mSecurity(context, id) {}
-    void setDefaultState()
-    {
-        Lwm2mSecurity::setDefaultState();
-        Lwm2mSecurity::resource(LWM2M_SERVER_URI_0)->set(STRING_T("x!"));
-        Lwm2mSecurity::resource(SECURITY_MODE_2)->set(INT_T(LWM2M_SECURITY_MODE_NONE));
-        Lwm2mSecurity::resource(SHORT_SERVER_ID_10)->set(INT_T(0));
-    }
-
-    void serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) { Lwm2mSecurity::serverOperationNotifier(type, resId); }
-    void userOperationNotifier(ResOp::TYPE type, const ResLink &resId) { Lwm2mSecurity::userOperationNotifier(type, resId); }
-};
-
-TEST_CASE("Lwm2mSecurity1", "[Lwm2mSecurity1]")
-{
-    SECTION("")
+    SECTION("Lwm2mSecurity")
     {
         class Lwm2mSecurityMock : public Lwm2mSecurity
         {

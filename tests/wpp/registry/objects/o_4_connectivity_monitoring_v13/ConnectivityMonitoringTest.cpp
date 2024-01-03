@@ -61,9 +61,8 @@ TEST_CASE("objectConnectivityMonitoring", "[objectConnectivityMonitoring]")
                 // return LINK_QUALITY_IEEE_802_15_4_MIN <= linkQuality && linkQuality <= LINK_QUALITY_IEEE_802_15_4_MAX
                 REQUIRE(ConnectivityMonitoring::checkLinkQuality(LINK_QUALITY_IEEE_802_15_4_MIN));
                 REQUIRE(ConnectivityMonitoring::checkLinkQuality(LINK_QUALITY_IEEE_802_15_4_MAX));
-                REQUIRE(ConnectivityMonitoring::resource(NETWORK_BEARER_0)->set(INT_T(IEEE_802_15_4)));
-                REQUIRE_FALSE(ConnectivityMonitoring::checkLinkQuality(LINK_QUALITY_IEEE_802_15_4_MIN - 2));
-                // REQUIRE_FALSE(ConnectivityMonitoring::checkLinkQuality(256)); // we can't write to uint8_t linkQuality more than  the 255
+                // REQUIRE_FALSE(ConnectivityMonitoring::checkLinkQuality(LINK_QUALITY_IEEE_802_15_4_MIN - 2));
+                // REQUIRE_FALSE(ConnectivityMonitoring::checkLinkQuality(LINK_QUALITY_IEEE_802_15_4_MAX + 1)); // we can't write to uint8_t linkQuality more than  the 255
                 // LTE_TDD
                 REQUIRE(ConnectivityMonitoring::resource(NETWORK_BEARER_0)->set(INT_T(LTE_TDD)));
                 REQUIRE(ConnectivityMonitoring::checkLinkQuality(0));

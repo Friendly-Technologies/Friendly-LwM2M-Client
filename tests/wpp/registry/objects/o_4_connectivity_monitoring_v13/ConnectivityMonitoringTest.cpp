@@ -16,9 +16,9 @@
 
 using namespace wpp;
 
-TEST_CASE("ConnectivityMonitoringMock", "[ConnectivityMonitoringMock]")
+TEST_CASE("objectConnectivityMonitoring", "[objectConnectivityMonitoring]")
 {
-    SECTION("ConnectivityMonitoringMock")
+    SECTION("objectConnectivityMonitoring")
     {
         class ConnectivityMonitoringMock : public ConnectivityMonitoring
         {

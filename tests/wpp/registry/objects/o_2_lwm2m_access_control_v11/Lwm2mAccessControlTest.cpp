@@ -10,9 +10,9 @@
 
 using namespace wpp;
 
-TEST_CASE("Lwm2mAccessControlMock", "[Lwm2mAccessControlMock]")
+TEST_CASE("objectLwm2mAccessControl", "[objectLwm2mAccessControl]")
 {
-    SECTION("Lwm2mAccessControlMock")
+    SECTION("objectLwm2mAccessControl")
     {
         class Lwm2mAccessControlMock : public Lwm2mAccessControl
         {

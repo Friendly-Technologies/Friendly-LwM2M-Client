@@ -3,9 +3,9 @@
 
 using namespace wpp;
 
-TEST_CASE("deviceMock", "[deviceMock]")
+TEST_CASE("objectDevice", "[objectDevice]")
 {
-    SECTION("deviceMock")
+    SECTION("objectDevice")
     {
         class DeviceMock : public Device
         {
@@ -15,12 +15,19 @@ TEST_CASE("deviceMock", "[deviceMock]")
             void setDefaultState()
             {
                 Device::setDefaultState();
-                REQUIRE(Device::resource(ERROR_CODE_11)->set((INT_T)NO_ERROR));
-                REQUIRE_FALSE(Device::resource(ERROR_CODE_11)->set((INT_T(10))));
-                REQUIRE_FALSE(Device::resource(ERROR_CODE_11)->set((INT_T(-1))));
 
+                // return NO_ERROR <= value && value < ERR_CODE_MAX
+                REQUIRE(Device::resource(ERROR_CODE_11)->set(INT_T(NO_ERROR)));
+                REQUIRE(Device::resource(ERROR_CODE_11)->set(INT_T(ERR_CODE_MAX - 1)));
+                REQUIRE_FALSE(Device::resource(ERROR_CODE_11)->set((INT_T(NO_ERROR - 1))));
+                REQUIRE_FALSE(Device::resource(ERROR_CODE_11)->set((INT_T(ERR_CODE_MAX))));
+
+                // return wppBindingValidate(value)
                 REQUIRE_FALSE(Device::resource(SUPPORTED_BINDING_AND_MODES_16)->set(STRING_T("")));
                 REQUIRE(Device::resource(SUPPORTED_BINDING_AND_MODES_16)->set(STRING_T(WPP_BINDING_TCP)));
+                REQUIRE(Device::resource(SUPPORTED_BINDING_AND_MODES_16)->set(STRING_T(WPP_BINDING_UDP)));
+                REQUIRE(Device::resource(SUPPORTED_BINDING_AND_MODES_16)->set(STRING_T(WPP_BINDING_SMS)));
+                REQUIRE(Device::resource(SUPPORTED_BINDING_AND_MODES_16)->set(STRING_T(WPP_BINDING_NON_IP)));
             }
 
             void serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) { Device::serverOperationNotifier(type, resId); }
@@ -29,7 +36,7 @@ TEST_CASE("deviceMock", "[deviceMock]")
 
         lwm2m_context_t mockContext;
         OBJ_LINK_T mockId = {0, 1};
-        // Create an instance of SecurityMock
+        // Create an instance of DeviceMock
         DeviceMock deviceMock(mockContext, mockId);
 
         deviceMock.setDefaultState();

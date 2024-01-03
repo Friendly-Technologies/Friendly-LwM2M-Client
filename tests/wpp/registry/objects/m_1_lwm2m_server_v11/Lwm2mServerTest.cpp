@@ -3,9 +3,9 @@
 
 using namespace wpp;
 
-TEST_CASE("objecLwm2mServer", "[objecLwm2mServer]")
+TEST_CASE("objectLwm2mServer", "[objectLwm2mServer]")
 {
-    SECTION("objecLwm2mServer")
+    SECTION("objectLwm2mServer")
     {
         class Lwm2mServerMock : public Lwm2mServer
         {
@@ -35,7 +35,7 @@ TEST_CASE("objecLwm2mServer", "[objecLwm2mServer]")
 
         lwm2m_context_t mockContext;
         OBJ_LINK_T mockId = {0, 1};
-        // Create an instance of SecurityMock
+        // Create an instance of ServerMock
         Lwm2mServerMock serverMock(mockContext, mockId);
 
         serverMock.setDefaultState();

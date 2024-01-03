@@ -3,9 +3,9 @@
 
 using namespace wpp;
 
-TEST_CASE("Lwm2mSecurity", "[Lwm2mSecurity]")
+TEST_CASE("objectLwm2mSecurity", "[objectLwm2mSecurity]")
 {
-    SECTION("Lwm2mSecurity")
+    SECTION("objectLwm2mSecurity")
     {
         class Lwm2mSecurityMock : public Lwm2mSecurity
         {
@@ -15,16 +15,20 @@ TEST_CASE("Lwm2mSecurity", "[Lwm2mSecurity]")
             {
                 Lwm2mSecurity::setDefaultState();
 
-                REQUIRE(Lwm2mSecurity::resource(LWM2M_SERVER_URI_0)->set(STRING_T("x!")));
-                REQUIRE(Lwm2mSecurity::resource(SECURITY_MODE_2)->set(INT_T(LWM2M_SECURITY_MODE_NONE)));
-                REQUIRE(Lwm2mSecurity::resource(SECURITY_MODE_2)->set(INT_T(LWM2M_SECURITY_MODE_PRE_SHARED_KEY)));
-                REQUIRE(Lwm2mSecurity::resource(SHORT_SERVER_ID_10)->set(INT_T(1)));
-
+                // return value.size() < SERVER_URI_MAX_SIZE
+                REQUIRE(Lwm2mSecurity::resource(LWM2M_SERVER_URI_0)->set(STRING_T("")));
                 REQUIRE_FALSE(Lwm2mSecurity::resource(LWM2M_SERVER_URI_0)->set(STRING_T("want-more-and-more-more-more1231231231231231231231231231231231231231231231231231231231231312312312312312312312312312312more1231231231231231231231231231231231231231231231231231231231231312312312312312312312312312312more1231231231231231231231231231231231231231231231231231231231231312312312312312312312312312312more1231231231231231231231231231231231231231231231231231231231231312312312312312312312312312312more1231231231231231231231231231231231231231231231231231231231231312312312312312312312312312312more1231231231231231231231231231231231231231231231231231231231231312312312312312312312312312312")));
-                REQUIRE_FALSE(Lwm2mSecurity::resource(SECURITY_MODE_2)->set(INT_T(-1)));
-                REQUIRE_FALSE(Lwm2mSecurity::resource(SECURITY_MODE_2)->set(INT_T(4)));
-                REQUIRE_FALSE(Lwm2mSecurity::resource(SHORT_SERVER_ID_10)->set(INT_T(0)));
-                REQUIRE_FALSE(Lwm2mSecurity::resource(SHORT_SERVER_ID_10)->set(INT_T(65535)));
+
+                // return LWM2M_SECURITY_MODE_PRE_SHARED_KEY <= value && value <= LWM2M_SECURITY_MODE_NONE
+                REQUIRE(Lwm2mSecurity::resource(SECURITY_MODE_2)->set(INT_T(LWM2M_SECURITY_MODE_PRE_SHARED_KEY)));
+                REQUIRE(Lwm2mSecurity::resource(SECURITY_MODE_2)->set(INT_T(LWM2M_SECURITY_MODE_NONE)));
+                REQUIRE_FALSE(Lwm2mSecurity::resource(SECURITY_MODE_2)->set(INT_T(LWM2M_SECURITY_MODE_PRE_SHARED_KEY - 1)));
+                REQUIRE_FALSE(Lwm2mSecurity::resource(SECURITY_MODE_2)->set(INT_T(LWM2M_SECURITY_MODE_NONE + 1)));
+
+                // return SINGLE_INSTANCE_ID < value && value < ID_T_MAX_VA
+                REQUIRE(Lwm2mSecurity::resource(SHORT_SERVER_ID_10)->set(INT_T(1)));
+                REQUIRE_FALSE(Lwm2mSecurity::resource(SHORT_SERVER_ID_10)->set(INT_T(SINGLE_INSTANCE_ID)));
+                REQUIRE_FALSE(Lwm2mSecurity::resource(SHORT_SERVER_ID_10)->set(INT_T(ID_T_MAX_VAL)));
             }
 
             void serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) { Lwm2mSecurity::serverOperationNotifier(type, resId); }

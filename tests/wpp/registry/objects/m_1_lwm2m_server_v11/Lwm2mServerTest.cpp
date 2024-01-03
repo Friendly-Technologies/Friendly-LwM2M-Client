@@ -3,9 +3,9 @@
 
 using namespace wpp;
 
-TEST_CASE("serverMock", "[serverMock]")
+TEST_CASE("objecLwm2mServer", "[objecLwm2mServer]")
 {
-    SECTION("serverMock")
+    SECTION("objecLwm2mServer")
     {
         class Lwm2mServerMock : public Lwm2mServer
         {
@@ -14,12 +14,19 @@ TEST_CASE("serverMock", "[serverMock]")
             void setDefaultState()
             {
                 Lwm2mServer::setDefaultState();
-                REQUIRE(Lwm2mServer::resource(SHORT_SERVER_ID_0)->set(INT_T(15)));
-                REQUIRE_FALSE(Lwm2mServer::resource(SHORT_SERVER_ID_0)->set(INT_T(0)));
-                REQUIRE_FALSE(Lwm2mServer::resource(SHORT_SERVER_ID_0)->set(INT_T(65535)));
 
+                // return SINGLE_INSTANCE_ID < value && value < ID_T_MAX_VAL
+                REQUIRE(Lwm2mServer::resource(SHORT_SERVER_ID_0)->set(INT_T(SINGLE_INSTANCE_ID + 1)));
+                REQUIRE(Lwm2mServer::resource(SHORT_SERVER_ID_0)->set(INT_T(ID_T_MAX_VAL - 1)));
+                REQUIRE_FALSE(Lwm2mServer::resource(SHORT_SERVER_ID_0)->set(INT_T(SINGLE_INSTANCE_ID)));
+                REQUIRE_FALSE(Lwm2mServer::resource(SHORT_SERVER_ID_0)->set(INT_T(ID_T_MAX_VAL)));
+
+                // return wppBindingValidate(value)
                 REQUIRE_FALSE(Lwm2mServer::resource(BINDING_7)->set(STRING_T("")));
                 REQUIRE(Lwm2mServer::resource(BINDING_7)->set(STRING_T(WPP_BINDING_TCP)));
+                REQUIRE(Lwm2mServer::resource(BINDING_7)->set(STRING_T(WPP_BINDING_UDP)));
+                REQUIRE(Lwm2mServer::resource(BINDING_7)->set(STRING_T(WPP_BINDING_SMS)));
+                REQUIRE(Lwm2mServer::resource(BINDING_7)->set(STRING_T(WPP_BINDING_NON_IP)));
             }
 
             void serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) { Lwm2mServer::serverOperationNotifier(type, resId); }

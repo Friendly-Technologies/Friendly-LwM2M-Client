@@ -60,7 +60,7 @@ TEST_CASE("FirmwareUpdate: resource initialization", "[resourcesCreate][resource
         REQUIRE(fwu.set(1, STRING_T("")));
         REQUIRE(fwu.set(2, execute));
         REQUIRE(fwu.set(3, (INT_T)FirmwareUpdate::S_DOWNLOADING));
-        REQUIRE(fwu.set(5, integer));
+        REQUIRE(fwu.set(5, (INT_T)FirmwareUpdate::R_INTEGRITY_CHECK_FAIL));
         REQUIRE(fwu.set(6, str));
         REQUIRE(fwu.set(7, str));
         REQUIRE(fwu.set(8, (INT_T)FirmwareUpdate::HTTP));
@@ -130,13 +130,60 @@ TEST_CASE("FirmwareUpdate", "[serverOperationNotifier][userOperationNotifier]") 
     }
 
     SECTION("userOperationNotifier") {
-        
+        INT_T state;
+
+        REQUIRE(fwu.set(3, (INT_T)FirmwareUpdate::S_DOWNLOADING));
+        REQUIRE(fwu.set(3, (INT_T)FirmwareUpdate::S_DOWNLOADED));
+        REQUIRE(fwu.set(3, (INT_T)FirmwareUpdate::S_UPDATING));
+        REQUIRE(fwu.set(5, (INT_T)FirmwareUpdate::R_FW_UPD_SUCCESS));
+        REQUIRE(fwu.get(3, state));
+        REQUIRE(state == FirmwareUpdate::S_IDLE);
+
+        REQUIRE(fwu.set(3, (INT_T)FirmwareUpdate::S_DOWNLOADING));
+        REQUIRE(fwu.set(3, (INT_T)FirmwareUpdate::S_DOWNLOADED));
+        REQUIRE(fwu.set(3, (INT_T)FirmwareUpdate::S_UPDATING));
+        REQUIRE(fwu.set(5, (INT_T)FirmwareUpdate::R_NOT_ENOUGH_FLASH));
+        REQUIRE(fwu.get(3, state));
+        REQUIRE(state == FirmwareUpdate::S_IDLE);
+
+        REQUIRE_FALSE(fwu.set(5, (INT_T)FirmwareUpdate::UPD_RES_MAX));
     }
 }
 
-TEST_CASE("FirmwareUpdate", "[changeUpdRes][changeState][resetStateMachine][isUriValid][extractSchemeFromUri][isSchemeValid][isSchemeSupported][schemeToProtId][isNewStateValid][isDeliveryTypeSupported][startDeferUpdateGuard][stopDeferUpdateGuard]") {
+TEST_CASE("FirmwareUpdate", "[isUriValid][schemeToProtId][isDeliveryTypeSupported][isNewStateValid]") {
     lwm2m_context_t context;
     const OBJ_LINK_T id {5, 0};
     FirmwareUpdate fwu(context, id);
+    
+    SECTION("isUriValid, isDeliveryTypeSupported, schemeToProtId") {
+        REQUIRE(fwu.set(9, (INT_T)FirmwareUpdate::BOTH));
+        REQUIRE(fwu.set({8, 1}, INT_T(FirmwareUpdate::COAPS)));
+        REQUIRE(fwu.set({8, 2}, INT_T(FirmwareUpdate::HTTP)));
+        REQUIRE(fwu.set({8, 3}, INT_T(FirmwareUpdate::HTTPS)));
+        REQUIRE(fwu.set({8, 4}, INT_T(FirmwareUpdate::COAP_TCP)));
+        REQUIRE(fwu.set({8, 5}, INT_T(FirmwareUpdate::COAP_TLS)));
+        REQUIRE_FALSE(fwu.set({8, 6}, INT_T(FirmwareUpdate::FW_UPD_PROTOCOL_MAX)));
 
+        REQUIRE(fwu.set(1, STRING_T("coap://localhost:5683/")));
+        REQUIRE(fwu.set(1, STRING_T("coaps://localhost:5683/")));
+        REQUIRE(fwu.set(1, STRING_T("http://localhost:5683/")));
+        REQUIRE(fwu.set(1, STRING_T("https://localhost:5683/")));
+        REQUIRE(fwu.set(1, STRING_T("coap+tcp://localhost:5683/")));
+        REQUIRE(fwu.set(1, STRING_T("coaps+tcp://localhost:5683/")));
+
+        REQUIRE_FALSE(fwu.set(1, STRING_T("coapss://localhost:5683/")));
+        fwu.remove({8, 1});
+        REQUIRE_FALSE(fwu.set(1, STRING_T("coaps://localhost:5683/")));
+    }
+
+    SECTION("isNewStateValid") {
+        REQUIRE(fwu.set(3, (INT_T)FirmwareUpdate::S_DOWNLOADING));
+        REQUIRE(fwu.set(3, (INT_T)FirmwareUpdate::S_DOWNLOADED));
+        REQUIRE(fwu.set(3, (INT_T)FirmwareUpdate::S_UPDATING));
+        REQUIRE(fwu.set(3, (INT_T)FirmwareUpdate::S_DOWNLOADED));
+        REQUIRE(fwu.set(3, (INT_T)FirmwareUpdate::S_UPDATING));
+        REQUIRE(fwu.set(3, (INT_T)FirmwareUpdate::S_IDLE));
+        REQUIRE_FALSE(fwu.set(3, (INT_T)FirmwareUpdate::STATE_MAX));
+        REQUIRE_FALSE(fwu.set(3, (INT_T)FirmwareUpdate::S_UPDATING));
+    }
 }

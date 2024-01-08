@@ -295,7 +295,7 @@ void FirmwareUpdate::resourcesInit() {
 	});
 	resource(UPDATE_RESULT_5)->set(INT_T(R_INITIAL));
 	resource(UPDATE_RESULT_5)->setDataVerifier((VERIFY_INT_T)[this](const INT_T& value) { 
-		if (R_INITIAL > value && value >= UPD_RES_MAX) return false;
+		if (R_INITIAL > value || value >= UPD_RES_MAX) return false;
 		#if RES_5_13
 		if (value == R_FW_UPD_DEFERRED) {
 			UINT_T deferPeriod;

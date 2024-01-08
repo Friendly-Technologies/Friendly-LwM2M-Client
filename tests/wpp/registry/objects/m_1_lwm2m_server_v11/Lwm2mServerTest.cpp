@@ -1,5 +1,5 @@
 #include "catch_amalgamated.hpp"
-#include "./../../../../../wpp/registry/objects/m_1_lwm2m_server_v11/Lwm2mServer.h"
+#include "m_1_lwm2m_server_v11/Lwm2mServer.h"
 
 using namespace wpp;
 
@@ -42,5 +42,8 @@ TEST_CASE("objectLwm2mServer", "[objectLwm2mServer]")
 
         serverMock.serverOperationNotifier(ResOp::TYPE::READ, {0, 0});
         serverMock.userOperationNotifier(ResOp::TYPE::WRITE, {10, 10});
+        EXECUTE_T exe;
+        serverMock.get(8, exe);
+        REQUIRE(exe(serverMock, 8, OPAQUE_T()));
     }
 }

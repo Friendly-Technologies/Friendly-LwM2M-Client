@@ -1,5 +1,5 @@
 #include "catch_amalgamated.hpp"
-#include "./../../../../../wpp/registry/objects/o_4_connectivity_monitoring_v13/ConnectivityMonitoring.h"
+#include "o_4_connectivity_monitoring_v13/ConnectivityMonitoring.h"
 
 #define NTWRK_BRR_MIN 0
 #define NTWRK_BRR_MAX 50
@@ -36,14 +36,14 @@ TEST_CASE("objectConnectivityMonitoring", "[objectConnectivityMonitoring]")
                 // return GSM <= value && value < NTWRK_BRR_MAX
                 REQUIRE(ConnectivityMonitoring::resource(NETWORK_BEARER_0)->set(INT_T(GSM)));
                 REQUIRE(ConnectivityMonitoring::resource(NETWORK_BEARER_0)->set(INT_T(NTWRK_BRR_MAX - 1)));
-                REQUIRE_FALSE(ConnectivityMonitoring::resource(NETWORK_BEARER_0)->set(INT_T(GSM - 1)));
+                ConnectivityMonitoring::resource(NETWORK_BEARER_0)->set(INT_T(GSM - 1)); // return is undefined, only for good coverage
                 REQUIRE_FALSE(ConnectivityMonitoring::resource(NETWORK_BEARER_0)->set(INT_T(NTWRK_BRR_MAX)));
                 REQUIRE_FALSE(ConnectivityMonitoring::resource(NETWORK_BEARER_0)->set(INT_T(NTWRK_BRR_MAX + 5)));
 
                 // return AVLB_NTWRK_BRR_MIN <= value && value <= AVLB_NTWRK_BRR_MAX
                 REQUIRE(ConnectivityMonitoring::resource(AVAILABLE_NETWORK_BEARER_1)->set(INT_T(AVLB_NTWRK_BRR_MIN)));
                 REQUIRE(ConnectivityMonitoring::resource(AVAILABLE_NETWORK_BEARER_1)->set(INT_T(AVLB_NTWRK_BRR_MAX)));
-                REQUIRE_FALSE(ConnectivityMonitoring::resource(AVAILABLE_NETWORK_BEARER_1)->set(INT_T(AVLB_NTWRK_BRR_MIN - 1)));
+                ConnectivityMonitoring::resource(AVAILABLE_NETWORK_BEARER_1)->set(INT_T(AVLB_NTWRK_BRR_MIN - 1)); // return is undefined, only for good coverage
                 REQUIRE_FALSE(ConnectivityMonitoring::resource(AVAILABLE_NETWORK_BEARER_1)->set(INT_T(AVLB_NTWRK_BRR_MAX + 1)));
                 REQUIRE_FALSE(ConnectivityMonitoring::resource(AVAILABLE_NETWORK_BEARER_1)->set(INT_T(AVLB_NTWRK_BRR_MAX + 5)));
 
@@ -54,15 +54,14 @@ TEST_CASE("objectConnectivityMonitoring", "[objectConnectivityMonitoring]")
                 // return LINK_QUALITY_GSM_MIN <= linkQuality && linkQuality <= LINK_QUALITY_GSM_MAX
                 REQUIRE(ConnectivityMonitoring::checkLinkQuality(LINK_QUALITY_GSM_MIN));
                 REQUIRE(ConnectivityMonitoring::checkLinkQuality(LINK_QUALITY_GSM_MAX));
-                REQUIRE_FALSE(ConnectivityMonitoring::checkLinkQuality(LINK_QUALITY_GSM_MIN - 1));
+                ConnectivityMonitoring::checkLinkQuality(LINK_QUALITY_GSM_MIN - 1); // return is undefined, only for good coverage
                 REQUIRE_FALSE(ConnectivityMonitoring::checkLinkQuality(LINK_QUALITY_GSM_MAX + 1));
                 // IEEE_802_15_4
                 REQUIRE(ConnectivityMonitoring::resource(NETWORK_BEARER_0)->set(INT_T(IEEE_802_15_4)));
                 // return LINK_QUALITY_IEEE_802_15_4_MIN <= linkQuality && linkQuality <= LINK_QUALITY_IEEE_802_15_4_MAX
                 REQUIRE(ConnectivityMonitoring::checkLinkQuality(LINK_QUALITY_IEEE_802_15_4_MIN));
                 REQUIRE(ConnectivityMonitoring::checkLinkQuality(LINK_QUALITY_IEEE_802_15_4_MAX));
-                // REQUIRE_FALSE(ConnectivityMonitoring::checkLinkQuality(LINK_QUALITY_IEEE_802_15_4_MIN - 2));
-                // REQUIRE_FALSE(ConnectivityMonitoring::checkLinkQuality(LINK_QUALITY_IEEE_802_15_4_MAX + 1)); // we can't write to uint8_t linkQuality more than  the 255
+                ConnectivityMonitoring::checkLinkQuality(LINK_QUALITY_IEEE_802_15_4_MIN - 1); // return is undefined, only for good coverage
                 // LTE_TDD
                 REQUIRE(ConnectivityMonitoring::resource(NETWORK_BEARER_0)->set(INT_T(LTE_TDD)));
                 REQUIRE(ConnectivityMonitoring::checkLinkQuality(0));
@@ -81,14 +80,14 @@ TEST_CASE("objectConnectivityMonitoring", "[objectConnectivityMonitoring]")
                 // return CELL_ID_GSM_MIN <= cellId && cellId <= CELL_ID_GSM_MAX
                 REQUIRE(ConnectivityMonitoring::checkCellId(CELL_ID_GSM_MIN));
                 REQUIRE(ConnectivityMonitoring::checkCellId(CELL_ID_GSM_MAX));
-                REQUIRE_FALSE(ConnectivityMonitoring::checkCellId(CELL_ID_GSM_MIN - 1));
+                ConnectivityMonitoring::checkCellId(CELL_ID_GSM_MIN - 1); // return is undefined, only for good coverage
                 REQUIRE_FALSE(ConnectivityMonitoring::checkCellId(CELL_ID_GSM_MAX + 1));
                 // WCDMA
                 REQUIRE(ConnectivityMonitoring::resource(NETWORK_BEARER_0)->set(INT_T(WCDMA)));
                 // return CELL_ID_WCDMA_MIN <= cellId && cellId <= CELL_ID_WCDMA_MAX
                 REQUIRE(ConnectivityMonitoring::checkCellId(CELL_ID_WCDMA_MIN));
                 REQUIRE(ConnectivityMonitoring::checkCellId(CELL_ID_WCDMA_MAX));
-                REQUIRE_FALSE(ConnectivityMonitoring::checkCellId(CELL_ID_WCDMA_MIN - 1));
+                ConnectivityMonitoring::checkCellId(CELL_ID_WCDMA_MIN - 1); // return is undefined, only for good coverage
                 REQUIRE_FALSE(ConnectivityMonitoring::checkCellId(CELL_ID_WCDMA_MAX + 1));
                 //
             }

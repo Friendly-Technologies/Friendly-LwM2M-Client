@@ -32,7 +32,7 @@ WppClient::~WppClient() {
 bool WppClient::create(const ClientInfo &info, WppConnection &connection, time_t maxSleepTime) {
 	if (isCreated()) return true;
 	
-	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Creating WppClient instance with info: endpoint->%s, msisdn->%s, altPath->%s", info.endpointName.c_str(), info.msisdn.c_str(), info.altPath.c_str());
+	WPP_LOGD(TAG_WPP_CLIENT, "Creating WppClient instance with info: endpoint->%s, msisdn->%s, altPath->%s", info.endpointName.c_str(), info.msisdn.c_str(), info.altPath.c_str());
 	_client = new WppClient(connection, maxSleepTime);
 	bool result = _client->lwm2mConfigure(info.endpointName, info.msisdn, info.altPath);
 	if (!result) {
@@ -113,9 +113,9 @@ time_t WppClient::loop() {
 
 	// Handles wakaama core state
 	int result = lwm2m_step(_lwm2m_context, &sleepTimeSec);
-	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Handling lwm2m internal state: result -> %d, state -> %d", result, getState());
+	WPP_LOGD(TAG_WPP_CLIENT, "Handling lwm2m internal state: result -> %d, state -> %d", result, getState());
 	if (result) {
-		WPP_LOGW_ARG(TAG_WPP_CLIENT, "LWM2M core step failed, error code: %d", result);
+		WPP_LOGW(TAG_WPP_CLIENT, "LWM2M core step failed, error code: %d", result);
 		if (getState() == STATE_BOOTSTRAPPING || getState() == STATE_BOOTSTRAP_REQUIRED) {
 			WPP_LOGW(TAG_WPP_CLIENT, "Trying to restore security and server objects");
 			registry().object(OBJ_ID::LWM2M_SECURITY)->restore();
@@ -128,12 +128,12 @@ time_t WppClient::loop() {
 }
 
 bool WppClient::updateServerRegistration(INT_T serverId, bool withObjects) {
-	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Update registration to server: ID -> %d, withObjects -> %d", serverId, withObjects);
+	WPP_LOGD(TAG_WPP_CLIENT, "Update registration to server: ID -> %d, withObjects -> %d", serverId, withObjects);
 	return !lwm2m_update_registration(_lwm2m_context, serverId, withObjects);
 }
 
 bool WppClient::updateServerRegistration(bool withObjects) {
-	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Update registration to each server: withObjects -> %d", withObjects);
+	WPP_LOGD(TAG_WPP_CLIENT, "Update registration to each server: withObjects -> %d", withObjects);
 	return !lwm2m_update_registration(_lwm2m_context, 0, withObjects);
 }
 

@@ -19,11 +19,13 @@ add_compile_options(
     -Wshadow
     -Wswitch-default
     -Wwrite-strings
-    -pedantic
-    # Reduce noise: Unused parameters are common in this ifdef-littered code-base, but of no danger
+    # Unused parameters are common in this ifdef-littered code-base, but of no danger
     -Wno-unused-parameter
-    # Reduce noise: Too many false positives
+    # Too many false positives
     -Wno-uninitialized
+    # Allow usage ##__VA_ARGS__ in macros
+    -Wno-gnu-zero-variadic-macro-arguments
+    -pedantic
     # Turn (most) warnings into errors
     -Werror
     # Disabled because of existing, non-trivially fixable code

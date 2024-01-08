@@ -61,18 +61,18 @@ template<typename T>
 Instance* ObjectSpec<T>::createInstance(ID_T instanceId) {
 	// If object is single and instance has already exist, then we can not create new one and return NULL
 	if (getObjectInfo().isSingle == IS_SINGLE::SINGLE && instanceCnt() != 0) {
-		WPP_LOGW_ARG(TAG_WPP_OBJ, "Not possible to create instance %d:%d, object is single", getObjectID(), instanceId);
+		WPP_LOGW(TAG_WPP_OBJ, "Not possible to create instance %d:%d, object is single", getObjectID(), instanceId);
 		return NULL;
 	}
 	// If instanceId == ID_T_MAX_VAL, it is mean that user do not want to set its own identifier, so we will choose ours
 	if (instanceId == ID_T_MAX_VAL) instanceId = getFirstAvailableInstanceID();
 	// If ID has been already occupied, then we can not create new instance with such ID and returns NULL
 	if (instanceId == ID_T_MAX_VAL || isInstanceExist(instanceId)) {
-		WPP_LOGW_ARG(TAG_WPP_OBJ, "Not possible to create instance %d:%d, ID has been already occupied", getObjectID(), instanceId);
+		WPP_LOGW(TAG_WPP_OBJ, "Not possible to create instance %d:%d, ID has been already occupied", getObjectID(), instanceId);
 		return NULL;
 	}
 
-	WPP_LOGD_ARG(TAG_WPP_OBJ, "Creating instance %d:%d", getObjectID(), instanceId);
+	WPP_LOGD(TAG_WPP_OBJ, "Creating instance %d:%d", getObjectID(), instanceId);
 	// Creation and registration new instance in core object
 	 lwm2m_list_t *element = new lwm2m_list_t;
 	 if (NULL == element) return NULL;

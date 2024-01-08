@@ -24,12 +24,12 @@ WppConnection::~WppConnection() {
 bool WppConnection::addPacketToQueue(const Packet &packet) {
 	Packet tmpPkt = packet;
 
-	WPP_LOGD_ARG(TAG_WPP_CONN, "Retrieved new packet from server: session->0x%x, length->%d", packet.session, packet.length);
+	WPP_LOGD(TAG_WPP_CONN, "Retrieved new packet from server: session->0x%x, length->%d", packet.session, packet.length);
 	tmpPkt.buffer = new uint8_t[packet.length];
 	memcpy(tmpPkt.buffer, packet.buffer, packet.length);
 
 	if (!packets.push(&tmpPkt)) {
-		WPP_LOGE_ARG(TAG_WPP_CONN, "Error ocured during add packet to queue: queue size -> %d, max queue size -> %d", getPacketQueueSize(), WPP_CONN_I_PACKETS_QUEUE_SIZE);
+		WPP_LOGE(TAG_WPP_CONN, "Error ocured during add packet to queue: queue size -> %d, max queue size -> %d", getPacketQueueSize(), WPP_CONN_I_PACKETS_QUEUE_SIZE);
 		delete [] tmpPkt.buffer;
 		return false;
 	}
@@ -42,7 +42,7 @@ uint8_t WppConnection::getPacketQueueSize() {
 }
 
 void WppConnection::clearPacketQueue() {
-	WPP_LOGD_ARG(TAG_WPP_CONN, "Clearing queue: queue size -> %d", getPacketQueueSize());
+	WPP_LOGD(TAG_WPP_CONN, "Clearing queue: queue size -> %d", getPacketQueueSize());
 	while (packets.size()) {
 		Packet *pkt = packets.front();
 		if (pkt && pkt->buffer) {
@@ -53,7 +53,7 @@ void WppConnection::clearPacketQueue() {
 }
 
 bool WppConnection::setDataBlockSize(uint16_t size) {
-	WPP_LOGD_ARG(TAG_WPP_CONN, "New data block size -> %d", size);
+	WPP_LOGD(TAG_WPP_CONN, "New data block size -> %d", size);
 	return lwm2m_set_coap_block_size(size);
 }
 
@@ -62,7 +62,7 @@ uint16_t WppConnection::getDataBlockSize()  {
 }
 
 void WppConnection::handlePacketsInQueue(WppClient &client) {
-	WPP_LOGD_ARG(TAG_WPP_CONN, "Handling packets in queue: packets count -> %d", getPacketQueueSize());
+	WPP_LOGD(TAG_WPP_CONN, "Handling packets in queue: packets count -> %d", getPacketQueueSize());
 	while (packets.size()) {
 		Packet *pkt = packets.front();
 		if (pkt && pkt->buffer) {
@@ -83,18 +83,18 @@ extern "C" {
 		}
 
 		wpp::WppClient *client = (wpp::WppClient *)userData;
-		WPP_LOGD_ARG(TAG_WPP_CONN, "Connecting to server: security obj ID -> %d", secObjInstID);
+		WPP_LOGD(TAG_WPP_CONN, "Connecting to server: security obj ID -> %d", secObjInstID);
 		wpp::Lwm2mSecurity *security = client->registry().lwm2mSecurity().instanceSpec(secObjInstID);
 		if (!security) {
-			WPP_LOGE_ARG(TAG_WPP_CONN, "Lwm2mSecurity obj with ID -> %d not found", secObjInstID);
+			WPP_LOGE(TAG_WPP_CONN, "Lwm2mSecurity obj with ID -> %d not found", secObjInstID);
 			return NULL;
 		}
 
 		wpp::WppConnection::SESSION_T session = client->connection().connect(*security);
 		if (!session) {
-			WPP_LOGE_ARG(TAG_WPP_CONN, "Not posible connect to server: security obj ID-> %d, session -> 0x%x", secObjInstID, session);
+			WPP_LOGE(TAG_WPP_CONN, "Not posible connect to server: security obj ID-> %d, session -> 0x%x", secObjInstID, session);
 		} else {
-			WPP_LOGI_ARG(TAG_WPP_CONN, "Connected to server: security obj ID-> %d, session -> 0x%x", secObjInstID, session);
+			WPP_LOGI(TAG_WPP_CONN, "Connected to server: security obj ID-> %d, session -> 0x%x", secObjInstID, session);
 		}
 
 		return session;
@@ -107,7 +107,7 @@ extern "C" {
 		}
 
 		wpp::WppClient *client = (wpp::WppClient *)userData;
-		WPP_LOGI_ARG(TAG_WPP_CONN, "Close connection: session ID -> 0x%x", sessionH);
+		WPP_LOGI(TAG_WPP_CONN, "Close connection: session ID -> 0x%x", sessionH);
 		client->connection().disconnect(sessionH);
 	}
 
@@ -118,9 +118,9 @@ extern "C" {
 		}
 
 		wpp::WppClient *client = (wpp::WppClient *)userData;
-		WPP_LOGD_ARG(TAG_WPP_CONN, "Sending buffer to server: session -> 0x%x, size -> %d", sessionH, length);
+		WPP_LOGD(TAG_WPP_CONN, "Sending buffer to server: session -> 0x%x, size -> %d", sessionH, length);
 		bool result = client->connection().sendPacket({sessionH, length, buffer});
-		WPP_LOGD_ARG(TAG_WPP_CONN, "Sending buffer to server: session -> 0x%x, result -> %d", sessionH, result);
+		WPP_LOGD(TAG_WPP_CONN, "Sending buffer to server: session -> 0x%x, result -> %d", sessionH, result);
 		return result? COAP_NO_ERROR : COAP_500_INTERNAL_SERVER_ERROR;
 	}
 

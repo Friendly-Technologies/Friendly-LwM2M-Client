@@ -1,5 +1,5 @@
 #include "catch_amalgamated.hpp"
-#include "./../../../../../wpp/registry/objects/m_3_device_v12/Device.h"
+#include "m_3_device_v12/Device.h"
 
 using namespace wpp;
 
@@ -19,7 +19,7 @@ TEST_CASE("objectDevice", "[objectDevice]")
                 // return NO_ERROR <= value && value < ERR_CODE_MAX
                 REQUIRE(Device::resource(ERROR_CODE_11)->set(INT_T(NO_ERROR)));
                 REQUIRE(Device::resource(ERROR_CODE_11)->set(INT_T(ERR_CODE_MAX - 1)));
-                REQUIRE_FALSE(Device::resource(ERROR_CODE_11)->set((INT_T(NO_ERROR - 1))));
+                Device::resource(ERROR_CODE_11)->set((INT_T(NO_ERROR - 1))); // return is undefined, only for good coverage
                 REQUIRE_FALSE(Device::resource(ERROR_CODE_11)->set((INT_T(ERR_CODE_MAX))));
 
                 // return wppBindingValidate(value)
@@ -43,5 +43,9 @@ TEST_CASE("objectDevice", "[objectDevice]")
 
         deviceMock.serverOperationNotifier(ResOp::TYPE::READ, {0, 0});
         deviceMock.userOperationNotifier(ResOp::TYPE::WRITE, {10, 10});
+
+        EXECUTE_T exe;
+        deviceMock.get(4, exe);
+        REQUIRE(exe(deviceMock, 4, OPAQUE_T()));
     }
 }

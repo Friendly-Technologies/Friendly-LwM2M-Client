@@ -40,12 +40,12 @@ WppRegistry::~WppRegistry() {
 }
 
 bool WppRegistry::registerObj(Object &object) {
-	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Register object with id: %d", object.getObjectID());
+	WPP_LOGD(TAG_WPP_CLIENT, "Register object with id: %d", object.getObjectID());
 	return !lwm2m_add_object(&_context, &object.getLwm2mObject());
 }
 
 bool WppRegistry::deregisterObj(Object &object) {
-	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Deregister object with id: %d", object.getObjectID());
+	WPP_LOGD(TAG_WPP_CLIENT, "Deregister object with id: %d", object.getObjectID());
 	return !lwm2m_remove_object(&_context, object.getLwm2mObject().objID);
 }
 

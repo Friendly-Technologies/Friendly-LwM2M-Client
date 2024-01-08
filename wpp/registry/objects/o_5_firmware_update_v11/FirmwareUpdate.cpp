@@ -72,7 +72,7 @@ void FirmwareUpdate::setDefaultState() {
 
 void FirmwareUpdate::serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
 	/* --------------- Code_cpp block 6 start --------------- */
-	WPP_LOGD_ARG(TAG, "Server operation -> type: %d, resId: %d, resInstId: %d", type, resId.resId, resId.resInstId);
+	WPP_LOGD(TAG, "Server operation -> type: %d, resId: %d, resInstId: %d", type, resId.resId, resId.resInstId);
 	switch (type) {
 	case ResOp::WRITE_UPD:
 	case ResOp::WRITE_REPLACE_RES: {
@@ -81,7 +81,7 @@ void FirmwareUpdate::serverOperationNotifier(ResOp::TYPE type, const ResLink &re
 			OPAQUE_T *pkg;
 			resource(PACKAGE_0)->ptr(&pkg);
 			if (pkg->empty()) {
-				WPP_LOGD_ARG(TAG, "Server reset state machine through PACKAGE_0", resId.resId, resId.resInstId);
+				WPP_LOGD(TAG, "Server reset state machine through PACKAGE_0", resId.resId, resId.resInstId);
 				resetStateMachine();
 				eventNotify(*this, E_RESET);
 			} else {
@@ -97,7 +97,7 @@ void FirmwareUpdate::serverOperationNotifier(ResOp::TYPE type, const ResLink &re
 			STRING_T pkgUri;
 			resource(PACKAGE_URI_1)->get(pkgUri);
 			if (pkgUri.empty()) {
-				WPP_LOGD_ARG(TAG, "Server reset state machine through PACKAGE_URI_1", resId.resId, resId.resInstId);
+				WPP_LOGD(TAG, "Server reset state machine through PACKAGE_URI_1", resId.resId, resId.resInstId);
 				resetStateMachine();
 				eventNotify(*this, E_RESET);
 			} else {
@@ -144,7 +144,7 @@ void FirmwareUpdate::serverOperationNotifier(ResOp::TYPE type, const ResLink &re
 
 void FirmwareUpdate::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
 	/* --------------- Code_cpp block 8 start --------------- */
-	WPP_LOGD_ARG(TAG, "User operation -> type: %d, resId: %d, resInstId: %d", type, resId.resId, resId.resInstId);
+	WPP_LOGD(TAG, "User operation -> type: %d, resId: %d, resInstId: %d", type, resId.resId, resId.resInstId);
 	switch (type) {
 	case ResOp::WRITE_UPD: {
 		switch (resId.resId) {

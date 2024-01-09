@@ -172,12 +172,21 @@ void Lwm2mServer::resourcesInit() {
 	resource(BINDING_7)->set(STRING_T(""));
 	resource(BINDING_7)->setDataVerifier((VERIFY_STRING_T)[](const STRING_T& value) { return wppBindingValidate(value); });
 
-	// TODO: Registration Update (Res id 8) must be implemented by wakaama core or WppClient
-	resource(REGISTRATION_UPDATE_TRIGGER_8)->set((EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
+	// TODO: Registration Update (Res id 8) must be implemented by wakaama core
+	resource(REGISTRATION_UPDATE_TRIGGER_8)->set((EXECUTE_T)[this](Instance& inst, ID_T resId, const OPAQUE_T& data) {
+		INT_T serverId;
+		resource(SHORT_SERVER_ID_0)->get(serverId);
+		WPP_LOGI(TAG, "Registration Update Trigger: serverId -> %d", serverId);
+		lwm2m_update_registration(&getContext(), serverId, true);
+		return true; 
+	});
 
 	// TODO: Bootstrap Request (Res id 9) must be implemented by wakaama core or WppClient
 	#if RES_1_9
-	resource(BOOTSTRAP_REQUEST_TRIGGER_9)->set((EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
+	resource(BOOTSTRAP_REQUEST_TRIGGER_9)->set((EXECUTE_T)[this](Instance& inst, ID_T resId, const OPAQUE_T& data) { 
+		getContext().state = STATE_BOOTSTRAP_REQUIRED;
+		return true; 
+	});
 	#endif
 
 	#if RES_1_10    

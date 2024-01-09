@@ -1,9 +1,9 @@
-option(LWM2M_BOOTSTRAP "Enable LWM2M Bootstrap support in a LWM2M Client" OFF)
+option(LWM2M_BOOTSTRAP "Enable LWM2M Bootstrap support in a LWM2M Client" ON)
 if (LWM2M_BOOTSTRAP)
     set(WPP_DEFINITIONS ${WPP_DEFINITIONS} LWM2M_BOOTSTRAP)
 endif()
 
-option(LWM2M_SUPPORT_SENML_JSON "Enable SenML JSON payload support" ON)
+option(LWM2M_SUPPORT_SENML_JSON "Enable SenML JSON payload support" OFF)
 if (LWM2M_SUPPORT_SENML_JSON)
     set(WPP_DEFINITIONS ${WPP_DEFINITIONS} LWM2M_SUPPORT_SENML_JSON)
 endif()

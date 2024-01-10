@@ -38,6 +38,7 @@ WppTaskQueue::task_id_t WppTaskQueue::addTask(ctx_t ctx, time_t delaySec, task_t
 
 	_instance._tasks.push_back(newTask);
 	_taskQueueGuard.unlock();
+	// TODO: It is dangerous to return pointer to heap memory as unique id becouse in the future it can be reused by other task.
 	return newTask;
 }
 
@@ -57,6 +58,7 @@ WppTaskQueue::task_id_t WppTaskQueue::addTaskWithCopy(const ctx_t ctx, size_t si
 
 	_instance._tasks.push_back(newTask);
 	_taskQueueGuard.unlock();
+	// TODO: It is dangerous to return pointer to heap memory as unique id becouse in the future it can be reused by other task.
 	return newTask;
 }
 

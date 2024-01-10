@@ -25,6 +25,7 @@ namespace wpp {
 Lwm2mServer::Lwm2mServer(lwm2m_context_t &context, const OBJ_LINK_T &id): Instance(context, id) {
 
 	/* --------------- Code_cpp block 1 start --------------- */
+	_requestBootstrapTaskId = WPP_ERR_TASK_ID;
 	/* --------------- Code_cpp block 1 end --------------- */
 
 	resourcesCreate();
@@ -36,6 +37,7 @@ Lwm2mServer::Lwm2mServer(lwm2m_context_t &context, const OBJ_LINK_T &id): Instan
 
 Lwm2mServer::~Lwm2mServer() {
 	/* --------------- Code_cpp block 3 start --------------- */
+	WppTaskQueue::requestToRemoveTask(_requestBootstrapTaskId);
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
@@ -148,7 +150,8 @@ void Lwm2mServer::resourcesInit() {
 	resource(SHORT_SERVER_ID_0)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return SINGLE_INSTANCE_ID < value && value < ID_T_MAX_VAL; });
 
 	resource(LIFETIME_1)->set(INT_T(0));
-
+	//TODO: After changed lifetime, the registration must be updated with lt parameter
+	//TODO: Different life time for diffrent servers for now alservers is update registration at the same time
 	#if RES_1_2    
 	resource(DEFAULT_MINIMUM_PERIOD_2)->set(INT_T(0));                                                                                                                                                                                                             
 	#endif    
@@ -183,8 +186,16 @@ void Lwm2mServer::resourcesInit() {
 
 	// TODO: Bootstrap Request (Res id 9) must be implemented by wakaama core or WppClient
 	#if RES_1_9
-	resource(BOOTSTRAP_REQUEST_TRIGGER_9)->set((EXECUTE_T)[this](Instance& inst, ID_T resId, const OPAQUE_T& data) { 
-		getContext().state = STATE_BOOTSTRAP_REQUIRED;
+	resource(BOOTSTRAP_REQUEST_TRIGGER_9)->set((EXECUTE_T)[this](Instance& inst, ID_T resId, const OPAQUE_T& data) {
+		if (!WppTaskQueue::isTaskExist(_requestBootstrapTaskId)) {
+			WPP_LOGI(TAG, "Bootstrap Request Trigger: Bootstrap request is started");
+			_requestBootstrapTaskId = WppTaskQueue::addTask(WPP_TASK_DEF_DELAY_S, [this](WppClient &client, WppTaskQueue::ctx_t ctx) -> bool {
+				getContext().state = STATE_BOOTSTRAP_REQUIRED;
+				return true;
+			});
+		} else {
+			WPP_LOGI(TAG, "Bootstrap Request Trigger: Bootstrap request is already in progress");
+		}
 		return true; 
 	});
 	#endif

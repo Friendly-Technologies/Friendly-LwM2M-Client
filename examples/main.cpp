@@ -35,6 +35,8 @@ void socketPolling(Connection *connection, DeviceImpl *device) {
 	}
 }
 
+// TODO: No payload in response for resource /3/0/0 in TLV format
+// TODO: Coap post not working correctly for write
 int main() {
 	cout << endl << "---- Creating requiered components ----" << endl;
 	Connection connection("56830", AF_INET);

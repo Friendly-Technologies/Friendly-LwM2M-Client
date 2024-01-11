@@ -35,6 +35,12 @@ TEST_CASE("objectLwm2mAccessControl", "[objectLwm2mAccessControl]")
                 REQUIRE_FALSE(Lwm2mAccessControl::resource(OBJECT_INSTANCE_ID_1)->set(INT_T(AC_OBJ_INST_ID_MIN - 1)));
                 REQUIRE_FALSE(Lwm2mAccessControl::resource(OBJECT_INSTANCE_ID_1)->set(INT_T(AC_OBJ_INST_ID_MAX + 1)));
 
+                #if RES_2_2
+                REQUIRE(resource(ACL_2)->set(INT_T(0)));
+                REQUIRE(resource(ACL_2)->set(INT_T(3)));
+                REQUIRE_FALSE(resource(ACL_2)->set(INT_T(200)));
+                #endif
+
                 // return AC_OWNER_MIN <= value && value <= AC_OWNER_MAX
                 REQUIRE(Lwm2mAccessControl::resource(ACCESS_CONTROL_OWNER_3)->set(INT_T(AC_OWNER_MIN)));
                 REQUIRE(Lwm2mAccessControl::resource(ACCESS_CONTROL_OWNER_3)->set(INT_T(AC_OWNER_MAX)));

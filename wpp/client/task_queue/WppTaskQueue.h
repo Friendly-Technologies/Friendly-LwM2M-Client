@@ -19,7 +19,7 @@
 #define WPP_TASK_MAX_DELAY_S  (time_t)(0xFFFFFFF)
 
 #define WPP_TASK_DEF_CTX	  NULL
-#define WPP_ERR_TASK_ID 	  NULL
+#define WPP_ERR_TASK_ID 	  0
 
 namespace wpp {
 
@@ -49,7 +49,7 @@ class WppClient;
  */
 class WppTaskQueue {
 public:
-	using task_id_t = void *;
+	using task_id_t = uint32_t;
 	using ctx_t = void *;
 	/**
 	 * Keep in mind that while std::function itself is always copy able,
@@ -70,6 +70,7 @@ private:
 	};
 
 	struct TaskInfo {
+		task_id_t id;
 		task_t task;
 		time_t delaySec;
 		time_t nextCallTime;
@@ -203,19 +204,28 @@ public:
 
 private:
 	/**
-	 * Deletes from list task with state SHOULD_BE_DELETED.
+	 * @brief Deletes from list task with state SHOULD_BE_DELETED.
 	 */
 	void deleteFinishedTasks();
 
 	/**
-	 * Returns minimum delay in sec to the next task executions.
+	 * @brief Returns minimum delay in sec to the next task executions.
 	 */
 	time_t updateNextCallTimeForTasks();
+
+	/**
+	 * @brief Returns next task id.
+	 */
+	task_id_t getNextTaskId();
 
 private:
 	static WppGuard _handleTaskGuard;
 	static WppGuard _taskQueueGuard;
 	static WppTaskQueue	_instance;
+	/**
+	 * @brief The next task id.
+	 */
+	task_id_t _nextTaskId;
 	/**
 	 * @brief Adding, removing and moving the elements within the list or
 	 * across several lists does not invalidate the iterators or

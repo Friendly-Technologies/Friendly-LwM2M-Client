@@ -9,7 +9,7 @@
 #ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
 
 /* --------------- Config block 0 start --------------- */
-#define RES_2_2 0
+#define RES_2_2 1
 
 /* --------------- Config block 0 end --------------- */
 

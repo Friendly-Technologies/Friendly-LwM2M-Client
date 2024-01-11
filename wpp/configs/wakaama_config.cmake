@@ -1,4 +1,4 @@
-option(LWM2M_BOOTSTRAP "Enable LWM2M Bootstrap support in a LWM2M Client" ON)
+option(LWM2M_BOOTSTRAP "Enable LWM2M Bootstrap support in a LWM2M Client" OFF)
 if (LWM2M_BOOTSTRAP)
     set(WPP_DEFINITIONS ${WPP_DEFINITIONS} LWM2M_BOOTSTRAP)
 endif()

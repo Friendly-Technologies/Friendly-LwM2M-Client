@@ -150,8 +150,7 @@ void Lwm2mServer::resourcesInit() {
 	resource(SHORT_SERVER_ID_0)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return SINGLE_INSTANCE_ID < value && value < ID_T_MAX_VAL; });
 
 	resource(LIFETIME_1)->set(INT_T(0));
-	//TODO: After changed lifetime, the registration must be updated with lt parameter
-	//TODO: Different life time for diffrent servers for now alservers is update registration at the same time
+
 	#if RES_1_2    
 	resource(DEFAULT_MINIMUM_PERIOD_2)->set(INT_T(0));                                                                                                                                                                                                             
 	#endif    

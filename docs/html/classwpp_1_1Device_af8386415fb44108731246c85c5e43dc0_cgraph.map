@@ -1,0 +1,6 @@
+<map id="wpp::Device::setDefaultState" name="wpp::Device::setDefaultState">
+<area shape="rect" id="node1" title="This method must be implemented by derived class. Reset all resources values and internal state to de..." alt="" coords="5,31,217,57"/>
+<area shape="rect" id="node2" href="$classwpp_1_1WppTaskQueue.html#afc7406199dfd9e11e3c62057326dfcb9" title="This function does not immediately delete the task, it only marks it as one that should be deleted at..." alt="" coords="265,23,433,65"/>
+<area shape="rect" id="node3" href="$classWppGuard.html#ae163e2a1fd7c7eb27ad53c421aa95d1d" title="Locks the guard object." alt="" coords="489,5,615,32"/>
+<area shape="rect" id="node4" href="$classWppGuard.html#a2777fbb91e81342ad7d6e3c6eaf2cddf" title="Unlocks the guard object." alt="" coords="481,56,623,83"/>
+</map>

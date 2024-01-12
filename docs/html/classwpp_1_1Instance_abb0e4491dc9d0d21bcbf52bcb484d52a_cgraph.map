@@ -1,0 +1,5 @@
+<map id="wpp::Instance::writeAsServer" name="wpp::Instance::writeAsServer">
+<area shape="rect" id="node1" title=" " alt="" coords="5,46,216,73"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Instance.html#a7502043c4c83e607a4ebb8a7367aa9c2" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="264,5,489,47"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Instance.html#aae439fd375128c09e13d2280096fd45f" title="This method must be implemented by derived class. Reset all resources values and internal state to de..." alt="" coords="283,71,471,112"/>
+</map>

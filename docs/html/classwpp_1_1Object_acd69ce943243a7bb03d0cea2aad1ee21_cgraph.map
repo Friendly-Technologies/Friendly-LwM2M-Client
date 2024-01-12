@@ -1,0 +1,11 @@
+<map id="wpp::Object::serverDiscover_clb" name="wpp::Object::serverDiscover_clb">
+<area shape="rect" id="node1" title="The discover callback function for the Lwm2m core." alt="" coords="5,155,236,182"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Instance.html#a47ef09eb0578bc1b4e10f6cd96fee218" title=" " alt="" coords="291,64,482,105"/>
+<area shape="rect" id="node6" href="$classwpp_1_1Object.html#a62b52b04e4aae34b0d04cbc26a5e9c69" title="Gets the object ID." alt="" coords="295,130,479,157"/>
+<area shape="rect" id="node7" href="$classwpp_1_1Object.html#a30a224b64f45197ec7d8d1bc17aa94e0" title="Gets an instance of the object." alt="" coords="305,181,468,207"/>
+<area shape="rect" id="node9" href="$classwpp_1_1Object.html#a5cfae90383e67e4125105c0755ee1820" title="Checks if an instance exists." alt="" coords="284,231,489,258"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Instance.html#a7873bcb3f20b4eae620f2531082d62e3" title="This method return list with resources that has been instantiated. If resources does not exist then r..." alt="" coords="541,5,759,47"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Instance.html#a0f3d2fe16a6f904517fb0ccb093abaea" title="This method return iterator for resource if it exists. If resources does not exist then return empty ..." alt="" coords="562,71,738,98"/>
+<area shape="rect" id="node5" href="$classwpp_1_1Instance.html#a7502043c4c83e607a4ebb8a7367aa9c2" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="537,123,763,164"/>
+<area shape="rect" id="node8" href="$classwpp_1_1Object.html#aee04ebf1209edf84ca7c08c70bbcb879" title="Gets the iterator to the instance." alt="" coords="563,210,737,237"/>
+</map>

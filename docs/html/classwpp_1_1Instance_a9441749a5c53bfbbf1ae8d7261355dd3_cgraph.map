@@ -1,0 +1,8 @@
+<map id="wpp::Instance::remove" name="wpp::Instance::remove">
+<area shape="rect" id="node1" title="Remove resource instance if resource is multiple and instance exists, if the resource is SINGLE or it..." alt="" coords="5,89,176,116"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Instance.html#a06a66da0f928586269d41c3ba13a7407" title="Notify server about resource value change." alt="" coords="231,23,429,65"/>
+<area shape="rect" id="node5" href="$classwpp_1_1Instance.html#a0f3d2fe16a6f904517fb0ccb093abaea" title="This method return iterator for resource if it exists. If resources does not exist then return empty ..." alt="" coords="242,89,418,116"/>
+<area shape="rect" id="node6" href="$classwpp_1_1Instance.html#a7051f73d34d93f0fa9299349b82d9492" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="224,141,436,182"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Instance.html#abe793eaf4ed798fd8c6462d97ba6823e" title=" " alt="" coords="484,5,695,32"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Instance.html#a20fc277ffa400f5cd4d76cd0b97d4f7a" title=" " alt="" coords="491,56,688,83"/>
+</map>

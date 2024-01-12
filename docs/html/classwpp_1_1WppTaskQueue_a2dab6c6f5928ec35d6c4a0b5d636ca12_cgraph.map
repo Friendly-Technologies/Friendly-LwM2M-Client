@@ -1,0 +1,6 @@
+<map id="wpp::WppTaskQueue::handleEachTask" name="wpp::WppTaskQueue::handleEachTask">
+<area shape="rect" id="node1" title="Execute each task in the queue and delete it from queue if task returns false or task state is SHOULD..." alt="" coords="5,49,171,90"/>
+<area shape="rect" id="node2" href="$classwpp_1_1WppPlatform.html#a7741918d2fe42ef9c2fcbfe9f91058a2" title="Returns the number of seconds elapsed since a specific origin." alt="" coords="219,5,423,32"/>
+<area shape="rect" id="node3" href="$classWppGuard.html#ae163e2a1fd7c7eb27ad53c421aa95d1d" title="Locks the guard object." alt="" coords="258,56,383,83"/>
+<area shape="rect" id="node4" href="$classWppGuard.html#a2777fbb91e81342ad7d6e3c6eaf2cddf" title="Unlocks the guard object." alt="" coords="250,107,391,133"/>
+</map>

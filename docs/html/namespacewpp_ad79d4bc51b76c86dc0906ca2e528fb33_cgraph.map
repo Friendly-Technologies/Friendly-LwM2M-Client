@@ -1,0 +1,5 @@
+<map id="wpp::lwm2m_buffer_send" name="wpp::lwm2m_buffer_send">
+<area shape="rect" id="node1" title=" " alt="" coords="5,35,195,61"/>
+<area shape="rect" id="node2" href="$classwpp_1_1WppClient.html#ab058f0a0d20678d37826c05155a80aad" title="Gets the WppConnection associated with the WppClient." alt="" coords="243,5,445,32"/>
+<area shape="rect" id="node3" href="$classwpp_1_1WppConnection.html#a2df21f5b981c2d72e6f7cec909f20fda" title="Sends a packet over the connection." alt="" coords="265,57,423,98"/>
+</map>

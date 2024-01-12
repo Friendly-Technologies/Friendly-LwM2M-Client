@@ -1,0 +1,6 @@
+<map id="wpp::Instance::discoverAsServer" name="wpp::Instance::discoverAsServer">
+<area shape="rect" id="node1" title=" " alt="" coords="5,64,196,105"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Instance.html#a7873bcb3f20b4eae620f2531082d62e3" title="This method return list with resources that has been instantiated. If resources does not exist then r..." alt="" coords="247,5,466,47"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Instance.html#a0f3d2fe16a6f904517fb0ccb093abaea" title="This method return iterator for resource if it exists. If resources does not exist then return empty ..." alt="" coords="269,71,445,98"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Instance.html#a7502043c4c83e607a4ebb8a7367aa9c2" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="244,123,469,164"/>
+</map>

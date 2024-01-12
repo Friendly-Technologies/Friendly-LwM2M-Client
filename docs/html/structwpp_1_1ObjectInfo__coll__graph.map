@@ -1,0 +1,6 @@
+<map id="wpp::ObjectInfo" name="wpp::ObjectInfo">
+<area shape="rect" id="node1" title="The ObjectInfo struct represents information about an object in the Wakaama data model." alt="" coords="140,292,264,428"/>
+<area shape="rect" id="node2" href="$structwpp_1_1Version.html" title=" " alt="" coords="5,64,111,156"/>
+<area shape="rect" id="node3" href="$structwpp_1_1InstOp.html" title=" " alt="" coords="135,27,269,193"/>
+<area shape="rect" id="node4" href="$structwpp_1_1ResOp.html" title="The ResOp struct represents the operations that can be performed on a resource." alt="" coords="293,5,426,215"/>
+</map>

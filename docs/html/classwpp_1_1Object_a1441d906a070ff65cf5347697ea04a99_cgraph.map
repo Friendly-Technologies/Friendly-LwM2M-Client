@@ -1,0 +1,15 @@
+<map id="wpp::Object::serverCreate_clb" name="wpp::Object::serverCreate_clb">
+<area shape="rect" id="node1" title="The create callback function for the Lwm2m core." alt="" coords="5,115,223,141"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Object.html#a2905bb68695e421c76ed3e0740bb4089" title="Creates an instance of the object." alt="" coords="278,5,481,32"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Object.html#a62b52b04e4aae34b0d04cbc26a5e9c69" title="Gets the object ID." alt="" coords="817,199,1001,225"/>
+<area shape="rect" id="node4" href="$classwpp_1_1ObjSubject.html#ad934f7b668f4b67132b48b8a6448eb7b" title="Notifies observers about object operations." alt="" coords="543,107,741,149"/>
+<area shape="rect" id="node5" href="$classwpp_1_1Object.html#a140b26495a6c878ac24a7cdc82bdf0cd" title="The delete callback function for the Lwm2m core." alt="" coords="271,173,488,200"/>
+<area shape="rect" id="node9" href="$classwpp_1_1Object.html#a9e90c0c3b618b5b0387f31bf06ff6280" title="The write callback function for the Lwm2m core." alt="" coords="275,325,484,352"/>
+<area shape="rect" id="node6" href="$classwpp_1_1Object.html#a5cfae90383e67e4125105c0755ee1820" title="Checks if an instance exists." alt="" coords="539,325,745,352"/>
+<area shape="rect" id="node8" href="$classwpp_1_1Object.html#a055e410d07f744b4a845646b2932e1ce" title="Removes an instance of the object." alt="" coords="536,224,748,251"/>
+<area shape="rect" id="node7" href="$classwpp_1_1Object.html#aee04ebf1209edf84ca7c08c70bbcb879" title="Gets the iterator to the instance." alt="" coords="821,325,996,352"/>
+<area shape="rect" id="node10" href="$classwpp_1_1Object.html#a30a224b64f45197ec7d8d1bc17aa94e0" title="Gets an instance of the object." alt="" coords="561,376,723,403"/>
+<area shape="rect" id="node11" href="$classwpp_1_1Instance.html#abb0e4491dc9d0d21bcbf52bcb484d52a" title=" " alt="" coords="537,427,747,453"/>
+<area shape="rect" id="node12" href="$classwpp_1_1Instance.html#a7502043c4c83e607a4ebb8a7367aa9c2" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="796,398,1021,439"/>
+<area shape="rect" id="node13" href="$classwpp_1_1Instance.html#aae439fd375128c09e13d2280096fd45f" title="This method must be implemented by derived class. Reset all resources values and internal state to de..." alt="" coords="815,463,1003,505"/>
+</map>

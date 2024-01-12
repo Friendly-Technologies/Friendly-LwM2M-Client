@@ -1,0 +1,4 @@
+<map id="wpp::WppConnection::clearPacketQueue" name="wpp::WppConnection::clearPacketQueue">
+<area shape="rect" id="node1" title="Clears the packet queue." alt="" coords="5,5,164,47"/>
+<area shape="rect" id="node2" href="$classwpp_1_1WppConnection.html#aca2e643e1b5aae589568e6c8128fdabe" title="Retrieves the size of the packet queue." alt="" coords="212,5,375,47"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="lwm2m_gettime" name="lwm2m_gettime">
+<area shape="rect" id="node1" title=" " alt="" coords="5,5,135,32"/>
+<area shape="rect" id="node2" href="$classwpp_1_1WppPlatform.html#a7741918d2fe42ef9c2fcbfe9f91058a2" title="Returns the number of seconds elapsed since a specific origin." alt="" coords="183,5,387,32"/>
+</map>

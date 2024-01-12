@@ -1,0 +1,4 @@
+<map id="wpp::Instance::getPtr" name="wpp::Instance::getPtr">
+<area shape="rect" id="Node000001" title="Returns const ptr to resource data for avoid extra copy." alt="" coords="5,29,197,57"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="69,31,63,21,67,11,80,5,101,3,127,6,138,14,135,19,125,11,101,8,81,10,71,15,68,20,73,28"/>
+</map>

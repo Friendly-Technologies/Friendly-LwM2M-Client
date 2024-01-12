@@ -1,0 +1,4 @@
+<map id="wpp::Lwm2mAccessControl::serverOperationNotifier" name="wpp::Lwm2mAccessControl::serverOperationNotifier">
+<area shape="rect" id="node1" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="5,5,207,47"/>
+<area shape="rect" id="node2" href="$classwpp_1_1InstSubject.html#a14cc3b35bbbfe583030d9482931472fb" title="Notifies the observers about an operation on an instance resource." alt="" coords="255,5,453,47"/>
+</map>

@@ -1,0 +1,11 @@
+<map id="wpp::Instance::serverOperationNotifier" name="wpp::Instance::serverOperationNotifier">
+<area shape="rect" id="node1" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="1013,71,1239,112"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Instance.html#a47ef09eb0578bc1b4e10f6cd96fee218" title=" " alt="" coords="765,5,955,47"/>
+<area shape="rect" id="node5" href="$classwpp_1_1Instance.html#ae5501c73f3c6554af18ac2a8387e4a69" title=" " alt="" coords="767,71,953,112"/>
+<area shape="rect" id="node7" href="$classwpp_1_1Instance.html#abb0e4491dc9d0d21bcbf52bcb484d52a" title=" " alt="" coords="755,137,965,163"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Object.html#acd69ce943243a7bb03d0cea2aad1ee21" title="The discover callback function for the Lwm2m core." alt="" coords="203,15,433,42"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Object.html#a54e0417f93a65854fb64da983e455367" title="Constructs an Object instance." alt="" coords="5,95,155,122"/>
+<area shape="rect" id="node6" href="$classwpp_1_1Object.html#a091c7813b08b105352edf4bc47e447e4" title="The execute callback function for the Lwm2m core." alt="" coords="481,77,707,103"/>
+<area shape="rect" id="node8" href="$classwpp_1_1Object.html#a9e90c0c3b618b5b0387f31bf06ff6280" title="The write callback function for the Lwm2m core." alt="" coords="489,137,699,163"/>
+<area shape="rect" id="node9" href="$classwpp_1_1Object.html#a1441d906a070ff65cf5347697ea04a99" title="The create callback function for the Lwm2m core." alt="" coords="209,171,427,198"/>
+</map>

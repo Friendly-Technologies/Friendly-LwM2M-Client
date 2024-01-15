@@ -1,6 +1,0 @@
-<map id="wpp::lwm2m_connect_server" name="wpp::lwm2m_connect_server">
-<area shape="rect" id="node1" title=" " alt="" coords="5,64,169,105"/>
-<area shape="rect" id="node2" href="$classwpp_1_1WppConnection.html#a00c1956737df9c2aa2b83313161557c8" title="Establishes a connection using the provided Lwm2mSecurity object." alt="" coords="239,5,398,47"/>
-<area shape="rect" id="node3" href="$classwpp_1_1WppClient.html#ab058f0a0d20678d37826c05155a80aad" title="Gets the WppConnection associated with the WppClient." alt="" coords="217,71,420,98"/>
-<area shape="rect" id="node4" href="$classwpp_1_1WppClient.html#afb790e827cb2a731ec6be3a97ef1c98a" title="Gets the WppRegistry associated with the WppClient." alt="" coords="227,122,410,149"/>
-</map>

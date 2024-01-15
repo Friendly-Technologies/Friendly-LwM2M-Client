@@ -1,5 +1,0 @@
-<map id="wpp::WppTaskQueue::requestToRemoveTask" name="wpp::WppTaskQueue::requestToRemoveTask">
-<area shape="rect" id="node1" title="This function does not immediately delete the task, it only marks it as one that should be deleted at..." alt="" coords="265,23,433,65"/>
-<area shape="rect" id="node2" href="$classwpp_1_1Device.html#af8386415fb44108731246c85c5e43dc0" title="This method must be implemented by derived class. Reset all resources values and internal state to de..." alt="" coords="5,5,217,32"/>
-<area shape="rect" id="node3" href="$classwpp_1_1Device.html#a8d689012fbe5c222855cf5762e6ef805" title=" " alt="" coords="28,56,195,83"/>
-</map>

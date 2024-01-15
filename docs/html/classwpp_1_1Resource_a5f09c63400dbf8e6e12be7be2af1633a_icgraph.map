@@ -1,6 +1,0 @@
-<map id="wpp::Resource::getId" name="wpp::Resource::getId">
-<area shape="rect" id="node1" title=" " alt="" coords="711,13,869,39"/>
-<area shape="rect" id="node2" href="$classwpp_1_1Instance.html#ae5501c73f3c6554af18ac2a8387e4a69" title=" " alt="" coords="476,5,663,47"/>
-<area shape="rect" id="node3" href="$classwpp_1_1Object.html#a091c7813b08b105352edf4bc47e447e4" title="The execute callback function for the Lwm2m core." alt="" coords="203,13,428,39"/>
-<area shape="rect" id="node4" href="$classwpp_1_1Object.html#a54e0417f93a65854fb64da983e455367" title="Constructs an Object instance." alt="" coords="5,13,155,39"/>
-</map>

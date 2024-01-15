@@ -1,6 +1,0 @@
-<map id="wpp::WppTaskQueue::~WppTaskQueue" name="wpp::WppTaskQueue::~WppTaskQueue">
-<area shape="rect" id="node1" title=" " alt="" coords="5,23,171,65"/>
-<area shape="rect" id="node2" href="$classwpp_1_1WppTaskQueue.html#afee00a2dab990091f296533cf572c28f" title="Blocks task handling, calls of other methods, and deletes all tasks from the queue,..." alt="" coords="219,23,384,65"/>
-<area shape="rect" id="node3" href="$classWppGuard.html#ae163e2a1fd7c7eb27ad53c421aa95d1d" title="Locks the guard object." alt="" coords="440,5,565,32"/>
-<area shape="rect" id="node4" href="$classWppGuard.html#a2777fbb91e81342ad7d6e3c6eaf2cddf" title="Unlocks the guard object." alt="" coords="432,56,573,83"/>
-</map>

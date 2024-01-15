@@ -1,5 +1,0 @@
-<map id="wpp::Instance::getPtr" name="wpp::Instance::getPtr">
-<area shape="rect" id="node1" title=" " alt="" coords="5,35,164,61"/>
-<area shape="rect" id="node2" href="$classwpp_1_1Instance.html#a0f3d2fe16a6f904517fb0ccb093abaea" title="This method return iterator for resource if it exists. If resources does not exist then return empty ..." alt="" coords="230,5,406,32"/>
-<area shape="rect" id="node3" href="$classwpp_1_1Instance.html#a7051f73d34d93f0fa9299349b82d9492" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="212,57,424,98"/>
-</map>

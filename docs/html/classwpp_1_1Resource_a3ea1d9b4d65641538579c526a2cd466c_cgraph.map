@@ -1,6 +1,0 @@
-<map id="wpp::Resource::remove" name="wpp::Resource::remove">
-<area shape="rect" id="node1" title="Remove resource instance if resource is multiple and instance exists, if the resource is SINGLE or it..." alt="" coords="5,64,180,91"/>
-<area shape="rect" id="node2" href="$classwpp_1_1Resource.html#a8b4d4cb712eeafec2649e9c46509fbbe" title=" " alt="" coords="228,5,431,32"/>
-<area shape="rect" id="node3" href="$classwpp_1_1Resource.html#a46e300071f53b65fde7b542e8f14daa3" title=" " alt="" coords="234,57,425,98"/>
-<area shape="rect" id="node4" href="$classwpp_1_1Resource.html#a6c8c94cdd5cf3a10a05afc7c4338674f" title=" " alt="" coords="241,123,417,149"/>
-</map>

@@ -1,8 +1,0 @@
-<map id="wpp::FirmwareUpdate::userOperationNotifier" name="wpp::FirmwareUpdate::userOperationNotifier">
-<area shape="rect" id="node1" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="5,57,176,98"/>
-<area shape="rect" id="node2" href="$classwpp_1_1InstSubject.html#ad304d49ddd5e562a1797734b9de49b85" title="Notifies the observers about a custom instance event." alt="" coords="224,5,437,32"/>
-<area shape="rect" id="node3" href="$classwpp_1_1Instance.html#a06a66da0f928586269d41c3ba13a7407" title="Notify server about resource value change." alt="" coords="231,57,430,98"/>
-<area shape="rect" id="node6" href="$classwpp_1_1Instance.html#a0f3d2fe16a6f904517fb0ccb093abaea" title="This method return iterator for resource if it exists. If resources does not exist then return empty ..." alt="" coords="243,123,419,149"/>
-<area shape="rect" id="node4" href="$classwpp_1_1Instance.html#abe793eaf4ed798fd8c6462d97ba6823e" title=" " alt="" coords="485,39,696,65"/>
-<area shape="rect" id="node5" href="$classwpp_1_1Instance.html#a20fc277ffa400f5cd4d76cd0b97d4f7a" title=" " alt="" coords="492,89,689,116"/>
-</map>

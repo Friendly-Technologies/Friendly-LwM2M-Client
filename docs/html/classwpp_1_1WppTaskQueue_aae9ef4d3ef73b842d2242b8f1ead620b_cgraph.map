@@ -1,4 +1,0 @@
-<map id="wpp::WppTaskQueue::addTask" name="wpp::WppTaskQueue::addTask">
-<area shape="rect" id="Node000001" title="Add task to queue, ctx that passed to task equals to NULL." alt="" coords="5,29,204,75"/>
-<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="67,29,65,19,72,10,85,5,105,3,128,6,140,13,138,18,126,11,105,8,86,10,75,15,71,21,72,29"/>
-</map>

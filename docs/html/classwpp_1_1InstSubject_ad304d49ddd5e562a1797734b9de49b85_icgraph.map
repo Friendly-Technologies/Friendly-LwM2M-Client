@@ -1,5 +1,0 @@
-<map id="wpp::InstSubject::eventNotify" name="wpp::InstSubject::eventNotify">
-<area shape="rect" id="node1" title="Notifies the observers about a custom instance event." alt="" coords="236,46,449,73"/>
-<area shape="rect" id="node2" href="$classwpp_1_1FirmwareUpdate.html#a21ef4e722b682c71a031f66d1b543cd3" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="5,5,188,47"/>
-<area shape="rect" id="node3" href="$classwpp_1_1FirmwareUpdate.html#a6910c048a947a2e996b30fb61485f7bc" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="11,71,182,112"/>
-</map>

@@ -1,6 +1,0 @@
-<map id="wpp::Instance::executeAsServer" name="wpp::Instance::executeAsServer">
-<area shape="rect" id="node1" title=" " alt="" coords="5,49,192,90"/>
-<area shape="rect" id="node2" href="$classwpp_1_1Resource.html#a1df4fcb1538d8ce107301c0a978a85f3" title=" " alt="" coords="279,5,426,32"/>
-<area shape="rect" id="node3" href="$classwpp_1_1Resource.html#a5f09c63400dbf8e6e12be7be2af1633a" title=" " alt="" coords="273,56,432,83"/>
-<area shape="rect" id="node4" href="$classwpp_1_1Instance.html#a7502043c4c83e607a4ebb8a7367aa9c2" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="240,107,465,149"/>
-</map>

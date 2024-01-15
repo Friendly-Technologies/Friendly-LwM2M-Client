@@ -1,7 +1,0 @@
-<map id="wpp::Instance::setDefaultState" name="wpp::Instance::setDefaultState">
-<area shape="rect" id="node1" title="This method must be implemented by derived class. Reset all resources values and internal state to de..." alt="" coords="984,5,1172,47"/>
-<area shape="rect" id="node2" href="$classwpp_1_1Instance.html#abb0e4491dc9d0d21bcbf52bcb484d52a" title=" " alt="" coords="725,13,936,39"/>
-<area shape="rect" id="node3" href="$classwpp_1_1Object.html#a9e90c0c3b618b5b0387f31bf06ff6280" title="The write callback function for the Lwm2m core." alt="" coords="468,13,677,39"/>
-<area shape="rect" id="node4" href="$classwpp_1_1Object.html#a54e0417f93a65854fb64da983e455367" title="Constructs an Object instance." alt="" coords="5,13,155,39"/>
-<area shape="rect" id="node5" href="$classwpp_1_1Object.html#a1441d906a070ff65cf5347697ea04a99" title="The create callback function for the Lwm2m core." alt="" coords="203,38,420,65"/>
-</map>

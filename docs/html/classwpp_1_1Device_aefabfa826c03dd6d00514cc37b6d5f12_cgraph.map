@@ -1,6 +1,0 @@
-<map id="wpp::Device::Device" name="wpp::Device::Device">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,29,188,57"/>
-<area shape="rect" id="Node000002" href="$classwpp_1_1Instance.html#ac4ffeaec8df3c662cc8d6373d7a3b367" title="Returns copy of resource value." alt="" coords="236,29,405,57"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="188,41,222,41,222,46,188,46"/>
-<area shape="poly" id="edge2_Node000002_Node000002" title=" " alt="" coords="283,31,276,21,281,11,296,5,321,3,351,6,364,15,361,19,349,11,321,8,297,10,284,15,281,20,287,28"/>
-</map>

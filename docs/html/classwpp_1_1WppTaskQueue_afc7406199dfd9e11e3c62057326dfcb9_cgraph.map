@@ -1,5 +1,0 @@
-<map id="wpp::WppTaskQueue::requestToRemoveTask" name="wpp::WppTaskQueue::requestToRemoveTask">
-<area shape="rect" id="node1" title="This function does not immediately delete the task, it only marks it as one that should be deleted at..." alt="" coords="5,23,173,65"/>
-<area shape="rect" id="node2" href="$classWppGuard.html#ae163e2a1fd7c7eb27ad53c421aa95d1d" title="Locks the guard object." alt="" coords="229,5,355,32"/>
-<area shape="rect" id="node3" href="$classWppGuard.html#a2777fbb91e81342ad7d6e3c6eaf2cddf" title="Unlocks the guard object." alt="" coords="221,56,363,83"/>
-</map>

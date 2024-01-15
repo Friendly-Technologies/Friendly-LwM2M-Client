@@ -1,6 +1,0 @@
-<map id="wpp::FirmwareUpdate::~FirmwareUpdate" name="wpp::FirmwareUpdate::~FirmwareUpdate">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,21,201,66"/>
-<area shape="rect" id="Node000002" href="$classwpp_1_1Instance.html#ac4ffeaec8df3c662cc8d6373d7a3b367" title="Returns copy of resource value." alt="" coords="249,29,419,57"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="201,41,236,41,236,46,201,46"/>
-<area shape="poly" id="edge2_Node000002_Node000002" title=" " alt="" coords="295,31,288,21,293,11,309,5,334,3,365,6,378,15,375,19,363,11,334,8,310,10,297,15,294,20,300,28"/>
-</map>

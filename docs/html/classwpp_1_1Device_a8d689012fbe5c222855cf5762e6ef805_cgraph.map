@@ -1,6 +1,0 @@
-<map id="wpp::Device::~Device" name="wpp::Device::~Device">
-<area shape="rect" id="node1" title=" " alt="" coords="5,31,172,57"/>
-<area shape="rect" id="node2" href="$classwpp_1_1WppTaskQueue.html#afc7406199dfd9e11e3c62057326dfcb9" title="This function does not immediately delete the task, it only marks it as one that should be deleted at..." alt="" coords="220,23,388,65"/>
-<area shape="rect" id="node3" href="$classWppGuard.html#ae163e2a1fd7c7eb27ad53c421aa95d1d" title="Locks the guard object." alt="" coords="444,5,569,32"/>
-<area shape="rect" id="node4" href="$classWppGuard.html#a2777fbb91e81342ad7d6e3c6eaf2cddf" title="Unlocks the guard object." alt="" coords="436,56,577,83"/>
-</map>

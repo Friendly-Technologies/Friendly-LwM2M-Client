@@ -1,6 +1,0 @@
-<map id="wpp::ObjSubject::operationNotify" name="wpp::ObjSubject::operationNotify">
-<area shape="rect" id="node1" title="Notifies observers about object operations." alt="" coords="733,23,931,65"/>
-<area shape="rect" id="node2" href="$classwpp_1_1Object.html#a1441d906a070ff65cf5347697ea04a99" title="The create callback function for the Lwm2m core." alt="" coords="203,5,420,32"/>
-<area shape="rect" id="node4" href="$classwpp_1_1Object.html#a140b26495a6c878ac24a7cdc82bdf0cd" title="The delete callback function for the Lwm2m core." alt="" coords="468,56,685,83"/>
-<area shape="rect" id="node3" href="$classwpp_1_1Object.html#a54e0417f93a65854fb64da983e455367" title="Constructs an Object instance." alt="" coords="5,31,155,57"/>
-</map>

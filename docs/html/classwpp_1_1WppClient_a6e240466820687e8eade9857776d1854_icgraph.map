@@ -1,4 +1,0 @@
-<map id="wpp::WppClient::getContext" name="wpp::WppClient::getContext">
-<area shape="rect" id="node1" title="Gets the LwM2M context associated with the WppClient." alt="" coords="231,13,435,39"/>
-<area shape="rect" id="node2" href="$classwpp_1_1WppConnection.html#af8e8671a361be7a0bb1b53d127a08c07" title="Processes the packets in the packet queue." alt="" coords="5,5,183,47"/>
-</map>

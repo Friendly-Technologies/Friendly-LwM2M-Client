@@ -1,7 +1,0 @@
-<map id="wpp::Object::~Object" name="wpp::Object::~Object">
-<area shape="rect" id="node1" title="Destroys the Object instance." alt="" coords="5,24,165,50"/>
-<area shape="rect" id="node2" href="$classwpp_1_1Object.html#a6bb15191844a2a5e0ff205e197e5e553" title="Clears the object." alt="" coords="213,24,352,50"/>
-<area shape="rect" id="node3" href="$classwpp_1_1Object.html#aee04ebf1209edf84ca7c08c70bbcb879" title="Gets the iterator to the instance." alt="" coords="632,24,807,50"/>
-<area shape="rect" id="node4" href="$classwpp_1_1Object.html#a62b52b04e4aae34b0d04cbc26a5e9c69" title="Gets the object ID." alt="" coords="400,24,584,50"/>
-<area shape="rect" id="node5" href="$classwpp_1_1Object.html#a30a224b64f45197ec7d8d1bc17aa94e0" title="Gets an instance of the object." alt="" coords="411,74,573,101"/>
-</map>

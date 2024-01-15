@@ -1,5 +1,0 @@
-<map id="wpp::WppTaskQueue::isTaskShouldBeDeleted" name="wpp::WppTaskQueue::isTaskShouldBeDeleted">
-<area shape="rect" id="node1" title=" " alt="" coords="5,23,180,65"/>
-<area shape="rect" id="node2" href="$classWppGuard.html#ae163e2a1fd7c7eb27ad53c421aa95d1d" title="Locks the guard object." alt="" coords="236,5,361,32"/>
-<area shape="rect" id="node3" href="$classWppGuard.html#a2777fbb91e81342ad7d6e3c6eaf2cddf" title="Unlocks the guard object." alt="" coords="228,56,369,83"/>
-</map>

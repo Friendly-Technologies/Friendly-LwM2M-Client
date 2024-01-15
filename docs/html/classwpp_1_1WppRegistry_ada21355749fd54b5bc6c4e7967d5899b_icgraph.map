@@ -1,4 +1,0 @@
-<map id="wpp::WppRegistry::object" name="wpp::WppRegistry::object">
-<area shape="rect" id="node1" title="Retrieves a pointer to the Object with the given objId." alt="" coords="265,5,452,32"/>
-<area shape="rect" id="node2" href="$classwpp_1_1WppRegistry.html#a9781fd6e1d459034ac37020bc4238703" title="Checks if an Object with the given objId exists in the registry." alt="" coords="5,5,217,32"/>
-</map>

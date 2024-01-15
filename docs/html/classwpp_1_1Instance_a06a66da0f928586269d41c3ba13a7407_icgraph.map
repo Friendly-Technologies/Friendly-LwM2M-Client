@@ -1,0 +1,8 @@
+<map id="wpp::Instance::notifyServerResChanged" name="wpp::Instance::notifyServerResChanged">
+<area shape="rect" id="node1" title="Notify server about resource value change." alt="" coords="229,99,428,141"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Instance.html#a3bfe23a347c8675828546468ab99335a" title="It is quite dangerous to leave a resource without instances, because when the server tries to read it..." alt="" coords="17,5,169,32"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Instance.html#a9441749a5c53bfbbf1ae8d7261355dd3" title="Remove resource instance if resource is multiple and instance exists, if the resource is SINGLE or it..." alt="" coords="8,56,179,83"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Instance.html#a1d1a27feefbb837dd6f16e8b6f69bddd" title=" " alt="" coords="23,107,163,133"/>
+<area shape="rect" id="node5" href="$classwpp_1_1Instance.html#ad14389eeb94d99f4623b8f028c34a2d2" title=" " alt="" coords="5,157,181,184"/>
+<area shape="rect" id="node6" href="$classwpp_1_1FirmwareUpdate.html#a6910c048a947a2e996b30fb61485f7bc" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="8,209,179,250"/>
+</map>

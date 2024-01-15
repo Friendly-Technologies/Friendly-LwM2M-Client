@@ -1,0 +1,7 @@
+<map id="wpp::WppConnection::getPacketQueueSize" name="wpp::WppConnection::getPacketQueueSize">
+<area shape="rect" id="node1" title="Retrieves the size of the packet queue." alt="" coords="437,71,600,112"/>
+<area shape="rect" id="node2" href="$classwpp_1_1WppConnection.html#a96b882355a509a3942037811fb8bd454" title="Adds a packet to the packet queue." alt="" coords="221,5,380,47"/>
+<area shape="rect" id="node3" href="$classwpp_1_1WppConnection.html#a6a5d8654b15c05dc7c93b66e2071bfa0" title="Clears the packet queue." alt="" coords="221,71,380,112"/>
+<area shape="rect" id="node5" href="$classwpp_1_1WppConnection.html#af8e8671a361be7a0bb1b53d127a08c07" title="Processes the packets in the packet queue." alt="" coords="212,136,389,177"/>
+<area shape="rect" id="node4" href="$classwpp_1_1WppConnection.html#ab9dce36411f730e581e6760a87192a6f" title=" " alt="" coords="5,71,164,112"/>
+</map>

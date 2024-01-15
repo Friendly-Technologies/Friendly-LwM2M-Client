@@ -1,0 +1,8 @@
+<map id="wpp::Instance::clear" name="wpp::Instance::clear">
+<area shape="rect" id="node1" title="It is quite dangerous to leave a resource without instances, because when the server tries to read it..." alt="" coords="5,89,157,116"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Instance.html#a06a66da0f928586269d41c3ba13a7407" title="Notify server about resource value change." alt="" coords="212,23,411,65"/>
+<area shape="rect" id="node5" href="$classwpp_1_1Instance.html#a0f3d2fe16a6f904517fb0ccb093abaea" title="This method return iterator for resource if it exists. If resources does not exist then return empty ..." alt="" coords="223,89,399,116"/>
+<area shape="rect" id="node6" href="$classwpp_1_1Instance.html#a7051f73d34d93f0fa9299349b82d9492" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="205,141,417,182"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Instance.html#abe793eaf4ed798fd8c6462d97ba6823e" title=" " alt="" coords="465,5,676,32"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Instance.html#a20fc277ffa400f5cd4d76cd0b97d4f7a" title=" " alt="" coords="472,56,669,83"/>
+</map>

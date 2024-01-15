@@ -1,0 +1,5 @@
+<map id="wpp::Object::restore" name="wpp::Object::restore">
+<area shape="rect" id="node1" title="Restores the object." alt="" coords="5,35,159,61"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Object.html#a62b52b04e4aae34b0d04cbc26a5e9c69" title="Gets the object ID." alt="" coords="211,5,395,32"/>
+<area shape="rect" id="node3" href="$classwpp_1_1ObjSubject.html#a8c1b4384020381b0b5c81440613d4ab9" title="Requests observers to perform an action on an object." alt="" coords="207,57,399,98"/>
+</map>

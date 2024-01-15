@@ -1,0 +1,36 @@
+var annotated_dup =
+[
+    [ "wpp", "namespacewpp.html", [
+      [ "WppTaskQueue", "classwpp_1_1WppTaskQueue.html", "classwpp_1_1WppTaskQueue" ],
+      [ "WppClient", "classwpp_1_1WppClient.html", "classwpp_1_1WppClient" ],
+      [ "WppConnection", "classwpp_1_1WppConnection.html", "classwpp_1_1WppConnection" ],
+      [ "WppPlatform", "classwpp_1_1WppPlatform.html", null ],
+      [ "Instance", "classwpp_1_1Instance.html", "classwpp_1_1Instance" ],
+      [ "InstBlockOpObserver", "classwpp_1_1InstBlockOpObserver.html", "classwpp_1_1InstBlockOpObserver" ],
+      [ "InstEventObserver", "classwpp_1_1InstEventObserver.html", "classwpp_1_1InstEventObserver" ],
+      [ "InstOpObserver", "classwpp_1_1InstOpObserver.html", "classwpp_1_1InstOpObserver" ],
+      [ "InstSubject", "classwpp_1_1InstSubject.html", "classwpp_1_1InstSubject" ],
+      [ "Object", "classwpp_1_1Object.html", "classwpp_1_1Object" ],
+      [ "ObjectSpec", "classwpp_1_1ObjectSpec.html", "classwpp_1_1ObjectSpec" ],
+      [ "ObjActObserver", "classwpp_1_1ObjActObserver.html", "classwpp_1_1ObjActObserver" ],
+      [ "ObjOpObserver", "classwpp_1_1ObjOpObserver.html", "classwpp_1_1ObjOpObserver" ],
+      [ "ObjSubject", "classwpp_1_1ObjSubject.html", "classwpp_1_1ObjSubject" ],
+      [ "Resource", "classwpp_1_1Resource.html", "classwpp_1_1Resource" ],
+      [ "InstOp", "structwpp_1_1InstOp.html", "structwpp_1_1InstOp" ],
+      [ "ObjectInfo", "structwpp_1_1ObjectInfo.html", "structwpp_1_1ObjectInfo" ],
+      [ "ResOp", "structwpp_1_1ResOp.html", "structwpp_1_1ResOp" ],
+      [ "OBJ_LINK_T", "structwpp_1_1OBJ__LINK__T.html", "structwpp_1_1OBJ__LINK__T" ],
+      [ "Version", "structwpp_1_1Version.html", "structwpp_1_1Version" ],
+      [ "ResLink", "structwpp_1_1ResLink.html", "structwpp_1_1ResLink" ],
+      [ "DataLink", "structwpp_1_1DataLink.html", "structwpp_1_1DataLink" ],
+      [ "Lwm2mSecurity", "classwpp_1_1Lwm2mSecurity.html", "classwpp_1_1Lwm2mSecurity" ],
+      [ "Lwm2mServer", "classwpp_1_1Lwm2mServer.html", "classwpp_1_1Lwm2mServer" ],
+      [ "Device", "classwpp_1_1Device.html", "classwpp_1_1Device" ],
+      [ "Lwm2mAccessControl", "classwpp_1_1Lwm2mAccessControl.html", "classwpp_1_1Lwm2mAccessControl" ],
+      [ "ConnectivityMonitoring", "classwpp_1_1ConnectivityMonitoring.html", "classwpp_1_1ConnectivityMonitoring" ],
+      [ "FirmwareUpdate", "classwpp_1_1FirmwareUpdate.html", "classwpp_1_1FirmwareUpdate" ],
+      [ "WppRegistry", "classwpp_1_1WppRegistry.html", "classwpp_1_1WppRegistry" ]
+    ] ],
+    [ "SafeQueue", "classSafeQueue.html", "classSafeQueue" ],
+    [ "WppGuard", "classWppGuard.html", "classWppGuard" ]
+];

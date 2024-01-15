@@ -1,0 +1,7 @@
+<map id="wpp::WppPlatform::getTime" name="wpp::WppPlatform::getTime">
+<area shape="rect" id="node1" title="Returns the number of seconds elapsed since a specific origin." alt="" coords="219,111,423,138"/>
+<area shape="rect" id="node2" href="$classwpp_1_1WppTaskQueue.html#ab1d690b37c237e8e16c62fd2cb6c5007" title="Add task to queue, ctx passed to task by pointer without copy." alt="" coords="5,5,171,47"/>
+<area shape="rect" id="node3" href="$classwpp_1_1WppTaskQueue.html#ad6d15c63823bfd06d31679dd5b4e34e7" title="Add task to queue, ctx passed to task by pointer with copy, allocated memory will be relesed after de..." alt="" coords="5,71,171,112"/>
+<area shape="rect" id="node4" href="$classwpp_1_1WppTaskQueue.html#a2dab6c6f5928ec35d6c4a0b5d636ca12" title="Execute each task in the queue and delete it from queue if task returns false or task state is SHOULD..." alt="" coords="5,136,171,177"/>
+<area shape="rect" id="node5" href="$WppPlatform_8cpp.html#acb772640957357464cebc7f3a8420c79" title=" " alt="" coords="23,202,153,229"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="wpp::Object::createInstance" name="wpp::Object::createInstance">
+<area shape="rect" id="Node000001" title="Creates an instance of the object." alt="" coords="543,5,789,33"/>
+<area shape="rect" id="Node000002" href="$classwpp_1_1Object.html#a1441d906a070ff65cf5347697ea04a99" title="The create callback function for the Lwm2m core." alt="" coords="232,5,495,33"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="529,22,495,22,495,17,529,17"/>
+<area shape="rect" id="Node000003" href="$classwpp_1_1Object.html#a54e0417f93a65854fb64da983e455367" title="Constructs an Object instance." alt="" coords="5,5,184,33"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="218,22,184,22,184,17,218,17"/>
+</map>

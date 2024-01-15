@@ -1,0 +1,16 @@
+<map id="wpp::Instance::resource" name="wpp::Instance::resource">
+<area shape="rect" id="node1" title="This method return iterator for resource if it exists. If resources does not exist then return empty ..." alt="" coords="739,305,915,331"/>
+<area shape="rect" id="node2" href="$classwpp_1_1ConnectivityMonitoring.html#aea4092d740ed80f672a961ada96f2f1a" title=" " alt="" coords="481,5,691,47"/>
+<area shape="rect" id="node3" href="$classwpp_1_1ConnectivityMonitoring.html#acd11107ef351b3d57555d906716d51a5" title=" " alt="" coords="481,71,691,112"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Instance.html#a3bfe23a347c8675828546468ab99335a" title="It is quite dangerous to leave a resource without instances, because when the server tries to read it..." alt="" coords="510,137,662,163"/>
+<area shape="rect" id="node5" href="$classwpp_1_1Instance.html#a47ef09eb0578bc1b4e10f6cd96fee218" title=" " alt="" coords="491,188,681,229"/>
+<area shape="rect" id="node8" href="$classwpp_1_1Instance.html#a271566a445c00ee4092875a7d7e4aa62" title=" " alt="" coords="515,254,657,281"/>
+<area shape="rect" id="node9" href="$classwpp_1_1Instance.html#adb3f10ba55a5d4adffbe0dbbd8febfe6" title=" " alt="" coords="507,305,665,331"/>
+<area shape="rect" id="node10" href="$classwpp_1_1Instance.html#a9441749a5c53bfbbf1ae8d7261355dd3" title="Remove resource instance if resource is multiple and instance exists, if the resource is SINGLE or it..." alt="" coords="501,355,671,382"/>
+<area shape="rect" id="node11" href="$classwpp_1_1FirmwareUpdate.html#a21ef4e722b682c71a031f66d1b543cd3" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="495,407,677,448"/>
+<area shape="rect" id="node12" href="$classwpp_1_1Instance.html#a1d1a27feefbb837dd6f16e8b6f69bddd" title=" " alt="" coords="516,473,656,499"/>
+<area shape="rect" id="node13" href="$classwpp_1_1Instance.html#ad14389eeb94d99f4623b8f028c34a2d2" title=" " alt="" coords="498,523,674,550"/>
+<area shape="rect" id="node14" href="$classwpp_1_1FirmwareUpdate.html#a6910c048a947a2e996b30fb61485f7bc" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="501,575,671,616"/>
+<area shape="rect" id="node6" href="$classwpp_1_1Object.html#acd69ce943243a7bb03d0cea2aad1ee21" title="The discover callback function for the Lwm2m core." alt="" coords="203,195,433,222"/>
+<area shape="rect" id="node7" href="$classwpp_1_1Object.html#a54e0417f93a65854fb64da983e455367" title="Constructs an Object instance." alt="" coords="5,195,155,222"/>
+</map>

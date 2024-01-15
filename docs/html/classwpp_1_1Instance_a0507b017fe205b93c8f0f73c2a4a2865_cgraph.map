@@ -1,0 +1,4 @@
+<map id="wpp::Instance::setMove" name="wpp::Instance::setMove">
+<area shape="rect" id="Node000001" title="Sets resource value by moving user data to resource to avoid extra copy." alt="" coords="5,29,216,57"/>
+<area shape="poly" id="edge1_Node000001_Node000001" title=" " alt="" coords="75,31,69,21,73,11,88,5,111,3,139,6,151,15,148,19,137,11,111,8,89,10,77,15,74,20,80,28"/>
+</map>

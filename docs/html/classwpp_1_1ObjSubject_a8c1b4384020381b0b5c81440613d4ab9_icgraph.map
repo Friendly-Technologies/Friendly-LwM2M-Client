@@ -1,0 +1,4 @@
+<map id="wpp::ObjSubject::observerDoAction" name="wpp::ObjSubject::observerDoAction">
+<area shape="rect" id="node1" title="Requests observers to perform an action on an object." alt="" coords="207,5,399,47"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Object.html#acf58fd27fdcb43494ef07afd7be3fd35" title="Restores the object." alt="" coords="5,13,159,39"/>
+</map>

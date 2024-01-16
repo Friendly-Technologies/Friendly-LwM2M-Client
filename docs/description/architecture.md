@@ -1,3 +1,3 @@
-# {#architecture_file_tag}
+\page architecture_tag
 
 # Architecture

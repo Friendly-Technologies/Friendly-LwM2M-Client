@@ -1,6 +1,6 @@
-# {#examples_file_tag}
+\page examples_tag
 
 # Examples
 
-- [Example 1](example_1.md)
-- [Example 2](example_2.md)
+- [Example 1](@ref example1_tag)
+- [Example 2](@ref example2_tag)

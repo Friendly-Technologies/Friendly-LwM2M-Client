@@ -1,4 +1,4 @@
-# {#build_file_tag}
+\page build_tag
 
 # Build Instructions for WakaamaPlus
 

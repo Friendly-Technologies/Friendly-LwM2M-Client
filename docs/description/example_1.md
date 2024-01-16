@@ -1,4 +1,4 @@
-# {#example1_file_tag}
+\page example1_tag
 
 # Examples 1
 

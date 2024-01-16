@@ -36,6 +36,7 @@ TEST_CASE("FirmwareUpdate: resource initialization", "[resourcesCreate][resource
         REQUIRE(fwu.get(1, str));
         REQUIRE(str.size() == 0);
         REQUIRE(fwu.get(2, execute));
+        execute(fwu, 2, opaque);
         REQUIRE(execute != nullptr);
         REQUIRE(fwu.get(3, integer));
         REQUIRE(integer == FirmwareUpdate::S_IDLE);

@@ -13,6 +13,7 @@
 #include "InstSubject.h"
 
 /* --------------- Сode_h block 0 start --------------- */
+#include "WppTaskQueue.h"
 #include "WppBindings.h"
 /* --------------- Сode_h block 0 end --------------- */
 
@@ -132,6 +133,7 @@ private:
 private:
 	/* --------------- Class private properties --------------- */
 	/* --------------- Code_h block 5 start --------------- */
+	WppTaskQueue::task_id_t _requestBootstrapTaskId;
 	/* --------------- Code_h block 5 end --------------- */
 };
 

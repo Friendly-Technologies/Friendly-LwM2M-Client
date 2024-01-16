@@ -445,7 +445,7 @@ bool FirmwareUpdate::isDeliveryTypeSupported(FwUpdDelivery type) {
 
 #if RES_5_13
 void FirmwareUpdate::startDeferUpdateGuard() {
-	if (_deferUpdateTaskId != WPP_ERR_TASK_ID) return;
+	if (WppTaskQueue::isTaskExist(_deferUpdateTaskId)) return;
 
 	UINT_T maxDefer = 0;
 	resource(MAXIMUM_DEFER_PERIOD_13)->get(maxDefer);

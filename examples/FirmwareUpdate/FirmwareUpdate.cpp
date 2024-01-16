@@ -17,10 +17,10 @@ void FirmwareUpdateImpl::init(Object &obj) {
 		return true;
 	});
 	inst0->set(FirmwareUpdate::STATE_3, (INT_T)FirmwareUpdate::S_IDLE);
-	inst0->set(FirmwareUpdate::UPDATE_RESULT_5, (INT_T)getLastUpdResult());
+    // Before starting FW update UPDATE_RESULT_5 should be set to R_INITIAL
+	inst0->set(FirmwareUpdate::UPDATE_RESULT_5, (INT_T)FirmwareUpdate::R_INITIAL);
     #if RES_5_8
-    inst0->set(FirmwareUpdate::FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8, (INT_T)FirmwareUpdate::COAP);
-    inst0->set({FirmwareUpdate::FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8, 1}, (INT_T)FirmwareUpdate::HTTP);
+    inst0->set(FirmwareUpdate::FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8, (INT_T)FirmwareUpdate::HTTP);
     #endif
     inst0->set(FirmwareUpdate::FIRMWARE_UPDATE_DELIVERY_METHOD_9, (INT_T)FirmwareUpdate::BOTH);
 	#if RES_5_10
@@ -48,7 +48,7 @@ void FirmwareUpdateImpl::instEvent(Instance &inst, EVENT_ID_T eventId) {
         inst.get(FirmwareUpdate::PACKAGE_URI_1, uri);
         _downloader.startDownloading(uri, [](string file) { 
             cout << "FW is downloaded to file: " << file << endl;
-            WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, [](WppClient &client, WppTaskQueue::ctx_t ctx) -> bool {
+            WppTaskQueue::addTask(5, [](WppClient &client, WppTaskQueue::ctx_t ctx) -> bool {
                 cout << "FW STATE_3 changed to S_DOWNLOADED" << endl;
                 client.registry().firmwareUpdate().instance()->set(FirmwareUpdate::STATE_3, (INT_T)FirmwareUpdate::S_DOWNLOADED);
                 return true;
@@ -98,7 +98,7 @@ void FirmwareUpdateImpl::update(Instance& inst) {
 
     inst.set(FirmwareUpdate::STATE_3, (INT_T)FirmwareUpdate::S_UPDATING);
     
-    WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, [](WppClient &client, WppTaskQueue::ctx_t ctx) -> bool {
+    WppTaskQueue::addTask(10, [](WppClient &client, WppTaskQueue::ctx_t ctx) -> bool {
         Instance *fw = client.registry().firmwareUpdate().instance();
         Instance *dev = client.registry().device().instance();
         

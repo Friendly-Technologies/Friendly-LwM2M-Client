@@ -125,6 +125,10 @@ protected: /* Interface that can be used by derived class */
 	 * If resources does not exist then return empty list.
 	 */
 	std::vector<Resource>::iterator resource(ID_T resId);
+	/**
+ 	 * @brief Return context that can be used by derived class.
+	 */
+	lwm2m_context_t& getContext();
 
 protected: /* Interface that must be implemented by derived class */
 	/**

@@ -1,7 +1,6 @@
 #include "catch_amalgamated.hpp"
 #include "WppTaskQueue.h"
 #include <thread>
-#include <iostream>
 
 namespace wpp {
     class WppClient {
@@ -281,7 +280,7 @@ TEST_CASE("WppTaskQueue: Error Handling and Edge Cases") {
     WppTaskQueue::task_id_t taskId;
     REQUIRE(WppTaskQueue::getTaskCnt() == 0);
     REQUIRE(WPP_TASK_DEF_CTX == NULL);
-    REQUIRE(WPP_ERR_TASK_ID == NULL);
+    REQUIRE(WPP_ERR_TASK_ID == 0);
 
     SECTION("Task delay") {
         REQUIRE(WPP_TASK_MIN_DELAY_S <= WPP_TASK_DEF_DELAY_S);

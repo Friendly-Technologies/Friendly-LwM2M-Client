@@ -86,6 +86,17 @@ if [ ! -e "$CLANGPP_KIT_PATH" ]; then
 fi
 echo -e "Setup clang kit DONE"
 
+echo -e "\nSetup Doxygen"
+./docs/doxygen_setup.sh
+echo -e "Setup Doxygen DONE"
+
+# TODO: Move docs generation to cmake file, with converting to .pdf
+echo -e "\nGenerating Doxygen documentation"
+cd docs
+doxygen Doxygen
+cd ..
+echo -e "Generating Doxygen documentation DONE"
+
 echo -e "\nSetup environment DONE"
 
 # wget https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/cmake/3.25.1-1ubuntu2/cmake_3.25.1.orig.tar.gz

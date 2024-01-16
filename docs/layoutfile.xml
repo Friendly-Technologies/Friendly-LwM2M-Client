@@ -4,10 +4,10 @@
   <navindex>
     <!-- Custom tabs for Markdown pages -->
     <tab type="user" visible="yes" title="Build" url="md_description_build.html"/>
-    <tab type="user" visible="yes" title="Architecture" url="md_description_architecture.html"/>
-    <tab type="usergroup" visible="yes" title="Examples" url="md_description_examples.html">
-        <tab type="user" visible="yes" title="Example 1" url="md_description_example_1.html"/>
-        <tab type="user" visible="yes" title="Example 2" url="md_description_example_2.html"/>
+    <tab type="user" visible="yes" title="Architecture" url="@ref architecture_file_tag"/>
+    <tab type="usergroup" visible="yes" title="Examples" url="@ref examples_file_tag">
+        <tab type="user" visible="yes" title="Example 1" url="@ref example1_file_tag"/>
+        <tab type="user" visible="yes" title="Example 2" url="@ref example2_file_tag"/>
     </tab>
   
     <tab type="usergroup" visible="yes" title="Code">

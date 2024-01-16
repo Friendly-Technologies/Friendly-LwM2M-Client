@@ -1,3 +1,5 @@
+# {#examples_file_tag}
+
 # Examples
 
 - [Example 1](example_1.md)

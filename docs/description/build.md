@@ -1,3 +1,5 @@
+# {#build_file_tag}
+
 # Build Instructions for WakaamaPlus
 
 ## Overview

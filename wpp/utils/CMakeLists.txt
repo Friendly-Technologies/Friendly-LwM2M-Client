@@ -1,4 +1,5 @@
 add_subdirectory(bindings)
+add_subdirectory(task_queue)
 
 # Update WPP_SOURCES variable from parent scope.
 set(WPP_SOURCES ${WPP_SOURCES} PARENT_SCOPE)

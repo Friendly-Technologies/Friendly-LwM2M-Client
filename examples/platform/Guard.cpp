@@ -2,22 +2,22 @@
 
 #include <mutex>
 
-WppGuard::WppGuard() {
+wpp::WppGuard::WppGuard() {
     _guard = new std::mutex();
 }
 
-WppGuard::~WppGuard() {
+wpp::WppGuard::~WppGuard() {
     delete (std::mutex *)_guard;
 }
 
-void WppGuard::lock() {
+void wpp::WppGuard::lock() {
     ((std::mutex *)_guard)->lock();
 }
 
-void WppGuard::unlock() {
+void wpp::WppGuard::unlock() {
     ((std::mutex *)_guard)->unlock();
 }
 
-bool WppGuard::try_lock() {
+bool wpp::WppGuard::try_lock() {
     return ((std::mutex *)_guard)->try_lock();
 }

@@ -7,6 +7,7 @@
 - [Overview](@ref arch_overview)
 - [Components](@ref arch_components)
 - [User Interfaces](@ref arch_user_interfaces)
+- [Sumary](@ref arch_summary)
 
 ### Overview {#arch_overview}
 **WakaamaPlus**, also known as **Wpp**, is a project built upon the [**Wakaama**](https://github.com/eclipse/wakaama) project, which implements the **Lightweight Machine to Machine (LwM2M)** protocol. The architecture of **Wpp** is carefully designed to provide a high-level presentation of [**Wakaama**](https://github.com/eclipse/wakaama) functionalities while retaining control and flexibility.
@@ -49,8 +50,8 @@ Wpp adheres to the principles of the LwM2M protocol, where interaction occurs be
 #### Integration and Flexibility
 Wpp's architecture allows for easy integration into new environments and the possibility to redefine interfaces as per environmental requirements. This flexibility is attributed to the absence of external dependencies, as Wpp defines all input and output interfaces, and the environment implements them.
 
-### Summary
-The architecture of WakaamaPlus (Wpp) is a well-structured framework that provides a robust platform for the development and implementation of LwM2M client applications. It maintains a balance between high-level functionality and control, and is designed to be flexible and adaptable to various user and environmental needs.
+### Summary {#arch_summary}
+The architecture of **WakaamaPlus (Wpp)** is a well-structured framework that provides a robust platform for the development and implementation of LwM2M client applications. It maintains a balance between high-level functionality and control, and is designed to be flexible and adaptable to various user and environmental needs.
 
 
 

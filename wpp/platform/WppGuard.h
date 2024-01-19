@@ -1,6 +1,8 @@
 #ifndef WPP_GUARD_H
 #define WPP_GUARD_H
 
+namespace wpp {
+
 /**
  * @class WppGuard
  * @brief The WppGuard class provides a linker callback class that must be implemented by the user.
@@ -51,5 +53,7 @@ public:
 private:
     void *_guard; /**< Pointer to the guard object. */
 };
+
+} // namespace wpp
 
 #endif // WPP_GUARD_H

@@ -2458,7 +2458,7 @@ INCLUDE_FILE_PATTERNS  =
 # recursively expanded use the := operator instead of the = operator.
 # This tag requires that the tag ENABLE_PREPROCESSING is set to YES.
 
-PREDEFINED             =
+PREDEFINED             = "OBJ_M_3_DEVICE_V12" "OBJ_M_1_LWM2M_SERVER_V11" "OBJ_M_0_LWM2M_SECURITY_V11" "OBJ_O_4_CONNECTIVITY_MONITORING_V13" "OBJ_O_2_LWM2M_ACCESS_CONTROL_V11" "OBJ_O_5_FIRMWARE_UPDATE_V11"
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
 # tag can be used to specify a list of macro names that should be expanded. The

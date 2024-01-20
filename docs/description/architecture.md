@@ -3,6 +3,11 @@
 - [Overview](@ref arch_overview)
 - [Components](@ref arch_components)
 - [User Interfaces](@ref arch_user_interfaces)
+- [State Management](@ref arch_client_state_management)
+- [Registry Management](@ref arch_registry_management)
+- [Object Management](@ref arch_object_management)
+- [Platform Dependencies](@ref arch_platform_dependent)
+- [Wpp Task Queue](@ref arch_wpp_task_queue)
 - [Integration and Flexibility](@ref arch_integration_and_flexibility)
 - [Sumary](@ref arch_summary)
 
@@ -36,7 +41,7 @@ The diagram below shows the common **Wpp** components with their dependencies on
 
 The main interface of the library consists of two main parts:
 - **Object registry management interface.** Which is used by the user to initialize the client, gain access to the object register, and manage objects. It consists from the next interfaces:
-  - **Client state management interface.** Used by the user to initialize the client, get its state, access to registry, and manage registration. It consists from **wpp::WppClient** class which is implemented as singleton, and it is the main entry point through which interaction with the client takes place.
+  - **State management interface.** Used by the user to initialize the client, get its state, access to registry, and manage registration. It consists from **wpp::WppClient** class which is implemented as singleton, and it is the main entry point through which interaction with the client takes place.
   - **Registry management interface.** Used by the user to gain access to the objects in the registry, register build-in objects, and get their state. It consists from **wpp::WppRegistry** class which is part of **wpp::WppClient**.
   - **Object management interface.** Used by the user to gain access to the objects state, instances, objects business logic, and internal data. It consists from **wpp::Object**, **wpp::Instance** classes, access to **wpp::Object** can be retreived through **wpp::WppRegistry** class.
 - **Platform dependent interface.** It is used by the **Wpp** and must be implemented by the user or platform. It includes an interface
@@ -47,6 +52,27 @@ for establishing connection, data transfer, and platform-dependent functionality
 One more diagram.
 
 \image html images/wpp_simplified_structure_with_deps.png width=950px
+
+### State Management {#arch_client_state_management}
+
+The **State Management** interface is presented in the form of a single class **wpp::WppClient**, which provides a single access point for processing the internal state of the client and the object registry. This approach allows to synchronize access to internal state changes when using the client by different threads. 
+To create a client, the user must call the **wpp::WppClient::create()** method, as parameters this method accepts a structure with information about the client, through which user can set its name **wpp::WppClient::ClientInfo::endpointName**, the second parameter is an object of class **wpp::WppConnection** that is implemented by the user.
+
+Synchronization of access to the client is provided by the ownership mechanism, the client can be owned by only one program subject at a time, for this purpose a pair of methods **wpp::WppClient::takeOwnership()** and **wpp::WppClient::giveOwnership()** are used. Any actions with the client can be performed only after the **wpp::WppClient::takeOwnership()** method returns a valid object. After completing the manipulations with the client, the owner **must** return control over the client by calling the **wpp::WppClient::giveOwnership()** method. **wpp::WppClient** has two types of methods to take ownership **wpp::WppClient::takeOwnership()** and **wpp::WppClient::takeOwnershipBlocking()**, the first method works without any blocking, if the client is already owned, it returns an empty pointer, but **wpp::WppClient::takeOwnershipBlocking()** works differently, if the client is owned, it blocks its call until the client is released after which takes ownership of the client and returns a valid object.
+
+The second important part of **wpp::WppClient** is **wpp::WppClient::loop()** method for state processing, which when called performs three main tasks: processing packets received from the server, processing tasks from **wpp::WppTaskQueue**, handling the internal state of the [**Wakaama**](https://github.com/eclipse/wakaama) library. After completion, the **wpp::WppClient::loop()** method returns the maximum time in seconds after which the user must call this method the next time. But if after calling **wpp::WppClient::loop()** the user creates a task **wpp::WppTaskQueue** which must be called earlier than the next call to the method **wpp::WppClient::loop()** , then in this case, the **wpp::WppClient::loop()** method must be executed earlier than scheduled for the timely execution of the user request. It should be noted that the time returned after calling **wpp::WppClient::loop()** is the maximum amount of time after which this method should be executed, while the minimum threshold is not set. Therefore, the user can call this method even without delays between calls. It should also be noted that the next call is timed in seconds, so there is no need to call **wpp::WppClient::loop()** more often than once per second, although this is acceptable.
+
+To access the registry, the client has a method **wpp::WppClient::registry()** that returns a registry object. Other methods and their purpose are described in the [Code](@ref code_tag) section at the following link **wpp::WppClient**.
+
+### Registry Management {#arch_registry_management}
+
+The **Registry management** interface consists of one class **wpp::WppRegistry**, which represents the registry of all existing objects in the client. Each object that exists in the client must be represented as a separate method in **wpp::WppRegistry**, for example, for the object **wpp::Device** there is a method **wpp::WppRegistry::device()** which when called, returns the corresponding object. User can also use another way to get the required object through **wpp::OBJ_ID**, for this needs to call the **wpp::WppRegistry::object()** method and pass the ID of the corresponding object. Each existing object in the client has its own unique **ID**, which is reflected in the **wpp::OBJ_ID** enumeration. In addition to the fact that **wpp::WppRegistry** stores all objects and provides access to them, it also has a function that allows to register the corresponding objects on the server, this is a pair of methods **wpp::WppRegistry::registerObj()** and **wpp::WppRegistry::deregisterObj()**, there are also methods that allows to get the current state of the object, more details at the following link **wpp::WppRegistry**. **wpp::WppRegistry** was designed in such a way that it can be used together with a set of utilities for generating objects [**object_maker**](../../utils/object_maker), so it is important not to disturb the internal structure and comments that exist in **wpp::WppRegistry**, and if it is necessary to do this, then it must be coordinated with utilities.
+
+### Object Management {#arch_object_management}
+
+### Wpp Task Queue {#arch_wpp_task_queue}
+
+### Platform Dependencies {#arch_platform_dependent}
 
 ### Integration and Flexibility {#arch_integration_and_flexibility}
 **Wpp's** architecture allows for easy integration into new environments and the possibility to implementation **Platform dependent interface** as per environmental requirements. This flexibility is attributed to the absence of external dependencies, as **Wpp** defines all input and output interfaces, and the environment implements them. For integration to new environment user should implement the next interfaces: **wpp::WppConnection**, **wpp::WppPlatform**, **wpp::WppGuard**. Example can be found in the [**platform**](../../examples/platform) folder.

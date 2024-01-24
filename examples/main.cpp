@@ -1,5 +1,5 @@
 //============================================================================
-// Name        : ObjectRegestry.cpp
+// Name        : main.cpp
 // Author      : Valentin
 // Version     :
 //============================================================================
@@ -35,11 +35,13 @@ void socketPolling(Connection *connection, DeviceImpl *device) {
 	}
 }
 
+// Found Wakaama bugs:
 // TODO: No payload in response for resource /3/0/0 in TLV format
 // TODO: Coap post not working correctly for write
 // TODO: Observation with set pmin attribute did not work properly
 // TODO: Device work with NON confirmation messages
-// TODO: Problem with converting lwm2mData to resource: 2:0:2:2 This starange behavior related to TLV format client receive next res 2(res):2(res inst):1(again res inst). Problem related to wakaama core in TLV format
+// TODO: Problem with converting lwm2mData to resource: 2:0:2:2. This starange behavior related to TLV format, client receive next res 2(res):2(res inst):1(again res inst). Problem related to wakaama core in TLV format.
+
 int main() {
 	cout << endl << "---- Creating requiered components ----" << endl;
 	Connection connection("56830", AF_INET);

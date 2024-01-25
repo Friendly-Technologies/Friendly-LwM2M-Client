@@ -1,5 +1,7 @@
 \page architecture_tag Architecture Description
 
+This section describes the general structure of **WakaamaPlus**, the structure and purpose of its components, user interfaces and features of use.
+
 - [Overview](@ref arch_overview)
 - [Components](@ref arch_components)
 - [User Interfaces](@ref arch_user_interfaces)
@@ -36,6 +38,10 @@ Since **Wpp** is built upon the [**Wakaama**](https://github.com/eclipse/wakaama
 The diagram below shows the common **Wpp** components with their dependencies on [**Wakaama**](https://github.com/eclipse/wakaama). A part of the [**Wakaama**](https://github.com/eclipse/wakaama) library with its components is highlighted in **yellow**, and a part of the **Wpp** library is highlighted in **green**. The dependencies of the environment and the user program from the **Wpp** library are also indicated.
 
 \image html images/wpp_dependencies_from_wakaama.jpg width=650px
+
+In the library, this structure has the following representation.
+
+\image html images/wpp_folders_structure.png width=450px
 
 ### User Interfaces {#arch_user_interfaces}
 

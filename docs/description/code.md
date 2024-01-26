@@ -1,6 +1,4 @@
-\page code_tag
-
-# Code Description
+\page code_tag Code Description
 
 This section of the **Wpp** documentation provides a detailed overview of the codebase, offering insights into the **namespaces**, **classes**, and **files** that constitute the project. It serves as a comprehensive guide for developers and contributors to understand the internal structure and organization of the **Wpp** code.
 

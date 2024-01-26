@@ -44,7 +44,7 @@
  * The name parameter should be a valid identifier.
  * @note Can be changed to any other implementation.
  */
-#define SQ_GUARD_CREATE(name)		WppGuard name
+#define SQ_GUARD_CREATE(name)		wpp::WppGuard name
 /**
  * @def SQ_GUARD_LOCK(name)
  * @brief Macro for locking the specified guard object.

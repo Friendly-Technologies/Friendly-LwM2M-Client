@@ -1,6 +1,6 @@
 \page examples_tag Examples of Usage
 
-This section covers examples of the use of the user interface and code generation utilities that were described in more detail in the [Architecture](@ref architecture_tag) section.
+This section covers examples of the use of the user interface and code generation utilities that were described in more detail in the [Architecture](@ref architecture_tag) section. A complete example of using Wpp is in the [**examples**](../../examples/) folder, it does not match the code in this section because the code in this section shows how to use **Wpp** and its interfaces.
 
 - [State Management](@ref ex_client_state_management)
 - [Registry Management](@ref ex_registry_management)
@@ -241,6 +241,8 @@ So this is the entire core interface for wpp::WppRegistry, it allows to register
 using namespace wpp;
 
 bool objects_registering(WppClient &client) {
+    WppRegistry &registry = client.registry();
+
     if (registry.isObjExist(OBJ_ID::CONNECTIVITY_MONITORING) == false) return false;
     if (registry.isObjExist(OBJ_ID::LWM2M_ACCESS_CONTROL) == false) return false;
     if (registry.isObjExist(OBJ_ID::FIRMWARE_UPDATE) == false) return false;
@@ -279,6 +281,161 @@ int main() {
 \endcode
 
 ### Object Management {#ex_object_management}
+
+In the previous sections, we discussed creating a client and registering objects, but objects themselves have no value because all information about the state of an object is stored in its instances. Therefore, this section will consider the creation of object instances, their initialization, and use. As a basis, we will take the code from the previous section and add to it three functions **device_init()**, **server_init** and **security_init()**, which will contain the initialization of three relevant objects, thanks to which the example will meet the minimum requirements under which the client will be able to join the LwM2M server.
+
+The method of monitoring objects and their instances will also be considered, thanks to which the user will be able to receive information about the necessary events.
+
+Since an initialization example will be given for **wpp::Device**, **wpp::Lwm2mServer** and **wpp::Lwm2mSecurity**, which by default are registered in the client, the **objects_registering()** method can be removed from the code example. The initial version of the code will look like this.
+\code{.cpp}
+#include "WppClient.h"
+#include "WppRegistry.h"
+using namespace wpp;
+
+void device_init(WppClient &client) {}
+void server_init(WppClient &client) {}
+void security_init(WppClient &client) {}
+void read_device_data(WppClient &client) {}
+
+int main() {
+    Connection connection;
+    
+    WppClient::create({"SinaiRnDTestLwm2m", "", ""}, connection);
+    if (WppClient::isCreated() == false) return -1;
+    WppClient *client = WppClient::takeOwnershipBlocking();
+
+    device_init(*client);
+    server_init(*client);
+    security_init(*client);
+    read_device_data(*client);
+
+    while (true) {
+        client->loop();
+        some_other_code();
+    }
+
+    WppClient::remove();
+}
+\endcode
+
+Let's start by initializing the **wpp::Device** object and create an implementation for the **device_init()** function.
+
+We get the register of objects from which we extract the **wpp::Device** object.
+\code{.cpp}
+Object *deviceObj = client.registry().object(OBJ_ID::DEVICE);
+\endcode
+
+We create an instance of the **wpp::Device** object. To do this, we need to call the **wpp::Object::createInstance()** method and pass the instance ID as a parameter, if the ID is not important, then it can be omitted, in which case the first available value will be taken.
+\code{.cpp}
+Instance *deviceInst = deviceObj->createInstance();
+\endcode
+
+It should be noted that there are two ways of accessing objects: specialized and generalized. The generalized interface was given above, but if you need to access a specific interface inherent only to the **wpp::Device** object, then you should use a specialized method.
+\code{.cpp}
+ObjectSpec<Device> &deviceObj = client.registry().device();
+Device *deviceInst = deviceObj.createInstanceSpec();
+\endcode
+
+If the object instance has already been created and you need to access it, you can use one of the following methods: **wpp::Object::instance()** or **wpp::ObjectSpec<T>::instanceSpec()**.
+\code{.cpp}
+Instance *deviceInst = client.registry().object(OBJ_ID::DEVICE).instance(0);
+Device *deviceInst = client.registry().device().instanceSpec(0);
+\endcode
+
+After creating the instance, we can proceed to its initialization. First let's clarify that according to [**Lightweight Machine to Machine Technical Specification**](https://www.openmobilealliance.org/release/LightweightM2M/V1_1_1-20190617-A/OMA-TS-LightweightM2M_Core-V1_1_1-20190617-A .pdf) there are three types of operations that can be performed by the server on the data of the object instance: writing, reading and execution, but only writing and reading can be performed from the user's side, since the behavior when performed is specified by the user, and there is no point in duplicating the behavior from the user's side.
+
+To set the value, there are two types of methods **wpp::Instance::set()** and **wpp::Instance::setMove()** the first creates two copies in memory, the second moves the data from the user change to the instance. A similar situation with obtaining a value is two methods **wpp::Instance::get()** and **wpp::Instance::getPtr()**, the first returns a copy of the data, the second a constant pointer to the data stored in the instance, which means that the user will not be able to change them. When writing or reading data, two parameters are passed to the corresponding method, the first indicates the ID of the resource to which it is necessary to write or from which it is necessary to read, the second parameter the user variable from which the value for writing will be taken, or to which the value of the resource will be written. Data is stored as resources inside the object instance. Each resource has its own unique ID, which is the same for all instances of the object. The purpose and characteristics of each resource in the object are standardized and described [**here**](https://technical.openmobilealliance.org/OMNA/LwM2M/LwM2MRegistry.html).
+
+Let's consider the most important characteristics:
+1. A resource has only one type of data throughout its existence. Data types are standardized and have their representation in **Wpp**: **STRING_T** (String), **INT_T** (Integer), **UINT_T** (Unsigned Integer), **FLOAT_T** (Float) , **BOOL_T** (Boolean), **OPAQUE_T** (Opaque), **TIME_T** (Time), **OBJ_LINK_T** (Objlnk), **CORE_LINK_T** (Corelnk), **EXECUTE_T** (none). The data type of the value being set or read must always be one of the above.
+2. A resource can contain several values of the same type (as an array), in which case the resource is considered **MULTIPLE**, and each element of this resource is called a **resource instance**. Each resource instance has its own unique ID within this resource. Therefore, if you need to refer to a resource instance, then in the corresponding method you need to specify two values, the first will indicate the ID of the resource itself, the other will indicate the ID of the resource instance.
+3. Resources may have certain restrictions regarding the values they store, these restrictions are described by the standard and reflected in the object implementations.
+
+Let's initialize the **wpp::Device** object, each object implementation has a list of available resources in the form of an enum for easier access.
+\code{.cpp}
+deviceInst->set(Device::ERROR_CODE_11, (INT_T)Device::NO_ERROR);
+deviceInst->set(Device::SUPPORTED_BINDING_AND_MODES_16, WPP_BINDING_UDP);
+deviceInst->set(Device::MANUFACTURER_0, (STRING_T)"Wakaama Plus");
+deviceInst->set(Device::MODEL_NUMBER_1, (STRING_T)"Lightweight M2M Client");
+deviceInst->set(Device::SERIAL_NUMBER_2, (STRING_T)"0123456789");
+\endcode
+
+If the resource has type **EXECUTE_T**, then this resource is functional, the function bound to it will be executed when the server applies the execute operation to the specified resource. For example, let's set a function that must be executed when the server wants to reboot the device.
+\code{.cpp}
+deviceInst->set(Device::REBOOT_4, (EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) {
+    requestRebootForDevice();
+    return true;
+});
+\endcode
+
+Objects are not required to implement all resources, only the main ones that are marked as MANDATORY in the documentation, so the implementation of the object is made in such a way that it allows turning on and off the necessary resources through the definition, which will reduce memory consumption. Each implementation of the object contains a file **<object name>Config.h** through which you can enable or disable the required resource, the file for the object can be found at the following path **wpp/registry/objects/<object name>/<object name>Config.h**.
+
+The complete version of the code for initializing the **wpp::Device** object.
+\code{.cpp}
+void device_init(WppClient &client) {
+    Object *deviceObj = client.registry().object(OBJ_ID::DEVICE);
+    Instance *deviceInst = deviceObj->createInstance();
+
+    deviceInst->set({Device::ERROR_CODE_11, 0}, (INT_T)Device::NO_ERROR);
+    deviceInst->set(Device::SUPPORTED_BINDING_AND_MODES_16, WPP_BINDING_UDP);
+    deviceInst->set(Device::MANUFACTURER_0, (STRING_T)"Wakaama Plus");
+    deviceInst->set(Device::MODEL_NUMBER_1, (STRING_T)"Lightweight M2M Client");
+    deviceInst->set(Device::SERIAL_NUMBER_2, (STRING_T)"0123456789");
+    deviceInst->set(Device::REBOOT_4, (EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) {
+        requestRebootForDevice();
+        return true;
+    });
+}
+\endcode
+
+For the **wpp::Lwm2mServer** object.
+\code{.cpp}
+void server_init(WppClient &client) {
+    ObjectSpec<Lwm2mServer> &serverObj = client.registry().lwm2mServer();
+    Lwm2mServer *serverInst = serverObj.createInstanceSpec();
+
+	serverInst->set(Lwm2mServer::SHORT_SERVER_ID_0, INT_T(123));
+	serverInst->set(Lwm2mServer::BINDING_7, WPP_BINDING_UDP);
+	serverInst->set(Lwm2mServer::LIFETIME_1, TIME_T(25));
+	serverInst->set(Lwm2mServer::NOTIFICATION_STORING_WHEN_DISABLED_OR_OFFLINE_6, false);
+}
+\endcode
+
+For the **wpp::Lwm2mSecurity** object.
+\code{.cpp}
+void security_init(WppClient &client) {
+    Object *securityObj = &client.registry().lwm2mSecurity();
+    Instance *securityInst = securityObj.createInstance();
+
+    securityInst->set(Lwm2mSecurity::SECURITY_MODE_2, (INT_T)LWM2M_SECURITY_MODE_NONE);
+    securityInst->set(Lwm2mSecurity::BOOTSTRAP_SERVER_1, false);
+    securityInst->set(Lwm2mSecurity::SHORT_SERVER_ID_10, (INT_T)123);
+
+    STRING_T uri = "coap://demodm.friendly-tech.com:5683";
+    securityInst->setMove(Lwm2mSecurity::LWM2M_SERVER_URI_0, uri);
+}
+\endcode
+
+Let's give an example of the code for getting data from an object.
+\code{.cpp}
+void read_device_data(WppClient &client) {
+    Instance *deviceInst = client.registry().device().instance();
+
+    INT_T errorCode;
+    STRING_T binding;
+    STRING_T manufacture;
+
+    deviceInst->get({Device::ERROR_CODE_11, 0}, errorCode);
+    deviceInst->get(Device::SUPPORTED_BINDING_AND_MODES_16, binding);
+    deviceInst->get(Device::MANUFACTURER_0, manufacture);
+
+    const STRING_T *model;
+    deviceInst->getPtr(Device::MODEL_NUMBER_1, &model);
+}
+\endcode
+
+Consider the interface for monitoring objects and instances.
+
 ### Platform Dependencies {#ex_platform_dependent}
 ### Wpp Task Queue {#ex_wpp_task_queue}
 ### Object Maker Tools {#ex_object_maker_tools}

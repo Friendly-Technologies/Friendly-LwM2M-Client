@@ -13,7 +13,7 @@ This document provides detailed instructions on how to build the WakaamaPlus pro
 - [Wakaama configuration](@ref b_wakaamaconf)
 - [WPP configuration](@ref b_wppconf)
 ***
-- [Static build variant](@ref b_staticvar)
+- [Static variant](@ref b_staticvar)
 - [Source variant](@ref b_sourcevar)
 
 ***
@@ -225,7 +225,19 @@ PATH - `wpp/configs/wpp_config.cmake`
 **WPP_LOGS_LEVEL** - set logs detalization for `WPP_ENABLE_LOGS ON` (default: **0**)
 
 ***
-## Static build variant {#b_staticvar}
+## Static variant {#b_staticvar}
+
+**Definition:** The static build option in LwM2M indicates the process of compiling and assembling protocol code that includes all necessary libraries and dependencies, creating a single executable file with closed dependencies.
+
+**Advantages:** Ease of installation and deployment, as all dependencies are included in one file. Can be useful in resource-constrained environments where executable autonomy is desired.
+
+**Disadvantages:** Larger executable size, and updating dependencies may require recompiling the entire project.
 
 ***
 ## Source variant {#b_sourcevar}
+
+**Definition:** The source code option in LwM2M indicates the use of the protocol source code without compiling it into a single executable file. This means that different components can be compiled independently of each other and then combined in an application.
+
+**Advantages:** Flexibility in choosing and updating dependencies, the ability to optimize and compile only the necessary components.
+
+**Disadvantages:** Requires more steps to deploy, but provides more flexibility in selecting components to compile.

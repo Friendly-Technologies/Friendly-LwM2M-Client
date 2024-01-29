@@ -604,5 +604,11 @@ int main() {
 \endcode
 
 ### Platform Dependencies {#ex_platform_dependent}
+
+Wpp has a part that depends on the platform on which the library is running. This part is presented in the form of three interfaces **wpp::WppPlatform**, **wpp::WppGuard** and **wpp::WppConnection**, which must be implemented by the user. To get more information about their purpose, you can go to the corresponding part with a description of the code, and to get an implementation example, go to the [**platform**](../../examples/platform) folder.
+
 ### Wpp Task Queue {#ex_wpp_task_queue}
+
+
+
 ### Object Maker Tools {#ex_object_maker_tools}

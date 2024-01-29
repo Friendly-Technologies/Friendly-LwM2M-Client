@@ -50,7 +50,6 @@ class WppClient;
 class WppTaskQueue {
 public:
 	using task_id_t = uint32_t;
-	using ctx_t = void *;
 	/**
 	 * Keep in mind that while std::function itself is always copy able,
 	 * it might hold a callable object (like a lambda) that captures
@@ -59,7 +58,7 @@ public:
 	 * but will throw a std::bad_function_call exception at runtime if
 	 * you try to call the copied std::function.
 	 */
-	using task_t = std::function<bool(WppClient&, ctx_t)>;
+	using task_t = std::function<bool(WppClient&, void *)>;
 
 private:
 	enum TaskState : uint8_t {
@@ -74,7 +73,7 @@ private:
 		task_t task;
 		time_t delaySec;
 		time_t nextCallTime;
-		ctx_t ctx = NULL;
+		void *ctx = NULL;
 		size_t ctxSize = 0;
 		TaskState state;
 	};
@@ -113,7 +112,7 @@ public:
 	 * 			   queue.
 	 * @return id of created task or WPP_ERR_TASK_ID
 	 */
-	static task_id_t addTask(ctx_t ctx, time_t delaySec, task_t task);
+	static task_id_t addTask(void *ctx, time_t delaySec, task_t task);
 
 	/**
 	 * @brief Add task to queue, ctx passed to task by pointer with copy,
@@ -129,7 +128,7 @@ public:
 	 * 			   the queue, and relese allocated memory for ctx.
 	 * @return id of created task or WPP_ERR_TASK_ID
 	 */
-	static task_id_t addTaskWithCopy(const ctx_t ctx, size_t size, time_t delaySec, task_t task);
+	static task_id_t addTaskWithCopy(const void *ctx, size_t size, time_t delaySec, task_t task);
 
 	/**
 	 * @brief Returns count of tasks in the queue.

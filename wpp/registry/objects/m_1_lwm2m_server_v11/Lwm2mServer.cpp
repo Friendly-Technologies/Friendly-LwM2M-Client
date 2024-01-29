@@ -188,7 +188,7 @@ void Lwm2mServer::resourcesInit() {
 	resource(BOOTSTRAP_REQUEST_TRIGGER_9)->set((EXECUTE_T)[this](Instance& inst, ID_T resId, const OPAQUE_T& data) {
 		if (!WppTaskQueue::isTaskExist(_requestBootstrapTaskId)) {
 			WPP_LOGI(TAG, "Bootstrap Request Trigger: Bootstrap request is started");
-			_requestBootstrapTaskId = WppTaskQueue::addTask(WPP_TASK_DEF_DELAY_S, [this](WppClient &client, WppTaskQueue::ctx_t ctx) -> bool {
+			_requestBootstrapTaskId = WppTaskQueue::addTask(WPP_TASK_DEF_DELAY_S, [this](WppClient &client, void *ctx) -> bool {
 				getContext().state = STATE_BOOTSTRAP_REQUIRED;
 				return true;
 			});

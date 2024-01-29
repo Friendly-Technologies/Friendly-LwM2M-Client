@@ -48,7 +48,7 @@ void FirmwareUpdateImpl::instEvent(Instance &inst, EVENT_ID_T eventId) {
         inst.get(FirmwareUpdate::PACKAGE_URI_1, uri);
         _downloader.startDownloading(uri, [](string file) { 
             cout << "FW is downloaded to file: " << file << endl;
-            WppTaskQueue::addTask(5, [](WppClient &client, WppTaskQueue::ctx_t ctx) -> bool {
+            WppTaskQueue::addTask(5, [](WppClient &client, void *ctx) -> bool {
                 cout << "FW STATE_3 changed to S_DOWNLOADED" << endl;
                 client.registry().firmwareUpdate().instance()->set(FirmwareUpdate::STATE_3, (INT_T)FirmwareUpdate::S_DOWNLOADED);
                 return true;
@@ -98,7 +98,7 @@ void FirmwareUpdateImpl::update(Instance& inst) {
 
     inst.set(FirmwareUpdate::STATE_3, (INT_T)FirmwareUpdate::S_UPDATING);
     
-    WppTaskQueue::addTask(10, [](WppClient &client, WppTaskQueue::ctx_t ctx) -> bool {
+    WppTaskQueue::addTask(10, [](WppClient &client, void *ctx) -> bool {
         Instance *fw = client.registry().firmwareUpdate().instance();
         Instance *dev = client.registry().device().instance();
         

@@ -368,7 +368,7 @@ deviceInst->set(Device::REBOOT_4, (EXECUTE_T)[](Instance& inst, ID_T resId, cons
 });
 \endcode
 
-Objects are not required to implement all resources, only the main ones that are marked as MANDATORY in the documentation, so the implementation of the object is made in such a way that it allows turning on and off the necessary resources through the definition, which will reduce memory consumption. Each implementation of the object contains a file **<object name>Config.h** through which you can enable or disable the required resource, the file for the object can be found at the following path **wpp/registry/objects/<object name>/<object name>Config.h**.
+Objects are not required to implement all resources, only the main ones that are marked as MANDATORY in the documentation, so the implementation of the object is made in such a way that it allows turning on and off the necessary resources through the definition, which will reduce memory consumption. Each implementation of the object contains a file **object_name+Config.h** through which you can enable or disable the required resource, the file for the object can be found at the following path **wpp/registry/objects/object_name/object_name+Config.h**.
 
 The complete version of the code for initializing the **wpp::Device** object.
 \code{.cpp}
@@ -405,7 +405,7 @@ For the **wpp::Lwm2mSecurity** object.
 \code{.cpp}
 void security_init(WppClient &client) {
     Object *securityObj = &client.registry().lwm2mSecurity();
-    Instance *securityInst = securityObj.createInstance();
+    Instance *securityInst = securityObj->createInstance();
 
     securityInst->set(Lwm2mSecurity::SECURITY_MODE_2, (INT_T)LWM2M_SECURITY_MODE_NONE);
     securityInst->set(Lwm2mSecurity::BOOTSTRAP_SERVER_1, false);
@@ -434,7 +434,174 @@ void read_device_data(WppClient &client) {
 }
 \endcode
 
-Consider the interface for monitoring objects and instances.
+Consider the interface for monitoring objects and instances. First, consider the method of receiving events from **wpp::Object**. To observe objects, it is necessary to implement one of the interfaces: **wpp::ObjActObserver**, **wpp::ObjOpObserver**, and subscribe to the observation by calling the corresponding method **wpp::ObjSubject::opSubscribe()** or **wpp::ObjSubject::actSubscribe()**. **wpp::ObjActObserver** allows to receive information about events that may require certain actions from the owner of the object, currently there is only one action, a request to restore the initial state of the object, upon receiving this request, the user can restore the initial state of the object if necessary. **wpp::ObjOpObserver** are informational events that inform the user about operations performed on the object from the server side. Currently, there are two events, about the creation of an object instance and its deletion.
+
+Consider an example of creating an observer and registering it. Let's create an **ObjectObserver** class that will inherit from **wpp::ObjActObserver** and **wpp::ObjOpObserver**.
+\code{.cpp}
+class ObjectObserver : public ObjActObserver, public ObjOpObserver {
+    void objectRestore(Object &object) override {}
+    void instanceCreated(Object &object, ID_T instanceId) override {}
+    void instanceDeleting(Object &object, ID_T instanceId) override {}
+};
+// Creating global observer for all object
+static ObjectObserver objObserver; 
+\endcode
+
+Let's update the implementation of the **device_init()**, **server_init()**, **security_init()** functions by adding the **objObserver** observer registration to them.
+\code{.cpp}
+...
+deviceObj->opSubscribe(&objObserver);
+deviceObj->actSubscribe(&objObserver);
+...
+serverObj.opSubscribe(&objObserver);
+serverObj.actSubscribe(&objObserver);
+...
+securityObj->opSubscribe(&objObserver);
+securityObj->actSubscribe(&objObserver);
+...
+\endcode
+
+A similar approach is also implemented for monitoring **wpp::Instance** events. To observe instances, it is necessary to implement one of the interfaces: **wpp::InstOpObserver**, **wpp::InstEventObserver**, and subscribe to the observation by calling the corresponding method **wpp::InstSubject::opSubscribe()** or **wpp::InstSubject::eventSubscribe()**. **wpp::InstOpObserver** are informational events that notify the user about operations performed on the instance from the server side. Currently, there are four events: writing to the resource, reading, executing the resource, completely replacing one of the instances (in fact, the old instance is deleted and a new one is substituted in its place, but the observer remains valid). **wpp::InstEventObserver** allows the user to receive information about specific events of the object inherent in the implementation of the instance.
+
+Will give an example of creating an observer and registering it. Let's create an **InstanceObserver** class that will inherit from **wpp::InstOpObserver** and **wpp::InstEventObserver**.
+\code{.cpp}
+class InstanceObserver : public InstEventObserver, public InstOpObserver {
+    void instEvent(Instance &inst, EVENT_ID_T eventId) override {}
+    void resourceRead(Instance &inst, const ResLink &resource) override {}
+    void resourceWrite(Instance &inst, const ResLink &resource) override {}
+    void resourceExecute(Instance &inst, const ResLink &resource) override {}
+    void resourcesReplaced(Instance &inst) override {}
+};
+// Creating global observer for all object
+static InstanceObserver instObserver; 
+\endcode
+
+Let's update the implementation of **device_init()**, **server_init()**, **security_init()** functions by adding **instObserver** observer registration to them.
+\code{.cpp}
+...
+deviceInst->opSubscribe(&instObserver);
+deviceInst->eventSubscribe(&instObserver);
+...
+serverInst->opSubscribe(&instObserver);
+serverInst->eventSubscribe(&instObserver);
+...
+securityInst->opSubscribe(&instObserver);
+securityInst->eventSubscribe(&instObserver);
+...
+\endcode
+
+The full version of the code that gives an example of obtaining access to objects, creating their instances and registering observers for objects and instances.
+\code{.cpp}
+#include "WppClient.h"
+#include "WppRegistry.h"
+using namespace wpp;
+
+class ObjectObserver : public ObjActObserver, public ObjOpObserver {
+    void objectRestore(Object &object) override {}
+    void instanceCreated(Object &object, ID_T instanceId) override {}
+    void instanceDeleting(Object &object, ID_T instanceId) override {}
+};
+// Creating global observer for all object
+static ObjectObserver objObserver; 
+
+class InstanceObserver : public InstEventObserver, public InstOpObserver {
+    void instEvent(Instance &inst, EVENT_ID_T eventId) override {}
+    void resourceRead(Instance &inst, const ResLink &resource) override {}
+    void resourceWrite(Instance &inst, const ResLink &resource) override {}
+    void resourceExecute(Instance &inst, const ResLink &resource) override {}
+    void resourcesReplaced(Instance &inst) override {}
+};
+// Creating global observer for all object
+static InstanceObserver instObserver; 
+
+void device_init(WppClient &client) {
+    Object *deviceObj = client.registry().object(OBJ_ID::DEVICE);
+    deviceObj->opSubscribe(&objObserver);
+    deviceObj->actSubscribe(&objObserver);
+
+    Instance *deviceInst = deviceObj->createInstance();
+    deviceInst->opSubscribe(&instObserver);
+    deviceInst->eventSubscribe(&instObserver);
+
+    deviceInst->set({Device::ERROR_CODE_11, 0}, (INT_T)Device::NO_ERROR);
+    deviceInst->set(Device::SUPPORTED_BINDING_AND_MODES_16, WPP_BINDING_UDP);
+    deviceInst->set(Device::MANUFACTURER_0, (STRING_T)"Wakaama Plus");
+    deviceInst->set(Device::MODEL_NUMBER_1, (STRING_T)"Lightweight M2M Client");
+    deviceInst->set(Device::SERIAL_NUMBER_2, (STRING_T)"0123456789");
+    deviceInst->set(Device::REBOOT_4, (EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) {
+        requestRebootForDevice();
+        return true;
+    });
+}
+
+void server_init(WppClient &client) {
+    ObjectSpec<Lwm2mServer> &serverObj = client.registry().lwm2mServer();
+    serverObj.opSubscribe(&objObserver);
+    serverObj.actSubscribe(&objObserver);
+
+    Lwm2mServer *serverInst = serverObj.createInstanceSpec();
+    serverInst->opSubscribe(&instObserver);
+    serverInst->eventSubscribe(&instObserver);
+
+	serverInst->set(Lwm2mServer::SHORT_SERVER_ID_0, INT_T(123));
+	serverInst->set(Lwm2mServer::BINDING_7, WPP_BINDING_UDP);
+	serverInst->set(Lwm2mServer::LIFETIME_1, TIME_T(25));
+	serverInst->set(Lwm2mServer::NOTIFICATION_STORING_WHEN_DISABLED_OR_OFFLINE_6, false);
+}
+
+void security_init(WppClient &client) {
+    Object *securityObj = &client.registry().lwm2mSecurity();
+    securityObj->opSubscribe(&objObserver);
+    securityObj->actSubscribe(&objObserver);
+
+    Instance *securityInst = securityObj->createInstance();
+    securityInst->opSubscribe(&instObserver);
+    securityInst->eventSubscribe(&instObserver);
+
+    securityInst->set(Lwm2mSecurity::SECURITY_MODE_2, (INT_T)LWM2M_SECURITY_MODE_NONE);
+    securityInst->set(Lwm2mSecurity::BOOTSTRAP_SERVER_1, false);
+    securityInst->set(Lwm2mSecurity::SHORT_SERVER_ID_10, (INT_T)123);
+
+    STRING_T uri = "coap://demodm.friendly-tech.com:5683";
+    securityInst->setMove(Lwm2mSecurity::LWM2M_SERVER_URI_0, uri);
+}
+
+void read_device_data(WppClient &client) {
+    Instance *deviceInst = client.registry().device().instance();
+
+    INT_T errorCode;
+    STRING_T binding;
+    STRING_T manufacture;
+
+    deviceInst->get({Device::ERROR_CODE_11, 0}, errorCode);
+    deviceInst->get(Device::SUPPORTED_BINDING_AND_MODES_16, binding);
+    deviceInst->get(Device::MANUFACTURER_0, manufacture);
+
+    const STRING_T *model;
+    deviceInst->getPtr(Device::MODEL_NUMBER_1, &model);
+}
+
+int main() {
+    Connection connection;
+    
+    WppClient::create({"SinaiRnDTestLwm2m", "", ""}, connection);
+    if (WppClient::isCreated() == false) return -1;
+    WppClient *client = WppClient::takeOwnershipBlocking();
+
+    device_init(*client);
+    server_init(*client);
+    security_init(*client);
+    read_device_data(*client);
+
+    while (true) {
+        client->loop();
+        some_other_code();
+        delaySec(1);
+    }
+
+    WppClient::remove();
+}
+\endcode
 
 ### Platform Dependencies {#ex_platform_dependent}
 ### Wpp Task Queue {#ex_wpp_task_queue}

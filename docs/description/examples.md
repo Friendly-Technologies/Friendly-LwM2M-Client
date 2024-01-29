@@ -1,6 +1,6 @@
 \page examples_tag Examples of Usage
 
-This section covers examples of the use of the user interface and code generation utilities that were described in more detail in the [Architecture](@ref architecture_tag) section. A complete example of using Wpp is in the [**examples**](../../examples/) folder, it does not match the code in this section because the code in this section shows how to use **Wpp** and its interfaces.
+This section covers examples of the use of the user interface and code generation utilities that were described in more detail in the [Architecture](@ref architecture_tag) section. A complete example of using **Wpp** is in the [**examples**](../../examples/) folder, it does not match the code in this section because the code in this section shows how to use **Wpp** and its interfaces.
 
 - [State Management](@ref ex_client_state_management)
 - [Registry Management](@ref ex_registry_management)
@@ -605,10 +605,110 @@ int main() {
 
 ### Platform Dependencies {#ex_platform_dependent}
 
-Wpp has a part that depends on the platform on which the library is running. This part is presented in the form of three interfaces **wpp::WppPlatform**, **wpp::WppGuard** and **wpp::WppConnection**, which must be implemented by the user. To get more information about their purpose, you can go to the corresponding part with a description of the code, and to get an implementation example, go to the [**platform**](../../examples/platform) folder.
+**Wpp**  has a part that depends on the platform on which the library is running. This part is presented in the form of three interfaces **wpp::WppPlatform**, **wpp::WppGuard** and **wpp::WppConnection**, which must be implemented by the user. To get more information about their purpose, you can go to the corresponding part with a description of the code, and to get an implementation example, go to the [**platform**](../../examples/platform) folder.
 
 ### Wpp Task Queue {#ex_wpp_task_queue}
 
+**Wpp** has an internal simplified task scheduler that runs in the context of the library and processes existing tasks when calling **wpp::WppClient::loop()**. Its work features are described in more detail [**here**](@ref arch_wpp_task_queue). It is used simultaneously for the internal needs of the libraries, such as updating the time in the resource of the Device object, and for the needs of the user. That is, the user can create his own task that will be performed in the context of the library, once or during a certain period of time, a more detailed description of the interface can be found at the following link **wpp::WppTaskQueue**.
 
+Let's give an example of creating a task that will be executed only once in 5 seconds.
+\code{.cpp}
+WppTaskQueue::addTask(5, [](WppClient &client, void *ctx) -> bool {
+    std::cout << "Wpp user task 1" << std::endl;
+    return true;
+});
+\endcode
+
+An example of a task that will be performed continuously with an interval of 2 seconds.
+\code{.cpp}
+WppTaskQueue::addTask(2, [](WppClient &client, void *ctx) -> bool {
+    std::cout << "Wpp user task 2" << std::endl;
+    return false;
+});
+\endcode
+
+An example of a task that will be performed 3 times with an interval of 10 seconds.
+\code{.cpp}
+WppTaskQueue::addTask(10, [](WppClient &client, void *ctx) -> bool {
+    static int cnt = 0;
+    std::cout << "Wpp user task 3" << std::endl;
+    cnt++;
+    return cnt == 3;
+});
+\endcode
+
+If necessary, the context may be passed to the task by reference or by copying.
+Let's give an example of creating a task that will be executed only once in 3 seconds and pass a link to the data to it.
+\code{.cpp}
+STRING_T data1 = "Test string for task 4!";
+WppTaskQueue::addTask(&data1, 5, [](WppClient &client, void *ctx) -> bool {
+    std::cout << "Wpp user task 4, data: " << *((STRING_T *)ctx) << std::endl;
+    return true;
+});
+\endcode
+
+Let's give an example of creating a task that will be executed only once after 4 seconds and transfer a copy of the data to it.
+\code{.cpp}
+STRING_T data2 = "Test string for task 5!";
+WppTaskQueue::addTaskWithCopy(data2.c_str(), 5, [](WppClient &client, void *ctx) -> bool {
+    std::cout << "Wpp user task 5, data: " << (char *)ctx << std::endl;
+    return true;
+});
+\endcode
+
+
+The whole example together.
+\code{.cpp}
+#include "WppClient.h"
+#include "WppRegistry.h"
+using namespace wpp;
+
+...
+
+int main() {
+    Connection connection;
+    
+    WppClient::create({"SinaiRnDTestLwm2m", "", ""}, connection);
+    if (WppClient::isCreated() == false) return -1;
+    WppClient *client = WppClient::takeOwnershipBlocking();
+
+    device_init(*client);
+    server_init(*client);
+    security_init(*client);
+    read_device_data(*client);
+
+    WppTaskQueue::addTask(5, [](WppClient &client, void *ctx) -> bool {
+        std::cout << "Wpp user task 1" << std::endl;
+        return true;
+    });
+    WppTaskQueue::addTask(2, [](WppClient &client, void *ctx) -> bool {
+        std::cout << "Wpp user task 2" << std::endl;
+        return false;
+    });
+    WppTaskQueue::addTask(10, [](WppClient &client, void *ctx) -> bool {
+        static int cnt = 0;
+        std::cout << "Wpp user task 3" << std::endl;
+        cnt++;
+        return cnt == 3;
+    });
+    STRING_T data1 = "Test string for task 4!";
+    WppTaskQueue::addTask(&data1, 5, [](WppClient &client, void *ctx) -> bool {
+        std::cout << "Wpp user task 4, data: " << *((STRING_T *)ctx) << std::endl;
+        return true;
+    });
+    STRING_T data2 = "Test string for task 5!";
+    WppTaskQueue::addTaskWithCopy(data2.c_str(), data2.size() , 5, [](WppClient &client, void *ctx) -> bool {
+        std::cout << "Wpp user task 5, data: " << (char *)ctx << std::endl;
+        return true;
+    });
+    while (true) {
+        client->loop();
+        some_other_code();
+        delaySec(1);
+    }
+
+    WppClient::remove();
+}
+\endcode
 
 ### Object Maker Tools {#ex_object_maker_tools}

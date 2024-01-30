@@ -32,6 +32,6 @@ target_link_wpp(Wpp)
 # Custom command to generate wpp_definitions.cmake
 add_custom_command(
     TARGET Wpp POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -DARGV0="${WPP_DEFINITIONS}" -DARGV1="${CMAKE_CURRENT_BINARY_DIR}/wpp_definitions.cmake" -P ${CMAKE_CURRENT_SOURCE_DIR}/wpp_definitions_gen.cmake
+    COMMAND ${CMAKE_COMMAND} -DARGV0="${WPP_DEFINITIONS}" -DARGV1="${CMAKE_CURRENT_BINARY_DIR}/wpp_definitions.cmake" -P ${CMAKE_CURRENT_SOURCE_DIR}/build_utils/wpp_definitions_gen.cmake
     COMMENT "Generating wpp_definitions.cmake"
 )

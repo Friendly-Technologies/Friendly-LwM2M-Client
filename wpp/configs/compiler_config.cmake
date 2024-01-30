@@ -61,6 +61,3 @@ else()
     message(STATUS "RTTI is not supported")
     add_compile_options(-fno-rtti)
 endif()
-
-# Share defines with target
-set(WPP_DEFINITIONS ${WPP_DEFINITIONS} PARENT_SCOPE)

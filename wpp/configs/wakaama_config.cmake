@@ -1,3 +1,15 @@
+# Wakaama should be always in the client mode
+set(WPP_DEFINITIONS ${WPP_DEFINITIONS} LWM2M_CLIENT_MODE)
+
+# CoAP block size used by CoAP layer when performing block-wise transfers. Possible values: 16, 32, 64, 128, 256, 512 and 1024.
+set(WPP_DEFINITIONS ${WPP_DEFINITIONS} LWM2M_COAP_DEFAULT_BLOCK_SIZE=1024)
+
+# Define your own endian if the endian is different from the platform default
+# If your target platform uses big-endian format
+# set(WPP_DEFINITIONS ${WPP_DEFINITIONS} LWM2M_BIG_ENDIAN)
+# If your target platform uses little-endian format
+# set(WPP_DEFINITIONS ${WPP_DEFINITIONS} LWM2M_LITTLE_ENDIAN)
+
 option(LWM2M_BOOTSTRAP "Enable LWM2M Bootstrap support in a LWM2M Client" OFF)
 if (LWM2M_BOOTSTRAP)
     set(WPP_DEFINITIONS ${WPP_DEFINITIONS} LWM2M_BOOTSTRAP)
@@ -42,15 +54,6 @@ option(LWM2M_WITH_LOGS "Enable logs for wakaama core" OFF)
 if (LWM2M_WITH_LOGS)
     set(WPP_DEFINITIONS ${WPP_DEFINITIONS} LWM2M_WITH_LOGS)
 endif()
-
-# CoAP block size used by CoAP layer when performing block-wise transfers. Possible values: 16, 32, 64, 128, 256, 512 and 1024.
-set(WPP_DEFINITIONS ${WPP_DEFINITIONS} LWM2M_COAP_DEFAULT_BLOCK_SIZE=1024)
-
-# Define your own endian if the endian is different from the platform default
-# If your target platform uses big-endian format
-# set(WPP_DEFINITIONS ${WPP_DEFINITIONS} LWM2M_BIG_ENDIAN)
-# If your target platform uses little-endian format
-# set(WPP_DEFINITIONS ${WPP_DEFINITIONS} LWM2M_LITTLE_ENDIAN)
 
 # Share defines with target
 set(WPP_DEFINITIONS ${WPP_DEFINITIONS} PARENT_SCOPE)

@@ -5,7 +5,7 @@
 - [Build Instructions](@ref build_tag)
 - [Architecture](@ref architecture_tag)
 - [Examples of Usage](@ref examples_tag)
-- [Code documentation](@ref code_tag)
+- [Code Documentation](@ref code_tag)
 
 ### Introduction to WakaamaPlus
 **WakaamaPlus (Wpp)** is an advanced extension of the open-source [**Wakaama**](https://github.com/eclipse/wakaama) project. **Wpp**  was created as a superstructure over [**Wakaama**](https://github.com/eclipse/wakaama) and its main value lies in its registry with implemented objects and their business logic. **Wpp** does not alter the behavior of the LwM2M and [**Wakaama**](https://github.com/eclipse/wakaama) projects, instead providing a robust framework for developing LwM2M client applications.

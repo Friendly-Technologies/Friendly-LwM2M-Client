@@ -207,7 +207,7 @@ void Device::resourcesInit() {
 
 	#if RES_3_13
 	resource(CURRENT_TIME_13)->set(TIME_T(WppPlatform::getTime()));
-	_currentTimeTaskId = WppTaskQueue::addTask(1, [this](WppClient &client, WppTaskQueue::ctx_t ctx) -> bool {
+	_currentTimeTaskId = WppTaskQueue::addTask(1, [this](WppClient &client, void *ctx) -> bool {
 		TIME_T currentTime = WppPlatform::getTime();
 		this->resource(CURRENT_TIME_13)->set(currentTime);
 		this->notifyServerResChanged({CURRENT_TIME_13,});

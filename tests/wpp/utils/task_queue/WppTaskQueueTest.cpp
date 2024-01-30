@@ -24,7 +24,7 @@ static void clearWppTaskQueue() {
 }
 
 static WppTaskQueue::task_t createDummyTask() {
-    return [](WppClient&, WppTaskQueue::ctx_t) { return true; };
+    return [](WppClient&, void *) { return true; };
 }
 
 TEST_CASE("WppTaskQueue: Task creating", "[addTask][addTaskWithCopy]") {
@@ -149,7 +149,7 @@ TEST_CASE("WppTaskQueue: Task state checking", "[isTaskExist][isTaskIdle][isTask
     }
 
     SECTION("Is task executing") {
-        WppTaskQueue::task_t task = [](WppClient& client, WppTaskQueue::ctx_t ctx) {
+        WppTaskQueue::task_t task = [](WppClient& client, void *ctx) {
             std::this_thread::sleep_for(std::chrono::seconds(2));
             return true;
         };
@@ -184,7 +184,7 @@ TEST_CASE("WppTaskQueue: Task executing") {
     REQUIRE(WppTaskQueue::getTaskCnt() == 0);
 
     SECTION("Task with null context") {
-        WppTaskQueue::task_t task = [](WppClient& client, WppTaskQueue::ctx_t ctx) {
+        WppTaskQueue::task_t task = [](WppClient& client, void *ctx) {
             REQUIRE(ctx == NULL);
             return true;
         };
@@ -200,7 +200,7 @@ TEST_CASE("WppTaskQueue: Task executing") {
 
     SECTION("Task with context") {
         char str[] = "Hello, world!";
-        WppTaskQueue::task_t task = [](WppClient& client, WppTaskQueue::ctx_t ctx) {
+        WppTaskQueue::task_t task = [](WppClient& client, void *ctx) {
             REQUIRE(ctx != NULL);
             REQUIRE(strcmp((char*)ctx, "Hello, world!") == 0);
             return true;
@@ -217,7 +217,7 @@ TEST_CASE("WppTaskQueue: Task executing") {
 
     SECTION("Task with copied context") {
         char str[] = "Hello, world!";
-        WppTaskQueue::task_t task = [](WppClient& client, WppTaskQueue::ctx_t ctx) {
+        WppTaskQueue::task_t task = [](WppClient& client, void *ctx) {
             REQUIRE(ctx != NULL);
             REQUIRE(strcmp((char*)ctx, "Hello, world!") == 0);
             return true;
@@ -233,7 +233,7 @@ TEST_CASE("WppTaskQueue: Task executing") {
     }
 
     SECTION("Task with delay call") {
-        WppTaskQueue::task_t task = [](WppClient& client, WppTaskQueue::ctx_t ctx) {
+        WppTaskQueue::task_t task = [](WppClient& client, void *ctx) {
             return true;
         };
         WppTaskQueue::task_id_t taskId = WppTaskQueue::addTask(2, task);
@@ -257,7 +257,7 @@ TEST_CASE("WppTaskQueue: Task executing") {
 
     SECTION("Task with double call") {
         int callCnt = 2;
-        WppTaskQueue::task_t task = [&callCnt](WppClient& client, WppTaskQueue::ctx_t ctx) {
+        WppTaskQueue::task_t task = [&callCnt](WppClient& client, void *ctx) {
             return !callCnt--;
         };
         WppTaskQueue::task_id_t taskId = WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, task);

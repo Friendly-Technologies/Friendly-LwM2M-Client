@@ -23,7 +23,7 @@ WppTaskQueue::task_id_t WppTaskQueue::addTask(time_t delaySec, task_t task) {
 	return addTask(WPP_TASK_DEF_CTX, delaySec, task);
 }
 
-WppTaskQueue::task_id_t WppTaskQueue::addTask(ctx_t ctx, time_t delaySec, task_t task) {
+WppTaskQueue::task_id_t WppTaskQueue::addTask(void *ctx, time_t delaySec, task_t task) {
 	if (delaySec < WPP_TASK_MIN_DELAY_S || WPP_TASK_MAX_DELAY_S < delaySec) return WPP_ERR_TASK_ID;
 
 	_taskQueueGuard.lock();
@@ -50,7 +50,7 @@ WppTaskQueue::task_id_t WppTaskQueue::addTask(ctx_t ctx, time_t delaySec, task_t
 	return id;
 }
 
-WppTaskQueue::task_id_t WppTaskQueue::addTaskWithCopy(const ctx_t ctx, size_t size, time_t delaySec, task_t task) {
+WppTaskQueue::task_id_t WppTaskQueue::addTaskWithCopy(const void *ctx, size_t size, time_t delaySec, task_t task) {
 	if (!ctx || !size || delaySec < WPP_TASK_MIN_DELAY_S || WPP_TASK_MAX_DELAY_S < delaySec) return WPP_ERR_TASK_ID;
 
 	_taskQueueGuard.lock();

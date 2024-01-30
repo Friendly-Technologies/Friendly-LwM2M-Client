@@ -712,3 +712,35 @@ int main() {
 \endcode
 
 ### Object Maker Tools {#ex_object_maker_tools}
+
+The purpose and general overview of the utilities is [**here**](@ref arch_object_maker_tools). We will give an example of generating, integrating, deleting and updating an object, for this we will use the object [**Temperature**](https://devtoolkit.openmobilealliance.org/OEditor/LWMOView?url=https%3A%2F%2Fraw.githubusercontent.com %2FOpenMobileAlliance%2Flwm2m-registry%2Fprod%2Fversion_history%2F3303-1_0.xml).
+
+First, consider an example of generating an object via a URL. The example of generation through a file is similar, so it will not be considered separately. For generation, we will use the following link [**Temperature 1.0**](https://raw.githubusercontent.com/OpenMobileAlliance/lwm2m-registry/prod/version_history/3303-1_0.xml).
+
+To interact with the utility, go to the **utils/object_maker** folder and start the generation.
+\code{.sh}
+./object_maker.py -g link https://raw.githubusercontent.com/OpenMobileAlliance/lwm2m-registry/prod/version_history/3303-1_0.xml
+\endcode
+
+If the generation was successful, the following message **[ObjectGenerator::]: the Object Temperature generated successfully** will be displayed in the terminal and a folder **o_3303_temperature_v10** with the code will be created in the current folder.
+
+After successful generation, you can proceed to the integration of the generated object in **wpp::WppRegistry**. For this, we will use the utility for integration.
+\code{.sh}
+./object_maker.py -i o_3303_temperature_v10
+\endcode
+
+If the integration is successful, the generated folder **o_3303_temperature_v10** will be moved to the following path **wpp/registry/objects**, a new method for accessing the temperature object will appear in **wpp::WppRegistry** and in the objects configuration file **wpp/configs/object_configs.cmake** new option to enable object **OBJ_O_3303_TEMPERATURE_V10** will be disabled by default, so to use integrated object you need to enable its support via **OBJ_O_3303_TEMPERATURE_V10**.
+
+For example, let's try to update the version of the object from 1.0 to 1.1. During an upgrade, all implementation code is migrated, and resource configurations are also migrated. To do this, we will use the update utility, which needs to specify two parameters: the path to the object to be updated (in our case, it is /home/user/wpp/registry/objects/o_3303_temperature_v10) and the path to the .xml file that contains the description for the new object (3303-1_1 .xml).
+\code{.sh}
+./object_maker.py -c /home/user/wpp/registry/objects/o_3303_temperature_v10 3303-1_1.xml
+\endcode
+
+It should be noted that after the update, the name of the option to enable the object changes from **OBJ_O_3303_TEMPERATURE_V10** to **OBJ_O_3303_TEMPERATURE_V11**.
+
+Also, using the utility, you can completely delete the object from the registry. To do this, you need to pass the path to the folder with the object to be deleted.
+\code{.sh}
+./object_maker.py -r /home/user/wpp/registry/objects/o_3303_temperature_v10
+\endcode
+
+During removal, the actions are the reverse of those during integration.

@@ -3,14 +3,11 @@
   <!-- Navigation index tabs for HTML output -->
   <navindex>
     <!-- Custom tabs for Markdown pages -->
-    <tab type="user" visible="yes" title="Build" url="@ref build_tag"/>
+    <tab type="user" visible="yes" title="Build Instructions" url="@ref build_tag"/>
     <tab type="user" visible="yes" title="Architecture" url="@ref architecture_tag"/>
-    <tab type="usergroup" visible="yes" title="Examples" url="@ref examples_tag">
-        <tab type="user" visible="yes" title="Example 1" url="@ref example1_tag"/>
-        <tab type="user" visible="yes" title="Example 2" url="@ref example2_tag"/>
-    </tab>
-  
-    <tab type="usergroup" visible="yes" title="Code" url="@ref code_tag">
+    <tab type="user" visible="yes" title="Examples of Usage" url="@ref examples_tag"/>
+
+    <tab type="usergroup" visible="yes" title="Code Documentation" url="@ref code_tag">
       <tab type="namespaces" visible="yes" title="Namespaces">
         <tab type="namespacelist" visible="yes" title="" intro="" />
         <tab type="namespacemembers" visible="yes" title="" intro="" />

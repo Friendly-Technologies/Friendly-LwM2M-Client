@@ -7,7 +7,7 @@ using namespace wpp;
 
 static WppTaskQueue::task_t createDummyTask()
 {
-    return [](WppClient &, WppTaskQueue::ctx_t)
+    return [](WppClient &, void *)
     { return true; };
 }
 

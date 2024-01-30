@@ -94,6 +94,7 @@ echo -e "Setup Doxygen DONE"
 echo -e "\nGenerating Doxygen documentation"
 cd docs
 doxygen Doxygen
+xdg-open html/index.html
 cd ..
 echo -e "Generating Doxygen documentation DONE"
 

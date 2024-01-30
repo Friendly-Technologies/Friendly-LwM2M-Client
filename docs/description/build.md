@@ -2,19 +2,19 @@
 
 
 This document provides detailed instructions on how to build the WakaamaPlus project. It covers requirements, setup steps, and common issues.
+- [Setup build environment](@ref b_setupbenv)
+  - [Repos Structure](@ref b_repostruct)
+  - [Environment Setup](@ref b_envsetup)
+  - [Source code](@ref b_sourcecode)
+  - [VS Code installation](@ref b_vscodeinstall)
+***
+- [Implementation and customisation](@ref b_implandcustmn)
+  - [Definitions and configurations](@ref b_defandconf)
+  - [Static WPP library](@ref b_staticvar)
+  - [Source WPP library](@ref b_sourcevar)
 
-- [Repos Structure](@ref b_repostruct)
-- [Environment Setup](@ref b_envsetup)
-- [Source code](@ref b_sourcecode)
-- [VS Code installation](@ref b_vscodeinstall)
-***
-- [Compiler configuration](@ref b_compilerconf)
-- [Object configuration](@ref b_objectconf)
-- [Wakaama configuration](@ref b_wakaamaconf)
-- [WPP configuration](@ref b_wppconf)
-***
-- [Static variant](@ref b_staticvar)
-- [Source variant](@ref b_sourcevar)
+
+# Setup build environment {#b_setupbenv}
 
 ***
 ## Repos Structure {#b_repostruct}
@@ -25,7 +25,7 @@ The current \[07.06.2023\] structure contains only 3 repos (other will be create
 * _Wakaama Upstream_ repo [https://github.com/eclipse/wakaama](https://github.com/eclipse/wakaama)
 * _Wakaama Copy_ \[as on 07.06.2023\]: [https://github.com/sinai-io/2305-Wakaama](https://github.com/sinai-io/2305-Wakaama)
 
-\image html build_1.png
+\image html build_1.png width=800
 
 ***
 ## Environment Setup {#b_envsetup}
@@ -117,127 +117,139 @@ If you need to add custom Kit or modify the list of available kits it can be don
 #### Cmake Tools doesn't want to configure projects (no button for it)
 > **Solution:** reinstall CMake and Cmake Tools extensions.
 
+
+# Implementation and customisation {#b_implandcustmn}
+
 ***
-## Compiler configuration {#b_compilerconf}
+## Definitions and configurations {#b_defandconf}
+
+We have 4 configuration types. And all of these configs (defines) developer can redefine/modify or implement to project by another method. Be free and careful.<br />
+Important, if you change configs in wpp/configs - all changes are applied to another part of the repository.<br />
+Best practices, create or copy configs and use your custom configurations.
+
+- [Compiler configuration](@ref b_compilerconf)
+- [Object configuration](@ref b_objectconf)
+- [Wakaama configuration](@ref b_wakaamaconf)
+- [WPP configuration](@ref b_wppconf)
+
+\image html build_6.png width=1000
+
+### Compiler configuration {#b_compilerconf}
 
 PATH - `wpp/configs/compiler_config.cmake`
 
-### Build options
+#### Build options
 
-**WPP_BUILD_WITH_EXCEPTIONS** - enable support of Exceptions (default: **OFF**)
+**WPP_BUILD_WITH_EXCEPTIONS** - enable support of Exceptions (default: **OFF**)<br />
+**WPP_BUILD_WITH_RTTI** - enable support of RTTI (default: **OFF**)<br />
+**WPP_BUILD_FOR_64_BIT** - build for 64-bit system or 32-bit (default: **ON**)<br />
+**CMAKE_POSITION_INDEPENDENT_CODE** - whether to create a position-independent target (default: **ON**) 
 
-**WPP_BUILD_WITH_RTTI** - enable support of RTTI (default: **OFF**)
+#### Compiler options
 
-**WPP_BUILD_FOR_64_BIT** - build for 64-bit system or 32-bit (default: **ON**)
-
-**CMAKE_POSITION_INDEPENDENT_CODE** - whether to create a position-independent target (default: **ON**)
-
-### Compiler options
-
-**Waggregate-return** - warn if any functions that return structures or unions are defined or called.
-
-**Wall** - this enables all the warnings about constructions that some users consider questionable, and that are easy to avoid, even in conjunction with macros.
-
-**Wcast-align** - warn whenever a pointer is cast such that the required alignment of the target is increased.
-
-**Wextra** - this enables some extra warning flags that are not enabled by -Wall. 
-
-**Wfloat-equal** - warn if floating-point values are used in equality comparisons.
-
-**Wpointer-arith** - warn about anything that depends on the “size of” a function type or of void.
-
-**Wshadow** - warn whenever a local variable or type declaration shadows another variable, parameter, type, class member (in C++), or instance variable (in Objective-C) or whenever a built-in function is shadowed.
-
-**Wswitch-default** - warn whenever a switch statement does not have a default case.
-
+**Waggregate-return** - warn if any functions that return structures or unions are defined or called.<br />
+**Wall** - this enables all the warnings about constructions that some users consider questionable, and that are easy to avoid, even in conjunction with macros.<br />
+**Wcast-align** - warn whenever a pointer is cast such that the required alignment of the target is increased.<br />
+**Wextra** - this enables some extra warning flags that are not enabled by -Wall.<br />
+**Wfloat-equal** - warn if floating-point values are used in equality comparisons.<br />
+**Wpointer-arith** - warn about anything that depends on the “size of” a function type or of void.<br />
+**Wshadow** - warn whenever a local variable or type declaration shadows another variable, parameter, type, class member (in C++), or instance variable (in Objective-C) or whenever a built-in function is shadowed.<br />
+**Wswitch-default** - warn whenever a switch statement does not have a default case.<br />
 **Wwrite-strings** - these warnings help you find at compile time code that can try 
-to write into a string constant, but only if you have been very careful about using const in declarations and prototypes.
-
-**Wno-unused-parameter** - unused parameters are common in this ifdef-littered code-base, but of no danger.
-
-**Wno-uninitialized** - too many false positives.
-
-**Wno-gnu-zero-variadic-macro-arguments** - allow usage ##__VA_ARGS__ in macros.
-
-**pedantic** - issue all the warnings demanded by strict ISO C and ISO C++; diagnose all programs that use forbidden extensions, and some other programs that do not follow ISO C and ISO C++.
-
-**Werror** - turn (most) warnings into errors.
-
+to write into a string constant, but only if you have been very careful about using const in declarations and prototypes.<br />
+**Wno-unused-parameter** - unused parameters are common in this ifdef-littered code-base, but of no danger.<br />
+**Wno-uninitialized** - too many false positives.<br />
+**Wno-gnu-zero-variadic-macro-arguments** - allow usage ##__VA_ARGS__ in macros.<br />
+**pedantic** - issue all the warnings demanded by strict ISO C and ISO C++; diagnose all programs that use forbidden extensions, and some other programs that do not follow ISO C and ISO C++.<br />
+**Werror** - turn (most) warnings into errors.<br />
 **Wno-error=cast-align** - disabled because of existing, non-trivially fixable code.
 
-***
-## Object configuration {#b_objectconf}
+### Object configuration {#b_objectconf}
 
 PATH - `wpp/configs/objects_config.cmake`
 
-### Mandatory objects config
+#### Mandatory objects config
 
-**OBJ_M_3_DEVICE_V12** - include mandatory Device object in the build (default: **ON**)
-
-**OBJ_M_1_LWM2M_SERVER_V11** - include mandatory Lwm2mServer object in the build  (default: **ON**)
-
+**OBJ_M_3_DEVICE_V12** - include mandatory Device object in the build (default: **ON**)<br />
+**OBJ_M_1_LWM2M_SERVER_V11** - include mandatory Lwm2mServer object in the build  (default: **ON**)<br />
 **OBJ_M_0_LWM2M_SECURITY_V11** - include mandatory Lwm2mSecurity object in the build  (default: **ON**)
 
-### Optional objects config
+#### Optional objects config
 
-**OBJ_O_4_CONNECTIVITY_MONITORING_V13** - include optional ConnectivityMonitoring object in the build  (default: **ON**)
-
-**OBJ_O_2_LWM2M_ACCESS_CONTROL_V11** - include optional Lwm2mAccessControl object in the build  (default: **ON**)
-
+**OBJ_O_4_CONNECTIVITY_MONITORING_V13** - include optional ConnectivityMonitoring object in the build  (default: **ON**)<br />
+**OBJ_O_2_LWM2M_ACCESS_CONTROL_V11** - include optional Lwm2mAccessControl object in the build  (default: **ON**)<br />
 **OBJ_O_5_FIRMWARE_UPDATE_V11** - include optional FirmwareUpdate object in the build  (default: **ON**)
 
-***
-## Wakaama configuration {#b_wakaamaconf}
+### Wakaama configuration {#b_wakaamaconf}
 
 PATH - `wpp/configs/wakaama_config.cmake`
 
-**LWM2M_BOOTSTRAP** - enable LWM2M Bootstrap support in a LWM2M Client (default: **OFF**)
-
-**LWM2M_SUPPORT_SENML_JSON** - enable SenML JSON payload support (default: **OFF**)
-
-**LWM2M_SUPPORT_JSON** - enable JSON payload support (default: **OFF**)
-
-**LWM2M_SUPPORT_TLV** - enable TLV payload support (default: **ON**)
-
-**LWM2M_OLD_CONTENT_FORMAT_SUPPORT** - support the deprecated content format values for TLV and JSON (default: **OFF**)
-
-**LWM2M_VERSION_1_0** - support only version 1.0 (default: **OFF**)
-
-**LWM2M_RAW_BLOCK1_REQUESTS** - ror low memory client devices where it is not possible to keep a large post or put request in memory to be parsed. Control over such operations is provided entirely to the user. At the moment, there are certain restrictions regarding the use of this mode, only two operations are supported BLOCK_EXECUTE without restrictions, and BLOCK_WRITE with the following restrictions: recording only one SINGLE resource, recording is possible in the following formats: TEXT, OPAQUE, TLV. (default: **OFF**)
-
-**LWM2M_WITH_LOGS** - enable logs for wakaama core (default: **OFF**)
-
+**LWM2M_BOOTSTRAP** - enable LWM2M Bootstrap support in a LWM2M Client (default: **OFF**)<br />
+**LWM2M_SUPPORT_SENML_JSON** - enable SenML JSON payload support (default: **OFF**)<br />
+**LWM2M_SUPPORT_JSON** - enable JSON payload support (default: **OFF**)<br />
+**LWM2M_SUPPORT_TLV** - enable TLV payload support (default: **ON**)<br />
+**LWM2M_OLD_CONTENT_FORMAT_SUPPORT** - support the deprecated content format values for TLV and JSON (default: **OFF**)<br />
+**LWM2M_VERSION_1_0** - support only version 1.0 (default: **OFF**)<br />
+**LWM2M_RAW_BLOCK1_REQUESTS** - ror low memory client devices where it is not possible to keep a large post or put request in memory to be parsed. Control over such operations is provided entirely to the user. At the moment, there are certain restrictions regarding the use of this mode, only two operations are supported BLOCK_EXECUTE without restrictions, and BLOCK_WRITE with the following restrictions: recording only one SINGLE resource, recording is possible in the following formats: TEXT, OPAQUE, TLV. (default: **OFF**)<br />
+**LWM2M_WITH_LOGS** - enable logs for wakaama core (default: **OFF**)<br />
 **LWM2M_COAP_DEFAULT_BLOCK_SIZE** - CoAP block size used by CoAP layer when performing block-wise transfers. Possible values: 16, 32, 64, 128, 256, 512 and 1024  (default: **1024**)
 
-Define your own endian if the endian is different from the platform default.
-
-`set(WPP_DEFINITIONS ${WPP_DEFINITIONS} LWM2M_BIG_ENDIAN)` - big-endian format
-
+Define your own endian if the endian is different from the platform default.<br />
+`set(WPP_DEFINITIONS ${WPP_DEFINITIONS} LWM2M_BIG_ENDIAN)` - big-endian format<br />
 `set(WPP_DEFINITIONS ${WPP_DEFINITIONS} LWM2M_LITTLE_ENDIAN)` - little-endian format
 
-***
-## WPP configuration {#b_wppconf}
+### WPP configuration {#b_wppconf}
 
 PATH - `wpp/configs/wpp_config.cmake`
 
-**WPP_ENABLE_LOGS** - enable logs for WakaamaPlus (default: **ON**)
-
+**WPP_ENABLE_LOGS** - enable logs for WakaamaPlus (default: **ON**)<br />
 **WPP_LOGS_LEVEL** - set logs detalization for `WPP_ENABLE_LOGS ON` (default: **0**)
 
 ***
-## Static variant {#b_staticvar}
+## Static WPP library {#b_staticvar}
 
-**Definition:** The static build option in LwM2M indicates the process of compiling and assembling protocol code that includes all necessary libraries and dependencies, creating a single executable file with closed dependencies.
-
-**Advantages:** Ease of installation and deployment, as all dependencies are included in one file. Can be useful in resource-constrained environments where executable autonomy is desired.
-
+**Definition:** The static build option in LwM2M indicates the process of compiling and assembling protocol code that includes all necessary libraries and dependencies, creating a single executable file with closed dependencies.<br />
+**Advantages:** Ease of installation and deployment, as all dependencies are included in one file. Can be useful in resource-constrained environments where executable autonomy is desired.<br />
 **Disadvantages:** Larger executable size, and updating dependencies may require recompiling the entire project.
 
+For implementig library into your project:
+1. Build static lib (*see image below*). Run **VS code** -> open **CMake** plugin -> **Set Build Target** Wpp -> run **Build**. Get archive `WppStaticLib.zip`.
+2. Unzip `WppStaticLib.zip` (for example in folder `WppStaticLib`).
+3. Add lib into the code in `<your_project>/CmakeLists.txt`  for starting to use WPP lib:
+```
+include(${CMAKE_SOURCE_DIR}/WppStaticLib/wpp_definitions.cmake)
+target_include_directories(<YOUR_TARGET> PUBLIC ${CMAKE_SOURCE_DIR}/WppStaticLib/headers/)
+target_compile_definitions(<YOUR_TARGET> PUBLIC ${WPP_DEFINITIONS})
+target_link_libraries(<YOUR_TARGET> ${CMAKE_SOURCE_DIR}/WppStaticLib/libWpp.a)
+```
+
+\image html build_7.png width=1100
+
+> **Static library realisation as in repository**<br />
+> In repository implementation, we used a flexible variant where we can to modify all config and rebuild our WPP lib before we start building our destination code. If you want to use it change the code in the example folder.
+
 ***
-## Source variant {#b_sourcevar}
+## Source WPP library {#b_sourcevar}
 
-**Definition:** The source code option in LwM2M indicates the use of the protocol source code without compiling it into a single executable file. This means that different components can be compiled independently of each other and then combined in an application.
-
-**Advantages:** Flexibility in choosing and updating dependencies, the ability to optimize and compile only the necessary components.
-
+**Definition:** The source code option in LwM2M indicates the use of the protocol source code without compiling it into a single executable file. This means that different components can be compiled independently of each other and then combined in an application.<br />
+**Advantages:** Flexibility in choosing and updating dependencies, the ability to optimize and compile only the necessary components.<br />
 **Disadvantages:** Requires more steps to deploy, but provides more flexibility in selecting components to compile.
+
+For implementig library into your project:
+1. We link wpp source to our code in `<your_project>/CMakeLists.txt` (or see example `tests/CMakeLists.txt`):
+```
+# Add file with wpp lib configs
+include(${CMAKE_SOURCE_DIR}/wpp/wpp.cmake)
+# Link wpp sources to tests
+target_link_wpp(<YOUR_EXECUTABLE>)
+```
+
+2. Add definitions to `CMakeLists.txt` that will be needed to build your project.<br /> Create or copy configs and use your custom configurations.
+   How to add defines as include modules see `tests/CMakeLists.txt`:
+```
+# Include file with Wakaama core config
+include(../wpp/configs/wakaama_config.cmake)
+# Include file with wpp object configs
+include(../wpp/configs/objects_config.cmake)
+```
+All are defined in a default state in the folder `wpp/configs`.

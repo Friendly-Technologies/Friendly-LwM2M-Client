@@ -209,18 +209,18 @@ PATH - `wpp/configs/wpp_config.cmake`
 ## Static WPP library {#b_staticvar}
 
 **Definition:** The static build option in LwM2M indicates the process of compiling and assembling protocol code that includes all necessary libraries and dependencies, creating a single executable file with closed dependencies.<br />
-**Advantages:** Ease of installation and deployment, as all dependencies are included in one file. Can be useful in resource-constrained environments where executable autonomy is desired.<br />
-**Disadvantages:** Larger executable size, and updating dependencies may require recompiling the entire project.
+**Advantages:** Ease of installation and deployment, as all dependencies are included in one file.<br />
+**Disadvantages:** Updating dependencies may require recompiling the entire project.
 
 For implementig library into your project:
-1. Build static lib (*see image below*). Run **VS code** -> open **CMake** plugin -> **Set Build Target** Wpp -> run **Build**. Get archive `WppStaticLib.zip`.
-2. Unzip `WppStaticLib.zip` (for example in folder `WppStaticLib`).
+1. Build static lib (*see image below*). Run **VS code** -> open **CMake** plugin -> **Set Build Target** Wpp -> run **Build**. Get archive `libWpp.zip`.
+2. Unzip `libWpp.zip` (for example in folder `libWpp`).
 3. Add lib into the code in `<your_project>/CmakeLists.txt`  for starting to use WPP lib:
 ```
-include(${CMAKE_SOURCE_DIR}/WppStaticLib/wpp_definitions.cmake)
-target_include_directories(<YOUR_TARGET> PUBLIC ${CMAKE_SOURCE_DIR}/WppStaticLib/headers/)
+include(${CMAKE_SOURCE_DIR}/libWpp/wpp_definitions.cmake)
+target_include_directories(<YOUR_TARGET> PUBLIC ${CMAKE_SOURCE_DIR}/libWpp/headers/)
 target_compile_definitions(<YOUR_TARGET> PUBLIC ${WPP_DEFINITIONS})
-target_link_libraries(<YOUR_TARGET> ${CMAKE_SOURCE_DIR}/WppStaticLib/libWpp.a)
+target_link_libraries(<YOUR_TARGET> ${CMAKE_SOURCE_DIR}/libWpp/libWpp.a)
 ```
 
 \image html build_7.png width=1100

@@ -6,6 +6,7 @@
     <tab type="user" visible="yes" title="Build Instructions" url="@ref build_tag"/>
     <tab type="user" visible="yes" title="Architecture" url="@ref architecture_tag"/>
     <tab type="user" visible="yes" title="Examples of Usage" url="@ref examples_tag"/>
+    <tab type="user" visible="yes" title="Testing" url="@ref testing_tag"/>
 
     <tab type="usergroup" visible="yes" title="Code Documentation" url="@ref code_tag">
       <tab type="namespaces" visible="yes" title="Namespaces">

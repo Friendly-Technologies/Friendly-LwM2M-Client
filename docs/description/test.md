@@ -1,6 +1,6 @@
 \page testing_tag Testing
 
-For checing and testing we used several utils.<br />
+For checking and testing we used several utils.<br />
 
 Tool **Cppcheck** for static analysis for C/C++ code (version 2.7). It provides unique code analysis to detect bugs and focuses on detecting undefined behaviour and dangerous coding constructs.<br />
 **Catch2** framework (version 3.4.0) for unit testing.<br />

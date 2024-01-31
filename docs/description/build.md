@@ -235,17 +235,14 @@ target_link_libraries(<YOUR_TARGET> ${CMAKE_SOURCE_DIR}/WppStaticLib/libWpp.a)
 **Advantages:** Flexibility in choosing and updating dependencies, the ability to optimize and compile only the necessary components.<br />
 **Disadvantages:** Requires more steps to deploy, but provides more flexibility in selecting components to compile.
 
-For implementig library into your project:
-1. We link wpp source to our code in `<your_project>/CMakeLists.txt` (or see example `tests/CMakeLists.txt`):
+For implementig library into your project in `<your_project>/CMakeLists.txt` (or see example `tests/CMakeLists.txt`):
+
+1. Set definitions:
 ```
-# Add file with wpp lib configs
-include(${CMAKE_SOURCE_DIR}/wpp/wpp.cmake)
-# Link wpp sources to tests
-target_link_wpp(<YOUR_EXECUTABLE>)
+set(WPP_DEFINITIONS "")
 ```
 
-2. Add definitions to `CMakeLists.txt` that will be needed to build your project.<br /> Create or copy configs and use your custom configurations.
-   How to add defines as include modules see `tests/CMakeLists.txt`:
+2. Include definitions that will be needed to build the project.<br /> Create or copy configs and use your custom configurations:
 ```
 # Include file with Wakaama core config
 include(../wpp/configs/wakaama_config.cmake)
@@ -253,3 +250,18 @@ include(../wpp/configs/wakaama_config.cmake)
 include(../wpp/configs/objects_config.cmake)
 ```
 All are defined in a default state in the folder `wpp/configs`.
+
+3. We link wpp source to our code:
+```
+# Add file with wpp lib configs
+include(${CMAKE_SOURCE_DIR}/wpp/wpp.cmake)
+```
+
+4. Add definitions to our project: 
+```
+# Set properties
+target_compile_definitions(<YOUR_EXECUTABLE> PUBLIC ${WPP_DEFINITIONS})
+# Link wpp sources to tests
+target_link_wpp(<YOUR_EXECUTABLE>)
+```
+ 

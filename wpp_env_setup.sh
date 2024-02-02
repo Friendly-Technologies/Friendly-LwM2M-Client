@@ -17,6 +17,8 @@ CLANGPP="clang++-$CLANG_VERSION"
 CLANGPP_KIT_PATH="/usr/bin/clang++"
 
 tools="\
+autoconf \
+pkg-config \
 default-jre \
 libcunit1 \
 libcunit1-doc \

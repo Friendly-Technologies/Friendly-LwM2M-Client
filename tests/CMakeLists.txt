@@ -52,7 +52,7 @@ target_compile_options(Catch2Tests PRIVATE
 
 # Add static analyzer target for cppcheck
 add_custom_command(TARGET Catch2Tests PRE_BUILD
-    COMMAND cppcheck --language=c++ --std=c++17 --enable=all --force ./../../wpp/* --output-file=cppchect_report.txt --file-filter=*.cpp --file-filter=*.h --suppress=unusedFunction --suppress=missingInclude --suppress=useInitializationList
+    COMMAND cppcheck --language=c++ --std=c++17 --enable=all --force ./../../wpp/* --output-file=cppcheck_report.xml --file-filter=*.cpp --file-filter=*.h --suppress=unusedFunction --suppress=missingInclude --suppress=useInitializationList
     COMMAND ${CMAKE_COMMAND} -E echo "---###---"
     COMMAND ${CMAKE_COMMAND} -E echo "Static analyzer cppcheck"
     COMMAND ${CMAKE_COMMAND} -E echo "---###---"
@@ -60,7 +60,7 @@ add_custom_command(TARGET Catch2Tests PRE_BUILD
 
 # Add tests target for Catch2
 add_custom_command(TARGET Catch2Tests POST_BUILD
-    COMMAND Catch2Tests --list-tests
+    COMMAND Catch2Tests --list-tests --reporter JUnit::out=result-junit.xml --reporter console::out=-
     COMMAND Catch2Tests
     COMMAND ${CMAKE_COMMAND} -E echo "---###---"
     COMMAND ${CMAKE_COMMAND} -E echo "Running tests catch2"

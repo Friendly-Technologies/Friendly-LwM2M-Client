@@ -25,7 +25,7 @@ For a detailed coverage report, open `index.html` in your browser (full path `_b
 Detalized report for all errors or warnings you can see in `_build/tests/cppcheck_report.xml`.<br />
 But, if you need a more user-friendly interface - run the command below in the folder `_build/tests/` and open `_build/tests/cppcheck_report/index.html` for the report in visual form. On this page, you can filter by message type and view the location of the warning in the file.
 ```
-cppcheck-htmlreport --source-dir=. --title=cppCheck report --file=cppcheck_report.xml --report-dir=cppcheck_report
+cppcheck-htmlreport --source-dir=. --title=cppCheck report --file=cppcheck_report.xml --report-dir=cppcheck_report && xdg-open cppcheck_report/index.html
 ```
 \image html test_4.png
 <br />

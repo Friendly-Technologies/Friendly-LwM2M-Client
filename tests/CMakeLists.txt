@@ -52,7 +52,7 @@ target_compile_options(Catch2Tests PRIVATE
 
 # Add static analyzer target for cppcheck
 add_custom_command(TARGET Catch2Tests PRE_BUILD
-    COMMAND cppcheck --language=c++ --std=c++17 --enable=all --force ./../../wpp/* --output-file=cppcheck_report.xml --file-filter=*.cpp --file-filter=*.h --suppress=unusedFunction --suppress=missingInclude --suppress=useInitializationList
+    COMMAND cppcheck --xml --xml-version=2  2>cppcheck_report.xml --language=c++ --std=c++17 --enable=all --force ./../../wpp/* --output-file=cppcheck_report.xml --file-filter=*.cpp --file-filter=*.h --suppress=unusedFunction --suppress=missingInclude --suppress=useInitializationList
     COMMAND ${CMAKE_COMMAND} -E echo "---###---"
     COMMAND ${CMAKE_COMMAND} -E echo "Static analyzer cppcheck"
     COMMAND ${CMAKE_COMMAND} -E echo "---###---"

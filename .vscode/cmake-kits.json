@@ -1,0 +1,9 @@
+[
+  {
+    "name": "Wpp Linux Kit",
+    "compilers": {
+      "C": "/usr/bin/clang",
+      "CXX": "/usr/bin/clang++"
+    }
+  }
+]

@@ -19,7 +19,18 @@ This document provides detailed instructions on how to build the WakaamaPlus pro
 ***
 ## Repos Structure {#b_repostruct}
 
+Based on the wakaama implementation of the lwm2m protocol core, we expand the possibilities - creating a library that will allow you to easily implement and implement objects.<br />
+The board support package will make it possible to make the library available for a large number of platforms and devices. The objects implemented by us will be a new addition and an example for simplifying and speeding up the creation, implementation of your solutions based on the lwm2m protocol.<br />
+
+Ways of future work and improvements:
+* **Core**. Extend support of the LWM2M Core features (more security, transport, formats). 
+* **Objects**. Implement standard objects based on the LWM2M Reg (+ API).
+* **HAL**. Give abilities to run Wakaama on different platforms (Android, FreeRTOS etc).
+* **BSP**. Integration of the Object Data Model with the specific Client Devices.
+
+
 The current \[07.06.2023\] structure contains only 3 repos (other will be created on ad-hoc basis):
+
 
 * _WakaamaPlus_ Main Development Repo: [https://github.com/sinai-io/2305-WakaamaPlus](https://github.com/sinai-io/2305-WakaamaPlus)
 * _Wakaama Upstream_ repo [https://github.com/eclipse/wakaama](https://github.com/eclipse/wakaama)
@@ -32,9 +43,12 @@ The current \[07.06.2023\] structure contains only 3 repos (other will be create
 
 
 ### Automatic setup
-The simpliest way is to use automatic setup by provided script - see [Automatic Setup](./../../wpp_env_setup.sh).
+The simpliest way is to use automatic setup by provided script - see [Automatic Setup](./../../wpp_env_setup.sh).<br />
+This script automatically installs core applications required to compile the library and submodules. Here are some - autoconf, clang, python3.<br />
+Tools for anylazing and testing - gcovr, llvm, cppcheck.<br />
+We also install Python tools for building and testing, such as `cmake`, `pylint`, `pytest` and other.<br />
 
-However this script is only helper and not heavy tested, so in case of problems, below you will find the full description of Environment Setup (skip the Automatic Setup chapter).
+> However this script is only helper and not heavy tested, so in case of problems, below you will find the full description of Environment Setup (skip the Automatic Setup chapter).
 
 ***
 ## Source code {#b_sourcecode}
@@ -42,7 +56,7 @@ However this script is only helper and not heavy tested, so in case of problems,
 
 ### WakaamaPlus source code
 
-Clone repository with submodules:
+To work with our implementation of the LWM2M library, clone the [repository](https://github.com/sinai-io/2305-WakaamaPlus) with the submodules using the command below. Our library uses the original Wakaama as a submodule.
 ```
 git clone --recurse-submodules git@github.com:sinai-io/2305-WakaamaPlus.git
 ```
@@ -50,7 +64,7 @@ git clone --recurse-submodules git@github.com:sinai-io/2305-WakaamaPlus.git
 
 ### Wakaama source code
 
-Clone [repository](https://github.com/eclipse/wakaama) with submodules: 
+But, if you want to learn to explore a pure implementation of wakaama - clone the [repository](https://github.com/eclipse/wakaama) with submodules.
 ```
 git clone --recurse-submodules git@github.com:eclipse/wakaama.git
 ```
@@ -58,6 +72,15 @@ git clone --recurse-submodules git@github.com:eclipse/wakaama.git
 ***
 ## VS Code installation {#b_vscodeinstall}
 
+Wakaama lib is a pure-C software with minimum external dependencies. It could be compiled with the usual GCC compiler (we used a v.9.4.0 and Ubuntu OS). 
+The core part follows the C99+Pedantic Standard, while Examples uses some extensions and needs at least GNU99 Standard (more info here: https://gcc.gnu.org/onlinedocs/gcc/Standards.html#C-Language).<br />
+Wakaama build system is CMake-based. Make files are generated from CMake scripts. Then make utility is used to build the binary files.<br />
+
+Wakaama has CMake build system, so it can be developed using any appropriate IDE / text editor with further building using the command line.
+However such approach is not very useful for active development, because lack of code completion and debug.<br />
+To make the development process smoother and faster we considered 2 IDE for further development: **Eclipse IDE** and **Visual Studio Code**.<br />
+
+After evaluation of both, we choose the **Visual Studio Code** due to it cross-platform nature and high flexibility. We also made a setup to build the Wakaama lib automatically in **Visual Studio Code**.
 
 ### Environment
 
@@ -68,11 +91,16 @@ Ubuntu: 18.04.6 / **22.04**
 
 ### Project setup stages
 
-* Download [Visual Studio Code](https://code.visualstudio.com/download).
-* Download the repository (`git clone --recurse-submodules git@github.com:sinai-io/2305-WakaamaPlus.git`).
-* Go to the **2305-WakaamaPlus** folder.
-* Run the `wpp_env_setup.sh` script to install the necessary utilities.
-* Start **VSCode** and go to **File → Open Workspace from File**.
+* Download [Visual Studio Code](https://code.visualstudio.com/download).<br />
+  You can use other IDE or use CLI for building and running.
+* Download the repository.<br />
+  `git clone --recurse-submodules git@github.com:sinai-io/2305-WakaamaPlus.git`
+  
+* Go to the **2305-WakaamaPlus** folder.<br />
+  `cd ./2305-WakaamaPlus`
+* Run the `wpp_env_setup.sh` script to install the necessary utilities. Use sudo permission to run the script. After successfully downloading, installing, and completing the installation process, the script generates documentation about the WPP library using Doxygen and automatically opens a web page to view the documentation.<br />
+  `sudo bash wpp_env_setup.sh`
+* Start **VSCode** and go to the open workspace which set up for this project **File → Open Workspace from File**.<br />
 * In the opened window, specify the path to the file `vs-code-wakaamaplus.code-workspace` located in the **2305-WakaamaPlus** repository.
 * After the workspace has loaded, go to **Extensions** `(Ctrl+Shift+x)`, set **Recommended** `(Text field: @recommended)` in the extensions filter, and then install all recommended extensions.
 
@@ -84,7 +112,7 @@ Ubuntu: 18.04.6 / **22.04**
 
 * Before the first build of the projects, it is necessary to configure the Kit in both projects, for this you need to choose **Wpp Linux Kit** (but in general the compiler depends on the target platform) as a compiler for both projects. After the kit is installed, you can start the first building.
 
-If you use Ubuntu with the 18 version and have trouble running `waakama_env.sh` - use the next commands and try again to run `waakama_env.sh`:
+If you use Ubuntu with the 18 version and have trouble running `wpp_env_setup.sh` - use the next commands and try again to run `wpp_env_setup.sh`:
 ```
 sudo apt-get install libstdc++-13-dev
 sudo apt install clang-14
@@ -264,4 +292,5 @@ target_compile_definitions(<YOUR_EXECUTABLE> PUBLIC ${WPP_DEFINITIONS})
 # Link wpp sources to tests
 target_link_wpp(<YOUR_EXECUTABLE>)
 ```
- 
+ <br />
+ <br />

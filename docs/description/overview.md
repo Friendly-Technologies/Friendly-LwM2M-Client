@@ -5,6 +5,7 @@
 - [Build Instructions](@ref build_tag)
 - [Architecture](@ref architecture_tag)
 - [Examples of Usage](@ref examples_tag)
+- [Testing](@ref testing_tag)
 - [Code Documentation](@ref code_tag)
 
 ### Introduction to WakaamaPlus

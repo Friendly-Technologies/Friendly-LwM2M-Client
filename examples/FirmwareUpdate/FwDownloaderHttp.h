@@ -45,9 +45,14 @@ public:
                 curl = curl_easy_init();
                 if (curl) {
                     fp = fopen(file.c_str(), "wb");
+                    curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
                     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
                     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
                     curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
+                    // To allow for insecure connections
+                    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+                    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
+    
                     res = curl_easy_perform(curl);
 
                     /* Check for errors */

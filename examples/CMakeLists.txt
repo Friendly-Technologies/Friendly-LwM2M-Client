@@ -25,6 +25,14 @@ find_package(CURL REQUIRED)
 # Include directories
 include_directories(${CURL_INCLUDE_DIR})
 
+# Find the libcoap library
+find_library(LIBCOAP_LIBRARY NAMES coap-3)
+find_path(LIBCOAP_INCLUDE_DIR NAMES coap3/coap.h)
+# Ensure that the libcoap library and include directory are found
+if(NOT LIBCOAP_LIBRARY OR NOT LIBCOAP_INCLUDE_DIR)
+  message(FATAL_ERROR "libcoap not found")
+endif()
+
 # Variables that will be filled in subdirectories
 set(SOURCES main.cpp)
 set(INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/)
@@ -40,7 +48,7 @@ endif()
 
 add_executable(WakaamaPlusExample)
 # Link with Wpp library
-target_link_libraries(WakaamaPlusExample Wpp pthread ${CURL_LIBRARIES})
+target_link_libraries(WakaamaPlusExample Wpp pthread ${CURL_LIBRARIES} ${LIBCOAP_LIBRARY})
 # List of preprocessor defines that will be set for compiler with key -D
 target_compile_definitions(WakaamaPlusExample PUBLIC ${COMPILE_DEFINITIONS})
 
@@ -62,7 +70,7 @@ endif()
 # Include sources
 target_sources(WakaamaPlusExample PUBLIC ${SOURCES})
 # List of directories that will be set for compiler with key -I
-target_include_directories(WakaamaPlusExample PUBLIC ${INCLUDES})
+target_include_directories(WakaamaPlusExample PUBLIC ${INCLUDES} ${LIBCOAP_INCLUDE_DIR})
 
 # Add tiny dtls src
 if (WITH_UDP_DTLS)

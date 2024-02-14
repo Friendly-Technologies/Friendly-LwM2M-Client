@@ -12,6 +12,7 @@
 #include "WppTaskQueue.h"
 
 #include "FwDownloaderHttp.h"
+#include "FwDownloaderCoap.h"
 
 using namespace wpp;
 using namespace std;
@@ -35,9 +36,11 @@ private:
     void update(Instance& inst);
     string getFileName(Instance& inst);
     void writeToFile(STRING_T fileName, const OPAQUE_T &buff);
+    bool isHttpScheme(const string &uri);
 
 private:
-    FwDownloaderHttp _downloader;
+    FwDownloaderHttp _httpDownloader;
+    FwDownloaderCoap _coapDownloader;
 };
 
 #endif // FIRMWARE_UPDATE_H_

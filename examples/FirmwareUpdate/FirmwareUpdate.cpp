@@ -22,12 +22,14 @@ void FirmwareUpdateImpl::init(Object &obj) {
     #if RES_5_8
     inst0->set(FirmwareUpdate::FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8, (INT_T)FirmwareUpdate::HTTP);
     inst0->set({FirmwareUpdate::FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8, 1}, (INT_T)FirmwareUpdate::HTTPS);
+    inst0->set({FirmwareUpdate::FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8, 2}, (INT_T)FirmwareUpdate::COAP);
     #endif
     inst0->set(FirmwareUpdate::FIRMWARE_UPDATE_DELIVERY_METHOD_9, (INT_T)FirmwareUpdate::BOTH);
 	#if RES_5_10
 	inst0->set(FirmwareUpdate::CANCEL_10, (EXECUTE_T)[this](Instance& inst, ID_T id, const OPAQUE_T& data) {
 		cout << "FirmwareUpdate: execute CANCEL_10" << endl;
-		this->_downloader.cancelDownloading();
+        if (_httpDownloader.isDownloading()) _httpDownloader.cancelDownloading();
+        else if (_coapDownloader.isDownloading()) _coapDownloader.cancelDownloading();
 		return true;
     });
     #endif
@@ -47,15 +49,29 @@ void FirmwareUpdateImpl::instEvent(Instance &inst, EVENT_ID_T eventId) {
     if (eventId == FirmwareUpdate::E_URI_DOWNLOADIN) {
         STRING_T uri;
         inst.get(FirmwareUpdate::PACKAGE_URI_1, uri);
-        _downloader.startDownloading(uri, [](string file) { 
+
+        auto downloadedClb = [](string file) { 
             cout << "FW is downloaded to file: " << file << endl;
             WppTaskQueue::addTask(5, [](WppClient &client, void *ctx) -> bool {
                 cout << "FW STATE_3 changed to S_DOWNLOADED" << endl;
                 client.registry().firmwareUpdate().instance()->set(FirmwareUpdate::STATE_3, (INT_T)FirmwareUpdate::S_DOWNLOADED);
                 return true;
             });
-            //this->fwIsDownloaded(); 
-        });
+        };
+
+        if (isHttpScheme(uri)) {
+            if (_httpDownloader.isDownloading()) {
+                cout << "FwUpdateImpl: HTTP downloader is already downloading" << endl;
+                return;
+            }
+            _httpDownloader.startDownloading(uri, downloadedClb);
+        } else {
+            if (_coapDownloader.isDownloading()) {
+                cout << "FwUpdateImpl: CoAP downloader is already downloading" << endl;
+                return;
+            }
+            _coapDownloader.startDownloading(uri, downloadedClb);
+        }
     }
 }
 
@@ -138,4 +154,8 @@ void FirmwareUpdateImpl::writeToFile(STRING_T fileName, const OPAQUE_T &buff) {
     if (!file.is_open()) return;
     file.write(reinterpret_cast<const char*>(buff.data()), buff.size());
     file.close();
+}
+
+bool FirmwareUpdateImpl::isHttpScheme(const string &uri) {
+    return uri.find("http://") == 0 || uri.find("https://") == 0;
 }

@@ -1,5 +1,5 @@
-#ifndef FIRMWARE_DOWNLOADER_STUB_H
-#define FIRMWARE_DOWNLOADER_STUB_H
+#ifndef FIRMWARE_DOWNLOADER_HTTP_H
+#define FIRMWARE_DOWNLOADER_HTTP_H
 
 #include <iostream>
 #include <thread>
@@ -9,11 +9,6 @@
 #include <curl/curl.h>
 
 using namespace std;
-
-static size_t write_data(void *ptr, size_t size, size_t nmemb, FILE *stream) {
-    size_t written = fwrite(ptr, size, nmemb, stream);
-    return written;
-}
 
 class FwDownloaderHttp {
     struct DownloadJob {
@@ -47,7 +42,10 @@ public:
                     fp = fopen(file.c_str(), "wb");
                     curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
                     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-                    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+                    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, [](void *ptr, size_t size, size_t nmemb, FILE *stream) {
+                        size_t written = fwrite(ptr, size, nmemb, stream);
+                        return written;
+                    });
                     curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
                     // To allow for insecure connections
                     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
@@ -109,4 +107,4 @@ private:
     DownloadJob _job;
 };
 
-#endif // FIRMWARE_DOWNLOADER_STUB_H
+#endif // FIRMWARE_DOWNLOADER_HTTP_H

@@ -42,10 +42,7 @@ public:
                     fp = fopen(file.c_str(), "wb");
                     curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
                     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-                    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, [](void *ptr, size_t size, size_t nmemb, FILE *stream) {
-                        size_t written = fwrite(ptr, size, nmemb, stream);
-                        return written;
-                    });
+                    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeData);
                     curl_easy_setopt(curl, CURLOPT_WRITEDATA, fp);
                     // To allow for insecure connections
                     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
@@ -98,6 +95,13 @@ public:
     void cancelDownloading() {
         _job.downloading = false;
     }
+
+private:
+
+static size_t writeData(void *ptr, size_t size, size_t nmemb, FILE *stream) {
+    size_t written = fwrite(ptr, size, nmemb, stream);
+    return written;
+}
 
 private:
     bool _terminateThread;

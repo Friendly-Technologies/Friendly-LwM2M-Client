@@ -23,6 +23,7 @@ void FirmwareUpdateImpl::init(Object &obj) {
     inst0->set(FirmwareUpdate::FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8, (INT_T)FirmwareUpdate::HTTP);
     inst0->set({FirmwareUpdate::FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8, 1}, (INT_T)FirmwareUpdate::HTTPS);
     inst0->set({FirmwareUpdate::FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8, 2}, (INT_T)FirmwareUpdate::COAP);
+    inst0->set({FirmwareUpdate::FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8, 3}, (INT_T)FirmwareUpdate::COAPS);
     #endif
     inst0->set(FirmwareUpdate::FIRMWARE_UPDATE_DELIVERY_METHOD_9, (INT_T)FirmwareUpdate::BOTH);
 	#if RES_5_10

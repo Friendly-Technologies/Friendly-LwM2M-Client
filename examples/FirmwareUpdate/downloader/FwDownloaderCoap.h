@@ -10,44 +10,6 @@
 
 using namespace std;
 
-static int append_to_output(const uint8_t *data, size_t len) {
-  printf("Received %zu bytes\n", len);
-  FILE *file = fopen("test_coap.fw", "a");
-  if (file != NULL) {
-      fwrite(data, 1, len, file);
-      fclose(file);
-      printf("Payload saved to 'downloaded_file'\n");
-  } else {
-      perror("Failed to open file");
-  }
-
-  return 0;
-}
-
-/*
- * Response handler used for coap_send() responses
- */
-static coap_response_t message_handler(coap_session_t *session COAP_UNUSED,
-                const coap_pdu_t *sent,
-                const coap_pdu_t *received,
-                const coap_mid_t id COAP_UNUSED) {
-
-    size_t len;
-    const uint8_t *databuf;
-    size_t offset;
-    size_t total;
-    coap_pdu_code_t rcv_code = coap_pdu_get_code(received);
-
-    /* output the received data, if any */
-    if (COAP_RESPONSE_CLASS(rcv_code) == 2) {
-        if (coap_get_data_large(received, &len, &databuf, &offset, &total)) {
-                append_to_output(databuf, len);
-        }
-    }
-
-    return COAP_RESPONSE_OK;
-}
-
 class FwDownloaderCoap {
     struct DownloadJob {
         string url = "";
@@ -79,6 +41,12 @@ public:
                 unsigned char buf[100];
                 coap_uri_t uri;
                 coap_optlist_t *optlist = NULL;
+                coap_dtls_pki_t dtls_pki;
+
+                memset(&dtls_pki, 0, sizeof(coap_dtls_pki_t));
+                dtls_pki.version = COAP_DTLS_PKI_SETUP_VERSION;
+                dtls_pki.verify_peer_cert = 0; // Verify the server's certificate
+                dtls_pki.pki_key.key_type = COAP_PKI_KEY_PEM; // Using PEM format for keys
 
                 /* Initialize libcoap library */
                 coap_startup();
@@ -111,9 +79,23 @@ public:
                 }
 
                 /* Add COAP_BLOCK_USE_LIBCOAP | COAP_BLOCK_SINGLE_BODY to receive large responses*/
-                coap_context_set_block_mode(ctx, COAP_BLOCK_USE_LIBCOAP | COAP_BLOCK_SINGLE_BODY);
-                if (!(session = coap_new_client_session(ctx, NULL, &dst, COAP_PROTO_UDP))) {
-                    cout << "cannot create client session" << endl;
+                coap_context_set_block_mode(ctx, COAP_BLOCK_USE_LIBCOAP);
+                if (uri.scheme == COAP_URI_SCHEME_COAP) {
+                    session = coap_new_client_session(ctx, NULL, &dst, COAP_PROTO_UDP);
+                    if (session == NULL) {
+                        coap_log_emerg("cannot create client session for COAP_URI_SCHEME_COAP\n");
+                        _job.downloading = false;
+                        continue;
+                    }
+                } else if (uri.scheme == COAP_URI_SCHEME_COAPS) {
+                    session = coap_new_client_session_pki(ctx, NULL, &dst, COAP_PROTO_DTLS, &dtls_pki);
+                    if (session == NULL) {
+                        coap_log_emerg("cannot create client session for COAP_URI_SCHEME_COAPS\n");
+                        _job.downloading = false;
+                        continue;
+                    }
+                } else {
+                    coap_log_emerg("cannot create client session for unsupported scheme %d\n", uri.scheme);
                     _job.downloading = false;
                     continue;
                 }
@@ -135,7 +117,7 @@ public:
                 coap_add_optlist_pdu(pdu, &optlist);
                 coap_show_pdu(COAP_LOG_INFO, pdu);
 
-                wait_ms = 90 * 1000;
+                wait_ms = 90000;
                 cout << "sending CoAP request" << endl;
                 if (coap_send(session, pdu) == COAP_INVALID_MID) {
                     cout << "cannot send CoAP pdu" << endl;
@@ -151,12 +133,12 @@ public:
                     result = coap_io_process(ctx, timeout_ms);
 
                     if (result >= 0 && wait_ms > 0) {
-                    if ((unsigned)result >= wait_ms) {
-                        coap_log_info("timeout\n");
-                        break;
-                    } else {
-                        wait_ms -= result;
-                    }
+                        if ((unsigned)result >= wait_ms) {
+                            cout << "timeout\n" << endl;
+                            break;
+                        } else {
+                            wait_ms -= result;
+                        }
                     }
                 }
 
@@ -198,6 +180,32 @@ public:
 
     void cancelDownloading() {
         _job.downloading = false;
+    }
+
+private:
+    static coap_response_t message_handler(coap_session_t *session COAP_UNUSED, const coap_pdu_t *sent, const coap_pdu_t *received, const coap_mid_t id COAP_UNUSED) {
+        size_t len;
+        const uint8_t *databuf;
+        size_t offset;
+        size_t total;
+        coap_pdu_code_t rcv_code = coap_pdu_get_code(received);
+
+        /* output the received data, if any */
+        if (COAP_RESPONSE_CLASS(rcv_code) == 2) {
+            if (coap_get_data_large(received, &len, &databuf, &offset, &total)) {
+                cout << "Received " << len << "bytes" << endl;
+                FILE *file = fopen("test_coap.fw", "a");
+                if (file != NULL) {
+                    fwrite(databuf, 1, len, file);
+                    fclose(file);
+                    printf("Payload saved to 'downloaded_file'\n");
+                } else {
+                    perror("Failed to open file");
+                }
+            }
+        }
+
+        return COAP_RESPONSE_OK;
     }
 
 private:

@@ -25,12 +25,22 @@ find_package(CURL REQUIRED)
 # Include directories
 include_directories(${CURL_INCLUDE_DIR})
 
-# Find the libcoap library
-find_library(LIBCOAP_LIBRARY NAMES coap-3)
-find_path(LIBCOAP_INCLUDE_DIR NAMES coap3/coap.h)
-# Ensure that the libcoap library and include directory are found
-if(NOT LIBCOAP_LIBRARY OR NOT LIBCOAP_INCLUDE_DIR)
-  message(FATAL_ERROR "libcoap not found")
+# Find the openssl package
+find_package(OpenSSL REQUIRED)
+
+# Build libcoap
+execute_process(
+    COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/libcoap_build.sh
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    RESULT_VARIABLE result
+    OUTPUT_VARIABLE libcoap_path
+    ERROR_VARIABLE error
+)
+
+if(NOT result STREQUAL "0")
+    message(FATAL_ERROR "Failed to build libcoap: ${error}")
+else()
+    message(STATUS "libcoap built successfully. Library path: ${libcoap_path}")
 endif()
 
 # Variables that will be filled in subdirectories
@@ -48,7 +58,7 @@ endif()
 
 add_executable(WakaamaPlusExample)
 # Link with Wpp library
-target_link_libraries(WakaamaPlusExample Wpp pthread ${CURL_LIBRARIES} ${LIBCOAP_LIBRARY})
+target_link_libraries(WakaamaPlusExample Wpp pthread ${libcoap_path}/libcoap-3.a OpenSSL::SSL OpenSSL::Crypto ${CURL_LIBRARIES})
 # List of preprocessor defines that will be set for compiler with key -D
 target_compile_definitions(WakaamaPlusExample PUBLIC ${COMPILE_DEFINITIONS})
 
@@ -70,7 +80,7 @@ endif()
 # Include sources
 target_sources(WakaamaPlusExample PUBLIC ${SOURCES})
 # List of directories that will be set for compiler with key -I
-target_include_directories(WakaamaPlusExample PUBLIC ${INCLUDES} ${LIBCOAP_INCLUDE_DIR})
+target_include_directories(WakaamaPlusExample PUBLIC ${INCLUDES} ${libcoap_path}/include/)
 
 # Add tiny dtls src
 if (WITH_UDP_DTLS)

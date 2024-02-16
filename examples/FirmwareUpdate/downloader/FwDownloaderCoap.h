@@ -190,19 +190,23 @@ private:
         size_t total;
         coap_pdu_code_t rcv_code = coap_pdu_get_code(received);
 
-        /* output the received data, if any */
         if (COAP_RESPONSE_CLASS(rcv_code) == 2) {
             if (coap_get_data_large(received, &len, &databuf, &offset, &total)) {
-                cout << "Received " << len << "bytes" << endl;
+                cout << "Received " << len << " bytes" << endl;
                 FILE *file = fopen("test_coap.fw", "a");
                 if (file != NULL) {
-                    fwrite(databuf, 1, len, file);
+                    size_t written = fwrite(databuf, 1, len, file);
+                    if (written != len) {
+                        perror("Failed to write all bytes to file");
+                    } else {
+                        printf("Payload saved to 'test_coap.fw'\n");
+                    }
                     fclose(file);
-                    printf("Payload saved to 'downloaded_file'\n");
                 } else {
                     perror("Failed to open file");
                 }
             }
+
         }
 
         return COAP_RESPONSE_OK;

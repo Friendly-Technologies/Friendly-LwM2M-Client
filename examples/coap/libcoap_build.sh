@@ -6,6 +6,8 @@ set -e
 LOG_FILE="build.log"
 BUILD_DIR="build"
 
+cd libcoap
+
 # Remove the existing directory if it exists
 if [ -d "$BUILD_DIR" ]; then
     rm -rf "$BUILD_DIR"

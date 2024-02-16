@@ -30,8 +30,8 @@ find_package(OpenSSL REQUIRED)
 
 # Build libcoap
 execute_process(
-    COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/libcoap_build.sh
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMAND bash libcoap_build.sh
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/coap
     RESULT_VARIABLE result
     OUTPUT_VARIABLE libcoap_path
     ERROR_VARIABLE error

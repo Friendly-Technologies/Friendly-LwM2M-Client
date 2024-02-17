@@ -25,9 +25,6 @@ find_package(CURL REQUIRED)
 # Include directories
 include_directories(${CURL_INCLUDE_DIR})
 
-# Find the openssl package
-find_package(OpenSSL REQUIRED)
-
 # Build libcoap
 execute_process(
     COMMAND bash libcoap_build.sh
@@ -36,7 +33,6 @@ execute_process(
     OUTPUT_VARIABLE libcoap_path
     ERROR_VARIABLE error
 )
-
 if(NOT result STREQUAL "0")
     message(FATAL_ERROR "Failed to build libcoap: ${error}")
 else()
@@ -58,7 +54,7 @@ endif()
 
 add_executable(WakaamaPlusExample)
 # Link with Wpp library
-target_link_libraries(WakaamaPlusExample Wpp pthread ${libcoap_path}/libcoap-3.a OpenSSL::SSL OpenSSL::Crypto ${CURL_LIBRARIES})
+target_link_libraries(WakaamaPlusExample Wpp pthread ${libcoap_path}/libcoap-3.so ${CURL_LIBRARIES})
 # List of preprocessor defines that will be set for compiler with key -D
 target_compile_definitions(WakaamaPlusExample PUBLIC ${COMPILE_DEFINITIONS})
 

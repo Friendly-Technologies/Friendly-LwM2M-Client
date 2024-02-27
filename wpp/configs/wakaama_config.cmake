@@ -35,6 +35,15 @@ if (LWM2M_OLD_CONTENT_FORMAT_SUPPORT)
     set(WPP_DEFINITIONS ${WPP_DEFINITIONS} LWM2M_OLD_CONTENT_FORMAT_SUPPORT)
 endif()
 
+# Preferred content type for bootstrap server and registration. 
+# If not defined, then the server chooses its own content type.
+# Possible values:
+# SENML_JSON = 110
+# JSON = 11543
+# TLV = 11542
+set(WPP_DEFINITIONS ${WPP_DEFINITIONS} LWM2M_BS_PREFERRED_CONTENT_TYPE=110)
+set(WPP_DEFINITIONS ${WPP_DEFINITIONS} LWM2M_REG_PREFERRED_CONTENT_TYPE=110)
+
 option(LWM2M_VERSION_1_0 "Support only version 1.0" OFF)
 if (LWM2M_VERSION_1_0)
     set(WPP_DEFINITIONS ${WPP_DEFINITIONS} LWM2M_VERSION_1_0)

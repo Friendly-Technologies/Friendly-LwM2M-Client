@@ -127,14 +127,14 @@ time_t WppClient::loop() {
 	return sleepTimeSec;
 }
 
-bool WppClient::updateServerRegistration(INT_T serverId, bool withObjects) {
-	WPP_LOGD(TAG_WPP_CLIENT, "Update registration to server: ID -> %d, withObjects -> %d", serverId, withObjects);
-	return !lwm2m_update_registration(_lwm2m_context, serverId, withObjects);
+bool WppClient::updateServerRegistration(INT_T serverId, bool withLifetime, bool withObjects) {
+	WPP_LOGD(TAG_WPP_CLIENT, "Update registration to server: ID -> %d, withLifetime -> %d, withObjects -> %d", serverId, withLifetime, withObjects);
+	return !lwm2m_update_registration(_lwm2m_context, serverId, withLifetime, withObjects);
 }
 
-bool WppClient::updateServerRegistration(bool withObjects) {
-	WPP_LOGD(TAG_WPP_CLIENT, "Update registration to each server: withObjects -> %d", withObjects);
-	return !lwm2m_update_registration(_lwm2m_context, 0, withObjects);
+bool WppClient::updateServerRegistration(bool withLifetime, bool withObjects) {
+	WPP_LOGD(TAG_WPP_CLIENT, "Update registration to each server: withLifetime -> %d, withObjects -> %d", withLifetime, withObjects);
+	return !lwm2m_update_registration(_lwm2m_context, 0, withLifetime, withObjects);
 }
 
 void WppClient::deregister() {

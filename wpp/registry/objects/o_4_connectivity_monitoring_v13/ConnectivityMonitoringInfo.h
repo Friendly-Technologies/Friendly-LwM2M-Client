@@ -29,8 +29,7 @@ inline const ObjectInfo CONNECTIVITY_MONITORING_OBJ_INFO = {
 	IS_MANDATORY::OPTIONAL,
 	/* Object supported operations */
 	/* --------------- Info block 0 start --------------- */
-	InstOp(	InstOp::CREATE |
-			InstOp::DELETE),
+	InstOp(),
 	ResOp(	ResOp::READ|
 			ResOp::WRITE|
 			ResOp::DISCOVER|

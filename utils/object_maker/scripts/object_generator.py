@@ -284,6 +284,7 @@ class ObjectGenerator:
     def generate_content_info_header(self):
         is_multiple = "MULTIPLE" if self.object_data[const.DATA_KEYS[const.KEY_IS_MULTIPLE]] else "SINGLE"
         is_mandatory = "MANDATORY" if self.object_data[const.DATA_KEYS[const.KEY_IS_MANDATORY]] else "OPTIONAL"
+        inst_operations = "InstOp::CREATE | InstOp::DELETE" if self.object_data[const.DATA_KEYS[const.KEY_IS_MULTIPLE]] else ""
 
         content = func.get_content_from_file(const.FILE_TMPLT_INFO)[1]
         content = content.replace("__DATETIME__", DATETIME)
@@ -299,6 +300,7 @@ class ObjectGenerator:
                                   f"{{{self.object_data[const.DATA_KEYS[const.KEY_VER_LWM2M]].replace('.', ',')}}}")
         content = content.replace("__MULTIPLE__", is_multiple)
         content = content.replace("__MANDATORY__", is_mandatory)
+        content = content.replace("__INST_OP__", inst_operations)
 
         return content
 

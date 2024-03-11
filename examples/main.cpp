@@ -19,8 +19,8 @@
 using namespace std;
 using namespace wpp;
 
-void socketPolling(Connection *connection) {
-	while (true) {
+void socketPolling(Connection *connection, DeviceImpl *device) {
+	while (!device->isNeededReboot()) {
 		connection->loop();
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
@@ -48,9 +48,9 @@ int main() {
 
 	// Initialize wpp objects
 	cout << endl << "---- Initialization wpp Server ----" << endl;
-	server.init(registry.server());
+	server.init(registry.lwm2mServer());
 	cout << endl << "---- Initialization wpp Security ----" << endl;
-	security.init(registry.security());
+	security.init(registry.lwm2mSecurity());
 	cout << endl << "---- Initialization wpp Device ----" << endl;
 	device.init(registry.device());
 	
@@ -58,10 +58,10 @@ int main() {
 	client->giveOwnership();
 
 	cout << endl << "---- Starting Connection thread ----" << endl;
-	thread my_thread(socketPolling, &connection);
+	thread my_thread(socketPolling, &connection, &device);
 
 	time_t callTime = 0;
-	for (int iterationCnt = 0; true; iterationCnt++) {
+	for (int iterationCnt = 0; !device.isNeededReboot(); iterationCnt++) {
 		time_t currTime = time(NULL);
 
 		cout << endl << "---- iteration:" << iterationCnt << " ----" << endl;
@@ -76,5 +76,11 @@ int main() {
 		}
 		this_thread::sleep_for(chrono::seconds(1));
 	}
+
+	cout << endl << "---- Closing example ----" << endl;
+	my_thread.join();
+	WppClient::remove();
+	
+	return 0;
 }
 

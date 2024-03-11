@@ -7,7 +7,7 @@
 #include <variant>
 
 #include "ObjectInfo.h"
-#include "Operation.h"
+#include "ResOp.h"
 #include "types.h"
 
 namespace wpp {
@@ -23,6 +23,14 @@ public: /* ---------- Public subtypes ----------*/
 	using DATA_T = std::variant<BOOL_T, INT_T, UINT_T, FLOAT_T, OPAQUE_T, OBJ_LINK_T, STRING_T, EXECUTE_T>;
 
 	/*
+	 * Type for resource instance
+	 */
+	struct ResInst {
+		ID_T id;
+		DATA_T data;
+	};
+
+	/*
 	 * Universal type for data validation functions
 	 */
 	using DATA_VERIFIER_T = std::variant<VERIFY_INT_T, VERIFY_UINT_T, VERIFY_FLOAT_T, VERIFY_OPAQUE_T, VERIFY_BOOL_T,
@@ -30,14 +38,16 @@ public: /* ---------- Public subtypes ----------*/
 
 public: /* ---------- Public methods for common usage ----------*/
     Resource();
-    Resource(ID_T id, const Operation &operation, IS_SINGLE isSingle, IS_MANDATORY isMandatory, TYPE_ID dataType);
+    Resource(ID_T id, const ResOp &operation, IS_SINGLE isSingle, IS_MANDATORY isMandatory, TYPE_ID dataType);
     Resource(const Resource& resource);
     Resource(Resource&& resource);
+	Resource& operator=(const Resource& other);
+	Resource& operator=(Resource&& other);
 
 	/* ---------- Methods for get resource metadata ----------*/
-    ID_T getID() const;
+    ID_T getId() const;
     TYPE_ID getTypeId() const;
-    const Operation& getOperation() const;
+    const ResOp& getOperation() const;
     bool isMandatory() const;
     bool isOptional() const;
     bool isSingle() const;
@@ -49,7 +59,7 @@ public: /* ---------- Public methods for common usage ----------*/
 	template<typename T>
 	bool isDataValueValid(const T &data) const;
 	bool isDataVerifierValid(const DATA_VERIFIER_T &verifier) const;
-	bool isOperationValid(Operation::TYPE type) const;
+	bool isOperationValid(ResOp::TYPE type) const;
 	bool isInstanceIdPossible(ID_T resInstId) const;
 	bool isInstanceExist(ID_T resInstId) const;
 	bool isTypeIdCompatible(TYPE_ID type) const;
@@ -57,7 +67,7 @@ public: /* ---------- Public methods for common usage ----------*/
 	size_t instanceCnt() const;
 
 	/* ---------- Extended abilities for access directly to resource data for avoid coping ----------*/
-	const std::unordered_map<ID_T, DATA_T>& getInstances();
+	const std::vector<ResInst>& getInstances();
 
 	/* ---------- Methods for manage resource data ----------*/
     bool set(const BOOL_T &value, ID_T resInstId = SINGLE_INSTANCE_ID);
@@ -102,6 +112,8 @@ public: /* ---------- Public methods for common usage ----------*/
 	bool setDataVerifier(const DATA_VERIFIER_T &verifier);
 
 private:
+	std::vector<ResInst>::iterator getResInstIter(ID_T resInstId) const;
+
     template<typename T>
 	bool _set(const T &value, ID_T resInstId);
 
@@ -110,11 +122,11 @@ private:
 
 private: /* ---------- Private properties ----------*/
     ID_T _id;
-    Operation _operation;
+    ResOp _operation;
     IS_SINGLE _isSingle;
     IS_MANDATORY _isMandatory;
     TYPE_ID _typeID;
-    mutable std::unordered_map<ID_T, DATA_T> _instances;
+    mutable std::vector<ResInst> _instances;
     DATA_VERIFIER_T _dataVerifier;
 };
 
@@ -131,7 +143,12 @@ bool Resource::_set(const T &value, ID_T resInstId) {
 	if (!isInstanceIdPossible(resInstId)) return false;
 	if (!isDataValueValid(value)) return false;
 
-	_instances[resInstId] = value;
+	if (isInstanceExist(resInstId)) {
+		auto instIter = getResInstIter(resInstId);
+		instIter->data = value;
+	} else {
+		_instances.push_back({resInstId, value});
+	}
 
 	return true;
 }
@@ -141,7 +158,8 @@ bool Resource::_get(T &value, ID_T resInstId) const {
 	if (!isDataTypeValid<T>()) return false;
 	if (!isInstanceExist(resInstId)) return false;
 
-	value = std::get<T>(_instances[resInstId]);
+	auto instIter = getResInstIter(resInstId);
+	value = std::get<T>(instIter->data);
 
 	return true;
 }

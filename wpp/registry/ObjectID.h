@@ -6,17 +6,25 @@
 namespace wpp {
 
 enum class OBJ_ID: ID_T {
-	/* ------------- Mandatory objects ID start ------------- */
-	SECURITY = 0,
-	SERVER = 1,
+	/* The start of the IDs of the mandatory objects. */
+#ifdef OBJ_M_3_DEVICE_V12
 	DEVICE = 3,
-	/* ------------- Mandatory objects ID end ------------- */
+#endif /* OBJ_M_3_DEVICE_V12 */
+#ifdef OBJ_M_0_LWM2M_SECURITY_V11
+	LWM2M_SECURITY = 0,
+#endif /* OBJ_M_0_LWM2M_SECURITY_V11 */
+#ifdef OBJ_M_1_LWM2M_SERVER_V11
+	LWM2M_SERVER = 1,
+#endif /* OBJ_M_1_LWM2M_SERVER_V11 */
+	/* The end of the IDs of the mandatory objects. */
+	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 
-	/* ------------- Optional objects ID start ------------- */
+	/* The start of the IDs of the optional objects. */
 	ACL = 2,
 	CONN_MONITORING = 4,
 	FIRMWARE_UPD = 5,
-	/* ------------- Optional objects ID end ------------- */
+	/* The end of the IDs of the optional objects. */
+	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 
 	MAX_ID = ID_T_MAX_VAL,
 };

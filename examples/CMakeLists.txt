@@ -4,30 +4,17 @@ project(WakaamaPlusTest CXX)
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 17)
 
+# Include file with compiler config
+include(../wpp/config/compiler_config.cmake)
+
 # Compiler options
 add_compile_options(
-    -Waggregate-return
-    -Wall
-    -Wcast-align
-    -Wextra
-    -Wfloat-equal
-    -Wpointer-arith
-    -Wshadow
-    -Wswitch-default
-    -Wwrite-strings
-    -pedantic
-    # Reduce noise: Unused parameters are common in this ifdef-littered code-base, but of no danger
-    -Wno-unused-parameter
+    # Disabled because Connection for dtls cast from 'sockaddr *' to 'sockaddr_in *' increases required alignment from 2 to 4
+    -Wno-cast-align
     # Reduce noise: Too many false positives
     -Wno-uninitialized
     # Allows to compile tinydtls without errors
     -Wno-c99-extensions
-    # Disabled because Connection for dtls cast from 'sockaddr *' to 'sockaddr_in *' increases required alignment from 2 to 4
-    -Wno-cast-align
-     # Turn (most) warnings into errors
-    -Werror
-    # Disabled because of existing, non-trivially fixable code
-    -Wno-error=cast-align
 )
 
 # Generating .map file
@@ -39,10 +26,10 @@ set(INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/)
 set(COMPILE_DEFINITIONS "")
 
 # General options
-option(WITH_UDP_DTLS "Enable UDP DTLS" ON)
+option(WITH_UDP_DTLS "Enable UDP DTLS" OFF)
 if (WITH_UDP_DTLS)
     set(COMPILE_DEFINITIONS ${COMPILE_DEFINITIONS} WITH_UDP_DTLS)
-    set(COMPILE_DEFINITIONS ${COMPILE_DEFINITIONS} DTLS_WITH_PSK)
+    # set(COMPILE_DEFINITIONS ${COMPILE_DEFINITIONS} DTLS_WITH_PSK)
     # set(COMPILE_DEFINITIONS ${COMPILE_DEFINITIONS} DTLS_WITH_RPK)
 endif()
 
@@ -63,7 +50,7 @@ target_include_directories(WakaamaPlusTest PUBLIC ${INCLUDES})
 target_compile_definitions(WakaamaPlusTest PUBLIC ${COMPILE_DEFINITIONS})
 
 # Link with Wpp library
-target_link_libraries(WakaamaPlusTest Wpp)
+target_link_libraries(WakaamaPlusTest Wpp pthread)
 # Add tiny dtls src
 if (WITH_UDP_DTLS)
     include(../2305-Wakaama/examples/shared/tinydtls.cmake)
@@ -78,3 +65,7 @@ add_custom_command(TARGET WakaamaPlusTest POST_BUILD
 add_custom_command(TARGET WakaamaPlusTest POST_BUILD
                    COMMAND ${CMAKE_OBJCOPY} -O ihex $<TARGET_FILE:WakaamaPlusTest> $<TARGET_FILE_DIR:WakaamaPlusTest>/WakaamaPlusTest.hex
                    COMMENT "Creating hex file")
+# Get information about size compiled program
+add_custom_command(TARGET WakaamaPlusTest POST_BUILD
+                   COMMAND size $<TARGET_FILE:WakaamaPlusTest>
+                   COMMENT "Compiled program size")

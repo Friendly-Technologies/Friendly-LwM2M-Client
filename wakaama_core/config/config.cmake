@@ -1,4 +1,4 @@
-option(LWM2M_BOOTSTRAP "Enable LWM2M Bootstrap support in a LWM2M Client" ON)
+option(LWM2M_BOOTSTRAP "Enable LWM2M Bootstrap support in a LWM2M Client" OFF)
 if (LWM2M_BOOTSTRAP)
     set(WAKAAMA_CORE_DEFINITIONS ${WAKAAMA_CORE_DEFINITIONS} LWM2M_BOOTSTRAP=1)
 endif()

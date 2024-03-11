@@ -12,44 +12,40 @@
 
 #include "Object.h"
 
-/* ------------- Mandatory objects include start ------------- */
-#if MANDATORY_SECURITY_OBJ
-#include "mandatory/security/Security.h"
+/* The start of the includes of the mandatory objects. */
+#if OBJ_M_3_DEVICE_V12
+#include "m_3_device_v12/Device.h"
 #endif
-#if MANDATORY_SERVER_OBJ
-#include "mandatory/server/Server.h"
+#if OBJ_M_0_LWM2M_SECURITY_V11
+#include "m_0_lwm2m_security_v11/Lwm2mSecurity.h"
 #endif
-#if MANDATORY_DEVICE_OBJ
-#include "mandatory/device/Device.h"
+#if OBJ_M_1_LWM2M_SERVER_V11
+#include "m_1_lwm2m_server_v11/Lwm2mServer.h"
 #endif
-/* ------------- Mandatory objects include end ------------- */
+/* The end of the includes of the mandatory objects. */
+/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 
-/* ------------- Optional objects include start ------------- */
+/* The start of the includes of the optional objects. */
 #if OPTIONAL_ACL_OBJ
-#include "optional/acl/Acl.h"
+#include "acl/Acl.h"
 #endif
 #if OPTIONAL_CONN_MONITORING_OBJ
-#include "optional/conn_monitoring/ConnMonitoring.h"
+#include "conn_monitoring/ConnMonitoring.h"
 #endif
 #if OPTIONAL_FIRMWARE_UPD_OBJ
-#include "optional/firmware_upd/FirmwareUpd.h"
+#include "firmware_upd/FirmwareUpd.h"
 #endif
-/* ------------- Optional objects include end ------------- */
+/* The end of the includes of the optional objects. */
+/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 
 namespace wpp {
-
-class WppClient;
-
-template<typename T>
-class Object;
-
 // TODO: Split mandatory and optional registers
 // TODO: Add ability to check whether some object id is exist
 // TODO: Add ability to get Lwm2mObject by ID
 // TODO: Try to redesign the registry and objects to simplify access
 class WppRegistry {
 public:
-	WppRegistry(WppClient &client);
+	WppRegistry(lwm2m_context_t &context);
 	~WppRegistry() {}
 
 	WppRegistry(const WppRegistry&) = delete;
@@ -57,19 +53,25 @@ public:
 	WppRegistry& operator=(const WppRegistry&) = delete;
 	WppRegistry& operator=(WppRegistry&&) = delete;
 
-	/* ------------- Mandatory objects prototype start ------------- */
-	#if MANDATORY_SECURITY_OBJ
-	Object<Security>& security();
-	#endif
-	#if MANDATORY_SERVER_OBJ
-	Object<Server>& server();
-	#endif
-	#if MANDATORY_DEVICE_OBJ
-	Object<Device>& device();
-	#endif
-	/* ------------- Mandatory objects prototype end ------------- */
+	bool registerObj(Lwm2mObject &object);
+	bool deregisterObj(Lwm2mObject &object);
+	bool isObjRegistered(Lwm2mObject &object);
 
-	/* ------------- Optional objects prototype start ------------- */
+	/* The start of the prototypes of the mandatory objects. */
+	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
+	#if OBJ_M_3_DEVICE_V12
+	Object<Device> & device();
+	#endif
+	#if OBJ_M_0_LWM2M_SECURITY_V11
+	Object<Lwm2mSecurity> & lwm2mSecurity();
+	#endif
+	#if OBJ_M_1_LWM2M_SERVER_V11
+	Object<Lwm2mServer> & lwm2mServer();
+	#endif
+	/* The end of the prototypes of the mandatory objects. */
+	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
+
+	/* The start of the prototypes of the optional objects. */
 	#if OPTIONAL_ACL_OBJ
 	Object<Acl>& acl();
 	#endif
@@ -79,10 +81,11 @@ public:
 	#if OPTIONAL_FIRMWARE_UPD_OBJ
 		Object<FirmwareUpd>& firmwareUpd();
 	#endif
-	/* ------------- Optional objects prototype end ------------- */
+	/* The end of the prototypes of the optional objects. */
+	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
 
 private:
-	WppClient &_client;
+	lwm2m_context_t &_context;
 };
 
 } // namespace wpp

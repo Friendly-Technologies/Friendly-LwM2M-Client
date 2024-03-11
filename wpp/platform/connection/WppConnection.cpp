@@ -61,12 +61,12 @@ uint16_t WppConnection::getDataBlockSize()  {
 	return lwm2m_get_coap_block_size();
 }
 
-void WppConnection::handlePacketsInQueue(lwm2m_context_t *context) {
+void WppConnection::handlePacketsInQueue(lwm2m_context_t &context) {
 	WPP_LOGD_ARG(TAG_WPP_CONN, "Handling packets in queue: packets count -> %d", getPacketQueueSize());
 	while (packets.size()) {
 		Packet *pkt = packets.front();
 		if (pkt && pkt->buffer) {
-			lwm2m_handle_packet(context, pkt->buffer, pkt->length, pkt->session);
+			lwm2m_handle_packet(&context, pkt->buffer, pkt->length, pkt->session);
 			delete [] pkt->buffer;
 		}
 		packets.pop();
@@ -79,14 +79,19 @@ extern "C" {
     void * lwm2m_connect_server(uint16_t secObjInstID, void * userData) {
 		wpp::WppClient *client = (wpp::WppClient *)userData;
 		WPP_LOGD_ARG(TAG_WPP_CONN, "Connecting to server: security obj ID -> %d", secObjInstID);
-		wpp::Security *security = client->registry().security().instance(secObjInstID);
+		wpp::Lwm2mSecurity *security = client->registry().lwm2mSecurity().instance(secObjInstID);
 		if (!security) {
-			WPP_LOGE_ARG(TAG_WPP_CONN, "Security obj with ID -> %d not found", secObjInstID);
+			WPP_LOGE_ARG(TAG_WPP_CONN, "Lwm2mSecurity obj with ID -> %d not found", secObjInstID);
 			return NULL;
 		}
 
 		wpp::WppConnection::SESSION_T session = client->connection().connect(*security);
-		WPP_LOGI_ARG(TAG_WPP_CONN, "Connected to server: security obj ID-> %d, session -> 0x%x", secObjInstID, session);
+		if (!session) {
+			WPP_LOGE_ARG(TAG_WPP_CONN, "Not posible connect to server: security obj ID-> %d, session -> 0x%x", secObjInstID, session);
+		} else {
+			WPP_LOGI_ARG(TAG_WPP_CONN, "Connected to server: security obj ID-> %d, session -> 0x%x", secObjInstID, session);
+		}
+
 		return session;
 	}
 

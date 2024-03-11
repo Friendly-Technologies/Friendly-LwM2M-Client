@@ -1,11 +1,8 @@
 #include "Connection.h"
 
+#include <algorithm>
 #include <iostream>
-#include <cstring>
-#include <sys/types.h>
 #include <unistd.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
 #include <netdb.h>
 #include <fcntl.h>
 
@@ -18,7 +15,7 @@ Connection::Connection(string port, int addressFamily): _port(port), _addressFam
 
 Connection::~Connection() {}
 
-Connection::SESSION_T Connection::connect(Security& security) {
+Connection::SESSION_T Connection::connect(Lwm2mSecurity& security) {
     int s = -1;
     addrinfo hints, *servinfo = NULL, *p;
     sockaddr *sa;
@@ -26,17 +23,17 @@ Connection::SESSION_T Connection::connect(Security& security) {
     connection_t * connP = NULL;
 
     STRING_T uri;
-    security.get(Security::SERVER_URI, uri);
+    security.get(Lwm2mSecurity::LWM2M_SERVER_URI_0, uri);
     string host = uriToHost(uri);
     string port = uriToPort(uri);
-    cout << "Connection: connect to host " << host << ", port " << port << endl;
-    cout << "Connection: connect to uri " << uri << endl;
+    cout << "Connection: connect to host " << host << ", host len: " << strlen(host.c_str()) << ", port " << port << ", port len: " << strlen(port.c_str()) << endl;
+    cout << "Connection: connect to uri " << uri << ", uri len: " << strlen(uri.c_str()) << endl;
     if (!host.length() || !port.length()) return NULL;
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = _addressFamily;
     hints.ai_socktype = SOCK_DGRAM;
 
-    if (0 != getaddrinfo(host.c_str(), port.c_str(), &hints, &servinfo) || servinfo == NULL) return NULL;
+    if (getaddrinfo(host.c_str(), port.c_str(), &hints, &servinfo) || servinfo == NULL) return NULL;
 
     // we test the various addresses
     for(s = -1, p = servinfo; p != NULL && s == -1 ; p = p->ai_next) {
@@ -175,7 +172,9 @@ string Connection::uriToPort(string uri) {
     start++;
     if (start >= uri.length()) return "";
 
-    return uri.substr(start);
+    string port = uri.substr(start);
+    port.erase(std::remove_if(port.begin(), port.end(), static_cast<int(*)(int)>(std::isspace)), port.end());
+    return port;
 }
     
 string Connection::uriToHost(string uri) {

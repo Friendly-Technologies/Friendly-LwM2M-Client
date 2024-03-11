@@ -17,12 +17,11 @@
 
 namespace wpp {
 
-class WppClient;
-class Security;
+class Lwm2mSecurity;
 
 class WppConnection {
 	friend class WppClient;
-
+	
 public:
 	using SESSION_T = void*;
 
@@ -46,7 +45,7 @@ public:
 	 * Virtual methods must be implemented by user and
 	 * will be called by wpp core.
 	 */
-	virtual SESSION_T connect(Security& security) = 0;
+	virtual SESSION_T connect(Lwm2mSecurity& security) = 0;
 	virtual void disconnect(SESSION_T session) = 0;
 	virtual bool sessionCmp(SESSION_T session1, SESSION_T session2) = 0;
 	/*
@@ -60,7 +59,7 @@ public:
 	 * Since messages from the server are mostly related to changes in the internal state
 	 * of the registry, their processing can be started only when the registry is owned by
 	 * WppClient. This approach will allow the user to use this interface from interrupts
-	 * or other streams without losing messages and with ownershiped WppRegistry.
+	 * or other streams without losing messages and without ownershiped WppClient.
 	 * 
 	 * The memory occupied by the package must be deleted by the user, because the method
 	 * does not save a pointer to the package data, but copies it.
@@ -82,11 +81,11 @@ public:
 
 private:
 	/*
-	* This method is called by AppClient in loop() if the queue contains at least one message.
-	* And processes all the messages found in the queue. If an error occurred during the
-	* processing of the package, it is deleted.
+	* This method is called by ownershiped WppClient in loop() if the queue contains at
+	* least one message. And processes all the messages found in the queue. If an error
+	* occurred during the processing of the package, it is deleted.
 	*/
-	void handlePacketsInQueue(lwm2m_context_t *context);
+	void handlePacketsInQueue(lwm2m_context_t &context);
 
 private:
 	SafeQueue<Packet, WPP_CONN_I_PACKETS_QUEUE_SIZE> packets;

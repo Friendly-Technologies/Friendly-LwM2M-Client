@@ -1,20 +1,22 @@
 #ifndef WPP_OBJECT_INFO_H
 #define WPP_OBJECT_INFO_H
 
-#include "Operation.h"
+#include "InstOp.h"
+#include "ResOp.h"
 #include "ObjectID.h"
 
 namespace wpp {
 
 struct ObjectInfo {
-	std::string name;
+	const char *name;
 	OBJ_ID objID;
-	std::string urn;
+	const char *urn;
 	Version objVersion;
 	Version lwm2mVersion;
 	IS_SINGLE isSingle;
 	IS_MANDATORY isMandatory;
-	Operation operation;
+	InstOp instOperation;
+	ResOp resOperation;
 };
 
 }; // wpp

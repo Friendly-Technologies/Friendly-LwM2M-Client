@@ -18,6 +18,8 @@ CLANGPP_KIT_PATH="/usr/bin/clang++"
 
 tools="\
 autoconf \
+automake \
+libtool \
 pkg-config \
 default-jre \
 libcunit1 \

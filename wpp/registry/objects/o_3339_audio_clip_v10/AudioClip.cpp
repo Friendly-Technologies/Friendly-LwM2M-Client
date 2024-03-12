@@ -122,23 +122,18 @@ void AudioClip::resourcesCreate() {
 
 void AudioClip::resourcesInit() {
 	/* --------------- Code_cpp block 10 start --------------- */
-	resource(CLIP_5522)->set( /* TODO */ );
-	resource(CLIP_5522)->setDataVerifier( /* TODO */ );
+	resource(CLIP_5522)->set(OPAQUE_T());
 	#if RES_3339_5523
-	resource(TRIGGER_5523)->set( /* TODO */ );
-	resource(TRIGGER_5523)->setDataVerifier( /* TODO */ );
+	resource(TRIGGER_5523)->set((EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
 	#endif
 	#if RES_3339_5548
-	resource(LEVEL_5548)->set( /* TODO */ );
-	resource(LEVEL_5548)->setDataVerifier( /* TODO */ );
+	resource(LEVEL_5548)->set((EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
 	#endif
 	#if RES_3339_5524
-	resource(DURATION_5524)->set( /* TODO */ );
-	resource(DURATION_5524)->setDataVerifier( /* TODO */ );
+	resource(DURATION_5524)->set((EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
 	#endif
 	#if RES_3339_5750
-	resource(APPLICATION_TYPE_5750)->set( /* TODO */ );
-	resource(APPLICATION_TYPE_5750)->setDataVerifier( /* TODO */ );
+	resource(APPLICATION_TYPE_5750)->set((EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
 	#endif
 	/* --------------- Code_cpp block 10 end --------------- */
 }

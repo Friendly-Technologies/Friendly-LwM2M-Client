@@ -26,7 +26,7 @@ option(OBJ_O_5_FIRMWARE_UPDATE_V11 "Include optional FirmwareUpdate object in th
 if (OBJ_O_5_FIRMWARE_UPDATE_V11)
 	set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_O_5_FIRMWARE_UPDATE_V11)
 endif()
-option(OBJ_O_3339_AUDIO_CLIP_V10 "Include optional AudioClip object in the build" OFF)
+option(OBJ_O_3339_AUDIO_CLIP_V10 "Include optional AudioClip object in the build" ON)
 if (OBJ_O_3339_AUDIO_CLIP_V10)
 	set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_O_3339_AUDIO_CLIP_V10)
 endif()

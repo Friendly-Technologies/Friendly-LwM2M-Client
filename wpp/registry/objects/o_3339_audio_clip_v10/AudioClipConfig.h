@@ -12,7 +12,7 @@
 #define RES_3339_5523 0
 #define RES_3339_5548 0
 #define RES_3339_5524 0
-#define RES_3339_5750 0
+#define RES_3339_5750 1
 
 /* --------------- Config block 0 end --------------- */
 

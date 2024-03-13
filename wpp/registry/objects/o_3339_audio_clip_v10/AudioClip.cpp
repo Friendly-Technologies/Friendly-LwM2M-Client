@@ -133,7 +133,7 @@ void AudioClip::resourcesInit() {
 	resource(DURATION_5524)->set((EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
 	#endif
 	#if RES_3339_5750
-	resource(APPLICATION_TYPE_5750)->set((EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
+	resource(APPLICATION_TYPE_5750)->set(STRING_T());
 	#endif
 	/* --------------- Code_cpp block 10 end --------------- */
 }

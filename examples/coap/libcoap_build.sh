@@ -23,7 +23,7 @@ cmake .. -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_SHARED_LIBS=ON -DENABLE_DTLS=ON -
 # Build the library and append output to the same log file
 make >> "$LOG_FILE" 2>&1
 
-rm -rf include
+# Copy the include directory to the build directory
 cp -r ../include ./
 
 # The static library will be located in build/src/

@@ -34,6 +34,9 @@ enum class OBJ_ID: ID_T {
 	#ifdef OBJ_O_5_FIRMWARE_UPDATE_V11
 	FIRMWARE_UPDATE = 5,
 	#endif
+	#ifdef OBJ_O_3339_AUDIO_CLIP_V10
+	AUDIO_CLIP = 3339,
+	#endif
 	/* ---------- Optional objects ID block end ---------- */
 
 	MAX_ID = ID_T_MAX_VAL,

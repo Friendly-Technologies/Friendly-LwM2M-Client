@@ -33,6 +33,9 @@
 #ifdef OBJ_O_5_FIRMWARE_UPDATE_V11
 #include "o_5_firmware_update_v11/FirmwareUpdate.h"
 #endif
+#ifdef OBJ_O_3339_AUDIO_CLIP_V10
+#include "o_3339_audio_clip_v10/AudioClip.h"
+#endif
 /* ---------- Optional objects include block end ---------- */
 
 namespace wpp {
@@ -118,6 +121,9 @@ public:
 	#endif
 	#ifdef OBJ_O_5_FIRMWARE_UPDATE_V11
 	ObjectSpec<FirmwareUpdate> & firmwareUpdate();
+	#endif
+	#ifdef OBJ_O_3339_AUDIO_CLIP_V10
+	ObjectSpec<AudioClip> & audioClip();
 	#endif
 	/* ---------- Optional objects prototype block end ---------- */
 

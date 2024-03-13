@@ -55,6 +55,11 @@ void Lwm2mServer::setDefaultState() {
 
 void Lwm2mServer::serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
 	/* --------------- Code_cpp block 6 start --------------- */
+	if (type == ResOp::WRITE_REPLACE_INST || ((type & ResOp::WRITE) && resId.resId == LIFETIME_1)) {
+		INT_T serverId;
+		resource(SHORT_SERVER_ID_0)->get(serverId);
+		lwm2m_update_registration(&getContext(), serverId, true, false);
+	}
 	/* --------------- Code_cpp block 6 end --------------- */
 
 	operationNotify(*this, resId, type);
@@ -65,6 +70,12 @@ void Lwm2mServer::serverOperationNotifier(ResOp::TYPE type, const ResLink &resId
 
 void Lwm2mServer::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
 	/* --------------- Code_cpp block 8 start --------------- */
+	if (type == ResOp::WRITE && resId.resId == LIFETIME_1 && getContext().state == STATE_READY){
+		INT_T serverId, lifetime;
+		resource(SHORT_SERVER_ID_0)->get(serverId);
+		resource(LIFETIME_1)->get(lifetime);
+		lwm2m_update_server_lifetime(&getContext(), serverId, lifetime);
+	}
 	/* --------------- Code_cpp block 8 end --------------- */
 }
 
@@ -179,7 +190,7 @@ void Lwm2mServer::resourcesInit() {
 		INT_T serverId;
 		resource(SHORT_SERVER_ID_0)->get(serverId);
 		WPP_LOGI(TAG, "Registration Update Trigger: serverId -> %d", serverId);
-		lwm2m_update_registration(&getContext(), serverId, true);
+		lwm2m_update_registration(&getContext(), serverId, false, true);
 		return true; 
 	});
 

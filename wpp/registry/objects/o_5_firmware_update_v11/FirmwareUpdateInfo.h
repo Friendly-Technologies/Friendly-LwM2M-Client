@@ -29,8 +29,7 @@ inline const ObjectInfo FIRMWARE_UPDATE_OBJ_INFO = {
 	IS_MANDATORY::OPTIONAL,
 	/* Object supported operations */
 	/* --------------- Info block 0 start --------------- */
-	InstOp(	InstOp::CREATE |
-			InstOp::DELETE),
+	InstOp(),
 	ResOp(	ResOp::READ|
 			ResOp::WRITE|
 			#ifdef LWM2M_RAW_BLOCK1_REQUESTS

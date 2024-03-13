@@ -29,7 +29,7 @@ inline const ObjectInfo DEVICE_OBJ_INFO = {
 	IS_MANDATORY::MANDATORY,
 	/* Object supported operations */
 	/* --------------- Info block 0 start --------------- */
-	InstOp(	InstOp::CREATE),
+	InstOp(),
 	ResOp(	ResOp::READ|
 			ResOp::WRITE|
 			ResOp::DISCOVER|

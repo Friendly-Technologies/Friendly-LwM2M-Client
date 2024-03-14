@@ -26,6 +26,7 @@ Lwm2mServer::Lwm2mServer(lwm2m_context_t &context, const OBJ_LINK_T &id): Instan
 
 	/* --------------- Code_cpp block 1 start --------------- */
 	_requestBootstrapTaskId = WPP_ERR_TASK_ID;
+	_requestDeregistrationTaskId = WPP_ERR_TASK_ID;
 	/* --------------- Code_cpp block 1 end --------------- */
 
 	resourcesCreate();
@@ -38,6 +39,8 @@ Lwm2mServer::Lwm2mServer(lwm2m_context_t &context, const OBJ_LINK_T &id): Instan
 Lwm2mServer::~Lwm2mServer() {
 	/* --------------- Code_cpp block 3 start --------------- */
 	WppTaskQueue::requestToRemoveTask(_requestBootstrapTaskId);
+	WppTaskQueue::requestToRemoveTask(_requestDeregistrationTaskId);
+	
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 

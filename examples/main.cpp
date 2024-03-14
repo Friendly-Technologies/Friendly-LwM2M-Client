@@ -91,6 +91,10 @@ int main() {
 	fwUpd.init(registry.firmwareUpdate());
 	registry.registerObj(registry.firmwareUpdate());
 	#endif
+	#ifdef OBJ_O_3339_AUDIO_CLIP_V10
+	cout << endl << "---- Initialization wpp AudioClip ----" << endl;
+	registry.registerObj(registry.audioClip());
+	#endif
 	
 	// Giving ownership to registry
 	client->giveOwnership();

@@ -29,6 +29,9 @@ WppRegistry::WppRegistry(lwm2m_context_t &context): _context(context) {
 	#ifdef OBJ_O_5_FIRMWARE_UPDATE_V11
 	_objects.push_back(new ObjectSpec<FirmwareUpdate>(_context, FIRMWARE_UPDATE_OBJ_INFO));
 	#endif
+	#if OBJ_O_3339_AUDIO_CLIP_V10
+	_objects.push_back(new ObjectSpec<AudioClip>(_context, AUDIO_CLIP_OBJ_INFO));
+	#endif
 	/* ---------- Optional objects init block end ---------- */
 }
 
@@ -96,6 +99,11 @@ ObjectSpec<Lwm2mAccessControl> & WppRegistry::lwm2mAccessControl() {
 #ifdef OBJ_O_5_FIRMWARE_UPDATE_V11
 ObjectSpec<FirmwareUpdate> & WppRegistry::firmwareUpdate() {
 	return *static_cast<ObjectSpec<FirmwareUpdate>*>(object(OBJ_ID::FIRMWARE_UPDATE));
+}
+#endif
+#if OBJ_O_3339_AUDIO_CLIP_V10
+ObjectSpec<AudioClip> & WppRegistry::audioClip() {
+	return *static_cast<ObjectSpec<AudioClip>*>(object(OBJ_ID::AUDIO_CLIP));
 }
 #endif
 /* ---------- Optional objects method block end ---------- */

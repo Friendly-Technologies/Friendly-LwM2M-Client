@@ -134,6 +134,7 @@ private:
 	/* --------------- Class private properties --------------- */
 	/* --------------- Code_h block 5 start --------------- */
 	WppTaskQueue::task_id_t _requestBootstrapTaskId;
+	WppTaskQueue::task_id_t _requestDeregistrationTaskId;
 	/* --------------- Code_h block 5 end --------------- */
 };
 

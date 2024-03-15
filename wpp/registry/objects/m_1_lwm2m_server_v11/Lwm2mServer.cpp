@@ -26,6 +26,7 @@ Lwm2mServer::Lwm2mServer(lwm2m_context_t &context, const OBJ_LINK_T &id): Instan
 
 	/* --------------- Code_cpp block 1 start --------------- */
 	_requestBootstrapTaskId = WPP_ERR_TASK_ID;
+	_requestDeregistrationTaskId = WPP_ERR_TASK_ID;
 	/* --------------- Code_cpp block 1 end --------------- */
 
 	resourcesCreate();
@@ -38,6 +39,8 @@ Lwm2mServer::Lwm2mServer(lwm2m_context_t &context, const OBJ_LINK_T &id): Instan
 Lwm2mServer::~Lwm2mServer() {
 	/* --------------- Code_cpp block 3 start --------------- */
 	WppTaskQueue::requestToRemoveTask(_requestBootstrapTaskId);
+	WppTaskQueue::requestToRemoveTask(_requestDeregistrationTaskId);
+	
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
@@ -172,7 +175,21 @@ void Lwm2mServer::resourcesInit() {
 
 	// TODO: Disable (Res id 4) must be implemented by wakaama core or WppClient
 	#if RES_1_4
-	resource(DISABLE_4)->set((EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
+	// Resource starts the separated task to deregistration from all currently registered servers. 
+	// The registration proccess performs after deregistration immediatelly. If the object delete
+	// before task execution, this task will be deleted at destructor.
+	resource(DISABLE_4)->set((EXECUTE_T)[this](Instance& inst, ID_T resId, const OPAQUE_T& data) {
+		if (!WppTaskQueue::isTaskExist(_requestDeregistrationTaskId)) {
+			WPP_LOGI(TAG, "Deregistration Request Trigger: Deregistration is started");
+			_requestDeregistrationTaskId = WppTaskQueue::addTask(WPP_TASK_DEF_DELAY_S, [this](WppClient &client, void *ctx) -> bool {
+				lwm2m_deregister(&getContext());
+				return true;
+			});
+		} else {
+			WPP_LOGI(TAG, "Deregistration Request Trigger: Deregistration is already in the progress");
+		}
+		return true;
+	});
 	#endif
 
 	#if RES_1_5                                                                                                                                                                                                                        

@@ -1,5 +1,7 @@
 # This CMakeLists.txt file is used to build Wpp as static library
-# with predefined configs in the configs directory
+# with predefined configs in the configs directory but user can use
+# build wpp as purt of own target with own configs by including wpp.cmake,
+# in this case user can set wpp properties through target_compile_definitions.
 
 # Project's name
 project(Wpp CXX)
@@ -7,12 +9,22 @@ project(Wpp CXX)
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 17)
 
+set(WPP_DEFINITIONS "")
+
 # Include file with compiler config
 include(configs/compiler_config.cmake)
-# Include file with Wpp configs
+# Include file with Wakaama core config
+include(configs/wakaama_config.cmake)
+# Include file with wpp config
+include(configs/wpp_config.cmake)
+# Include file with wpp object configs
+include(configs/objects_config.cmake)
+# Include file with Wpp sources
 include(wpp.cmake)
 
 # Creating target as static library
-add_library(Wpp STATIC ${WPP_SOURCES})
+add_library(Wpp STATIC)
+# Set wpp properties
+target_compile_definitions(Wpp PUBLIC ${WPP_DEFINITIONS})
 # Link Wpp sources
 target_link_wpp(Wpp)

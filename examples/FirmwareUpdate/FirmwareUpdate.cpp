@@ -1,6 +1,6 @@
 #include "FirmwareUpdate.h"
 
-FirmwareUpdateImpl::FirmwareUpdateImpl(DeviceImpl &device) : _device(device) {}
+FirmwareUpdateImpl::FirmwareUpdateImpl() {}
 
 FirmwareUpdateImpl::~FirmwareUpdateImpl() {}
 
@@ -20,9 +20,9 @@ void FirmwareUpdateImpl::init(Object &obj) {
 	inst0->set(FirmwareUpdate::UPDATE_RESULT_5, (INT_T)getLastUpdResult());
     #if RES_5_8
     inst0->set(FirmwareUpdate::FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8, (INT_T)FirmwareUpdate::COAP);
-    inst0->set({FirmwareUpdate::FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8, 1}, (INT_T)FirmwareUpdate::COAPS);
+    inst0->set({FirmwareUpdate::FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8, 1}, (INT_T)FirmwareUpdate::HTTP);
     #endif
-    inst0->set(FirmwareUpdate::FIRMWARE_UPDATE_DELIVERY_METHOD_9, (INT_T)FirmwareUpdate::PUSH);
+    inst0->set(FirmwareUpdate::FIRMWARE_UPDATE_DELIVERY_METHOD_9, (INT_T)FirmwareUpdate::BOTH);
 	#if RES_5_10
 	inst0->set(FirmwareUpdate::CANCEL_10, (EXECUTE_T)[this](Instance& inst, ID_T id, const OPAQUE_T& data) {
 		cout << "FirmwareUpdate: execute CANCEL_10" << endl;
@@ -49,6 +49,7 @@ void FirmwareUpdateImpl::instEvent(Instance &inst, EVENT_ID_T eventId) {
         _downloader.startDownloading(uri, [](string file) { 
             cout << "FW is downloaded to file: " << file << endl;
             WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, [](WppClient &client, WppTaskQueue::ctx_t ctx) -> bool {
+                cout << "FW STATE_3 changed to S_DOWNLOADED" << endl;
                 client.registry().firmwareUpdate().instance()->set(FirmwareUpdate::STATE_3, (INT_T)FirmwareUpdate::S_DOWNLOADED);
                 return true;
             });
@@ -61,7 +62,7 @@ void FirmwareUpdateImpl::instEvent(Instance &inst, EVENT_ID_T eventId) {
 void FirmwareUpdateImpl::resourceBlockWrite(Instance &inst, const ResLink &resource, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock) {
     if (resource.resId != FirmwareUpdate::PACKAGE_0) return;
     cout << "FwUpdateImpl: resourceBlockWrite: len->" << buff.size() << ", blockNum: " << blockNum << ", isLastBlock:" << isLastBlock << endl;
-    writeToFile(getFileName(), buff);
+    writeToFile(getFileName(inst), buff);
 }
 #endif
 
@@ -86,15 +87,36 @@ void FirmwareUpdateImpl::update(Instance& inst) {
     #endif
 
     #ifndef LWM2M_RAW_BLOCK1_REQUESTS
-    const OPAQUE_T *fwData = NULL;
-    inst.getPtr(FirmwareUpdate::PACKAGE_0, &fwData);
-    if (fwData) writeToFile(getFileName(), *fwData);
+    STRING_T uri;
+    inst.get(FirmwareUpdate::PACKAGE_URI_1, uri);
+    if (!uri.empty()) {
+        const OPAQUE_T *fwData = NULL;
+        inst.getPtr(FirmwareUpdate::PACKAGE_0, &fwData);
+        if (fwData) writeToFile(getFileName(inst), *fwData);
+    }
     #endif
 
-    _device.requestReboot();
+    inst.set(FirmwareUpdate::STATE_3, (INT_T)FirmwareUpdate::S_UPDATING);
+    
+    WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, [](WppClient &client, WppTaskQueue::ctx_t ctx) -> bool {
+        Instance *fw = client.registry().firmwareUpdate().instance();
+        Instance *dev = client.registry().device().instance();
+        
+        #if RES_3_3 && RES_5_7
+        STRING_T fwVersion;
+        fw->get(FirmwareUpdate::PKGVERSION_7, fwVersion);
+        dev->set(Device::FIRMWARE_VERSION_3, fwVersion);
+        #endif
+        
+        fw->set(FirmwareUpdate::UPDATE_RESULT_5, (INT_T)FirmwareUpdate::R_FW_UPD_SUCCESS);
+        dev->set(Device::FIRMWARE_VERSION_3, (INT_T)FirmwareUpdate::S_DOWNLOADED);
+
+        cout << "FW UPDATE_RESULT_5 changed to R_FW_UPD_SUCCESS" << endl;
+        return true;
+    });
 }
 
-string FirmwareUpdateImpl::getFileName() {
+string FirmwareUpdateImpl::getFileName(Instance& inst) {
     STRING_T fileName = "test";
 
     #if RES_5_6 && RES_5_7

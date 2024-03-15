@@ -57,7 +57,9 @@ FirmwareUpdate::~FirmwareUpdate() {
 
 void FirmwareUpdate::setDefaultState() {
 	/* --------------- Code_cpp block 4 start --------------- */
-	void stopDeferUpdateGuard();
+	#if RES_5_13
+	stopDeferUpdateGuard();
+	#endif
 	/* --------------- Code_cpp block 4 end --------------- */
 
 	_resources.clear();
@@ -70,7 +72,7 @@ void FirmwareUpdate::setDefaultState() {
 
 void FirmwareUpdate::serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
 	/* --------------- Code_cpp block 6 start --------------- */
-	WPP_LOGD_ARG(TAG, "Server operation -> type: %d, resId: %d, resInstId: %d", type, resId.resId, resId.resInstId);
+	WPP_LOGD(TAG, "Server operation -> type: %d, resId: %d, resInstId: %d", type, resId.resId, resId.resInstId);
 	switch (type) {
 	case ResOp::WRITE_UPD:
 	case ResOp::WRITE_REPLACE_RES: {
@@ -79,7 +81,7 @@ void FirmwareUpdate::serverOperationNotifier(ResOp::TYPE type, const ResLink &re
 			OPAQUE_T *pkg;
 			resource(PACKAGE_0)->ptr(&pkg);
 			if (pkg->empty()) {
-				WPP_LOGD_ARG(TAG, "Server reset state machine through PACKAGE_0", resId.resId, resId.resInstId);
+				WPP_LOGD(TAG, "Server reset state machine through PACKAGE_0", resId.resId, resId.resInstId);
 				resetStateMachine();
 				eventNotify(*this, E_RESET);
 			} else {
@@ -95,7 +97,7 @@ void FirmwareUpdate::serverOperationNotifier(ResOp::TYPE type, const ResLink &re
 			STRING_T pkgUri;
 			resource(PACKAGE_URI_1)->get(pkgUri);
 			if (pkgUri.empty()) {
-				WPP_LOGD_ARG(TAG, "Server reset state machine through PACKAGE_URI_1", resId.resId, resId.resInstId);
+				WPP_LOGD(TAG, "Server reset state machine through PACKAGE_URI_1", resId.resId, resId.resInstId);
 				resetStateMachine();
 				eventNotify(*this, E_RESET);
 			} else {
@@ -117,8 +119,6 @@ void FirmwareUpdate::serverOperationNotifier(ResOp::TYPE type, const ResLink &re
 				#if RES_5_13
 				stopDeferUpdateGuard();
 				#endif
-				changeUpdRes(R_INITIAL);
-				changeState(S_UPDATING);
 			}
 			break;
 		}
@@ -144,7 +144,7 @@ void FirmwareUpdate::serverOperationNotifier(ResOp::TYPE type, const ResLink &re
 
 void FirmwareUpdate::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
 	/* --------------- Code_cpp block 8 start --------------- */
-	WPP_LOGD_ARG(TAG, "User operation -> type: %d, resId: %d, resInstId: %d", type, resId.resId, resId.resInstId);
+	WPP_LOGD(TAG, "User operation -> type: %d, resId: %d, resInstId: %d", type, resId.resId, resId.resInstId);
 	switch (type) {
 	case ResOp::WRITE_UPD: {
 		switch (resId.resId) {
@@ -181,7 +181,8 @@ void FirmwareUpdate::userOperationNotifier(ResOp::TYPE type, const ResLink &resI
 			resource(UPDATE_RESULT_5)->get(res);
 			switch (res) {
 			case R_FW_UPD_SUCCESS:
-				changeState(S_IDLE);
+				resetStateMachine();
+				changeUpdRes(R_FW_UPD_SUCCESS);
 				break;
 			#if RES_5_13
 			case R_FW_UPD_DEFERRED: {
@@ -294,7 +295,7 @@ void FirmwareUpdate::resourcesInit() {
 	});
 	resource(UPDATE_RESULT_5)->set(INT_T(R_INITIAL));
 	resource(UPDATE_RESULT_5)->setDataVerifier((VERIFY_INT_T)[this](const INT_T& value) { 
-		if (R_INITIAL > value && value >= UPD_RES_MAX) return false;
+		if (R_INITIAL > value || value >= UPD_RES_MAX) return false;
 		#if RES_5_13
 		if (value == R_FW_UPD_DEFERRED) {
 			UINT_T deferPeriod;

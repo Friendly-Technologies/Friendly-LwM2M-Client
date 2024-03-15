@@ -212,7 +212,7 @@ class ObjectGenerator:
             text = '"' + text + '"'
             for argument in arguments:
                 text += ', ' + argument
-            return f"""WPP_LOGD_ARG(TAG, {text});"""
+            return f"""WPP_LOGD(TAG, {text});"""
 
     def get_content_serverOperationNotifier(self):
         cases = ["READ", "WRITE_UPD", "WRITE_REPLACE_INST", "WRITE_REPLACE_RES", "EXECUTE", "DISCOVER", "DELETE"]

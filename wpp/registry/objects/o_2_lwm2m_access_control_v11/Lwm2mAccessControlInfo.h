@@ -8,7 +8,7 @@
 
 #include "ObjectInfo.h"
 
-#if OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
+#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
 
 namespace wpp {
 

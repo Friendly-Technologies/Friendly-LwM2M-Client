@@ -11,7 +11,7 @@
 bool Resource::set(const _TYPE_ &value, ID_T resInstId) {					\
 	return _set(value, resInstId);											\
 }																			\
-bool Resource::setMove(const _TYPE_ &value, ID_T resInstId) {				\
+bool Resource::setMove(_TYPE_ &value, ID_T resInstId) {				\
 	return _setMove(value, resInstId);										\
 }																			\
 bool Resource::get(_TYPE_ &value, ID_T resInstId) const {					\
@@ -51,7 +51,6 @@ Resource::Resource(Resource&& resource) {
 	_typeID = resource._typeID;
 	_instances = std::move(resource._instances);
 	_dataVerifier = resource._dataVerifier;
-	resource.clear();
 }
 
 Resource& Resource::operator=(const Resource& resource) {
@@ -149,7 +148,8 @@ size_t Resource::instanceCnt() const {
 
 const std::vector<ID_T> Resource::getInstIds() const {
 	std::vector<ID_T> ids;
-	for (auto inst : _instances) ids.push_back(inst.id);
+	ids.reserve(_instances.size());
+	std::transform(_instances.begin(), _instances.end(), std::back_inserter(ids), [](const auto& inst) { return inst.id; });
 	return ids;
 }
 
@@ -164,7 +164,7 @@ RES_METHODS_IMPL_SET_FOR(STRING_T);
 RES_METHODS_IMPL_SET_FOR(EXECUTE_T);
 
 bool Resource::remove(ID_T resInstId) {
-	if (!isInstanceExist(resInstId) || isSingle()) return false;
+	if (!isInstanceExist(resInstId) || isSingle() || instanceCnt() == 1) return false;
 	auto instForRemove = getResInstIter(resInstId);
 	_instances.erase(instForRemove);
 
@@ -189,7 +189,8 @@ bool Resource::isDataVerifierValid(const DATA_VERIFIER_T &verifier) const {
 	else if (std::holds_alternative<VERIFY_FLOAT_T>(verifier) && std::get<VERIFY_FLOAT_T>(verifier)) return _typeID == TYPE_ID::FLOAT;
 	else if (std::holds_alternative<VERIFY_OPAQUE_T>(verifier) && std::get<VERIFY_OPAQUE_T>(verifier)) return _typeID == TYPE_ID::OPAQUE;
 	else if (std::holds_alternative<VERIFY_OBJ_LINK_T>(verifier) && std::get<VERIFY_OBJ_LINK_T>(verifier)) return _typeID == TYPE_ID::OBJ_LINK;
-	else if (std::holds_alternative<VERIFY_STRING_T>(verifier) && std::get<VERIFY_STRING_T>(verifier)) return _typeID == TYPE_ID::STRING;
+	// VERIFY_CORE_LINK_T the same as VERIFY_STRING_T therefore we use only VERIFY_STRING_T
+	else if (std::holds_alternative<VERIFY_STRING_T>(verifier) && std::get<VERIFY_STRING_T>(verifier)) return _typeID == TYPE_ID::STRING || _typeID == TYPE_ID::CORE_LINK;
 	else if (std::holds_alternative<VERIFY_EXECUTE_T>(verifier) && std::get<VERIFY_EXECUTE_T>(verifier)) return _typeID == TYPE_ID::EXECUTE;
 	else return false;
 }

@@ -176,8 +176,8 @@ void Lwm2mServer::resourcesInit() {
 	// TODO: Disable (Res id 4) must be implemented by wakaama core or WppClient
 	#if RES_1_4
 	// Resource starts the separated task to deregistration from all currently registered servers. 
-	// The registration proccess performs after deregistration immediatelly. The task will be 
-	// deleted at destructor.
+	// The registration proccess performs after deregistration immediatelly. If the object delete
+	// before task execution, this task will be deleted at destructor.
 	resource(DISABLE_4)->set((EXECUTE_T)[this](Instance& inst, ID_T resId, const OPAQUE_T& data) {
 		if (!WppTaskQueue::isTaskExist(_requestDeregistrationTaskId)) {
 			WPP_LOGI(TAG, "Deregistration Request Trigger: Deregistration is started");

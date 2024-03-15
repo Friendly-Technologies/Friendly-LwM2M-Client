@@ -1,0 +1,12 @@
+#include "__CLASS_NAME__.h"
+
+__CLASS_NAME__Impl::__CLASS_NAME__Impl() {}
+
+__CLASS_NAME__Impl::~__CLASS_NAME__Impl() {}
+
+void __CLASS_NAME__Impl::init(Object &obj) {
+	__SUBSCRB_1__
+__INSTANCES__}
+
+
+__CALLBACKS__

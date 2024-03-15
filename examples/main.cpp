@@ -8,10 +8,19 @@
 #include <thread>
 #include <chrono>
 
-#include "Server.h"
-#include "Security.h"
+#include "Lwm2mServer.h"
+#include "Lwm2mSecurity.h"
 #include "Device.h"
 #include "Connection.h"
+#if OBJ_O_4_CONNECTIVITY_MONITORING_V13
+#include "ConnectivityMonitoring.h"
+#endif
+#if OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
+#include "Lwm2mAccessControl.h"
+#endif
+#if OBJ_O_5_FIRMWARE_UPDATE_V11
+#include "FirmwareUpdate.h"
+#endif
 
 #include "WppClient.h"
 #include "WppRegistry.h"
@@ -29,9 +38,18 @@ void socketPolling(Connection *connection, DeviceImpl *device) {
 int main() {
 	cout << endl << "---- Creating requiered components ----" << endl;
 	Connection connection("56830", AF_INET);
-	ServerImpl server;
-	SecurityImpl security;
+	Lwm2mServerImpl server;
+	Lwm2mSecurityImpl security;
 	DeviceImpl device;
+	#if OBJ_O_4_CONNECTIVITY_MONITORING_V13
+	ConnectivityMonitoringImpl conn_mon;
+	#endif
+	#if OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
+	Lwm2mAccessControlImpl accessCtrl;
+	#endif
+	#if OBJ_O_5_FIRMWARE_UPDATE_V11
+	FirmwareUpdateImpl fwUpd(device);
+	#endif
 
 	// Client initialization
 	cout << endl << "---- Creating WppClient ----" << endl;
@@ -41,7 +59,7 @@ int main() {
 	#elif DTLS_WITH_RPK
 	clientName += "RPK";
 	#endif
-
+	cout << "WppClient name: " << clientName << endl;
 	WppClient::create({clientName, "", ""}, connection);
 	WppClient *client = WppClient::takeOwnership();
 	WppRegistry &registry = client->registry();
@@ -53,6 +71,21 @@ int main() {
 	security.init(registry.lwm2mSecurity());
 	cout << endl << "---- Initialization wpp Device ----" << endl;
 	device.init(registry.device());
+	#if OBJ_O_4_CONNECTIVITY_MONITORING_V13
+	cout << endl << "---- Initialization wpp ConnectivityMonitoring ----" << endl;
+	conn_mon.init(registry.connectivityMonitoring());
+	registry.registerObj(registry.connectivityMonitoring());
+	#endif
+	#if OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
+	cout << endl << "---- Initialization wpp AccessControl ----" << endl;
+	accessCtrl.init(registry.lwm2mAccessControl());
+	registry.registerObj(registry.lwm2mAccessControl());
+	#endif
+	#if OBJ_O_5_FIRMWARE_UPDATE_V11
+	cout << endl << "---- Initialization wpp FirmwareUpdate ----" << endl;
+	fwUpd.init(registry.firmwareUpdate());
+	registry.registerObj(registry.firmwareUpdate());
+	#endif
 	
 	// Giving ownership to registry
 	client->giveOwnership();
@@ -64,7 +97,7 @@ int main() {
 	for (int iterationCnt = 0; !device.isNeededReboot(); iterationCnt++) {
 		time_t currTime = time(NULL);
 
-		cout << endl << "---- iteration:" << iterationCnt << " ----" << endl;
+		cout << endl << "---- iteration:" << iterationCnt << ", time: " << time(NULL) << " ----" << endl;
 		if (currTime >= callTime || connection.getPacketQueueSize()) {
 			// Handle client state and process packets from the server
 			client = WppClient::takeOwnership();

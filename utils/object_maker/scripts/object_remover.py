@@ -9,16 +9,17 @@ class ObjectRemover:
     """Add some comments here"""
 
     def __init__(self, object_folder_path):
-        self.log_tag = f"[{self.__class__.__name__}]:"
+        self.log_tag = self.__class__.__name__
         self.object_folder_path = object_folder_path
         self.object_define = self.extract_define()
 
     def update_file(self, path_to_file):
-        old_content = func.get_file_content(path_to_file)[1]
+        old_content = func.get_content_from_file(path_to_file)[1]
         new_content = ''
 
         if old_content.find(self.object_define) == -1:
-            print(f'{self.log_tag} The file "{path_to_file}" is not contain the Object\'s info that must be removed')
+            func.LOG(self.log_tag, self.update_file.__name__,
+                     f'the file "{path_to_file}" is not contain the Object\'s info that must be removed')
             return
 
         add_line = True     # the flag indicates whether leave the line
@@ -30,7 +31,6 @@ class ObjectRemover:
 
             if add_line:
                 new_content += line + "\n"
-
             else:   # check if all that must be deleted is already deleted:
                 if line_to_check[:6] in ["#endif", "endif("]:
                     add_line = True
@@ -39,25 +39,26 @@ class ObjectRemover:
 
     def update_files(self):
         if not self.extract_define():
-            print(f'{self.log_tag} The define of the deleted Object not extracted')
+            func.LOG(self.log_tag, self.update_files.__name__, "the define of the deleted Object not extracted")
             return False
         for file in [const.FILE_OBJECT_ID, const.FILE_REGISTRY_H, const.FILE_REGISTRY_CPP, const.FILE_CONFIG_CMAKE]:
             self.update_file(file)
         return True
 
     def extract_define(self):
-        errcode, data_str = func.get_file_content(f"{self.object_folder_path}/{const.FILE_OBJ_METADATA}")
+        json_file = f"{self.object_folder_path}/{const.FILE_OBJ_METADATA}"
+        errcode, data_dict = func.get_json_from_file(json_file)
         if not errcode:
             return False
-
-        data_dict = eval(data_str)
-        dict_obj_meta = data_dict["object_names"]["define"]
+        dict_obj_meta = data_dict[const.KEY_DICT_OBJ_NAMES][const.KEY_NAME_DEFINE]
         return dict_obj_meta
 
     def remove_object(self):
         if not self.update_files():
+            func.LOG(self.log_tag, self.remove_object.__name__, "unable to get defines. Operation interrupted.")
             return False
         func.remove_folder(self.object_folder_path)
+        func.LOG(self.log_tag, self.remove_object.__name__, "the Object removed successfully.")
         return True
 
 

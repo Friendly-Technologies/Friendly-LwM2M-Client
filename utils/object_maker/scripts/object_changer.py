@@ -8,22 +8,12 @@ import os
 import re
 from optparse import OptionParser
 
-RES_DEF_PATTERN = r'#define RES_\d+_\d+_'
-RES_DEF_PARTS_CNT = 3
-
-ENUM_FIELD_PATTERN = r" = \d"
-ENUM_START_PATTERN = "enum ID: ID_T {"
-ENUM_END_PATTERN = "};"
-ENUM_FIELD_PARTS_CNT = 2
-
-FILE_TYPE_COMPONENTS_CNT = 2
-
 
 class ObjectChanger:
     """Add some comments here"""
 
     def __init__(self, obj_folder_to_change, obj_metadata_to_use):
-        self.log_tag = f"[{self.__class__.__name__}]:"
+        self.log_tag = self.__class__.__name__
         self.user_codes_relations = None
         self.obj_folder_to_change = obj_folder_to_change
         self.obj_metadata_to_use = obj_metadata_to_use
@@ -35,23 +25,23 @@ class ObjectChanger:
         datas = []
 
         for folder in folders:
-            file_path = f"{folder}/{const.FILE_OBJ_METADATA}"
             # just read and save data to list:
-            errcode, content = func.get_file_content(file_path)
+            file_path = f"{folder}/{const.FILE_OBJ_METADATA}"
+            errcode, json_data = func.get_json_from_file(file_path)
             if not errcode:
-                print(f'{self.log_tag} The "{file_path}" file not found. Operation interrupted')
+                func.LOG(self.log_tag, self.set_relations.__name__, f'the "{file_path}" file not found.')
                 return False
-            datas.append(content)
-
+            datas.append(json_data)
+            
         # parse, pack and save object_files-dict to Class-field:
         try:
-            relations["old"] = eval(datas[0])[const.KEY_DICT_OBJ_FILES]
-            relations["new"] = eval(datas[1])[const.KEY_DICT_OBJ_FILES]
+            relations["old"] = datas[0][const.KEY_DICT_OBJ_FILES]
+            relations["new"] = datas[1][const.KEY_DICT_OBJ_FILES]
             self.user_codes_relations = relations
             return True
 
         except KeyError:
-            # print(f'There is no "{const.KEY_DICT_OBJ_FILES}" key on dictionaries')
+            # func.LOG(self.log_tag, self.set_relations.__name__, f'the "{const.KEY_DICT_OBJ_FILES}" key not found')
             return False
 
     def get_info(self, path_to_file):
@@ -61,11 +51,11 @@ class ObjectChanger:
         user_code_blocks = {}
         with open(path_to_file, 'r') as f:
             for line in f:
-                if re.search("block \d start", line):
+                if re.search(const.USER_CODE_BLOCK_START, line):
                     add_line = True
                     continue
 
-                if re.search("block \d end", line):
+                if re.search(const.USER_CODE_BLOCK_END, line):
                     add_line = False
                     user_code_blocks[counter] = user_code_block
                     user_code_block = ""
@@ -80,19 +70,23 @@ class ObjectChanger:
     def put_info(self, path_to_file, file_user_code_dict):
         counter = 0
         new_content = ''
-        old_content = func.get_file_content(path_to_file)[1]
+        errcode, old_content = func.get_content_from_file(path_to_file)
+        if not errcode:
+            func.LOG(self.log_tag, self.put_info.__name__, f'unable get old content from "{path_to_file}" file')
+            return False
+        
         add_flag = True
         
         for line in old_content.split("\n"):
-            if re.search("block \d start", line):
+            if re.search(const.USER_CODE_BLOCK_START, line):
                 new_content += line + "\n"
+                add_flag = False
                 if file_user_code_dict[counter] == "":
                     counter += 1
                     continue
-                add_flag = False
                 new_content += file_user_code_dict[counter]
                 counter += 1
-            if re.search("block \d end", line):
+            if re.search(const.USER_CODE_BLOCK_END, line):
                 add_flag = True
             if add_flag:
                 new_content += line + "\n"
@@ -138,7 +132,8 @@ class ObjectChanger:
     def get_obj_res_enum_content_from_file(self, obj_path):
         impl_file = self.get_file_name_by_type("old", const.KEY_FILE_IMPL_H)
         if not impl_file:
-            print(f'{self.log_tag} File with type "{const.KEY_FILE_IMPL_H}" not found in the path "{obj_path}"')
+            func.LOG(self.log_tag, self.get_obj_res_enum_content_from_file.__name__,
+                     f'file with type "{const.KEY_FILE_IMPL_H}" not found in the path "{obj_path}"')
             return ""
 
         with open(obj_path + "/" + impl_file, 'r') as file:
@@ -148,13 +143,13 @@ class ObjectChanger:
             block = list()
 
             for id in range(len(lines)):
-                if re.search(ENUM_START_PATTERN, lines[id]):
+                if re.search(const.ENUM_START_PATTERN, lines[id]):
                     enum_start_id = id
                     break
             if enum_start_id == -1:
                 return list()
             for id in range(id, len(lines)):
-                if re.search(ENUM_END_PATTERN, lines[id]):
+                if re.search(const.ENUM_END_PATTERN, lines[id]):
                     enum_end_id = id
                     break
                 block.append(lines[id])
@@ -167,16 +162,16 @@ class ObjectChanger:
         # Return ["line0", "line1", ...]
         res_enum = self.get_obj_res_enum_content_from_file(self.obj_folder_to_change)
         if not res_enum:
-            print(f"{self.log_tag} Enum with resources definitions not found")
+            func.LOG(self.log_tag, self.get_resource_names_old.__name__, "enum with resources definitions not found")
             return dict()
 
         names = dict()
         for line in res_enum:
-            if not re.search(ENUM_FIELD_PATTERN, line):
+            if not re.search(const.ENUM_FIELD_PATTERN, line):
                 continue
             field_parts = line.replace(" ", "").strip("\t,\n").split("=")
-            if len(field_parts) != ENUM_FIELD_PARTS_CNT or not field_parts[1].isnumeric():
-                print(f"{self.log_tag} Incorrect enum field format '{line}'")
+            if len(field_parts) != const.ENUM_FIELD_PARTS_CNT or not field_parts[1].isnumeric():
+                func.LOG(self.log_tag, self.get_resource_names_old.__name__, f'incorrect enum field format "{line}"')
                 continue
             names[int(field_parts[1])] = field_parts[0]
         return names
@@ -216,7 +211,7 @@ class ObjectChanger:
         return new_user_code_blocks
 
     def is_metadata_is_link(self):
-        for resource in const.LWM2M_WEB_RESOUCES:
+        for resource in const.LWM2M_WEB_RESOURCES:
             if re.search(resource, self.obj_metadata_to_use):
                 return True
         return False
@@ -232,6 +227,7 @@ class ObjectChanger:
         # 2. check if there is possible and set the relations of user-code blocks (old_object -> updated_object):
         if not self.set_relations([self.obj_folder_to_change, path_to_new_object]):     # don't change order in list
             func.remove_folder(path_to_new_object)
+            func.LOG(self.log_tag, self.change.__name__, "unable to mapped old and new data. Operation interrupted.")
             return False
 
         # 3. update the code of the new Object by user-code block of the old Object:
@@ -241,13 +237,13 @@ class ObjectChanger:
         # 4. remove old Object code:
         obj_r = object_remover.ObjectRemover(self.obj_folder_to_change)
         if not obj_r.remove_object():
-            print(f"{self.log_tag} Unable to remove old data. Operation interrupted.")
+            func.LOG(self.log_tag, self.change.__name__, "unable to remove old data. Operation interrupted.")
             return False
 
         # 5. integrate new code of the Object:
         obj_i = object_integrator.ObjectIntegrator(path_to_new_object)
         if not obj_i.update_files():
-            print(f"{self.log_tag} Please, check the existing Object and try again")
+            func.LOG(self.log_tag, self.update_files.__name__, "please, check the existing Object and try again")
             return False
         return True
 

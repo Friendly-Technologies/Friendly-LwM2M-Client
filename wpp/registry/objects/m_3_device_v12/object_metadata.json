@@ -1,10 +1,11 @@
 {
     "object_data": {
-        "is_mandatory": "True",
         "name": "Device",
         "id": "3",
+        "version": "1.2",
         "lwm2m_version": "1.1",
-        "version": "1.2"
+        "is_mandatory": true,
+        "is_multiple": false
     },
     "object_names": {
         "class": "Device",

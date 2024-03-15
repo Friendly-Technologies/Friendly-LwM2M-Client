@@ -1,10 +1,11 @@
 {
     "object_data": {
-        "is_mandatory": "True",
         "name": "LWM2M Security",
         "id": "0",
+        "version": "1.1",
         "lwm2m_version": "1.1",
-        "version": "1.1"
+        "is_mandatory": true,
+        "is_multiple": true
     },
     "object_names": {
         "class": "Lwm2mSecurity",

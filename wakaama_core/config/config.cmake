@@ -28,22 +28,17 @@ if (LWM2M_VERSION_1_0)
     set(WAKAAMA_CORE_DEFINITIONS ${WAKAAMA_CORE_DEFINITIONS} LWM2M_VERSION_1_0=1)
 endif()
 
-option(LWM2M_RAW_BLOCK1_REQUESTS "For low memory client devices where it is not possible to keep a large post or put request in memory to be parsed" OFF)
+option(LWM2M_RAW_BLOCK1_REQUESTS "For low memory client devices where it is not possible to keep a large post
+                                  or put request in memory to be parsed. Control over such operations is provided
+                                  entirely to the user. At the moment, there are certain restrictions regarding
+                                  the use of this mode, only two operations are supported BLOCK_EXECUTE without
+                                  restrictions, and BLOCK_WRITE with the following restrictions: recording only
+                                  one SINGLE resource, recording is possible in the following formats: TEXT, OPAQUE, TLV." OFF)
 if (LWM2M_RAW_BLOCK1_REQUESTS)
     set(WAKAAMA_CORE_DEFINITIONS ${WAKAAMA_CORE_DEFINITIONS} LWM2M_RAW_BLOCK1_REQUESTS=1)
 endif()
 
-option(LWM2M_RAW_BLOCK1_REQUESTS "For low memory client devices where it is not possible to keep a large post or put request in memory to be parsed" OFF)
-if (LWM2M_RAW_BLOCK1_REQUESTS)
-    set(WAKAAMA_CORE_DEFINITIONS ${WAKAAMA_CORE_DEFINITIONS} LWM2M_RAW_BLOCK1_REQUESTS=1)
-endif()
-
-option(LWM2M_LITTLE_ENDIAN "For low memory client devices where it is not possible to keep a large post or put request in memory to be parsed" OFF)
-if (LWM2M_RAW_BLOCK1_REQUESTS)
-    set(WAKAAMA_CORE_DEFINITIONS ${WAKAAMA_CORE_DEFINITIONS} LWM2M_RAW_BLOCK1_REQUESTS=1)
-endif()
-
-option(LWM2M_WITH_LOGS "Enable logs for wakaama core" ON)
+option(LWM2M_WITH_LOGS "Enable logs for wakaama core" OFF)
 if (LWM2M_WITH_LOGS)
     set(WAKAAMA_CORE_DEFINITIONS ${WAKAAMA_CORE_DEFINITIONS} LWM2M_WITH_LOGS=1)
 endif()

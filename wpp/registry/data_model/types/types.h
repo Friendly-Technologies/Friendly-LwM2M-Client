@@ -15,8 +15,10 @@ namespace wpp {
 using ID_T = uint16_t;
 #define ID_T_MAX_VAL (LWM2M_MAX_ID)
 
-/*
- * Wpp data types ID
+using EVENT_ID_T = uint8_t;
+
+/**
+ * @brief Wpp data types ID
  */
 enum class TYPE_ID: uint8_t {
 	BOOL,           // bool
@@ -32,8 +34,8 @@ enum class TYPE_ID: uint8_t {
 	UNDEFINED     	// Undefined type
 };
 
-/*
- * Wpp data types bindings
+/**
+ * @brief Wpp data types bindings
  */
 using BOOL_T = bool;
 using INT_T = int64_t;
@@ -41,35 +43,36 @@ using UINT_T = uint64_t;
 using FLOAT_T = double;
 using TIME_T = INT_T;
 using STRING_T = std::string;
-/*
- * Opaque - represent buffer or string as lwm2m_data_t.value.asBuffer
+/**
+ * @brief Opaque - represent buffer or string as lwm2m_data_t.value.asBuffer
  */
 using OPAQUE_T = std::vector<uint8_t>;
-/*
- * ObjLink - (object ID):(instance ID), example: 1:3. 
+/**
+ * @brief ObjLink - (object ID):(instance ID), example: 1:3. 
  * Represent as two integers in lwm2m_data_t.value.asObjLink.
  */
 struct OBJ_LINK_T {
 	ID_T objId = ID_T_MAX_VAL;
     ID_T objInstId = ID_T_MAX_VAL;
 };
-/*
- * CoreLink -  </3/0> or </1/0/>;ssid=101 or </5>,</4>,</55>;ver=1.9,</55/0>.
+/**
+ * @brief CoreLink -  </3/0> or </1/0/>;ssid=101 or </5>,</4>,</55>;ver=1.9,</55/0>.
  * Represent as string in lwm2m_data_t.value.asBuffer
  */
 using CORE_LINK_T = std::string;
-/*
- * Keep in mind that while std::function itself is always copy able,
+/**
+ * @brief Keep in mind that while std::function itself is always copy able,
  * it might hold a callable object (like a lambda) that captures
  * variables which may not be copy able. If you try to copy a
  * std::function that holds a non-copyable callable, it will compile,
  * but will throw a std::bad_function_call exception at runtime if
  * you try to call the copied std::function.
  */
-using EXECUTE_T = std::function<void(ID_T, const OPAQUE_T&)>;
+class Instance;
+using EXECUTE_T = std::function<bool(Instance&, ID_T, const OPAQUE_T&)>;
 
-/*
- * Determining type ID by real type
+/**
+ * @brief Determining type ID by real type
  */
 template<typename T>
 TYPE_ID dataTypeToID() {
@@ -86,8 +89,8 @@ TYPE_ID dataTypeToID() {
 	return typeID;
 }
 
-/*
- * Data validation function types
+/**
+ * @brief Data validation function types
  */
 using VERIFY_INT_T 	  	 = std::function<bool(const INT_T&)>;
 using VERIFY_UINT_T 	 = std::function<bool(const UINT_T&)>;

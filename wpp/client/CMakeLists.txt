@@ -1,3 +1,5 @@
+add_subdirectory(task_queue)
+
 # Update WPP_SOURCES variable from parent scope.
 set(WPP_SOURCES ${WPP_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/WppClient.cpp PARENT_SCOPE)
 # Update WPP_INCLUDES variable from parent scope.

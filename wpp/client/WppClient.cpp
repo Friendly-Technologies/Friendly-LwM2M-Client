@@ -9,13 +9,14 @@
 #include "WppRegistry.h"
 #include "WppConnection.h"
 #include "WppLogs.h"
+#include "WppTaskQueue.h"
 
 namespace wpp {
 
+WppGuard WppClient::_clientGuard;
 WppClient *WppClient::_client = NULL;
-std::mutex WppClient::_clientGuard;
 
-WppClient::WppClient(WppConnection &connection, time_t maxSleepTime): _connection(connection), _maxSleepTime(maxSleepTime) {
+WppClient::WppClient(WppConnection &connection, time_t maxSleepTimeSec): _connection(connection), _maxSleepTimeSec(maxSleepTimeSec) {
 	lwm2mContextOpen();
 	_registry = new WppRegistry(getContext());
 }
@@ -62,9 +63,18 @@ WppClient* WppClient::takeOwnership() {
     return _client;
 }
 
+WppClient* WppClient::takeOwnershipBlocking() {
+    if (!isCreated()) return NULL;
+	// WPP_LOGD(TAG_WPP_CLIENT, "Taking ownership of client instance");
+	_clientGuard.lock();
+	// WPP_LOGD(TAG_WPP_CLIENT, "Lock acquired, transferring ownership");
+    return _client;
+}
+
 void WppClient::giveOwnership() {
 	// WPP_LOGD(TAG_WPP_CLIENT, "Giving ownership of client instance");
-    _clientGuard.unlock();
+	_clientGuard.try_lock();
+	_clientGuard.unlock();
 }
 
 
@@ -82,28 +92,39 @@ lwm2m_client_state_t WppClient::getState() {
 	return _lwm2m_context->state;
 }
 
+lwm2m_context_t & WppClient::getContext() {
+	return *_lwm2m_context;
+}
+
 time_t WppClient::loop() {
 	// Max sleep time
-	time_t sleepTime = _maxSleepTime;
+	time_t sleepTimeSec = _maxSleepTimeSec;
 
 	WPP_LOGD(TAG_WPP_CLIENT, "Handling server packets if they exists");
-	// Handle packets retreived from server
-	if (connection().getPacketQueueSize()) connection().handlePacketsInQueue(getContext());
+	// Handles packets retreived from server
+	if (connection().getPacketQueueSize()) connection().handlePacketsInQueue(*this);
 
-	// Handle wakaama core state
-	int result = lwm2m_step(_lwm2m_context, &sleepTime);
-	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Processing internal state: result -> %d, state -> %d", result, getState());
+	WPP_LOGD(TAG_WPP_CLIENT, "Handling wpp tasks if they exists");
+	// Handles Wpp tasks in the WppClient context and return next call interval
+	if (WppTaskQueue::getTaskCnt()) {
+		time_t nextTaskCallIntervalSec = WppTaskQueue::handleEachTask(*this);
+		if (nextTaskCallIntervalSec < sleepTimeSec) sleepTimeSec = nextTaskCallIntervalSec;
+	}
+
+	// Handles wakaama core state
+	int result = lwm2m_step(_lwm2m_context, &sleepTimeSec);
+	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Handling lwm2m internal state: result -> %d, state -> %d", result, getState());
 	if (result) {
 		WPP_LOGW_ARG(TAG_WPP_CLIENT, "LWM2M core step failed, error code: %d", result);
 		if (getState() == STATE_BOOTSTRAPPING || getState() == STATE_BOOTSTRAP_REQUIRED) {
 			WPP_LOGW(TAG_WPP_CLIENT, "Trying to restore security and server objects");
-			registry().lwm2mSecurity().restore();
-			registry().lwm2mServer().restore();
+			registry().object(OBJ_ID::LWM2M_SECURITY)->restore();
+			registry().object(OBJ_ID::LWM2M_SERVER)->restore();
 		}
 		_lwm2m_context->state = STATE_INITIAL;
 	}
 
-	return sleepTime;
+	return sleepTimeSec;
 }
 
 bool WppClient::updateServerRegistration(INT_T serverId, bool withObjects) {
@@ -133,14 +154,10 @@ void WppClient::lwm2mContextClose() {
 	_lwm2m_context = NULL;
 }
 
-lwm2m_context_t & WppClient::getContext() {
-	return *_lwm2m_context;
-}
-
 bool WppClient::lwm2mConfigure(const std::string &endpointName, const std::string &msisdn, const std::string &altPath) {
-	lwm2m_object_t *lwm2m_major_objects[] = {&registry().lwm2mSecurity().getLwm2mObject(),
-											&registry().lwm2mServer().getLwm2mObject(),
-										    &registry().device().getLwm2mObject()};
+	lwm2m_object_t *lwm2m_major_objects[] = {&registry().object(OBJ_ID::LWM2M_SECURITY)->getLwm2mObject(),
+											&registry().object(OBJ_ID::LWM2M_SERVER)->getLwm2mObject(),
+										    &registry().object(OBJ_ID::DEVICE)->getLwm2mObject()};
 	uint16_t objectsCnt = sizeof(lwm2m_major_objects) / sizeof(lwm2m_object_t *);
 	const char *msisdn_c = msisdn.empty()? NULL : msisdn.c_str();
 	const char *altPath_c = altPath.empty()? NULL : altPath.c_str();

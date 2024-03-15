@@ -17,7 +17,7 @@ class ObjectGenerator:
     """Add some comments here"""
 
     def __init__(self, xml_file, xml_url):
-        self.log_tag = f"[{self.__class__.__name__}]:"
+        self.log_tag = self.__class__.__name__
         xp = object_xml_parser.ObjectXmlParser(xml_file=xml_file, xml_url=xml_url)
         self.object_data = xp.object_data
         self.resources_data = xp.resources_data
@@ -28,38 +28,39 @@ class ObjectGenerator:
         """The goal is to create the container of the Object's names of different format beforehand"""
         object_names = {}
 
-        obj_name_plain = self.object_data[const.KEYS_OBJ_DATA["name"]]          # 'LWM2M Server'
-        obj_name_lower = obj_name_plain.lower()                                     # 'lwm2m server'
-        obj_name_capwords = string.capwords(obj_name_lower)                         # 'Lwm2m Server'
-        obj_name_class = obj_name_capwords.replace(' ', '')                         # 'Lwm2mServer'
-        obj_name_camelcase = obj_name_class[0].lower() + obj_name_class[1:]         # 'lwm2mServer'
-        obj_name_underline = obj_name_plain.replace(' ', '_')                       # 'LWM2M_Server'
-        obj_name_underline_up = obj_name_underline.upper()                          # 'LWM2M_SERVER'
-        obj_name_underline_lw = obj_name_underline.lower()                          # 'lwm2m_server'
-        obj_requirement_short = "M" if self.object_data[const.KEYS_OBJ_DATA["is_mandatory"]] else "O"    # 'M' | 'O'
-        obj_version = self.object_data[const.KEYS_OBJ_DATA["version"]].replace(".", "")           # 13
-        obj_id = self.object_data[const.KEYS_OBJ_DATA['id']]                                      # 1
+        obj_name_plain = self.object_data[const.DATA_KEYS[const.KEY_NAME]]      # 'LWM2M Server'
+        obj_name_lower = obj_name_plain.lower()                                 # 'lwm2m server'
+        obj_name_capwords = string.capwords(obj_name_lower)                     # 'Lwm2m Server'
+        obj_name_class = obj_name_capwords.replace(' ', '')                     # 'Lwm2mServer'
+        obj_name_camelcase = obj_name_class[0].lower() + obj_name_class[1:]     # 'lwm2mServer'
+        obj_name_underline = obj_name_plain.replace(' ', '_')                   # 'LWM2M_Server'
+        obj_name_underline_up = obj_name_underline.upper()                      # 'LWM2M_SERVER'
+        obj_name_underline_lw = obj_name_underline.lower()                      # 'lwm2m_server'
+
+        obj_requirement_short = "M" if self.object_data[const.DATA_KEYS[const.KEY_IS_MANDATORY]] else "O"    # 'M' | 'O'
+        obj_version = self.object_data[const.DATA_KEYS[const.KEY_VER]].replace(".", "")                      # 13
+        obj_id = self.object_data[const.DATA_KEYS[const.KEY_ID_OBJ]]                                         # 1
         obj_name_folder = f"{obj_requirement_short.lower()}_" \
                           f"{obj_id}_" \
                           f"{obj_name_underline_lw}_"\
-                          f"v{obj_version}"                                         # 'm_1_lwm2m_server_v13'
-        obj_name_path_to_folder = f"../../wpp/registry/objects/"                    # '../../wpp/registry/objects/'
+                          f"v{obj_version}"                                     # 'm_1_lwm2m_server_v13'
+        obj_name_path_to_folder = f"../../wpp/registry/objects/"                # '../../wpp/registry/objects/'
         obj_name_define = f"OBJ_{obj_requirement_short}_" \
                           f"{obj_id}_" \
                           f"{obj_name_underline_up}_" \
-                          f"V{obj_version}"                                         # 'OBJ_M_1_LWM2M_SERVER_V13'
+                          f"V{obj_version}"                                     # 'OBJ_M_1_LWM2M_SERVER_V13'
 
-        object_names["obj_name_class"] = obj_name_class                             # 'Lwm2mServer'
-        object_names["obj_name_camelcase"] = obj_name_camelcase                     # 'lwm2mServer'
-        object_names["obj_name_define"] = obj_name_define                           # 'OBJ_M_1_LWM2M_SERVER_V13'
-        object_names["obj_name_folder"] = obj_name_folder                           # 'm_1_lwm2m_server_v13'
-        object_names["obj_name_path_to_folder"] = obj_name_path_to_folder           # '../../wpp/registry/objects/'
-        object_names["obj_name_up_underline"] = obj_name_underline_up               # 'LWM2M_SERVER'
+        object_names[const.KEY_NAME_CLASS] = obj_name_class                     # 'Lwm2mServer'
+        object_names[const.KEY_NAME_CAMELCASE] = obj_name_camelcase             # 'lwm2mServer'
+        object_names[const.KEY_NAME_DEFINE] = obj_name_define                   # 'OBJ_M_1_LWM2M_SERVER_V13'
+        object_names[const.KEY_NAME_OF_FOLDER] = obj_name_folder                # 'm_1_lwm2m_server_v13'
+        object_names[const.KEY_PATH_TO_FOLDER] = obj_name_path_to_folder        # '../../wpp/registry/objects/'
+        object_names[const.KEY_NAME_UNDERLINE] = obj_name_underline_up          # 'LWM2M_SERVER'
 
         self.object_names = object_names
 
     def get_folder_path(self):
-        return self.object_names["obj_name_folder"]
+        return self.object_names[const.KEY_NAME_OF_FOLDER]
 
     def parse_operation(self, xml_operation):
         type = const.TYPE_OPERATION
@@ -142,32 +143,30 @@ class ObjectGenerator:
         x.align = "l"
 
         for resource_xml in resources_list_xml:
-            resource_name = resource_xml['Name']
-            resource_id = resource_xml['ID']
+            resource_name = resource_xml[const.DATA_KEYS[const.KEY_NAME]]
+            resource_id = resource_xml[const.DATA_KEYS[const.KEY_ID_RES]]
             # postfix = "M" if resource_xml['Mandatory'] == "MANDATORY" else "O"
 
             # fill the Resources' enum:
-            resource_define = resource_xml['Define']
+            resource_define = resource_xml[const.DATA_KEYS[const.KEY_DEFINE_RES]]
             resource = f"{resource_name}_{resource_id}"
 
-            if resource_xml['Mandatory'] != "MANDATORY":
-                resources_enum += f"\t\t#if {resource_define}\n"
-            resources_enum += f"\t\t{resource} = {resource_xml['ID']},\n"
-            if resource_xml['Mandatory'] != "MANDATORY":
-                resources_enum += f"\t\t#endif\n"
+            resource_enum = f"\t\t{resource} = {resource_xml[ const.DATA_KEYS[const.KEY_ID_RES]]},\n"
+            resource_map = [f"*TAB*{{{resource},",
+                            self.parse_operation(resource_xml[const.DATA_KEYS[const.KEY_OPERATIONS]]),
+                            f"IS_SINGLE::{resource_xml[const.DATA_KEYS[const.KEY_IS_MULTIPLE]]},",
+                            f"IS_MANDATORY::{resource_xml[const.DATA_KEYS[const.KEY_IS_MANDATORY]]},",
+                            f"{self.parse_resource_data_type(resource_xml[const.DATA_KEYS[const.KEY_TYPE]])} }},"]
 
-            # fill the vector <ID_T, Resource> table:
-            if resource_xml['Mandatory'] != "MANDATORY":
+            # wrap into "#if-directive" if the resource is not mandatory:
+            if resource_xml[const.DATA_KEYS[const.KEY_IS_MANDATORY]] != "MANDATORY":
+                resources_enum += f"\t\t#if {resource_define}\n{resource_enum}\t\t#endif\n"
                 x.add_row([f"*TAB*#if {resource_define}", "", "", "", ""])
-
-            x.add_row([f"*TAB*{{{resource},",
-                       self.parse_operation(resource_xml['Operations']),
-                       f"IS_SINGLE::{resource_xml['MultipleInstances']},",
-                       f"IS_MANDATORY::{resource_xml['Mandatory']},",
-                       f"{self.parse_resource_data_type(resource_xml['Type'])} }},"])
-
-            if resource_xml['Mandatory'] != "MANDATORY":
+                x.add_row(resource_map)
                 x.add_row([f"*TAB*#endif", "", "", "", ""])
+            else:
+                resources_enum += resource_enum
+                x.add_row(resource_map)
 
         resources_map = str(x).replace("*TAB*", "\t\t")
         # TODO: fix next line by PrettyTable features!
@@ -175,29 +174,25 @@ class ObjectGenerator:
 
         return resources_enum, resources_map
 
-    def get_content_resourcesInit_f(self, resources_list_xml):
+    def get_content_resourcesInit_f(self):
         content = f"""void __CLASS_NAME__::resourcesInit() {{\n""" \
-                  f"""\t/* --------------- Code_cpp block 9 start --------------- */\n""" \
-                  f"""// TODO: The most part of the server resources logic must be implemented\n""" \
-                  f"""// on wakaama core level, because the Server is only a state holder and\n""" \
-                  f"""// at this level, it does not have the required information for doing\n""" \
-                  f"""// sings described in the documentation.\n\n"""
-        for resource in resources_list_xml:
-            if resource["Mandatory"] == "MANDATORY":
+                  f"""\t/* --------------- Code_cpp block 10 start --------------- */\n"""
+        for resource in self.resources_data:
+            if resource[ "Mandatory"] == "MANDATORY":
                 # content += f"""\t\t#if {resource["Name"]}_{resource["Mandatory"]}\n\t"""
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].set( /* TODO */ );\n"
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n\n"
-                content += f"\t+getResIter({resource['Name']}_{resource['ID']})->set( /* TODO */ );\n"
-                content += f"\t+getResIter({resource['Name']}_{resource['ID']})->setDataVerifier( /* TODO */ );\n\n"
+                content += f"\tresource({resource['Name']}_{resource['ID']})->set( /* TODO */ );\n"
+                content += f"\tresource({resource['Name']}_{resource['ID']})->setDataVerifier( /* TODO */ );\n"
                 # content += f"\t\t#endif\n\n"
             if resource["Mandatory"] == "OPTIONAL":
                 content += f"""\t#if {resource["Define"]}\n"""
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].set( /* TODO */ );\n"
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n"
-                content += f"\t-getResIter({resource['Name']}_{resource['ID']})->set( /* TODO */ );\n"
-                content += f"\t-getResIter({resource['Name']}_{resource['ID']})->setDataVerifier( /* TODO */ );\n"
-                content += f"\t#endif\n\n"
-        content += f"""\t/* --------------- Code_cpp block 9 end --------------- */\n}}"""
+                content += f"\tresource({resource['Name']}_{resource['ID']})->set( /* TODO */ );\n"
+                content += f"\tresource({resource['Name']}_{resource['ID']})->setDataVerifier( /* TODO */ );\n"
+                content += f"\t#endif\n"
+        content += f"""\t/* --------------- Code_cpp block 10 end --------------- */\n}}"""
 
         return content
 
@@ -220,12 +215,12 @@ class ObjectGenerator:
             return f"""WPP_LOGD_ARG(TAG, {text});"""
 
     def get_content_serverOperationNotifier(self):
-        cases = ["READ", "WRITE", "EXECUTE", "DISCOVER", "DELETE"]
+        cases = ["READ", "WRITE_UPD", "WRITE_REPLACE_INST", "WRITE_REPLACE_RES", "EXECUTE", "DISCOVER", "DELETE"]
         base = \
             f"""void __CLASS_NAME__::serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) {{\n""" \
             f"""\t/* --------------- Code_cpp block 6 start --------------- */\n""" \
             f"""\t/* --------------- Code_cpp block 6 end --------------- */\n""" \
-            f"""\n\tobserverNotify(*this, resId, type);\n\n""" \
+            f"""\n\toperationNotify(*this, resId, type);\n\n""" \
             f"""\t/* --------------- Code_cpp block 7 start --------------- */\n""" \
             f"""\tswitch (type) {{\n\t"""
         for case in cases:
@@ -238,7 +233,7 @@ class ObjectGenerator:
                f"""/* --------------- Code_cpp block 7 end --------------- */\n}}"""
 
     def get_content_userOperationNotifier(self):
-        cases = ["READ", "WRITE", "DELETE"]
+        cases = ["READ", "WRITE_UPD", "DELETE"]
         prefix = \
             f"""void __CLASS_NAME__::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) {{\n""" \
             f"""\t/* --------------- Code_cpp block 8 start --------------- */\n""" \
@@ -254,54 +249,54 @@ class ObjectGenerator:
         return prefix + postfix
 
     def generate_content_header(self, resources_enum):
-        data_str_h = func.get_file_content(const.FILE_TMPLT_IMPL_H)[1]
+        data_str_h = func.get_content_from_file(const.FILE_TMPLT_IMPL_H)[1]
         data_str_h = data_str_h.replace("__DATETIME__", DATETIME)
-        data_str_h = data_str_h.replace("__IF_NOT_DEFINED_DEFINE__", self.object_names["obj_name_folder"].upper())
-        data_str_h = data_str_h.replace("__CLASS_NAME__", self.object_names["obj_name_class"])
-        data_str_h = data_str_h.replace("__ID_ENUM__", resources_enum)
-        data_str_h = data_str_h.replace("<<IF_DEF_DIRECTIVE>>", self.object_names["obj_name_folder"].upper())
+        data_str_h = data_str_h.replace("__IF_NOT_DEFINED_DEFINE__",    self.object_names[const.KEY_NAME_OF_FOLDER].upper())
+        data_str_h = data_str_h.replace("__CLASS_NAME__",               self.object_names[const.KEY_NAME_CLASS])
+        data_str_h = data_str_h.replace("__ID_ENUM__",                  resources_enum)
+        data_str_h = data_str_h.replace("<<IF_DEF_DIRECTIVE>>",         self.object_names[const.KEY_NAME_OF_FOLDER].upper())
 
         return data_str_h
 
     def generate_content_cpp(self, resources_map):
-        data_str_cpp = func.get_file_content(const.FILE_TMPLT_IMPL_CPP)[1]
+        data_str_cpp = func.get_content_from_file(const.FILE_TMPLT_IMPL_CPP)[1]
         data_str_cpp = data_str_cpp.replace("__DATETIME__", DATETIME)
-        data_str_cpp = data_str_cpp.replace("__OBJ_FOLDER__", self.object_names["obj_name_folder"])
+        data_str_cpp = data_str_cpp.replace("__OBJ_FOLDER__", self.object_names[const.KEY_NAME_OF_FOLDER])
         data_str_cpp = data_str_cpp.replace("__F_SERVER_OPERATION_NOTIFIER__",
                                             self.get_content_serverOperationNotifier())
         data_str_cpp = data_str_cpp.replace("__F_USER_OPERATION_NOTIFIER__",
                                             self.get_content_userOperationNotifier())
         data_str_cpp = data_str_cpp.replace("__F_RESOURCE_INIT__",
-                                            self.get_content_resourcesInit_f(self.resources_data))
-        data_str_cpp = data_str_cpp.replace("__CLASS_NAME__", self.object_names["obj_name_class"])
+                                            self.get_content_resourcesInit_f())
+        data_str_cpp = data_str_cpp.replace("__CLASS_NAME__", self.object_names[const.KEY_NAME_CLASS])
         data_str_cpp = data_str_cpp.replace("__RESOURCES_TABLE__", resources_map)
 
         return data_str_cpp
 
     def generate_content_cmake_list(self):
-        content = func.get_file_content(const.FILE_TMPLT_CMAKE)[1]
-        content = content.replace("__DATETIME__", DATETIME)
-        content = content.replace("__OBJ_DEFINE__", self.object_names["obj_name_define"])
-        content = content.replace("__CLASS_NAME__", self.object_names["obj_name_class"])
+        content = func.get_content_from_file(const.FILE_TMPLT_CMAKE)[1]
+        content = content.replace("__DATETIME__",   DATETIME)
+        content = content.replace("__OBJ_DEFINE__", self.object_names[const.KEY_NAME_DEFINE])
+        content = content.replace("__CLASS_NAME__", self.object_names[const.KEY_NAME_CLASS])
 
         return content
 
     def generate_content_info_header(self):
-        is_multiple = "MULTIPLE" if self.object_data[const.KEYS_OBJ_DATA["is_multiple"]] else "SINGLE"
-        is_mandatory = "MANDATORY" if self.object_data[const.KEYS_OBJ_DATA["is_mandatory"]] else "OPTIONAL"
+        is_multiple = "MULTIPLE" if self.object_data[const.DATA_KEYS[const.KEY_IS_MULTIPLE]] else "SINGLE"
+        is_mandatory = "MANDATORY" if self.object_data[const.DATA_KEYS[const.KEY_IS_MANDATORY]] else "OPTIONAL"
 
-        content = func.get_file_content(const.FILE_TMPLT_INFO)[1]
+        content = func.get_content_from_file(const.FILE_TMPLT_INFO)[1]
         content = content.replace("__DATETIME__", DATETIME)
-        content = content.replace("<<IF_DEF_DIRECTIVE>>", self.object_names["obj_name_up_underline"])
-        content = content.replace("__UPNAME__", self.object_names["obj_name_up_underline"])
-        content = content.replace("__OBJ_DEFINE__", self.object_names["obj_name_define"])
-        content = content.replace("__NAME__", self.object_data[const.KEYS_OBJ_DATA["name"]])
-        content = content.replace("__OBJ_ID__", self.object_names["obj_name_up_underline"])
-        content = content.replace("__URN__", f'"{self.object_data[const.KEYS_OBJ_DATA["urn"]]}"')
+        content = content.replace("<<IF_DEF_DIRECTIVE>>",   self.object_names[const.KEY_NAME_UNDERLINE])
+        content = content.replace("__UPNAME__",             self.object_names[const.KEY_NAME_UNDERLINE])
+        content = content.replace("__OBJ_DEFINE__",         self.object_names[const.KEY_NAME_DEFINE])
+        content = content.replace("__NAME__",               self.object_data[const.DATA_KEYS[const.KEY_NAME]])
+        content = content.replace("__OBJ_ID__",             self.object_names[const.KEY_NAME_UNDERLINE])
+        content = content.replace("__URN__",                f'"{self.object_data[const.DATA_KEYS[const.KEY_URN]]}"')
         content = content.replace("__VERSION__",
-                                  f"{{{self.object_data[const.KEYS_OBJ_DATA['version']].replace('.', ',')}}}")
+                                  f"{{{self.object_data[const.DATA_KEYS[const.KEY_VER]].replace('.', ',')}}}")
         content = content.replace("__LWM2M_VERSION__",
-                                  f"{{{self.object_data[const.KEYS_OBJ_DATA['lwm2m_version']].replace('.', ',')}}}")
+                                  f"{{{self.object_data[const.DATA_KEYS[const.KEY_VER_LWM2M]].replace('.', ',')}}}")
         content = content.replace("__MULTIPLE__", is_multiple)
         content = content.replace("__MANDATORY__", is_mandatory)
 
@@ -313,49 +308,50 @@ class ObjectGenerator:
             if resource["Mandatory"] == "OPTIONAL":
                 defines += f"""#define {resource['Define']} 0\n"""
 
-        content = func.get_file_content(const.FILE_TMPLT_CONFIG)[1]
-        content = content.replace("__DATETIME__", DATETIME)
-        content = content.replace("<<IF_DEF_DIRECTIVE>>", self.object_names["obj_name_up_underline"])
-        content = content.replace("__OBJ_DEFINE__", self.object_names["obj_name_define"])
-        content = content.replace("__RES_DEFINES__", defines)
+        content = func.get_content_from_file(const.FILE_TMPLT_CONFIG)[1]
+        content = content.replace("__DATETIME__",           DATETIME)
+        content = content.replace("<<IF_DEF_DIRECTIVE>>",   self.object_names[const.KEY_NAME_UNDERLINE])
+        content = content.replace("__OBJ_DEFINE__",         self.object_names[const.KEY_NAME_DEFINE])
+        content = content.replace("__RES_DEFINES__",        defines)
 
         return content
 
     def generate_obj_integration_data(self):
+        """
+        Function generates the json-data consists of:
+            - the Object metadatas,
+            - names of the generated files of the Object,
+            - generated names of the Object of different styles.
+        That data will be written to the separate file for the convenience of use 
+        by other parts of the Object Maker.
+        """
         dictionary = {}
+        object_class_name = self.object_names[const.KEY_NAME_CLASS]
 
-        obj_dict = {const.KEY_DICT_OBJ_META_MANDAT: "True" if self.object_data[const.KEYS_OBJ_DATA["is_mandatory"]] else "False",
-                    const.KEY_DICT_OBJ_META_NAME: self.object_data[const.KEYS_OBJ_DATA["name"]],
-                    const.KEY_DICT_OBJ_META_ID: self.object_data[const.KEYS_OBJ_DATA["id"]],
-                    const.KEY_DICT_OBJ_META_VER_LWM2M: self.object_data[const.KEYS_OBJ_DATA["lwm2m_version"]],
-                    const.KEY_DICT_OBJ_META_VER: self.object_data[const.KEYS_OBJ_DATA["version"]]}
 
-        obj_names = {const.KEY_DICT_OBJ_NAMES_CLASS: self.object_names["obj_name_class"],
-                     const.KEY_DICT_OBJ_NAMES_CAMELC: self.object_names["obj_name_camelcase"],
-                     const.KEY_DICT_OBJ_NAMES_DEFINE: self.object_names["obj_name_define"],
-                     const.KEY_DICT_OBJ_NAMES_UNDERL: self.object_names["obj_name_up_underline"]}
+        obj_dict = {const.KEY_NAME:         self.object_data[const.DATA_KEYS[const.KEY_NAME]],
+                    const.KEY_ID:           self.object_data[const.DATA_KEYS[const.KEY_ID_OBJ]],
+                    const.KEY_VER:          self.object_data[const.DATA_KEYS[const.KEY_VER]],
+                    const.KEY_VER_LWM2M:    self.object_data[const.DATA_KEYS[const.KEY_VER_LWM2M]],
+                    const.KEY_IS_MANDATORY: self.object_data[const.DATA_KEYS[const.KEY_IS_MANDATORY]],
+                    const.KEY_IS_MULTIPLE:  self.object_data[const.DATA_KEYS[const.KEY_IS_MULTIPLE]]}
 
-        obj_files = {const.KEY_FILE_IMPL_H: f"{self.object_names['obj_name_class']}.h",
-                     const.KEY_FILE_IMPL_CPP: f"{self.object_names['obj_name_class']}.cpp",
-                     const.KEY_FILE_IMPL_CONFIG: f"{self.object_names['obj_name_class']}Config.h",
-                     const.KEY_FILE_IMPL_INFO: f"{self.object_names['obj_name_class']}Info.h",
-                     const.KEY_FILE_IMPL_CMAKE: f"CMakeLists.txt"}
+        obj_names = {const.KEY_NAME_CLASS:      self.object_names[const.KEY_NAME_CLASS],
+                     const.KEY_NAME_CAMELCASE:  self.object_names[const.KEY_NAME_CAMELCASE],
+                     const.KEY_NAME_DEFINE:     self.object_names[const.KEY_NAME_DEFINE],
+                     const.KEY_NAME_UNDERLINE:  self.object_names[const.KEY_NAME_UNDERLINE]}
+
+        obj_files = {const.KEY_FILE_IMPL_H:      f"{object_class_name}.h",
+                     const.KEY_FILE_IMPL_CPP:    f"{object_class_name}.cpp",
+                     const.KEY_FILE_IMPL_CONFIG: f"{object_class_name}Config.h",
+                     const.KEY_FILE_IMPL_INFO:   f"{object_class_name}Info.h",
+                     const.KEY_FILE_IMPL_CMAKE:  f"{const.FILE_CMAKE_LISTS}"}
 
         dictionary[const.KEY_DICT_OBJ_META] = obj_dict
         dictionary[const.KEY_DICT_OBJ_NAMES] = obj_names
         dictionary[const.KEY_DICT_OBJ_FILES] = obj_files
 
         return json.dumps(dictionary, indent=4)
-
-    def create_folder(self):
-        try:
-            os.mkdir(self.object_names['obj_name_folder'])
-        except FileExistsError:
-            pass
-
-    def create_file(self, filename, filetype, content):
-        file = filename if filetype == "" else f"{filename}.{filetype}"
-        func.create_file(f"./{self.object_names['obj_name_folder']}/{file}", content)
 
     def object_code_generate(self):
         resources_enum, resources_map = self.get_map_of_resources(self.resources_data)
@@ -366,17 +362,19 @@ class ObjectGenerator:
         generated_config = self.generate_content_config()
         generated_obj_integration_data = self.generate_obj_integration_data()
 
-        name_class = self.object_names["obj_name_class"]
+        name_class = self.object_names[const.KEY_NAME_CLASS]
+        json_file = const.FILE_OBJ_METADATA
 
-        self.create_folder()
+        folder = self.object_names[const.KEY_NAME_OF_FOLDER]
+        func.create_folder(folder)
 
-        self.create_file(f"{name_class}",       "h",    generated_header)
-        self.create_file(f"{name_class}Info",   "h",    generated_info_header)
-        self.create_file(f"{name_class}Config", "h",    generated_config)
-        self.create_file(f"{name_class}",       "cpp",  generated_cpp_file)
-        self.create_file(f"CMakeLists",         "txt",  generated_cmake_list)
-
-        self.create_file(const.FILE_OBJ_METADATA, "", generated_obj_integration_data)
+        func.create_file(f"{folder}/{name_class}.h",            generated_header)
+        func.create_file(f"{folder}/{name_class}Info.h",        generated_info_header)
+        func.create_file(f"{folder}/{name_class}Config.h",      generated_config)
+        func.create_file(f"{folder}/{name_class}.cpp",          generated_cpp_file)
+        func.create_file(f"{folder}/{const.FILE_CMAKE_LISTS}",  generated_cmake_list)
+        func.create_file(f"{folder}/{json_file}",               generated_obj_integration_data)
+        func.LOG(self.log_tag, "", f"the Object {self.object_names[const.KEY_NAME_CLASS]} generated successfully")
 
 
 if __name__ == "__main__":

@@ -1,4 +1,0 @@
-if(OPTIONAL_FIRMWARE_UPD_OBJ)
-    # Update WPP_SOURCES variable from parent scope.
-    set(WPP_SOURCES ${WPP_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/FirmwareUpd.cpp PARENT_SCOPE)
-endif()

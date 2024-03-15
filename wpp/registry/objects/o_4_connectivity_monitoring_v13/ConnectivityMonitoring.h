@@ -1,0 +1,153 @@
+/*
+ * ConnectivityMonitoring
+ * Generated on: 2023-11-02 16:57:15
+ * Created by: SinaiR&D
+ */
+
+#ifndef WPP_O_4_CONNECTIVITY_MONITORING_V13_H
+#define WPP_O_4_CONNECTIVITY_MONITORING_V13_H
+
+#include "ConnectivityMonitoringConfig.h"
+#include "ConnectivityMonitoringInfo.h"
+#include "Instance.h"
+#include "InstSubject.h"
+
+/* --------------- Сode_h block 0 start --------------- */
+/* --------------- Сode_h block 0 end --------------- */
+
+namespace wpp {
+
+class ConnectivityMonitoring : public Instance {
+public:
+	enum ID: ID_T {
+		NETWORK_BEARER_0 = 0,
+		AVAILABLE_NETWORK_BEARER_1 = 1,
+		RADIO_SIGNAL_STRENGTH_2 = 2,
+		#if RES_4_3
+		LINK_QUALITY_3 = 3,
+		#endif
+		IP_ADDRESSES_4 = 4,
+		#if RES_4_5
+		ROUTER_IP_ADDRESSES_5 = 5,
+		#endif
+		#if RES_4_6
+		LINK_UTILIZATION_6 = 6,
+		#endif
+		#if RES_4_7
+		APN_7 = 7,
+		#endif
+		#if RES_4_8
+		CELL_ID_8 = 8,
+		#endif
+		#if RES_4_9
+		SMNC_9 = 9,
+		#endif
+		#if RES_4_10
+		SMCC_10 = 10,
+		#endif
+		#if RES_4_11
+		SIGNALSNR_11 = 11,
+		#endif
+		#if RES_4_12
+		LAC_12 = 12,
+		#endif
+		#if RES_4_13
+		COVERAGE_ENHANCEMENT_LEVEL_13 = 13,
+		#endif
+	};
+
+	/* --------------- Code_h block 1 start --------------- */
+
+	enum NtwrkBrr: uint8_t {
+		GSM = 0,
+		TD_SCDMA = 1,
+		WCDMA = 2,
+		CDMA2000 = 3,
+		WIMAX = 4,
+		LTE_TDD = 5,
+		LTE_FDD = 6,
+		NB_IOT = 7,
+		NR_TDD_5G = 8,
+		NR_FDD_5G = 9,
+		CLLR_OTHER_BEGIN = 10,
+		CLLR_OTHER_END = 20,
+		WLAN = 21,
+		BLUETOOTH = 22,
+		IEEE_802_15_4 = 23,
+		WRLSS_OTHER_BEGIN = 24,
+		WRLSS_OTHER_END = 40,
+		ETHERNET = 41,
+		DSL = 42,
+		PLC = 43,
+		WRLN_OTHER_BEGIN = 44,
+		WRLN_OTHER_END = 50,
+		NTWRK_BRR_MAX
+	};
+
+	#if RES_4_13
+	enum CvrgEnhncmntLvl: uint8_t {
+		MISSING = 0,
+		LEVEL_0 = 1,
+		LEVEL_1 = 2,
+		LEVEL_2 = 3,
+		LEVEL_3 = 4,
+		CVRG_ENHNCMNT_LVL_MAX
+	};
+	#endif
+
+	/* --------------- Code_h block 1 end --------------- */
+
+public:
+	ConnectivityMonitoring(lwm2m_context_t &context, const OBJ_LINK_T &id);
+	~ConnectivityMonitoring();
+
+	/* --------------- Code_h block 2 start --------------- */
+
+	bool checkLinkQuality(uint8_t linkQuality);
+	bool checkCellId(uint32_t cellId);
+
+	/* --------------- Code_h block 2 end --------------- */
+
+protected:
+	/* --------------- Instance implementation part --------------- */
+	/*
+	 * Reset all resources values and internal state to default.
+	 */
+	void setDefaultState() override;
+	/*
+	 * Handles information about resource operation that made server
+	 */
+	void serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) override;
+	/*
+	 * Handles information about resource operation that made user
+	 */
+	void userOperationNotifier(ResOp::TYPE type, const ResLink &resId) override;
+
+	/* --------------- Code_h block 3 start --------------- */
+	/* --------------- Code_h block 3 end --------------- */
+
+private:
+	/* --------------- Class private methods --------------- */
+	/*
+	 * Creates resources without initializing.
+	 */
+	void resourcesCreate();
+	/*
+	 * Initialize resources with default values
+	 * Resource always must have at least one instance.
+	 * Note: From server side, empty resource == undefined resource.
+	 */	
+	void resourcesInit();
+	
+	/* --------------- Code_h block 4 start --------------- */
+	/* --------------- Code_h block 4 end --------------- */
+
+private:
+	/* --------------- Class private properties --------------- */
+	/* --------------- Code_h block 5 start --------------- */
+	/* --------------- Code_h block 5 end --------------- */
+};
+
+} /* namespace wpp */
+
+#endif /* WPP_O_4_CONNECTIVITY_MONITORING_V13_H */

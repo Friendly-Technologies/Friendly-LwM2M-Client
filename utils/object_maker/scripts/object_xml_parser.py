@@ -17,14 +17,14 @@ class ObjectXmlParser:
     """
 
     def __init__(self, xml_file=None, xml_url=None):
-        self.log_tag = f"[{self.__class__.__name__}]:"
+        self.log_tag = self.__class__.__name__
         self.xml_file = xml_file
         self.xml_url = xml_url
         self.object_data = None
         self.resources_data = None
 
         if xml_file and xml_url:
-            print(self.__class__.__name__, "only one source should be provided to create the the Object (file or url")
+            func.LOG(self.log_tag, "", "only one source should be provided to create the the Object (file or url")
 
         self.set_xml_file()
         self.set_parsed_data()  # sets self.object_data and self.resources_data
@@ -40,11 +40,11 @@ class ObjectXmlParser:
         web_page = self.xml_url.split("/")[2]
 
         raw_data = requests.get(self.xml_url).content.decode('utf-8')
-        if web_page == const.LWM2M_WEB_RESOUCES[0]:                     # raw.githubusercontent.com
+        if web_page == const.LWM2M_WEB_RESOURCES[0]:                     # raw.githubusercontent.com
             func.write_to_file(f"./{filename}", raw_data)
             return filename
 
-        if web_page == const.LWM2M_WEB_RESOUCES[1]:                     # github.com
+        if web_page == const.LWM2M_WEB_RESOURCES[1]:                     # github.com
             json_data = json.loads(raw_data)
             object_description = json_data["payload"]["blob"]["rawLines"]
             func.write_to_file_line_by_line(f"./{filename}", object_description)
@@ -56,14 +56,28 @@ class ObjectXmlParser:
         root = tree.getroot()
         # ========================= extract data of the Object ==========================
         object_data = {}
-        for key in const.KEYS_OBJ_DATA.values():
+        for key in const.DATA_KEYS.values():
             for i in root[0]:
                 if i.tag == key:
                     object_data[key] = i.text
-        if (const.KEYS_OBJ_DATA["lwm2m_version"] not in object_data.keys() or
-                const.KEYS_OBJ_DATA["version"] not in object_data.keys()):
-            object_data[const.KEYS_OBJ_DATA["lwm2m_version"]] = "1.0"
-            object_data[const.KEYS_OBJ_DATA["version"]] = "1.0"
+
+        # convert the "is_mandatory" to bool
+        if object_data[const.DATA_KEYS[const.KEY_IS_MANDATORY]] not in const.OPTIONS_MANDATORY:
+            func.LOG(self.log_tag, self.set_parsed_data.__name__,
+                     "WARNING: the critical error is possible! Please, check the <Mandatory> field of the Object.")
+        object_data[const.DATA_KEYS[const.KEY_IS_MANDATORY]] = object_data[const.DATA_KEYS[const.KEY_IS_MANDATORY]] == "Mandatory"
+
+        # convert the "is_multiple" value to bool
+        if object_data[const.DATA_KEYS[const.KEY_IS_MULTIPLE]] not in const.OPTIONS_VARIETY:
+            func.LOG(self.log_tag, self.set_parsed_data.__name__,
+                     "WARNING: the critical error is possible! Check the <MultipleInstances> field of the Object.")
+        object_data[const.DATA_KEYS[const.KEY_IS_MULTIPLE]] = object_data[const.DATA_KEYS[const.KEY_IS_MULTIPLE]] == "Multiple"
+
+        # check and set the "versions" fields if not defined:
+        if (const.DATA_KEYS[const.KEY_VER_LWM2M] not in object_data.keys() or
+                const.DATA_KEYS[const.KEY_VER] not in object_data.keys()):
+            object_data[const.DATA_KEYS[const.KEY_VER_LWM2M]] = "1.0"
+            object_data[const.DATA_KEYS[const.KEY_VER]] = "1.0"
         self.object_data = object_data
         # ===============================================================================
         # ====== extract data of each of the resources, and pack it to dictionary =======
@@ -79,10 +93,9 @@ class ObjectXmlParser:
                 resource_dict[resource.tag] = resource_name.upper()
                 # print(resource_name.upper())
             # generate define of the resource:
-            name_res = resource_dict['Name']
-            id_obj = object_data[const.KEYS_OBJ_DATA['id']]
-            id_res = resource_dict['ID']
-            resource_dict['Define'] = f"RES_{id_obj}_{id_res}"
+            id_obj = object_data[const.DATA_KEYS[const.KEY_ID_OBJ]]
+            id_res = resource_dict[const.DATA_KEYS[const.KEY_ID_RES]]
+            resource_dict[const.DATA_KEYS[const.KEY_DEFINE_RES]] = f"RES_{id_obj}_{id_res}"
             # ============ add prepared resource's dictionaries to the list =============
             resources_data.append(resource_dict)
             # ===========================================================================

@@ -6,56 +6,99 @@ namespace wpp {
 
 WppRegistry::WppRegistry(lwm2m_context_t &context): _context(context) {
     WPP_LOGD(TAG_WPP_REG, "Creating registry instance");
+	
+	/* ---------- Mandatory objects init block begin ---------- */
+	# if OBJ_M_3_DEVICE_V12
+	_objects.push_back(new ObjectSpec<Device>(_context, DEVICE_OBJ_INFO));
+	#endif
+	# if OBJ_M_1_LWM2M_SERVER_V11
+	_objects.push_back(new ObjectSpec<Lwm2mServer>(_context, LWM2M_SERVER_OBJ_INFO));
+	#endif
+	# if OBJ_M_0_LWM2M_SECURITY_V11
+	_objects.push_back(new ObjectSpec<Lwm2mSecurity>(_context, LWM2M_SECURITY_OBJ_INFO));
+	#endif
+	/* ---------- Mandatory objects init block end ---------- */
+
+	/* ---------- Optional objects init block begin ---------- */
+	# if OBJ_O_4_CONNECTIVITY_MONITORING_V13
+	_objects.push_back(new ObjectSpec<ConnectivityMonitoring>(_context, CONNECTIVITY_MONITORING_OBJ_INFO));
+	#endif
+	# if OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
+	_objects.push_back(new ObjectSpec<Lwm2mAccessControl>(_context, LWM2M_ACCESS_CONTROL_OBJ_INFO));
+	#endif
+	# if OBJ_O_5_FIRMWARE_UPDATE_V11
+	_objects.push_back(new ObjectSpec<FirmwareUpdate>(_context, FIRMWARE_UPDATE_OBJ_INFO));
+	#endif
+	/* ---------- Optional objects init block end ---------- */
 }
 
-bool WppRegistry::registerObj(Lwm2mObject &object) {
+WppRegistry::~WppRegistry() {
+	for (auto obj : _objects) {
+		delete obj;
+	}
+	_objects.clear();
+}
+
+bool WppRegistry::registerObj(Object &object) {
 	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Register object with id: %d", object.getObjectID());
 	return !lwm2m_add_object(&_context, &object.getLwm2mObject());
 }
 
-bool WppRegistry::deregisterObj(Lwm2mObject &object) {
+bool WppRegistry::deregisterObj(Object &object) {
 	WPP_LOGD_ARG(TAG_WPP_CLIENT, "Deregister object with id: %d", object.getObjectID());
 	return !lwm2m_remove_object(&_context, object.getLwm2mObject().objID);
 }
 
-bool WppRegistry::isObjRegistered(Lwm2mObject &object) {
+bool WppRegistry::isObjRegistered(Object &object) {
 	lwm2m_object_t * lwm2m_object = (lwm2m_object_t *)LWM2M_LIST_FIND(_context.objectList, object.getLwm2mObject().objID);
 	return lwm2m_object != NULL;
 }
 
-/* The start of the prototypes of the mandatory objects. */
+bool WppRegistry::isObjExist(OBJ_ID objId) {
+	return object(objId) != NULL;
+}
+
+Object * WppRegistry::object(OBJ_ID objId) {
+	auto finder = [objId](const Object *obj) -> bool { return obj->getObjectID() == objId; };
+	auto objIter = std::find_if(_objects.begin(), _objects.end(), finder);
+	return objIter != _objects.end()? *objIter : NULL;
+}
+
+/* ---------- Mandatory objects method block begin ---------- */
 # if OBJ_M_3_DEVICE_V12
-Object<Device> & WppRegistry::device() {
-	if (!Object<Device>::isCreated()) Object<Device>::create(_context, DEVICE_OBJ_INFO);
-	return *Object<Device>::object();
+ObjectSpec<Device> & WppRegistry::device() {
+	return *static_cast<ObjectSpec<Device>*>(object(OBJ_ID::DEVICE));
 }
-# endif
-# if OBJ_M_0_LWM2M_SECURITY_V11
-Object<Lwm2mSecurity> & WppRegistry::lwm2mSecurity() {
-	if (!Object<Lwm2mSecurity>::isCreated()) Object<Lwm2mSecurity>::create(_context, LWM2M_SECURITY_OBJ_INFO);
-	return *Object<Lwm2mSecurity>::object();
-}
-# endif
+#endif
 # if OBJ_M_1_LWM2M_SERVER_V11
-Object<Lwm2mServer> & WppRegistry::lwm2mServer() {
-	if (!Object<Lwm2mServer>::isCreated()) Object<Lwm2mServer>::create(_context, LWM2M_SERVER_OBJ_INFO);
-	return *Object<Lwm2mServer>::object();
+ObjectSpec<Lwm2mServer> & WppRegistry::lwm2mServer() {
+	return *static_cast<ObjectSpec<Lwm2mServer>*>(object(OBJ_ID::LWM2M_SERVER));
 }
-# endif
-/* The end of the prototypes of the mandatory objects. */
-/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE! */
-
-/* The start of the prototypes of the optional objects. */
-#if OPTIONAL_ACL_OBJ
 #endif
-
-#if OPTIONAL_CONN_MONITORING_OBJ
+# if OBJ_M_0_LWM2M_SECURITY_V11
+ObjectSpec<Lwm2mSecurity> & WppRegistry::lwm2mSecurity() {
+	return *static_cast<ObjectSpec<Lwm2mSecurity>*>(object(OBJ_ID::LWM2M_SECURITY));
+}
 #endif
+/* ---------- Mandatory objects method block end ---------- */
 
-#if OPTIONAL_FIRMWARE_UPD_OBJ
+/* ---------- Optional objects method block begin ---------- */
+# if OBJ_O_4_CONNECTIVITY_MONITORING_V13
+ObjectSpec<ConnectivityMonitoring> & WppRegistry::connectivityMonitoring() {
+	return *static_cast<ObjectSpec<ConnectivityMonitoring>*>(object(OBJ_ID::CONNECTIVITY_MONITORING));
+}
 #endif
-/* The end of the prototypes of the optional objects. */
-/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE! */
+# if OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
+ObjectSpec<Lwm2mAccessControl> & WppRegistry::lwm2mAccessControl() {
+	return *static_cast<ObjectSpec<Lwm2mAccessControl>*>(object(OBJ_ID::LWM2M_ACCESS_CONTROL));
+}
+#endif
+# if OBJ_O_5_FIRMWARE_UPDATE_V11
+ObjectSpec<FirmwareUpdate> & WppRegistry::firmwareUpdate() {
+	return *static_cast<ObjectSpec<FirmwareUpdate>*>(object(OBJ_ID::FIRMWARE_UPDATE));
+}
+#endif
+/* ---------- Optional objects method block end ---------- */
 
 
 } //wpp

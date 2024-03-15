@@ -30,7 +30,9 @@ clang-format \
 clang-format-$CLANG_VERSION \
 clang-tools-$CLANG_VERSION \
 lldb-$CLANG_VERSION \
-$CLANG"
+$CLANG \
+cppcheck
+llvm"
 
 ptools="\
 cmake-format \

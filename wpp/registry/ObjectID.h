@@ -5,26 +5,36 @@
 
 namespace wpp {
 
+/**
+ * @brief Enumeration of object IDs in the WakaamaPlus library.
+ * 
+ * This enumeration represents the object IDs used in the WakaamaPlus library.
+ * It includes both mandatory and optional object IDs.
+ */
 enum class OBJ_ID: ID_T {
-	/* The start of the IDs of the mandatory objects. */
-#ifdef OBJ_M_3_DEVICE_V12
+	/* ---------- Mandatory objects ID block begin ---------- */
+	#ifdef OBJ_M_3_DEVICE_V12
 	DEVICE = 3,
-#endif /* OBJ_M_3_DEVICE_V12 */
-#ifdef OBJ_M_0_LWM2M_SECURITY_V11
-	LWM2M_SECURITY = 0,
-#endif /* OBJ_M_0_LWM2M_SECURITY_V11 */
-#ifdef OBJ_M_1_LWM2M_SERVER_V11
+	#endif
+	#ifdef OBJ_M_1_LWM2M_SERVER_V11
 	LWM2M_SERVER = 1,
-#endif /* OBJ_M_1_LWM2M_SERVER_V11 */
-	/* The end of the IDs of the mandatory objects. */
-	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
+	#endif
+	#ifdef OBJ_M_0_LWM2M_SECURITY_V11
+	LWM2M_SECURITY = 0,
+	#endif
+	/* ---------- Mandatory objects ID block end ---------- */
 
-	/* The start of the IDs of the optional objects. */
-	ACL = 2,
-	CONN_MONITORING = 4,
-	FIRMWARE_UPD = 5,
-	/* The end of the IDs of the optional objects. */
-	/* !!! DO NOT DELETE OR CHANGE THE COMMENT ABOVE !!! */
+	/* ---------- Optional objects ID block begin ---------- */
+	#ifdef OBJ_O_4_CONNECTIVITY_MONITORING_V13
+	CONNECTIVITY_MONITORING = 4,
+	#endif
+	#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
+	LWM2M_ACCESS_CONTROL = 2,
+	#endif
+	#ifdef OBJ_O_5_FIRMWARE_UPDATE_V11
+	FIRMWARE_UPDATE = 5,
+	#endif
+	/* ---------- Optional objects ID block end ---------- */
 
 	MAX_ID = ID_T_MAX_VAL,
 };

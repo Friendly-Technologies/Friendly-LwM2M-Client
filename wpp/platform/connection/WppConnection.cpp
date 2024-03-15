@@ -61,12 +61,12 @@ uint16_t WppConnection::getDataBlockSize()  {
 	return lwm2m_get_coap_block_size();
 }
 
-void WppConnection::handlePacketsInQueue(lwm2m_context_t &context) {
+void WppConnection::handlePacketsInQueue(WppClient &client) {
 	WPP_LOGD_ARG(TAG_WPP_CONN, "Handling packets in queue: packets count -> %d", getPacketQueueSize());
 	while (packets.size()) {
 		Packet *pkt = packets.front();
 		if (pkt && pkt->buffer) {
-			lwm2m_handle_packet(&context, pkt->buffer, pkt->length, pkt->session);
+			lwm2m_handle_packet(&client.getContext(), pkt->buffer, pkt->length, pkt->session);
 			delete [] pkt->buffer;
 		}
 		packets.pop();
@@ -79,7 +79,7 @@ extern "C" {
     void * lwm2m_connect_server(uint16_t secObjInstID, void * userData) {
 		wpp::WppClient *client = (wpp::WppClient *)userData;
 		WPP_LOGD_ARG(TAG_WPP_CONN, "Connecting to server: security obj ID -> %d", secObjInstID);
-		wpp::Lwm2mSecurity *security = client->registry().lwm2mSecurity().instance(secObjInstID);
+		wpp::Lwm2mSecurity *security = client->registry().lwm2mSecurity().instanceSpec(secObjInstID);
 		if (!security) {
 			WPP_LOGE_ARG(TAG_WPP_CONN, "Lwm2mSecurity obj with ID -> %d not found", secObjInstID);
 			return NULL;
@@ -104,7 +104,9 @@ extern "C" {
 	uint8_t lwm2m_buffer_send(void * sessionH, uint8_t * buffer, size_t length, void * userData) {
 		wpp::WppClient *client = (wpp::WppClient *)userData;
 		WPP_LOGD_ARG(TAG_WPP_CONN, "Sending buffer to server: session -> 0x%x, size -> %d", sessionH, length);
-		return client->connection().sendPacket({sessionH, length, buffer})? COAP_NO_ERROR : COAP_500_INTERNAL_SERVER_ERROR;
+		bool result = client->connection().sendPacket({sessionH, length, buffer});
+		WPP_LOGD_ARG(TAG_WPP_CONN, "Sending buffer to server: session -> 0x%x, result -> %d", sessionH, result);
+		return result? COAP_NO_ERROR : COAP_500_INTERNAL_SERVER_ERROR;
 	}
 
 	bool lwm2m_session_is_equal(void * session1, void * session2, void * userData) {

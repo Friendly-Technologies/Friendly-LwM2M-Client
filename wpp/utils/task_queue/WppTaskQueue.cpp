@@ -12,7 +12,7 @@ WppGuard WppTaskQueue::_handleTaskGuard;
 WppTaskQueue WppTaskQueue::_instance;
 
 
-WppTaskQueue::WppTaskQueue() {}
+WppTaskQueue::WppTaskQueue() : _nextTaskId(WPP_ERR_TASK_ID) {}
 
 WppTaskQueue::~WppTaskQueue() {
 	hardReset();
@@ -23,12 +23,20 @@ WppTaskQueue::task_id_t WppTaskQueue::addTask(time_t delaySec, task_t task) {
 	return addTask(WPP_TASK_DEF_CTX, delaySec, task);
 }
 
-WppTaskQueue::task_id_t WppTaskQueue::addTask(ctx_t ctx, time_t delaySec, task_t task) {
+WppTaskQueue::task_id_t WppTaskQueue::addTask(void *ctx, time_t delaySec, task_t task) {
 	if (delaySec < WPP_TASK_MIN_DELAY_S || WPP_TASK_MAX_DELAY_S < delaySec) return WPP_ERR_TASK_ID;
 
 	_taskQueueGuard.lock();
 
+	task_id_t id = _instance.getNextTaskId();
+	if (id == WPP_ERR_TASK_ID) {
+		WPP_LOGE(TAG_WPP_TASK, "Can't add task becouse task id is WPP_ERR_TASK_ID, looks like all task ids are busy.");
+		_taskQueueGuard.unlock();
+		return WPP_ERR_TASK_ID;
+	}
+
 	TaskInfo *newTask = new TaskInfo;
+	newTask->id = id;
 	newTask->task = task;
 	newTask->delaySec = delaySec;
 	newTask->nextCallTime = WppPlatform::getTime() + newTask->delaySec;
@@ -38,15 +46,24 @@ WppTaskQueue::task_id_t WppTaskQueue::addTask(ctx_t ctx, time_t delaySec, task_t
 
 	_instance._tasks.push_back(newTask);
 	_taskQueueGuard.unlock();
-	return newTask;
+	
+	return id;
 }
 
-WppTaskQueue::task_id_t WppTaskQueue::addTaskWithCopy(const ctx_t ctx, size_t size, time_t delaySec, task_t task) {
+WppTaskQueue::task_id_t WppTaskQueue::addTaskWithCopy(const void *ctx, size_t size, time_t delaySec, task_t task) {
 	if (!ctx || !size || delaySec < WPP_TASK_MIN_DELAY_S || WPP_TASK_MAX_DELAY_S < delaySec) return WPP_ERR_TASK_ID;
 
 	_taskQueueGuard.lock();
 
+	task_id_t id = _instance.getNextTaskId();
+	if (id == WPP_ERR_TASK_ID) {
+		WPP_LOGE(TAG_WPP_TASK, "Can't add task becouse task id is WPP_ERR_TASK_ID, looks like all task ids are busy.");
+		_taskQueueGuard.unlock();
+		return WPP_ERR_TASK_ID;
+	}
+
 	TaskInfo *newTask = new TaskInfo;
+	newTask->id = id;
 	newTask->task = task;
 	newTask->delaySec = delaySec;
 	newTask->nextCallTime = WppPlatform::getTime() + newTask->delaySec;
@@ -57,7 +74,8 @@ WppTaskQueue::task_id_t WppTaskQueue::addTaskWithCopy(const ctx_t ctx, size_t si
 
 	_instance._tasks.push_back(newTask);
 	_taskQueueGuard.unlock();
-	return newTask;
+
+	return id;
 }
 
 size_t WppTaskQueue::getTaskCnt() {
@@ -67,7 +85,7 @@ size_t WppTaskQueue::getTaskCnt() {
 bool WppTaskQueue::isTaskExist(task_id_t id) {
 	_taskQueueGuard.lock();
 
-	auto task = std::find(_instance._tasks.begin(), _instance._tasks.end(), static_cast<TaskInfo*>(id));
+	auto task = std::find_if(_instance._tasks.begin(), _instance._tasks.end(), [id](TaskInfo *task) { return task->id == id; });
 	bool isExist = task != _instance._tasks.end();
 
 	_taskQueueGuard.unlock();
@@ -77,7 +95,7 @@ bool WppTaskQueue::isTaskExist(task_id_t id) {
 bool WppTaskQueue::isTaskIdle(task_id_t id) {
 	_taskQueueGuard.lock();
 
-	auto task = std::find(_instance._tasks.begin(), _instance._tasks.end(), static_cast<TaskInfo*>(id));
+	auto task = std::find_if(_instance._tasks.begin(), _instance._tasks.end(), [id](TaskInfo *task) { return task->id == id; });
 	if (task == _instance._tasks.end()) {
 		_taskQueueGuard.unlock();
 		return false;
@@ -91,7 +109,7 @@ bool WppTaskQueue::isTaskIdle(task_id_t id) {
 bool WppTaskQueue::isTaskExecuting(task_id_t id) {
 	_taskQueueGuard.lock();
 
-	auto task = std::find(_instance._tasks.begin(), _instance._tasks.end(), static_cast<TaskInfo*>(id));
+	auto task = std::find_if(_instance._tasks.begin(), _instance._tasks.end(), [id](TaskInfo *task) { return task->id == id; });
 	if (task == _instance._tasks.end()) {
 		_taskQueueGuard.unlock();
 		return false;
@@ -105,7 +123,7 @@ bool WppTaskQueue::isTaskExecuting(task_id_t id) {
 bool WppTaskQueue::isTaskShouldBeDeleted(task_id_t id) {
 	_taskQueueGuard.lock();
 
-	auto task = std::find(_instance._tasks.begin(), _instance._tasks.end(), static_cast<TaskInfo*>(id));
+	auto task = std::find_if(_instance._tasks.begin(), _instance._tasks.end(), [id](TaskInfo *task) { return task->id == id; });
 	if (task == _instance._tasks.end()) {
 		_taskQueueGuard.unlock();
 		return false;
@@ -119,7 +137,7 @@ bool WppTaskQueue::isTaskShouldBeDeleted(task_id_t id) {
 void WppTaskQueue::requestToRemoveTask(task_id_t id) {
 	_taskQueueGuard.lock();
 
-	auto task = std::find(_instance._tasks.begin(), _instance._tasks.end(), static_cast<TaskInfo*>(id));
+	auto task = std::find_if(_instance._tasks.begin(), _instance._tasks.end(), [id](TaskInfo *task) { return task->id == id; });
 	if (task == _instance._tasks.end()) {
 		_taskQueueGuard.unlock();
 		return;
@@ -220,6 +238,23 @@ time_t WppTaskQueue::updateNextCallTimeForTasks() {
 	}
 	_taskQueueGuard.unlock();
 	return nextCallInterval;
+}
+
+WppTaskQueue::task_id_t WppTaskQueue::getNextTaskId() {
+	task_id_t baseId = _nextTaskId;
+	task_id_t newId = WPP_ERR_TASK_ID;
+	bool isExist = true;
+
+	do {
+		newId = _nextTaskId++;
+		if (newId == WPP_ERR_TASK_ID) continue;
+		auto task = std::find_if(_instance._tasks.begin(), _instance._tasks.end(), [newId](TaskInfo *task) { return task->id == newId; });
+		isExist = task != _instance._tasks.end();
+	} while (isExist && baseId != _nextTaskId);
+
+	if (baseId == _nextTaskId) newId = WPP_ERR_TASK_ID;
+	
+	return newId;
 }
 
 } // namespace wpp

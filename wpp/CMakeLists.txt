@@ -28,3 +28,12 @@ add_library(Wpp STATIC)
 target_compile_definitions(Wpp PUBLIC ${WPP_DEFINITIONS})
 # Link Wpp sources
 target_link_wpp(Wpp)
+
+# Custom command to generate libWpp.zip
+add_custom_command(
+    TARGET Wpp POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -DARGV0="${WPP_DEFINITIONS}" -DARGV1="${CMAKE_CURRENT_BINARY_DIR}/wpp_definitions.cmake" -P ${CMAKE_CURRENT_SOURCE_DIR}/build_utils/wpp_definitions_gen.cmake
+    COMMAND /bin/bash ${CMAKE_CURRENT_SOURCE_DIR}/build_utils/wpp_headers_gen.sh ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}/headers
+    COMMAND zip -r libWpp.zip  headers/* libWpp.a wpp_definitions.cmake
+    COMMENT "Generating libWpp.zip"
+)

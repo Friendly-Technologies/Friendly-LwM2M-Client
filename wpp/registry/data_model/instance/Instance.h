@@ -34,8 +34,10 @@ namespace wpp {
  * this call. It is necessary to notify about the change for all resources except those marked as EXECUTE.
  * 
  * @note From server side, empty resource == undefined resource.
+ * TODO: Avoid of using clear and remove methods, because it is not clear what to do with resources.
+ * Instead, replace the approach to act with MULTIPLE resources. Add the ability to set/get the whole
+ * resource at one time.
  */
-
 class Instance: public InstSubject {
 public:
 	Instance(lwm2m_context_t &context, const OBJ_LINK_T &id): _context(context), _id(id) {}
@@ -51,31 +53,54 @@ public:
 	OBJ_ID getObjectID() const { return (OBJ_ID)_id.objId; }
 	ID_T getInstanceID() const { return _id.objInstId; }
 	/**
- 	 * @brief Sets resource value
+ 	 * @brief Sets resource value.
+	 * This version of the method is used with SINGLE resources.
+	 * If resource is multiple then resource instance will be set to 0.
 	 */
 	template<typename T>
 	bool set(ID_T resId, const T &value);
+	/**
+ 	 * @brief Sets resource value, this version of the method is used with MULTIPLE resources.
+	 */
 	template<typename T>
 	bool set(const ResLink &resId, const T &value);
 	/**
- 	 * @brief Sets resource value by moving user data to resource to avoid extra copy
+ 	 * @brief Sets resource value by moving user data to resource to avoid extra copy.
+	 * This version of the method is used with SINGLE resources.
+	 * If resource is multiple then resource instance will be set to 0.
 	 */
 	template<typename T>
 	bool setMove(ID_T resId, T &value);
+	/**
+ 	 * @brief Sets resource value by moving user data to resource to avoid extra copy.
+	 * This version of the method is used with MULTIPLE resources.
+	 */
 	template<typename T>
 	bool setMove(const ResLink &resId, T &value);
 	/**
- 	 * @brief Returns copy of resource value
+ 	 * @brief Returns copy of resource value.
+	 * This version of the method is used with SINGLE resources.
+	 * If resource is multiple then resource instance will be set to 0.
 	 */
 	template<typename T>
 	bool get(ID_T resId, T &value);
+	/**
+ 	 * @brief Returns copy of resource value.
+	 * This version of the method is used with MULTIPLE resources.
+	 */
 	template<typename T>
 	bool get(const ResLink &resId, T &value);
 	/**
- 	 * @brief Returns const ptr to resource data for avoid extra copy
+ 	 * @brief Returns const ptr to resource data for avoid extra copy.
+	 * This version of the method is used with SINGLE resources.
+	 * If resource is multiple then resource instance will be set to 0.
 	 */
 	template<typename T>
 	bool getPtr(ID_T resId, const T **value);
+	/**
+ 	 * @brief Returns const ptr to resource data for avoid extra copy.
+	 * This version of the method is used with MULTIPLE resources.
+	 */
 	template<typename T>
 	bool getPtr(const ResLink &resId, const T **value);
 	/**
@@ -125,6 +150,10 @@ protected: /* Interface that can be used by derived class */
 	 * If resources does not exist then return empty list.
 	 */
 	std::vector<Resource>::iterator resource(ID_T resId);
+	/**
+ 	 * @brief Return context that can be used by derived class.
+	 */
+	lwm2m_context_t& getContext();
 
 protected: /* Interface that must be implemented by derived class */
 	/**

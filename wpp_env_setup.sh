@@ -17,6 +17,8 @@ CLANGPP="clang++-$CLANG_VERSION"
 CLANGPP_KIT_PATH="/usr/bin/clang++"
 
 tools="\
+autoconf \
+pkg-config \
 default-jre \
 libcunit1 \
 libcunit1-doc \
@@ -85,6 +87,18 @@ if [ ! -e "$CLANGPP_KIT_PATH" ]; then
 	echo "$CLANGPP_KIT_PATH symbolic link created successfully."
 fi
 echo -e "Setup clang kit DONE"
+
+echo -e "\nSetup Doxygen"
+./docs/doxygen_setup.sh
+echo -e "Setup Doxygen DONE"
+
+# TODO: Move docs generation to cmake file, with converting to .pdf
+echo -e "\nGenerating Doxygen documentation"
+cd docs
+doxygen Doxygen
+xdg-open html/index.html
+cd ..
+echo -e "Generating Doxygen documentation DONE"
 
 echo -e "\nSetup environment DONE"
 

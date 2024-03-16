@@ -9,9 +9,15 @@ void Lwm2mSecurityImpl::init(Object &obj) {
 	wpp::Instance *inst0 = obj.createInstance(0);
 
 	#ifdef LWM2M_BOOTSTRAP
-        string url = "coap://demodm.friendly-tech.com:5680";
+        string url = "coap://demodm.friendly-tech.com:5681";
         inst0->set(Lwm2mSecurity::BOOTSTRAP_SERVER_1, true);
         inst0->set(Lwm2mSecurity::CLIENT_HOLD_OFF_TIME_11, (INT_T)10);
+        #if DTLS_WITH_PSK
+        string pskId = "SINAI_TEST_DEV_ID";
+        inst0->set(Lwm2mSecurity::SECURITY_MODE_2, (INT_T)LWM2M_SECURITY_MODE_PRE_SHARED_KEY);
+        inst0->set(Lwm2mSecurity::PUBLIC_KEY_OR_IDENTITY_3, OPAQUE_T(pskId.begin(), pskId.end()));
+        inst0->set(Lwm2mSecurity::SECRET_KEY_5, OPAQUE_T {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0x99, 0x88, 0x77, 0x66, 0x55, 0x44});
+        #endif
     #else
         string url = "coaps://demodm.friendly-tech.com:";//"coap://eu.iot.avsystem.cloud:"; //"coaps://leshan.eclipseprojects.io:";
         #if DTLS_WITH_PSK

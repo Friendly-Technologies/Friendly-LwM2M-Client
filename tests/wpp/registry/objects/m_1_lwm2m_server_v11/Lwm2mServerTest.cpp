@@ -1,5 +1,14 @@
 #include "catch_amalgamated.hpp"
 #include "m_1_lwm2m_server_v11/Lwm2mServer.h"
+#include <thread>
+
+namespace wpp {
+    class WppClient {
+    public:
+        WppClient() {}
+        ~WppClient() {}
+    };
+}
 
 using namespace wpp;
 
@@ -45,5 +54,17 @@ TEST_CASE("objectLwm2mServer", "[objectLwm2mServer]")
         EXECUTE_T exe;
         serverMock.get(8, exe);
         REQUIRE(exe(serverMock, 8, OPAQUE_T()));
+        #if RES_1_9
+        WppClient client;
+        REQUIRE(WppTaskQueue::getTaskCnt() == 0);
+        serverMock.get(9, exe);
+        REQUIRE(exe(serverMock, 9, OPAQUE_T()));
+        REQUIRE(WppTaskQueue::getTaskCnt() == 1);
+        REQUIRE(exe(serverMock, 9, OPAQUE_T()));
+        REQUIRE(WppTaskQueue::getTaskCnt() == 1);
+        std::this_thread::sleep_for(std::chrono::seconds(WPP_TASK_DEF_DELAY_S+1));
+        WppTaskQueue::handleEachTask(client);
+        REQUIRE(WppTaskQueue::getTaskCnt() == 0);
+        #endif
     }
 }

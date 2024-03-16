@@ -1,5 +1,14 @@
 #include "catch_amalgamated.hpp"
 #include "m_3_device_v12/Device.h"
+#include <thread>
+
+namespace wpp {
+    class WppClient {
+    public:
+        WppClient() {}
+        ~WppClient() {}
+    };
+}
 
 using namespace wpp;
 
@@ -36,10 +45,14 @@ TEST_CASE("objectDevice", "[objectDevice]")
 
         lwm2m_context_t mockContext;
         OBJ_LINK_T mockId = {0, 1};
+        REQUIRE(WppTaskQueue::getTaskCnt() == 0);
         // Create an instance of DeviceMock
         DeviceMock deviceMock(mockContext, mockId);
+        REQUIRE(WppTaskQueue::getTaskCnt() == 1);
+        std::this_thread::sleep_for(std::chrono::seconds(2));
 
         deviceMock.setDefaultState();
+        REQUIRE(WppTaskQueue::getTaskCnt() == 2);
 
         deviceMock.serverOperationNotifier(ResOp::TYPE::READ, {0, 0});
         deviceMock.userOperationNotifier(ResOp::TYPE::WRITE, {10, 10});
@@ -47,5 +60,12 @@ TEST_CASE("objectDevice", "[objectDevice]")
         EXECUTE_T exe;
         deviceMock.get(4, exe);
         REQUIRE(exe(deviceMock, 4, OPAQUE_T()));
+
+        WppClient client;
+        WppTaskQueue::handleEachTask(client);
+        REQUIRE(WppTaskQueue::getTaskCnt() == 1);
+        WppTaskQueue::requestToRemoveEachTask();
+        WppTaskQueue::handleEachTask(client);
+        REQUIRE(WppTaskQueue::getTaskCnt() == 0);
     }
 }

@@ -66,6 +66,10 @@ std::vector<Resource>::iterator Instance::resource(ID_T resId) {
 	return std::find_if(_resources.begin(), _resources.end(), finder);
 }
 
+lwm2m_context_t& Instance::getContext() { 
+	return _context; 
+}
+
 #ifdef LWM2M_RAW_BLOCK1_REQUESTS
 void Instance::serverBlockOperationNotifier(ResOp::TYPE type, const ResLink &resId, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock) {
 	WPP_LOGI(TAG_WPP_INST, "Block operation notifier not implemented for: %d:%d:%d, operation type: %d", _id.objId, resId.resId, resId.resInstId, type);

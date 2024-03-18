@@ -42,7 +42,12 @@ public:
                 coap_uri_t uri;
                 coap_optlist_t *optlist = NULL;
                 coap_dtls_pki_t dtls_pki;
+                coap_block_t block;
 
+                block.num = 0;      // Block number
+                block.m = 0;        // More blocks to follow (0 for the first block)
+                block.szx = 6;      // Block size (2^(szx + 4)), so szx=6 means 1024 bytes
+                
                 memset(&dtls_pki, 0, sizeof(coap_dtls_pki_t));
                 dtls_pki.version = COAP_DTLS_PKI_SETUP_VERSION;
                 dtls_pki.verify_peer_cert = 0; // Verify the server's certificate
@@ -116,6 +121,9 @@ public:
 
                 coap_add_optlist_pdu(pdu, &optlist);
                 coap_show_pdu(COAP_LOG_INFO, pdu);
+
+                // Add the Block2 option to the request
+                coap_add_option(pdu, COAP_OPTION_BLOCK2, coap_encode_var_safe(buf, sizeof(buf), (block.num << 4) | (block.m << 3) | block.szx), buf);
 
                 wait_ms = 90000;
                 cout << "sending CoAP request" << endl;

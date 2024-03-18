@@ -18,7 +18,7 @@ mkdir "$BUILD_DIR"
 cd "$BUILD_DIR"
 
 # Configure the build for a static library and append output to log file
-cmake .. -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_SHARED_LIBS=ON -DENABLE_DTLS=ON -DENABLE_SERVER_MODE=OFF -DENABLE_EXAMPLES=OFF -DENABLE_DOCS=OFF >> "$LOG_FILE" 2>&1
+cmake .. -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_SHARED_LIBS=ON -DENABLE_DTLS=ON -DWITH_TINYDTLS=ON -DENABLE_SERVER_MODE=OFF -DENABLE_EXAMPLES=OFF -DENABLE_DOCS=OFF >> "$LOG_FILE" 2>&1
 
 # Build the library and append output to the same log file
 make >> "$LOG_FILE" 2>&1

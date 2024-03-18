@@ -13,6 +13,8 @@ using namespace std;
 class FwDownloaderCoap {
     struct DownloadJob {
         string url = "";
+        std::string psk_id = "";
+        std::vector<uint8_t> psk_key;
         function<void(string)> downloadedClb;
         bool downloading = false;
     };
@@ -28,6 +30,8 @@ public:
 
                 this->_jobGuard.lock();
                 string url = this->_job.url;
+                std::string pskId = this->_job.psk_id;
+                std::vector<uint8_t> pskKey = this->_job.psk_key;
                 function<void(string)> downloadedClb = this->_job.downloadedClb;
                 this->_jobGuard.unlock();
                 cout << "Start downloading from url: " << url << endl;
@@ -41,23 +45,25 @@ public:
                 unsigned char buf[100];
                 coap_uri_t uri;
                 coap_optlist_t *optlist = NULL;
-                coap_dtls_pki_t dtls_pki;
+                coap_dtls_cpsk_t dtls_psk;
                 coap_block_t block;
 
                 block.num = 0;      // Block number
                 block.m = 0;        // More blocks to follow (0 for the first block)
                 block.szx = 6;      // Block size (2^(szx + 4)), so szx=6 means 1024 bytes
-                
-                memset(&dtls_pki, 0, sizeof(coap_dtls_pki_t));
-                dtls_pki.version = COAP_DTLS_PKI_SETUP_VERSION;
-                dtls_pki.verify_peer_cert = 0; // Verify the server's certificate
-                dtls_pki.pki_key.key_type = COAP_PKI_KEY_PEM; // Using PEM format for keys
+
+                memset(&dtls_psk, 0, sizeof(dtls_psk));
+                dtls_psk.version = COAP_DTLS_CPSK_SETUP_VERSION;
+                dtls_psk.psk_info.identity.s = (const uint8_t *)pskId.c_str();
+                dtls_psk.psk_info.identity.length = pskId.size();
+                dtls_psk.psk_info.key.s = pskKey.data();
+                dtls_psk.psk_info.key.length = pskKey.size();
 
                 /* Initialize libcoap library */
                 coap_startup();
 
-                coap_set_log_level(COAP_LOG_WARN);
-                coap_dtls_set_log_level(COAP_LOG_WARN);
+                coap_set_log_level(COAP_LOG_DEBUG);
+                coap_dtls_set_log_level(COAP_LOG_DEBUG);
 
                 if (coap_split_uri((unsigned char *)url.c_str(), url.size(), &uri) < 0) {
                     cout << "invalid CoAP URI" << endl;
@@ -93,7 +99,7 @@ public:
                         continue;
                     }
                 } else if (uri.scheme == COAP_URI_SCHEME_COAPS) {
-                    session = coap_new_client_session_pki(ctx, NULL, &dst, COAP_PROTO_DTLS, &dtls_pki);
+                    session = coap_new_client_session_psk2(ctx, NULL, &dst, COAP_PROTO_DTLS, &dtls_psk);
                     if (session == NULL) {
                         coap_log_emerg("cannot create client session for COAP_URI_SCHEME_COAPS\n");
                         _job.downloading = false;
@@ -178,7 +184,14 @@ public:
 	void startDownloading(string url, function<void(string)> downloadedClb) {
         // TODO befor starting download check if not already downloading
         _jobGuard.lock();
-        _job = {url, downloadedClb, true};
+        _job = {url, "", {}, downloadedClb, true};
+        _jobGuard.unlock();
+    }
+
+    void startDownloading(string url, std::string pskId, std::vector<uint8_t> pskKey, function<void(string)> downloadedClb) {
+        // TODO befor starting download check if not already downloading
+        _jobGuard.lock();
+        _job = {url, pskId, pskKey, downloadedClb, true};
         _jobGuard.unlock();
     }
 

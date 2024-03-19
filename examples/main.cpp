@@ -12,13 +12,13 @@
 #include "Lwm2mSecurity.h"
 #include "Device.h"
 #include "Connection.h"
-#ifdef OBJ_O_4_CONNECTIVITY_MONITORING_V13
+#ifdef OBJ_O_4_CONNECTIVITY_MONITORING
 #include "ConnectivityMonitoring.h"
 #endif
-#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
+#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL
 #include "Lwm2mAccessControl.h"
 #endif
-#ifdef OBJ_O_5_FIRMWARE_UPDATE_V10
+#ifdef OBJ_O_5_FIRMWARE_UPDATE
 #include "FirmwareUpdate.h"
 #endif
 
@@ -46,13 +46,13 @@ int main() {
 	Lwm2mServerImpl server;
 	Lwm2mSecurityImpl security;
 	DeviceImpl device;
-	#ifdef OBJ_O_4_CONNECTIVITY_MONITORING_V13
+	#ifdef OBJ_O_4_CONNECTIVITY_MONITORING
 	ConnectivityMonitoringImpl conn_mon;
 	#endif
-	#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
+	#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL
 	Lwm2mAccessControlImpl accessCtrl;
 	#endif
-	#ifdef OBJ_O_5_FIRMWARE_UPDATE_V10
+	#ifdef OBJ_O_5_FIRMWARE_UPDATE
 	FirmwareUpdateImpl fwUpd;
 	#endif
 
@@ -76,22 +76,22 @@ int main() {
 	security.init(registry.lwm2mSecurity());
 	cout << endl << "---- Initialization wpp Device ----" << endl;
 	device.init(registry.device());
-	#ifdef OBJ_O_4_CONNECTIVITY_MONITORING_V13
+	#ifdef OBJ_O_4_CONNECTIVITY_MONITORING
 	cout << endl << "---- Initialization wpp ConnectivityMonitoring ----" << endl;
 	conn_mon.init(registry.connectivityMonitoring());
 	registry.registerObj(registry.connectivityMonitoring());
 	#endif
-	#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
+	#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL
 	cout << endl << "---- Initialization wpp AccessControl ----" << endl;
 	accessCtrl.init(registry.lwm2mAccessControl());
 	registry.registerObj(registry.lwm2mAccessControl());
 	#endif
-	#ifdef OBJ_O_5_FIRMWARE_UPDATE_V10
+	#ifdef OBJ_O_5_FIRMWARE_UPDATE
 	cout << endl << "---- Initialization wpp FirmwareUpdate ----" << endl;
 	fwUpd.init(registry.firmwareUpdate());
 	registry.registerObj(registry.firmwareUpdate());
 	#endif
-	#ifdef OBJ_O_3339_AUDIO_CLIP_V10
+	#ifdef OBJ_O_3339_AUDIO_CLIP
 	cout << endl << "---- Initialization wpp AudioClip ----" << endl;
 	registry.registerObj(registry.audioClip());
 	#endif

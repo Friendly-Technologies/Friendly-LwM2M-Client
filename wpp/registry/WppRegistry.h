@@ -12,29 +12,29 @@
 #include "ObjectSpec.h"
 
 /* ---------- Mandatory objects include block begin ---------- */
-#ifdef OBJ_M_3_DEVICE_V12
-#include "m_3_device_v12/Device.h"
+#ifdef OBJ_M_3_DEVICE
+#include "m_3_device/Device.h"
 #endif
-#ifdef OBJ_M_1_LWM2M_SERVER_V11
-#include "m_1_lwm2m_server_v11/Lwm2mServer.h"
+#ifdef OBJ_M_1_LWM2M_SERVER
+#include "m_1_lwm2m_server/Lwm2mServer.h"
 #endif
-#ifdef OBJ_M_0_LWM2M_SECURITY_V11
-#include "m_0_lwm2m_security_v11/Lwm2mSecurity.h"
+#ifdef OBJ_M_0_LWM2M_SECURITY
+#include "m_0_lwm2m_security/Lwm2mSecurity.h"
 #endif
 /* ---------- Mandatory objects include block end ---------- */
 
 /* ---------- Optional objects include block begin ---------- */
-#ifdef OBJ_O_4_CONNECTIVITY_MONITORING_V13
-#include "o_4_connectivity_monitoring_v13/ConnectivityMonitoring.h"
+#ifdef OBJ_O_4_CONNECTIVITY_MONITORING
+#include "o_4_connectivity_monitoring/ConnectivityMonitoring.h"
 #endif
-#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
-#include "o_2_lwm2m_access_control_v11/Lwm2mAccessControl.h"
+#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL
+#include "o_2_lwm2m_access_control/Lwm2mAccessControl.h"
 #endif
-#ifdef OBJ_O_3339_AUDIO_CLIP_V10
-#include "o_3339_audio_clip_v10/AudioClip.h"
+#ifdef OBJ_O_3339_AUDIO_CLIP
+#include "o_3339_audio_clip/AudioClip.h"
 #endif
-#ifdef OBJ_O_5_FIRMWARE_UPDATE_V10
-#include "o_5_firmware_update_v10/FirmwareUpdate.h"
+#ifdef OBJ_O_5_FIRMWARE_UPDATE
+#include "o_5_firmware_update/FirmwareUpdate.h"
 #endif
 /* ---------- Optional objects include block end ---------- */
 
@@ -101,28 +101,28 @@ public:
 	Object *object(OBJ_ID objId);
 
 	/* ---------- Mandatory objects prototype block begin ---------- */
-	#ifdef OBJ_M_3_DEVICE_V12
+	#ifdef OBJ_M_3_DEVICE
 	ObjectSpec<Device> & device();
 	#endif
-	#ifdef OBJ_M_1_LWM2M_SERVER_V11
+	#ifdef OBJ_M_1_LWM2M_SERVER
 	ObjectSpec<Lwm2mServer> & lwm2mServer();
 	#endif
-	#ifdef OBJ_M_0_LWM2M_SECURITY_V11
+	#ifdef OBJ_M_0_LWM2M_SECURITY
 	ObjectSpec<Lwm2mSecurity> & lwm2mSecurity();
 	#endif
 	/* ---------- Mandatory objects prototype block end ---------- */
 
 	/* ---------- Optional objects prototype block begin ---------- */
-	#ifdef OBJ_O_4_CONNECTIVITY_MONITORING_V13
+	#ifdef OBJ_O_4_CONNECTIVITY_MONITORING
 	ObjectSpec<ConnectivityMonitoring> & connectivityMonitoring();
 	#endif
-	#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
+	#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL
 	ObjectSpec<Lwm2mAccessControl> & lwm2mAccessControl();
 	#endif
-	#ifdef OBJ_O_3339_AUDIO_CLIP_V10
+	#ifdef OBJ_O_3339_AUDIO_CLIP
 	ObjectSpec<AudioClip> & audioClip();
 	#endif
-	#ifdef OBJ_O_5_FIRMWARE_UPDATE_V10
+	#ifdef OBJ_O_5_FIRMWARE_UPDATE
 	ObjectSpec<FirmwareUpdate> & firmwareUpdate();
 	#endif
 	/* ---------- Optional objects prototype block end ---------- */

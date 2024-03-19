@@ -13,28 +13,28 @@ namespace wpp {
  */
 enum class OBJ_ID: ID_T {
 	/* ---------- Mandatory objects ID block begin ---------- */
-	#ifdef OBJ_M_3_DEVICE_V12
+	#ifdef OBJ_M_3_DEVICE
 	DEVICE = 3,
 	#endif
-	#ifdef OBJ_M_1_LWM2M_SERVER_V11
+	#ifdef OBJ_M_1_LWM2M_SERVER
 	LWM2M_SERVER = 1,
 	#endif
-	#ifdef OBJ_M_0_LWM2M_SECURITY_V11
+	#ifdef OBJ_M_0_LWM2M_SECURITY
 	LWM2M_SECURITY = 0,
 	#endif
 	/* ---------- Mandatory objects ID block end ---------- */
 
 	/* ---------- Optional objects ID block begin ---------- */
-	#ifdef OBJ_O_4_CONNECTIVITY_MONITORING_V13
+	#ifdef OBJ_O_4_CONNECTIVITY_MONITORING
 	CONNECTIVITY_MONITORING = 4,
 	#endif
-	#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
+	#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL
 	LWM2M_ACCESS_CONTROL = 2,
 	#endif
-	#ifdef OBJ_O_3339_AUDIO_CLIP_V10
+	#ifdef OBJ_O_3339_AUDIO_CLIP
 	AUDIO_CLIP = 3339,
 	#endif
-	#ifdef OBJ_O_5_FIRMWARE_UPDATE_V10
+	#ifdef OBJ_O_5_FIRMWARE_UPDATE
 	FIRMWARE_UPDATE = 5,
 	#endif
 	/* ---------- Optional objects ID block end ---------- */

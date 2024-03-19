@@ -1,10 +1,10 @@
 /*
  * FirmwareUpdate
- * Generated on: 2023-11-08 13:50:54
+ * Generated on: 2024-03-19 13:06:08
  * Created by: SinaiR&D
  */
 
-#include "o_5_firmware_update_v11/FirmwareUpdate.h"
+#include "o_5_firmware_update_v10/FirmwareUpdate.h"
 
 #include "Resource.h"
 #include "ResOp.h"
@@ -14,10 +14,6 @@
 /* --------------- Code_cpp block 0 start --------------- */
 #include <cstring>
 #include "WppPlatform.h"
-
-#if RES_5_13
-#define DEFER_NOT_ALLWED 0
-#endif
 
 #define SCHEME_DIVIDER 	"://"
 #define COAP_SCHEME 	"coap"
@@ -35,9 +31,6 @@ namespace wpp {
 FirmwareUpdate::FirmwareUpdate(lwm2m_context_t &context, const OBJ_LINK_T &id): Instance(context, id) {
 
 	/* --------------- Code_cpp block 1 start --------------- */
-	#if RES_5_13
-	_deferUpdateTaskId = WPP_ERR_TASK_ID;
-	#endif
 	/* --------------- Code_cpp block 1 end --------------- */
 
 	resourcesCreate();
@@ -49,17 +42,11 @@ FirmwareUpdate::FirmwareUpdate(lwm2m_context_t &context, const OBJ_LINK_T &id): 
 
 FirmwareUpdate::~FirmwareUpdate() {
 	/* --------------- Code_cpp block 3 start --------------- */
-	#if RES_5_13
-	stopDeferUpdateGuard();
-	#endif
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
 void FirmwareUpdate::setDefaultState() {
 	/* --------------- Code_cpp block 4 start --------------- */
-	#if RES_5_13
-	stopDeferUpdateGuard();
-	#endif
 	/* --------------- Code_cpp block 4 end --------------- */
 
 	_resources.clear();
@@ -103,7 +90,7 @@ void FirmwareUpdate::serverOperationNotifier(ResOp::TYPE type, const ResLink &re
 			} else {
 				changeUpdRes(R_INITIAL);
 				changeState(S_DOWNLOADING);
-				eventNotify(*this, E_URI_DOWNLOADIN);
+				eventNotify(*this, E_URI_DOWNLOADING);
 			}
 			break;
 		}
@@ -115,19 +102,8 @@ void FirmwareUpdate::serverOperationNotifier(ResOp::TYPE type, const ResLink &re
 		case UPDATE_2: {
 			INT_T state;
 			resource(STATE_3)->get(state);
-			if (state == S_DOWNLOADED) {
-				#if RES_5_13
-				stopDeferUpdateGuard();
-				#endif
-			}
 			break;
 		}
-		#if RES_5_10
-		case CANCEL_10: 
-			resetStateMachine();
-			changeUpdRes(R_FW_UPD_CANCELLED);
-			break;
-		#endif
 		default: break;
 		}
 		break;
@@ -162,16 +138,6 @@ void FirmwareUpdate::userOperationNotifier(ResOp::TYPE type, const ResLink &resI
 			case S_DOWNLOADED:
 				eventNotify(*this, E_DOWNLOADED);
 				break;
-			#if RES_5_13
-			case S_UPDATING: {
-				INT_T res;
-				resource(UPDATE_RESULT_5)->get(res);
-				if (res == R_FW_UPD_DEFERRED) {
-					resource(UPDATE_RESULT_5)->set(INT_T(R_INITIAL));
-					stopDeferUpdateGuard();
-				}
-			}
-			#endif
 			default: break;
 			}
 			break;
@@ -184,31 +150,12 @@ void FirmwareUpdate::userOperationNotifier(ResOp::TYPE type, const ResLink &resI
 				resetStateMachine();
 				changeUpdRes(R_FW_UPD_SUCCESS);
 				break;
-			#if RES_5_13
-			case R_FW_UPD_DEFERRED: {
-				INT_T state;
-				resource(STATE_3)->get(state);
-				if (state == S_UPDATING) {
-					changeState(S_DOWNLOADED);
-					startDeferUpdateGuard();
-				}
-				else resource(UPDATE_RESULT_5)->set(INT_T(R_INITIAL));
-				break;
-			}
-			#endif
 			case R_NOT_ENOUGH_FLASH:
 			case R_OUT_OF_RAM:
 			case R_CONN_LOST:
 			case R_INTEGRITY_CHECK_FAIL:
 			case R_FW_UPD_FAIL:
 			case R_UNSUPPORTED_PROTOCOL:
-			case R_FW_UPD_CANCELLED: {
-				resource(PACKAGE_0)->set(OPAQUE_T());
-				notifyServerResChanged({PACKAGE_0,});
-				resource(PACKAGE_URI_1)->set(STRING_T(""));
-				notifyServerResChanged({PACKAGE_URI_1,});
-				changeState(S_IDLE);
-			}
 			default: break;
 			}
 			break;
@@ -258,18 +205,6 @@ void FirmwareUpdate::resourcesCreate() {
 		{FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8, ResOp(ResOp::READ),              IS_SINGLE::MULTIPLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },     
 		#endif                                                                                                                                                                     
 		{FIRMWARE_UPDATE_DELIVERY_METHOD_9,  ResOp(ResOp::READ),              IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::INT },     
-		#if RES_5_10                                                                                                                                                               
-		{CANCEL_10,                          ResOp(ResOp::EXECUTE),           IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::EXECUTE }, 
-		#endif                                                                                                                                                                     
-		#if RES_5_11                                                                                                                                                               
-		{SEVERITY_11,                        ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },     
-		#endif                                                                                                                                                                     
-		#if RES_5_12                                                                                                                                                               
-		{LAST_STATE_CHANGE_TIME_12,          ResOp(ResOp::READ),              IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::TIME },    
-		#endif                                                                                                                                                                     
-		#if RES_5_13                                                                                                                                                               
-		{MAXIMUM_DEFER_PERIOD_13,            ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::UINT },    
-		#endif                                                                                                                                                                     
 	};
 	_resources = std::move(resources);
 }
@@ -287,24 +222,11 @@ void FirmwareUpdate::resourcesInit() {
 	resource(STATE_3)->set(INT_T(S_IDLE));
 	resource(STATE_3)->setDataVerifier((VERIFY_INT_T)[this](const INT_T& value) { 
 		if (!isNewStateValid(State(value))) return false;
-		#if RES_5_12
-		resource(LAST_STATE_CHANGE_TIME_12)->set((TIME_T)WppPlatform::getTime());
-		notifyServerResChanged({LAST_STATE_CHANGE_TIME_12,});
-		#endif
 		return true;
 	});
 	resource(UPDATE_RESULT_5)->set(INT_T(R_INITIAL));
-	resource(UPDATE_RESULT_5)->setDataVerifier((VERIFY_INT_T)[this](const INT_T& value) { 
+	resource(UPDATE_RESULT_5)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { 
 		if (R_INITIAL > value || value >= UPD_RES_MAX) return false;
-		#if RES_5_13
-		if (value == R_FW_UPD_DEFERRED) {
-			UINT_T deferPeriod;
-			resource(MAXIMUM_DEFER_PERIOD_13)->get(deferPeriod);
-			if (deferPeriod == DEFER_NOT_ALLWED) return false;
-		}
-		#else
-		(void)this;
-		#endif
 		return true; 
 	});
 	#if RES_5_6
@@ -319,19 +241,6 @@ void FirmwareUpdate::resourcesInit() {
 	#endif
 	resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set(INT_T(PUSH));
 	resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return PULL <= value && value < FW_UPD_DELIVERY_MAX; });
-	#if RES_5_10
-	resource(CANCEL_10)->set((EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
-	#endif
-	#if RES_5_11
-	resource(SEVERITY_11)->set(INT_T(MANDATORY));
-	resource(SEVERITY_11)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return CRITICAL <= value && value < SEVERITY_MAX; });
-	#endif
-	#if RES_5_12
-	resource(LAST_STATE_CHANGE_TIME_12)->set(TIME_T(0));
-	#endif
-	#if RES_5_13
-	resource(MAXIMUM_DEFER_PERIOD_13)->set(UINT_T(DEFER_NOT_ALLWED));
-	#endif
 	/* --------------- Code_cpp block 10 end --------------- */
 }
 
@@ -442,41 +351,6 @@ bool FirmwareUpdate::isDeliveryTypeSupported(FwUpdDelivery type) {
 	if (deliveryType == type || deliveryType == BOTH) return true;
 	return false;
 }
-
-#if RES_5_13
-void FirmwareUpdate::startDeferUpdateGuard() {
-	if (WppTaskQueue::isTaskExist(_deferUpdateTaskId)) return;
-
-	UINT_T maxDefer = 0;
-	resource(MAXIMUM_DEFER_PERIOD_13)->get(maxDefer);
-	if (!maxDefer) return;
-
-	_deferUpdateTaskId = WppTaskQueue::addTask(maxDefer, [this](WppClient &client, WppTaskQueue::ctx_t ctx) -> bool {
-		INT_T res, state;
-		resource(UPDATE_RESULT_5)->get(res);
-		resource(STATE_3)->get(state);
-		if (state != S_DOWNLOADED && res != R_FW_UPD_DEFERRED) return true;
-
-		changeUpdRes(R_INITIAL);
-		changeState(S_UPDATING);
-
-		EXECUTE_T execute;
-		resource(UPDATE_2)->get(execute);
-		if (!resource(UPDATE_2)->get(execute) || !execute) return true;
-
-		execute(*this, UPDATE_2, OPAQUE_T());
-
-		return true;
-	});
-}
-
-void FirmwareUpdate::stopDeferUpdateGuard() {
-	if (_deferUpdateTaskId != WPP_ERR_TASK_ID) {
-		WppTaskQueue::requestToRemoveTask(_deferUpdateTaskId);
-		_deferUpdateTaskId = WPP_ERR_TASK_ID;
-	}
-}
-#endif
 /* --------------- Code_cpp block 11 end --------------- */
 
 } /* namespace wpp */

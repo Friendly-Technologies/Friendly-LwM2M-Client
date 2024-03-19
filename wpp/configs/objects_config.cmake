@@ -22,13 +22,13 @@ option(OBJ_O_2_LWM2M_ACCESS_CONTROL_V11 "Include optional Lwm2mAccessControl obj
 if (OBJ_O_2_LWM2M_ACCESS_CONTROL_V11)
 	set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_O_2_LWM2M_ACCESS_CONTROL_V11)
 endif()
-option(OBJ_O_5_FIRMWARE_UPDATE_V11 "Include optional FirmwareUpdate object in the build" ON)
-if (OBJ_O_5_FIRMWARE_UPDATE_V11)
-	set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_O_5_FIRMWARE_UPDATE_V11)
-endif()
 option(OBJ_O_3339_AUDIO_CLIP_V10 "Include optional AudioClip object in the build" ON)
 if (OBJ_O_3339_AUDIO_CLIP_V10)
 	set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_O_3339_AUDIO_CLIP_V10)
+endif()
+option(OBJ_O_5_FIRMWARE_UPDATE_V10 "Include optional FirmwareUpdate object in the build" ON)
+if (OBJ_O_5_FIRMWARE_UPDATE_V10)
+	set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_O_5_FIRMWARE_UPDATE_V10)
 endif()
 # ---------- Optional objects config block end ----------
 

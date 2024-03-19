@@ -1,11 +1,11 @@
 /*
  * FirmwareUpdate
- * Generated on: 2023-11-08 13:50:54
+ * Generated on: 2024-03-19 13:06:08
  * Created by: SinaiR&D
  */
 
-#ifndef WPP_O_5_FIRMWARE_UPDATE_V11_H
-#define WPP_O_5_FIRMWARE_UPDATE_V11_H
+#ifndef WPP_O_5_FIRMWARE_UPDATE_V10_H
+#define WPP_O_5_FIRMWARE_UPDATE_V10_H
 
 #include "FirmwareUpdateConfig.h"
 #include "FirmwareUpdateInfo.h"
@@ -36,23 +36,11 @@ public:
 		FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8 = 8,
 		#endif
 		FIRMWARE_UPDATE_DELIVERY_METHOD_9 = 9,
-		#if RES_5_10
-		CANCEL_10 = 10,
-		#endif
-		#if RES_5_11
-		SEVERITY_11 = 11,
-		#endif
-		#if RES_5_12
-		LAST_STATE_CHANGE_TIME_12 = 12,
-		#endif
-		#if RES_5_13
-		MAXIMUM_DEFER_PERIOD_13 = 13,
-		#endif
 	};
 
 	/* --------------- Code_h block 1 start --------------- */
 	enum Event: EVENT_ID_T {
-		E_URI_DOWNLOADIN = 0,
+		E_URI_DOWNLOADING = 0,
 		E_PKG_DOWNLOADING,
 		E_DOWNLOADED,
 		E_RESET
@@ -77,10 +65,6 @@ public:
 		R_INVALID_URI = 7,
 		R_FW_UPD_FAIL = 8,
 		R_UNSUPPORTED_PROTOCOL = 9,
-		R_FW_UPD_CANCELLED = 10,
-		#if RES_5_13
-		R_FW_UPD_DEFERRED = 11,
-		#endif
 		UPD_RES_MAX
 	};
 
@@ -172,22 +156,14 @@ private:
 	bool isNewStateValid(State newState);
 
 	bool isDeliveryTypeSupported(FwUpdDelivery type);
-
-	#if RES_5_13
-	void startDeferUpdateGuard();
-	void stopDeferUpdateGuard();
-	#endif
 	/* --------------- Code_h block 4 end --------------- */
 
 private:
 	/* --------------- Class private properties --------------- */
 	/* --------------- Code_h block 5 start --------------- */
-	#if RES_5_13
-	WppTaskQueue::task_id_t _deferUpdateTaskId;
-	#endif
 	/* --------------- Code_h block 5 end --------------- */
 };
 
 } /* namespace wpp */
 
-#endif /* WPP_O_5_FIRMWARE_UPDATE_V11_H */
+#endif /* WPP_O_5_FIRMWARE_UPDATE_V10_H */

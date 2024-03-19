@@ -69,7 +69,7 @@ endif()
 if(OBJ_O_2_LWM2M_ACCESS_CONTROL_V11)
     add_subdirectory(Lwm2mAccessControl)
 endif()
-if(OBJ_O_5_FIRMWARE_UPDATE_V11)
+if(OBJ_O_5_FIRMWARE_UPDATE_V10)
     add_subdirectory(FirmwareUpdate)
 endif()
 

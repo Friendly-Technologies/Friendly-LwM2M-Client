@@ -1,7 +1,7 @@
-# Generated on: 2023-11-08 13:50:54
+# Generated on: 2024-03-19 13:06:08
 # Created by: SinaiR&D
 
-wpp_check_definition("OBJ_O_5_FIRMWARE_UPDATE_V11" is_defined)
+wpp_check_definition("OBJ_O_5_FIRMWARE_UPDATE_V10" is_defined)
 if(is_defined)
 	# Update SOURCES variable from parent scope.
 	set(WPP_SOURCES ${WPP_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/FirmwareUpdate.cpp)

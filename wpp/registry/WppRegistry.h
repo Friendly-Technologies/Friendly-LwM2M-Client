@@ -30,11 +30,11 @@
 #ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
 #include "o_2_lwm2m_access_control_v11/Lwm2mAccessControl.h"
 #endif
-#ifdef OBJ_O_5_FIRMWARE_UPDATE_V11
-#include "o_5_firmware_update_v11/FirmwareUpdate.h"
-#endif
 #ifdef OBJ_O_3339_AUDIO_CLIP_V10
 #include "o_3339_audio_clip_v10/AudioClip.h"
+#endif
+#ifdef OBJ_O_5_FIRMWARE_UPDATE_V10
+#include "o_5_firmware_update_v10/FirmwareUpdate.h"
 #endif
 /* ---------- Optional objects include block end ---------- */
 
@@ -119,11 +119,11 @@ public:
 	#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
 	ObjectSpec<Lwm2mAccessControl> & lwm2mAccessControl();
 	#endif
-	#ifdef OBJ_O_5_FIRMWARE_UPDATE_V11
-	ObjectSpec<FirmwareUpdate> & firmwareUpdate();
-	#endif
 	#ifdef OBJ_O_3339_AUDIO_CLIP_V10
 	ObjectSpec<AudioClip> & audioClip();
+	#endif
+	#ifdef OBJ_O_5_FIRMWARE_UPDATE_V10
+	ObjectSpec<FirmwareUpdate> & firmwareUpdate();
 	#endif
 	/* ---------- Optional objects prototype block end ---------- */
 

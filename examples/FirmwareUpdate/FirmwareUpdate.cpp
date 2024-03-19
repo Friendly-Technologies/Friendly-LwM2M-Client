@@ -30,17 +30,6 @@ void FirmwareUpdateImpl::init(Object &obj) {
     inst0->set({FirmwareUpdate::FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8, 3}, (INT_T)FirmwareUpdate::COAPS);
     #endif
     inst0->set(FirmwareUpdate::FIRMWARE_UPDATE_DELIVERY_METHOD_9, (INT_T)FirmwareUpdate::BOTH);
-	#if RES_5_10
-	inst0->set(FirmwareUpdate::CANCEL_10, (EXECUTE_T)[this](Instance& inst, ID_T id, const OPAQUE_T& data) {
-		cout << "FirmwareUpdate: execute CANCEL_10" << endl;
-        if (_httpDownloader.isDownloading()) _httpDownloader.cancelDownloading();
-        else if (_coapDownloader.isDownloading()) _coapDownloader.cancelDownloading();
-		return true;
-    });
-    #endif
-    #if RES_5_13
-    inst0->set(FirmwareUpdate::MAXIMUM_DEFER_PERIOD_13, (UINT_T)10);
-    #endif
 }
 
 void FirmwareUpdateImpl::objectRestore(Object &object) {
@@ -51,7 +40,7 @@ void FirmwareUpdateImpl::objectRestore(Object &object) {
 
 void FirmwareUpdateImpl::instEvent(Instance &inst, EVENT_ID_T eventId) {
     cout << "FwUpdateImpl: event: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ", eventId: " << (int)eventId << endl;
-    if (eventId == FirmwareUpdate::E_URI_DOWNLOADIN) {
+    if (eventId == FirmwareUpdate::E_URI_DOWNLOADING) {
         STRING_T uri;
         inst.get(FirmwareUpdate::PACKAGE_URI_1, uri);
 
@@ -100,15 +89,6 @@ void FirmwareUpdateImpl::fwIsDownloaded() {
     }
 
 void FirmwareUpdateImpl::update(Instance& inst) {
-    #if RES_5_13
-    static uint8_t reqCnt = 0;
-    if (!reqCnt) {
-        inst.set(FirmwareUpdate::UPDATE_RESULT_5, (INT_T)FirmwareUpdate::R_FW_UPD_DEFERRED);
-        reqCnt++;
-        return;
-    }
-    #endif
-
     #ifndef LWM2M_RAW_BLOCK1_REQUESTS
     STRING_T uri;
     inst.get(FirmwareUpdate::PACKAGE_URI_1, uri);

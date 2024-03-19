@@ -1,7 +1,7 @@
 # Generated on: 2023-11-02 16:57:15
 # Created by: SinaiR&D
 
-wpp_check_definition("OBJ_O_4_CONNECTIVITY_MONITORING_V13" is_defined)
+wpp_check_definition("OBJ_O_4_CONNECTIVITY_MONITORING" is_defined)
 if(is_defined)
 	# Update SOURCES variable from parent scope.
 	set(WPP_SOURCES ${WPP_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/ConnectivityMonitoring.cpp)

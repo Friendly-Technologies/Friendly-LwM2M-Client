@@ -76,6 +76,21 @@ def remove_folder(folder_path):
         # print("There is no folder/files to remove")
         pass
 
+def copy_file(src, dst):
+    try:
+        shutil.copy(src, dst)
+    except FileNotFoundError:
+        LOG(__name__, copy_file.__name__, f"the file {src} not found")
+        return False
+    return True
+
+def copy_folder(src, dst):
+    try:
+        shutil.copytree(src, dst)
+    except FileNotFoundError:
+        LOG(__name__, copy_folder.__name__, f"the folder {src} not found")
+        return False
+    return True
 
 def LOG(tag, func, text):
     print(f"[{tag}::{func}]: {text}")

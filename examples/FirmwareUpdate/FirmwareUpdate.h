@@ -37,6 +37,7 @@ private:
     string getFileName(Instance& inst);
     void writeToFile(STRING_T fileName, const OPAQUE_T &buff);
     bool isHttpScheme(const string &uri);
+    bool isCoapsScheme(const string &uri);
 
 private:
     FwDownloaderHttp _httpDownloader;

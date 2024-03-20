@@ -14,6 +14,9 @@
 
 /* --------------- Сode_h block 0 start --------------- */
 #include "WppTaskQueue.h"
+#include "fwUpdTypes.h"
+#include "o_5_firmware_update/downloader/FwExternalUriDl.h"
+#include "o_5_firmware_update/downloader/FwAutoDl.h"
 /* --------------- Сode_h block 0 end --------------- */
 
 namespace wpp {
@@ -39,52 +42,12 @@ public:
 	};
 
 	/* --------------- Code_h block 1 start --------------- */
+
 	enum Event: EVENT_ID_T {
 		E_URI_DOWNLOADING = 0,
 		E_PKG_DOWNLOADING,
 		E_DOWNLOADED,
 		E_RESET
-	};
-
-	enum State: uint8_t {
-		S_IDLE = 0,
-		S_DOWNLOADING = 1,
-		S_DOWNLOADED = 2,
-		S_UPDATING = 3,
-		STATE_MAX
-	};
-
-	enum UpdRes: uint8_t {
-		R_INITIAL = 0,
-		R_FW_UPD_SUCCESS = 1,
-		R_NOT_ENOUGH_FLASH = 2,
-		R_OUT_OF_RAM = 3,
-		R_CONN_LOST = 4,
-		R_INTEGRITY_CHECK_FAIL = 5,
-		R_UNSUPPORTED_PKG_TYPE = 6,
-		R_INVALID_URI = 7,
-		R_FW_UPD_FAIL = 8,
-		R_UNSUPPORTED_PROTOCOL = 9,
-		UPD_RES_MAX
-	};
-
-	#if RES_5_8
-	enum FwUpdProtocol: uint8_t {
-		COAP = 0,
-		COAPS = 1,
-		HTTP = 2,
-		HTTPS = 3,
-		COAP_TCP = 4,
-		COAP_TLS = 5,
-		FW_UPD_PROTOCOL_MAX
-	};
-	#endif
-
-	enum FwUpdDelivery: uint8_t {
-		PULL = 0,
-		PUSH = 1,
-		BOTH = 2,
-		FW_UPD_DELIVERY_MAX
 	};
 	/* --------------- Code_h block 1 end --------------- */
 
@@ -93,6 +56,26 @@ public:
 	~FirmwareUpdate();
 
 	/* --------------- Code_h block 2 start --------------- */
+	#if RES_5_8
+	/**
+	 * @brief Return the list of supported protocols for downloading the firmware through uri.
+	 */
+	std::vector<FwUpdProtocol> supportedProtocols();
+	
+	/**
+	 * @brief Set the FwExternalUriDl object for downloading the firmware package from the specified URI.
+	 * @param downloader - FwExternalUriDl object.
+	 * @return true if the FwExternalUriDl object is set successfully, otherwise false.
+	 */
+	bool setFwExternalUriDownloader(FwExternalUriDl &downloader);
+	#endif
+
+	/**
+	 * @brief Set the FwAutoDl object for auto downloading firmware.
+	 * @param downloader - FwAutoDl object.
+	 * @return true if the FwAutoDl object is set successfully, otherwise false.
+	 */
+	bool setFwAutoDownloader(FwAutoDl &downloader);
 	/* --------------- Code_h block 2 end --------------- */
 
 protected:
@@ -130,8 +113,8 @@ private:
 	void resourcesInit();
 	
 	/* --------------- Code_h block 4 start --------------- */
-	void changeUpdRes(UpdRes res);
-	void changeState(State state);
+	void changeUpdRes(FwUpdRes res);
+	void changeState(FwUpdState state);
 	void resetStateMachine();
 
 	bool isPkgValid(OPAQUE_T uri);
@@ -144,7 +127,7 @@ private:
 	FwUpdProtocol schemeToProtId(STRING_T scheme);
 	#endif
 
-	bool isNewStateValid(State newState);
+	bool isNewStateValid(FwUpdState newState);
 
 	bool isDeliveryTypeSupported(FwUpdDelivery type);
 	/* --------------- Code_h block 4 end --------------- */
@@ -152,6 +135,8 @@ private:
 private:
 	/* --------------- Class private properties --------------- */
 	/* --------------- Code_h block 5 start --------------- */
+	FwExternalUriDl *_uriDownloader;
+	FwAutoDl *_autoDownloader;
 	/* --------------- Code_h block 5 end --------------- */
 };
 

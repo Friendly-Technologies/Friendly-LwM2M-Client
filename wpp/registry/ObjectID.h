@@ -1,7 +1,7 @@
 #ifndef WPP_OBJECT_ID_H_
 #define WPP_OBJECT_ID_H_
 
-#include "types.h"
+#include "wppTypes.h"
 
 namespace wpp {
 

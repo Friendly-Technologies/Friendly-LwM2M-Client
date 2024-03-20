@@ -11,7 +11,7 @@
 #include <list>
 #include <functional>
 
-#include "types.h"
+#include "wppTypes.h"
 #include "WppGuard.h"
 
 #define WPP_TASK_MIN_DELAY_S  (time_t)0

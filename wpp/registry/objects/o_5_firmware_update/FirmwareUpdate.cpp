@@ -8,7 +8,7 @@
 
 #include "Resource.h"
 #include "ResOp.h"
-#include "types.h"
+#include "wppTypes.h"
 #include "WppLogs.h"
 
 /* --------------- Code_cpp block 0 start --------------- */
@@ -31,6 +31,8 @@ namespace wpp {
 FirmwareUpdate::FirmwareUpdate(lwm2m_context_t &context, const OBJ_LINK_T &id): Instance(context, id) {
 
 	/* --------------- Code_cpp block 1 start --------------- */
+	_uriDownloader = NULL;
+	_autoDownloader = NULL;
 	/* --------------- Code_cpp block 1 end --------------- */
 
 	resourcesCreate();
@@ -47,6 +49,8 @@ FirmwareUpdate::~FirmwareUpdate() {
 
 void FirmwareUpdate::setDefaultState() {
 	/* --------------- Code_cpp block 4 start --------------- */
+	_uriDownloader = NULL;
+	_autoDownloader = NULL;
 	/* --------------- Code_cpp block 4 end --------------- */
 
 	_resources.clear();
@@ -221,7 +225,7 @@ void FirmwareUpdate::resourcesInit() {
 	resource(UPDATE_2)->set((EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
 	resource(STATE_3)->set(INT_T(S_IDLE));
 	resource(STATE_3)->setDataVerifier((VERIFY_INT_T)[this](const INT_T& value) { 
-		if (!isNewStateValid(State(value))) return false;
+		if (!isNewStateValid(FwUpdState(value))) return false;
 		return true;
 	});
 	resource(UPDATE_RESULT_5)->set(INT_T(R_INITIAL));
@@ -245,12 +249,81 @@ void FirmwareUpdate::resourcesInit() {
 }
 
 /* --------------- Code_cpp block 11 start --------------- */
-void FirmwareUpdate::changeUpdRes(UpdRes res) {
+#if RES_5_8
+std::vector<FwUpdProtocol> FirmwareUpdate::supportedProtocols() {
+	std::vector<FwUpdProtocol> supportedProtocols;
+	for (auto id : resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->getInstIds()) {
+		INT_T protocol;
+		resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->get(protocol, id);
+		supportedProtocols.push_back(FwUpdProtocol(protocol));
+	}
+
+	return supportedProtocols;
+}
+
+bool FirmwareUpdate::setFwExternalUriDownloader(FwExternalUriDl &downloader) {
+	_uriDownloader = &downloader;
+
+	std::vector<FwUpdProtocol> dlSupportedProtocols = _uriDownloader->supportedProtocols();
+	if (dlSupportedProtocols.empty()) {
+		_uriDownloader = NULL;
+		return false;
+	}
+
+	// Setup delivery type
+	if (_autoDownloader) resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set(INT_T(BOTH));
+	else resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set(INT_T(PULL));
+
+	// Setup supported protocols
+	ID_T instId = 0;
+	resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->clear();
+	for (auto prot : dlSupportedProtocols) {
+		resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->set(INT_T(prot), instId);
+		instId++;
+	}
+
+	// Set last update result
+	if (downloader.lastUpdateResult() != R_INITIAL) {
+		resource(UPDATE_RESULT_5)->set(INT_T(downloader.lastUpdateResult()));
+	}
+
+	// Notify server about changes
+	notifyServerResChanged({FIRMWARE_UPDATE_DELIVERY_METHOD_9,});
+	notifyServerResChanged({FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8,});
+	notifyServerResChanged({UPDATE_RESULT_5,});
+
+	return true;
+}
+#endif
+
+bool FirmwareUpdate::setFwAutoDownloader(FwAutoDl &downloader) {
+	// TODO: Update the implementation of this method after creating an
+	// interface for downloading firmware via uri using the library.
+	// Currently, FwAutoDl only supports loading through the PACKAGE_0 resource.
+	_autoDownloader = &downloader;
+
+	// Setup delivery type
+	if (_uriDownloader) resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set(INT_T(BOTH));
+	else resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set(INT_T(PUSH));
+
+	// Set last update result
+	if (downloader.lastUpdateResult() != R_INITIAL) {
+		resource(UPDATE_RESULT_5)->set(INT_T(downloader.lastUpdateResult()));
+	}
+
+	// Notify server about changes
+	notifyServerResChanged({FIRMWARE_UPDATE_DELIVERY_METHOD_9,});
+	notifyServerResChanged({UPDATE_RESULT_5,});
+
+	return true;
+}
+
+void FirmwareUpdate::changeUpdRes(FwUpdRes res) {
 	resource(UPDATE_RESULT_5)->set(INT_T(res));
 	notifyServerResChanged({UPDATE_RESULT_5,});
 }
 
-void FirmwareUpdate::changeState(State state) {
+void FirmwareUpdate::changeState(FwUpdState state) {
 	resource(STATE_3)->set(INT_T(state));
 	notifyServerResChanged({STATE_3,});
 }
@@ -311,7 +384,7 @@ bool FirmwareUpdate::isSchemeSupported(STRING_T scheme) {
 	return false;
 }
 
-FirmwareUpdate::FwUpdProtocol FirmwareUpdate::schemeToProtId(STRING_T scheme) {
+FwUpdProtocol FirmwareUpdate::schemeToProtId(STRING_T scheme) {
 	if (!std::strcmp(scheme.c_str(), COAP_SCHEME)) return COAP;
 	else if (!std::strcmp(scheme.c_str(), COAPS_SCHEME)) return COAPS;
 	else if (!std::strcmp(scheme.c_str(), HTTP_SCHEME)) return HTTP;
@@ -322,7 +395,7 @@ FirmwareUpdate::FwUpdProtocol FirmwareUpdate::schemeToProtId(STRING_T scheme) {
 }
 #endif
 
-bool FirmwareUpdate::isNewStateValid(State newState) {
+bool FirmwareUpdate::isNewStateValid(FwUpdState newState) {
 	INT_T currState;
 	resource(STATE_3)->get(currState);
 	if (currState == newState) return true;

@@ -13,7 +13,7 @@
 #include "liblwm2m.h"
 #include "Resource.h"
 #include "ResOp.h"
-#include "types.h"
+#include "wppTypes.h"
 #include "InstSubject.h"
 
 namespace wpp {

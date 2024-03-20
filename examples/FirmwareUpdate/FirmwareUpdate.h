@@ -31,7 +31,7 @@ private:
     void resourceBlockWrite(Instance &inst, const ResLink &resource, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock) override;
     #endif
     
-    FirmwareUpdate::UpdRes getLastUpdResult();
+    FwUpdRes getLastUpdResult();
     void fwIsDownloaded();
     void update(Instance& inst);
     string getFileName(Instance& inst);

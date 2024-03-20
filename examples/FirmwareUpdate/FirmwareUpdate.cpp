@@ -20,16 +20,16 @@ void FirmwareUpdateImpl::init(Object &obj) {
 		this->update(inst);
 		return true;
 	});
-	inst0->set(FirmwareUpdate::STATE_3, (INT_T)FirmwareUpdate::S_IDLE);
+	inst0->set(FirmwareUpdate::STATE_3, (INT_T)FwUpdState::S_IDLE);
     // Before starting FW update UPDATE_RESULT_5 should be set to R_INITIAL
-	inst0->set(FirmwareUpdate::UPDATE_RESULT_5, (INT_T)FirmwareUpdate::R_INITIAL);
+	inst0->set(FirmwareUpdate::UPDATE_RESULT_5, (INT_T)FwUpdRes::R_INITIAL);
     #if RES_5_8
-    inst0->set(FirmwareUpdate::FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8, (INT_T)FirmwareUpdate::HTTP);
-    inst0->set({FirmwareUpdate::FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8, 1}, (INT_T)FirmwareUpdate::HTTPS);
-    inst0->set({FirmwareUpdate::FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8, 2}, (INT_T)FirmwareUpdate::COAP);
-    inst0->set({FirmwareUpdate::FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8, 3}, (INT_T)FirmwareUpdate::COAPS);
+    inst0->set(FirmwareUpdate::FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8, (INT_T)FwUpdProtocol::HTTP);
+    inst0->set({FirmwareUpdate::FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8, 1}, (INT_T)FwUpdProtocol::HTTPS);
+    inst0->set({FirmwareUpdate::FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8, 2}, (INT_T)FwUpdProtocol::COAP);
+    inst0->set({FirmwareUpdate::FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8, 3}, (INT_T)FwUpdProtocol::COAPS);
     #endif
-    inst0->set(FirmwareUpdate::FIRMWARE_UPDATE_DELIVERY_METHOD_9, (INT_T)FirmwareUpdate::BOTH);
+    inst0->set(FirmwareUpdate::FIRMWARE_UPDATE_DELIVERY_METHOD_9, (INT_T)FwUpdDelivery::BOTH);
 }
 
 void FirmwareUpdateImpl::objectRestore(Object &object) {
@@ -48,7 +48,7 @@ void FirmwareUpdateImpl::instEvent(Instance &inst, EVENT_ID_T eventId) {
             cout << "FW is downloaded to file: " << file << endl;
             WppTaskQueue::addTask(5, [](WppClient &client, void *ctx) -> bool {
                 cout << "FW STATE_3 changed to S_DOWNLOADED" << endl;
-                client.registry().firmwareUpdate().instance()->set(FirmwareUpdate::STATE_3, (INT_T)FirmwareUpdate::S_DOWNLOADED);
+                client.registry().firmwareUpdate().instance()->set(FirmwareUpdate::STATE_3, (INT_T)FwUpdState::S_DOWNLOADED);
                 return true;
             });
         };
@@ -78,13 +78,13 @@ void FirmwareUpdateImpl::resourceBlockWrite(Instance &inst, const ResLink &resou
 }
 #endif
 
-FirmwareUpdate::UpdRes FirmwareUpdateImpl::getLastUpdResult() {
-    return FirmwareUpdate::R_FW_UPD_SUCCESS;
+FwUpdRes FirmwareUpdateImpl::getLastUpdResult() {
+    return FwUpdRes::R_FW_UPD_SUCCESS;
 }
 
 void FirmwareUpdateImpl::fwIsDownloaded() {
         WppClient *client = WppClient::takeOwnershipBlocking();
-        client->registry().firmwareUpdate().instance()->set(FirmwareUpdate::STATE_3, (INT_T)FirmwareUpdate::S_DOWNLOADED);
+        client->registry().firmwareUpdate().instance()->set(FirmwareUpdate::STATE_3, (INT_T)FwUpdState::S_DOWNLOADED);
         client->giveOwnership();
     }
 
@@ -99,7 +99,7 @@ void FirmwareUpdateImpl::update(Instance& inst) {
     }
     #endif
 
-    inst.set(FirmwareUpdate::STATE_3, (INT_T)FirmwareUpdate::S_UPDATING);
+    inst.set(FirmwareUpdate::STATE_3, (INT_T)FwUpdState::S_UPDATING);
     
     WppTaskQueue::addTask(10, [](WppClient &client, void *ctx) -> bool {
         Instance *fw = client.registry().firmwareUpdate().instance();
@@ -111,8 +111,8 @@ void FirmwareUpdateImpl::update(Instance& inst) {
         dev->set(Device::FIRMWARE_VERSION_3, fwVersion);
         #endif
         
-        fw->set(FirmwareUpdate::UPDATE_RESULT_5, (INT_T)FirmwareUpdate::R_FW_UPD_SUCCESS);
-        dev->set(Device::FIRMWARE_VERSION_3, (INT_T)FirmwareUpdate::S_DOWNLOADED);
+        fw->set(FirmwareUpdate::UPDATE_RESULT_5, (INT_T)FwUpdRes::R_FW_UPD_SUCCESS);
+        dev->set(Device::FIRMWARE_VERSION_3, (INT_T)FwUpdState::S_DOWNLOADED);
 
         cout << "FW UPDATE_RESULT_5 changed to R_FW_UPD_SUCCESS" << endl;
         return true;

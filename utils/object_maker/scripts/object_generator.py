@@ -71,9 +71,9 @@ class ObjectGenerator:
             case "W":
                 operation += "WRITE"
             case "RW":
-                operation += f"{operation}READ|{operation_type}::WRITE"
+                operation += f"READ|{operation_type}::WRITE"
             case default:
-                operation += f"{operation}READ|{operation_type}::WRITE"
+                operation += f"READ|{operation_type}::WRITE"
         operation += "),"
         return operation
 

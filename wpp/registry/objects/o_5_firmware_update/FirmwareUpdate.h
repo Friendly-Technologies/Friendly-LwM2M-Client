@@ -150,6 +150,7 @@ private:
 	FwExternalDl *_externalDownloader;
 	WppTaskQueue::task_id_t _externalDownloaderTaskId;
 	#endif
+	WppTaskQueue::task_id_t _autoDownloaderTaskId;
 	WppTaskQueue::task_id_t _updaterTaskId;
 	/* --------------- Code_h block 5 end --------------- */
 };

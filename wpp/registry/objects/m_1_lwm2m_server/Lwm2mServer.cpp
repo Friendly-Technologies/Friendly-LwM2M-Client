@@ -181,7 +181,7 @@ void Lwm2mServer::resourcesInit() {
 	resource(DISABLE_4)->set((EXECUTE_T)[this](Instance& inst, ID_T resId, const OPAQUE_T& data) {
 		if (!WppTaskQueue::isTaskExist(_requestDeregistrationTaskId)) {
 			WPP_LOGI(TAG, "Deregistration Request Trigger: Deregistration is started");
-			_requestDeregistrationTaskId = WppTaskQueue::addTask(WPP_TASK_DEF_DELAY_S, [this](WppClient &client, void *ctx) -> bool {
+			_requestDeregistrationTaskId = WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, [this](WppClient &client, void *ctx) -> bool {
 				lwm2m_deregister(&getContext());
 				return true;
 			});
@@ -216,7 +216,7 @@ void Lwm2mServer::resourcesInit() {
 	resource(BOOTSTRAP_REQUEST_TRIGGER_9)->set((EXECUTE_T)[this](Instance& inst, ID_T resId, const OPAQUE_T& data) {
 		if (!WppTaskQueue::isTaskExist(_requestBootstrapTaskId)) {
 			WPP_LOGI(TAG, "Bootstrap Request Trigger: Bootstrap request is started");
-			_requestBootstrapTaskId = WppTaskQueue::addTask(WPP_TASK_DEF_DELAY_S, [this](WppClient &client, void *ctx) -> bool {
+			_requestBootstrapTaskId = WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, [this](WppClient &client, void *ctx) -> bool {
 				getContext().state = STATE_BOOTSTRAP_REQUIRED;
 				return true;
 			});

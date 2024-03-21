@@ -78,7 +78,7 @@ class ObjectGenerator:
         return operation
 
     def parse_resource_data_type(self, xml_type):
-        resource_type = "TYPE_ID::"
+        resource_type = f"{const.TYPE_ID}::"
         match xml_type:
             case "NONE":
                 resource_type += "EXECUTE"
@@ -102,7 +102,7 @@ class ObjectGenerator:
                 resource_type += "CORE_LINK"
             case default:
                 raise Exception(f"Undefined type of the resource ({xml_type})")
-
+        resource_type += " },"
         return resource_type
 
     def get_map_of_resources(self, resources_list_xml):
@@ -126,7 +126,7 @@ class ObjectGenerator:
                             self.parse_operation(resource_xml[const.DATA_KEYS[const.KEY_OPERATIONS]]),
                             f"IS_SINGLE::{resource_xml[const.DATA_KEYS[const.KEY_IS_MULTIPLE]]},",
                             f"IS_MANDATORY::{resource_xml[const.DATA_KEYS[const.KEY_IS_MANDATORY]]},",
-                            f"{self.parse_resource_data_type(resource_xml[const.DATA_KEYS[const.KEY_TYPE]])} }},"]
+                            self.parse_resource_data_type(resource_xml[const.DATA_KEYS[const.KEY_TYPE]])]
 
             # wrap into "#if-directive" if the resource is not mandatory:
             if resource_xml[const.DATA_KEYS[const.KEY_IS_MANDATORY]] != "MANDATORY":

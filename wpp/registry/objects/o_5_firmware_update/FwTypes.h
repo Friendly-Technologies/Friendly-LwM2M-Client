@@ -1,7 +1,7 @@
 #ifndef WPP_FW_UPD_TYPES_H
 #define WPP_FW_UPD_TYPES_H
 
-#include "wppTypes.h"
+#include "WppTypes.h"
 #include "FirmwareUpdateConfig.h"
 
 namespace wpp {

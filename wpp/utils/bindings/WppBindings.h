@@ -1,7 +1,7 @@
 #ifndef WPP_BINDINGS_H
 #define WPP_BINDINGS_H
 
-#include "wppTypes.h"
+#include "WppTypes.h"
 
 #define WPP_BINDING_UDP	STRING_T("U")
 #define WPP_BINDING_TCP	STRING_T("T")

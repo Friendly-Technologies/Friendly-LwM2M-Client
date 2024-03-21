@@ -14,10 +14,10 @@
 
 /* --------------- Сode_h block 0 start --------------- */
 #include "WppTaskQueue.h"
-#include "fwUpdTypes.h"
-#include "o_5_firmware_update/downloader/FwPkgUpdater.h"
-#include "o_5_firmware_update/downloader/FwExternalUriDl.h"
-#include "o_5_firmware_update/downloader/FwAutoDl.h"
+#include "FwTypes.h"
+#include "o_5_firmware_update/interfaces/FwUpdater.h"
+#include "o_5_firmware_update/interfaces/FwExternalDl.h"
+#include "o_5_firmware_update/interfaces/FwAutoDl.h"
 /* --------------- Сode_h block 0 end --------------- */
 
 namespace wpp {
@@ -51,12 +51,12 @@ public:
 
 	/* --------------- Code_h block 2 start --------------- */
 	/**
-	 * @brief Set the FwPkgUpdater object for updating the firmware package.
-	 * @param updater - FwPkgUpdater object.
+	 * @brief Set the FwUpdater object for updating the firmware package.
+	 * @param updater - FwUpdater object.
 	 * @note Call of this method is reset the current state of the FirmwareUpdate object.
-	 * @return true if the FwPkgUpdater object is set successfully, otherwise false.
+	 * @return true if the FwUpdater object is set successfully, otherwise false.
 	 */
-	bool setFwPkgUpdater(FwPkgUpdater &updater);
+	bool setFwUpdater(FwUpdater &updater);
 
 	#if RES_5_8
 	/**
@@ -65,12 +65,12 @@ public:
 	std::vector<FwUpdProtocol> supportedProtocols();
 	
 	/**
-	 * @brief Set the FwExternalUriDl object for downloading the firmware package from the specified URI.
-	 * @param downloader - FwExternalUriDl object.
+	 * @brief Set the FwExternalDl object for downloading the firmware package from the specified URI.
+	 * @param downloader - FwExternalDl object.
 	 * @note Call of this method is reset the current state of the FirmwareUpdate object.
-	 * @return true if the FwExternalUriDl object is set successfully, otherwise false.
+	 * @return true if the FwExternalDl object is set successfully, otherwise false.
 	 */
-	bool setFwExternalUriDownloader(FwExternalUriDl &downloader);
+	bool setFwExternalDownloader(FwExternalDl &downloader);
 	#endif
 
 	/**
@@ -140,8 +140,8 @@ private:
 private:
 	/* --------------- Class private properties --------------- */
 	/* --------------- Code_h block 5 start --------------- */
-	FwPkgUpdater *_pkgUpdater;
-	FwExternalUriDl *_uriDownloader;
+	FwUpdater *_pkgUpdater;
+	FwExternalDl *_uriDownloader;
 	FwAutoDl *_autoDownloader;
 
 	WppTaskQueue::task_id_t _uriDownloaderTaskId;

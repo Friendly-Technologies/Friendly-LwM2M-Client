@@ -2,7 +2,7 @@
 #define FW_AUTO_DL_H
 
 #include <vector>
-#include "o_5_firmware_update/fwUpdTypes.h"
+#include "o_5_firmware_update/FwTypes.h"
 
 namespace wpp {
 

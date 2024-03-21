@@ -3,27 +3,27 @@
 
 #include <vector>
 #include "m_0_lwm2m_security/Lwm2mSecurity.h"
-#include "o_5_firmware_update/fwUpdTypes.h"
+#include "o_5_firmware_update/FwTypes.h"
 
 namespace wpp {
 
 /**
- * @interface FwExternalUriDl Interface for downloading the firmware package from the specified URI.
- * The FwExternalUriDl is registered in the FirmwareUpdate object. With using this interface, FirmwareUpdate
+ * @interface FwExternalDl Interface for downloading the firmware package from the specified URI.
+ * The FwExternalDl is registered in the FirmwareUpdate object. With using this interface, FirmwareUpdate
  * notifies user about required operation and gets the result of the operation. But downloading process is
  * occured on the user side. When user downloader implement the same protocol as the FirmwareUpdate, 
  * in this case user downloader will be preferred.
  * @note The implementation of each method must not use blocking functions and must terminate as quickly as
  * possible. If possible, operations that take a long time should be performed asynchronously.
  */
-class FwExternalUriDl {
+class FwExternalDl {
 public:
-    FwExternalUriDl() = default;
-    virtual ~FwExternalUriDl() = default;
+    FwExternalDl() = default;
+    virtual ~FwExternalDl() = default;
 
     /**
      * @brief Returns the list of supported protocols for downloading the firmware package.
-     * After the registration FwExternalUriDl, the list of supported protocols should not be changed.
+     * After the registration FwExternalDl, the list of supported protocols should not be changed.
      * The list should contain at least one protocol.
      */
     virtual std::vector<FwUpdProtocol> supportedProtocols() = 0;

@@ -8,7 +8,7 @@
 
 #include "Resource.h"
 #include "ResOp.h"
-#include "wppTypes.h"
+#include "WppTypes.h"
 #include "WppLogs.h"
 
 /* --------------- Code_cpp block 0 start --------------- */
@@ -162,7 +162,7 @@ void FirmwareUpdate::resourcesInit() {
 }
 
 /* --------------- Code_cpp block 11 start --------------- */
-bool FirmwareUpdate::setFwPkgUpdater(FwPkgUpdater &updater) {
+bool FirmwareUpdate::setFwUpdater(FwUpdater &updater) {
 	resetStateMachine();
 
 	_pkgUpdater = &updater;
@@ -195,7 +195,7 @@ std::vector<FwUpdProtocol> FirmwareUpdate::supportedProtocols() {
 	return supportedProtocols;
 }
 
-bool FirmwareUpdate::setFwExternalUriDownloader(FwExternalUriDl &downloader) {
+bool FirmwareUpdate::setFwExternalDownloader(FwExternalDl &downloader) {
 	resetStateMachine();
 
 	_uriDownloader = &downloader;
@@ -315,7 +315,7 @@ void FirmwareUpdate::autoDownloaderHandler() {
 		_autoDownloader->reset();
 		return;
 	} 
-
+	
 	changeState(S_DOWNLOADING);
 	_autoDownloader->downloadIsStarted();
 	_autoDownloader->saveDownloadedBlock(*pkg);

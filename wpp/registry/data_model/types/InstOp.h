@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "wppTypes.h"
+#include "WppTypes.h"
 
 /**
  * @brief The InstOp struct represents an instance operation.

@@ -8,7 +8,7 @@
 
 #include "Resource.h"
 #include "ResOp.h"
-#include "wppTypes.h"
+#include "WppTypes.h"
 #include "WppLogs.h"
 
 /* --------------- Code_cpp block 0 start --------------- */

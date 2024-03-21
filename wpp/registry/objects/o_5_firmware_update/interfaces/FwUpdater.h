@@ -1,14 +1,14 @@
 #ifndef WPP_FWPKGUPDATER_H
 #define WPP_FWPKGUPDATER_H
 
-#include "o_5_firmware_update/fwUpdTypes.h"
+#include "o_5_firmware_update/FwTypes.h"
 
 namespace wpp {
 
-class FwPkgUpdater {
+class FwUpdater {
 public:
-    FwPkgUpdater() = default;
-    virtual ~FwPkgUpdater() = default;
+    FwUpdater() = default;
+    virtual ~FwUpdater() = default;
 
     /**
      * @brief Request to start updating the firmware.
@@ -26,7 +26,7 @@ public:
 
     /**
      * @brief Contains the result of the last update process.
-     * This method is called whenever the FwExternalUriDl is registered to get
+     * This method is called whenever the FwExternalDl is registered to get
      * information about the result of the last update. If there were no updates,
      * the method should return R_INITIAL
      * Possible results when update is successful: R_INITIAL, R_FW_UPD_SUCCESS

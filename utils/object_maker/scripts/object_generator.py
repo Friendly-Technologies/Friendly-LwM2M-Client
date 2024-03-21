@@ -80,6 +80,8 @@ class ObjectGenerator:
     def parse_resource_data_type(self, xml_type):
         resource_type = "TYPE_ID::"
         match xml_type:
+            case "NONE":
+                resource_type += "EXECUTE"
             case "INTEGER":
                 resource_type += "INT"
             case "UNSIGNED_INTEGER":
@@ -88,20 +90,18 @@ class ObjectGenerator:
                 resource_type += "BOOL"
             case "STRING":
                 resource_type += "STRING"
-            case "EXECUTE":
-                resource_type += "EXECUTE"
             case "OPAQUE":
                 resource_type += "OPAQUE"
-            case "?":
-                resource_type += "FLOAT"  # TODO: check case
-            case "OBJLNK":
-                resource_type += "OBJ_LINK"
+            case "FLOAT":
+                resource_type += "FLOAT"
             case "TIME":
                 resource_type += "TIME"
-            case "?":
-                resource_type += "CORE_LINK"  # TODO: check case
+            case "OBJLNK":
+                resource_type += "OBJ_LINK"
+            case "CORELNK":
+                resource_type += "CORE_LINK"
             case default:
-                resource_type += "EXECUTE"  # TODO: check case
+                raise Exception(f"Undefined type of the resource ({xml_type})")
 
         return resource_type
 

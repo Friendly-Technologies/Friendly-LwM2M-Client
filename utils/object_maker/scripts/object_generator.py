@@ -61,8 +61,8 @@ class ObjectGenerator:
         return self.object_names[const.KEY_NAME_OF_FOLDER]
 
     def parse_operation(self, xml_operation):
-        type = const.TYPE_OPERATION
-        operation = f"{type}({type}::"
+        operation_type = const.TYPE_OPERATION
+        operation = f"{operation_type}({operation_type}::"
         match xml_operation:
             case "E":
                 operation += "EXECUTE"
@@ -71,9 +71,9 @@ class ObjectGenerator:
             case "W":
                 operation += "WRITE"
             case "RW":
-                operation = f"{type}({type}::READ|{type}::WRITE"
+                operation += f"{operation}READ|{operation_type}::WRITE"
             case default:
-                operation = f"{type}({type}::READ|{type}::WRITE"
+                operation += f"{operation}READ|{operation_type}::WRITE"
         operation += "),"
         return operation
 

@@ -13,6 +13,8 @@ namespace wpp {
  * notifies user about required operation and gets the result of the operation. But downloading process is
  * occured on the user side. When user downloader implement the same protocol as the FirmwareUpdate, 
  * in this case user downloader will be preferred.
+ * @note The implementation of each method must not use blocking functions and must terminate as quickly as
+ * possible. If possible, operations that take a long time should be performed asynchronously.
  */
 class FwExternalUriDl {
 public:
@@ -29,13 +31,11 @@ public:
     /**
      * @brief Request to start downloading the firmware package from the specified URI.
      * @param uri - URI of the firmware package.
-     * @param pkgName - Name of the firmware package.
-     * @param pkgVersion - Version of the firmware package.
      * @param security - Security object that contains the information necessary to download the firmware package.
      * For notify that the download is completed, isDownloaded() method should return true.
      * For notify download result, downloadResult() method should return the result of the download process.
      */
-    virtual void startDownloading(const STRING_T &uri, const STRING_T &pkgName, const STRING_T &pkgVersion, Lwm2mSecurity &security) = 0;
+    virtual void startDownloading(const STRING_T &uri, Lwm2mSecurity &security) = 0;
     /**
      * @brief Returns true if the download process is completed.
      * For notify download result, downloadResult() method should return the result of the download process.
@@ -49,34 +49,12 @@ public:
      */
     virtual FwUpdRes downloadResult() = 0;
 
-    /**
-     * @brief Request to start updating the firmware.
-     * For notify that the update is completed, isUpdated() method should return true.
-     * For notify update result, lastUpdateResult() method should return the result of the update process.
-     */
-    virtual void startUpdating() = 0;
-    /**
-     * @brief Returns true if the update process is completed.
-     * For notify update result, lastUpdateResult() method should return the result of the update process.
-     * Regardless of the reason for the termination, whether it is a complete firmware update or a update error.
-     */
-    virtual bool isUpdated() = 0;
-    /**
-     * @brief Contains the result of the last update process.
-     * This method is called whenever the FwExternalUriDl is registered to get
-     * information about the result of the last update. If there were no updates,
-     * the method should return R_INITIAL
-     * Possible results when update is successful: R_INITIAL, R_FW_UPD_SUCCESS
-     * Possible results when error occured: R_FW_UPD_FAIL, R_INTEGRITY_CHECK_FAIL
-     */
-    virtual FwUpdRes lastUpdateResult() = 0;
-
-    /**
+    /*
      * @brief Reset the download process.
      * When this method is called, the download process is reset and the download
-     * process can be started again. This methos can not becalled when the updeate
+     * process can be started again. This methos can not be called when the updeate
      * process is started. All the information about the previous download process
-     * is cleared. So downloadResult() and lastUpdateResult() should return R_INITIAL.
+     * is cleared. So downloadResult() should return R_INITIAL.
      */
     virtual void reset() = 0;
 };

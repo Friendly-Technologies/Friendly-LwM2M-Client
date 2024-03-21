@@ -15,6 +15,7 @@
 /* --------------- Сode_h block 0 start --------------- */
 #include "WppTaskQueue.h"
 #include "fwUpdTypes.h"
+#include "o_5_firmware_update/downloader/FwPkgUpdater.h"
 #include "o_5_firmware_update/downloader/FwExternalUriDl.h"
 #include "o_5_firmware_update/downloader/FwAutoDl.h"
 /* --------------- Сode_h block 0 end --------------- */
@@ -42,13 +43,6 @@ public:
 	};
 
 	/* --------------- Code_h block 1 start --------------- */
-
-	enum Event: EVENT_ID_T {
-		E_URI_DOWNLOADING = 0,
-		E_PKG_DOWNLOADING,
-		E_DOWNLOADED,
-		E_RESET
-	};
 	/* --------------- Code_h block 1 end --------------- */
 
 public:
@@ -56,6 +50,14 @@ public:
 	~FirmwareUpdate();
 
 	/* --------------- Code_h block 2 start --------------- */
+	/**
+	 * @brief Set the FwPkgUpdater object for updating the firmware package.
+	 * @param updater - FwPkgUpdater object.
+	 * @note Call of this method is reset the current state of the FirmwareUpdate object.
+	 * @return true if the FwPkgUpdater object is set successfully, otherwise false.
+	 */
+	bool setFwPkgUpdater(FwPkgUpdater &updater);
+
 	#if RES_5_8
 	/**
 	 * @brief Return the list of supported protocols for downloading the firmware through uri.
@@ -65,6 +67,7 @@ public:
 	/**
 	 * @brief Set the FwExternalUriDl object for downloading the firmware package from the specified URI.
 	 * @param downloader - FwExternalUriDl object.
+	 * @note Call of this method is reset the current state of the FirmwareUpdate object.
 	 * @return true if the FwExternalUriDl object is set successfully, otherwise false.
 	 */
 	bool setFwExternalUriDownloader(FwExternalUriDl &downloader);
@@ -73,6 +76,7 @@ public:
 	/**
 	 * @brief Set the FwAutoDl object for auto downloading firmware.
 	 * @param downloader - FwAutoDl object.
+	 * @note Call of this method is reset the current state of the FirmwareUpdate object.
 	 * @return true if the FwAutoDl object is set successfully, otherwise false.
 	 */
 	bool setFwAutoDownloader(FwAutoDl &downloader);
@@ -94,9 +98,6 @@ protected:
 	void userOperationNotifier(ResOp::TYPE type, const ResLink &resId) override;
 
 	/* --------------- Code_h block 3 start --------------- */
-	#ifdef LWM2M_RAW_BLOCK1_REQUESTS
-	void serverBlockOperationNotifier(ResOp::TYPE type, const ResLink &resId, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock) override;
-	#endif
 	/* --------------- Code_h block 3 end --------------- */
 
 private:
@@ -113,6 +114,10 @@ private:
 	void resourcesInit();
 	
 	/* --------------- Code_h block 4 start --------------- */
+	void pkgUpdaterHandler();
+	void uriDownloaderHandler();
+	void autoDownloaderHandler();
+
 	void changeUpdRes(FwUpdRes res);
 	void changeState(FwUpdState state);
 	void resetStateMachine();
@@ -135,8 +140,12 @@ private:
 private:
 	/* --------------- Class private properties --------------- */
 	/* --------------- Code_h block 5 start --------------- */
+	FwPkgUpdater *_pkgUpdater;
 	FwExternalUriDl *_uriDownloader;
 	FwAutoDl *_autoDownloader;
+
+	WppTaskQueue::task_id_t _uriDownloaderTaskId;
+	WppTaskQueue::task_id_t _updaterTaskId;
 	/* --------------- Code_h block 5 end --------------- */
 };
 

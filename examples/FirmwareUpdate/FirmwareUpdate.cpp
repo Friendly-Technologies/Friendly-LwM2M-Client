@@ -1,8 +1,8 @@
 #include "FirmwareUpdate.h"
 
 // TODO: Find other way to share credentials with the COAP downloader
-const char psk_id[] = "SINAI_TEST_DEV_ID_VS";
-const uint8_t psk_key[] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0x99, 0x88, 0x77, 0x66, 0x55, 0x44};
+// const char psk_id[] = "SINAI_TEST_DEV_ID_VS";
+// const uint8_t psk_key[] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0x99, 0x88, 0x77, 0x66, 0x55, 0x44};
 
 FirmwareUpdateImpl::FirmwareUpdateImpl() {}
 
@@ -40,34 +40,34 @@ void FirmwareUpdateImpl::objectRestore(Object &object) {
 
 void FirmwareUpdateImpl::instEvent(Instance &inst, EVENT_ID_T eventId) {
     cout << "FwUpdateImpl: event: " << (ID_T)inst.getObjectID() << ":" << inst.getInstanceID() << ", eventId: " << (int)eventId << endl;
-    if (eventId == FirmwareUpdate::E_URI_DOWNLOADING) {
-        STRING_T uri;
-        inst.get(FirmwareUpdate::PACKAGE_URI_1, uri);
+    // if (eventId == FirmwareUpdate::E_URI_DOWNLOADING) {
+    //     STRING_T uri;
+    //     inst.get(FirmwareUpdate::PACKAGE_URI_1, uri);
 
-        auto downloadedClb = [](string file) { 
-            cout << "FW is downloaded to file: " << file << endl;
-            WppTaskQueue::addTask(5, [](WppClient &client, void *ctx) -> bool {
-                cout << "FW STATE_3 changed to S_DOWNLOADED" << endl;
-                client.registry().firmwareUpdate().instance()->set(FirmwareUpdate::STATE_3, (INT_T)FwUpdState::S_DOWNLOADED);
-                return true;
-            });
-        };
+    //     auto downloadedClb = [](string file) { 
+    //         cout << "FW is downloaded to file: " << file << endl;
+    //         WppTaskQueue::addTask(5, [](WppClient &client, void *ctx) -> bool {
+    //             cout << "FW STATE_3 changed to S_DOWNLOADED" << endl;
+    //             client.registry().firmwareUpdate().instance()->set(FirmwareUpdate::STATE_3, (INT_T)FwUpdState::S_DOWNLOADED);
+    //             return true;
+    //         });
+    //     };
 
-        if (isHttpScheme(uri)) {
-            if (_httpDownloader.isDownloading()) {
-                cout << "FwUpdateImpl: HTTP downloader is already downloading" << endl;
-                return;
-            }
-            _httpDownloader.startDownloading(uri, downloadedClb);
-        } else {
-            if (_coapDownloader.isDownloading()) {
-                cout << "FwUpdateImpl: CoAP downloader is already downloading" << endl;
-                return;
-            }
-            if (isCoapsScheme(uri)) _coapDownloader.startDownloading(uri, string(psk_id), vector<uint8_t>(psk_key, psk_key + sizeof(psk_key)), downloadedClb);
-            else _coapDownloader.startDownloading(uri, downloadedClb);
-        }
-    }
+    //     if (isHttpScheme(uri)) {
+    //         if (_httpDownloader.isDownloading()) {
+    //             cout << "FwUpdateImpl: HTTP downloader is already downloading" << endl;
+    //             return;
+    //         }
+    //         _httpDownloader.startDownloading(uri, downloadedClb);
+    //     } else {
+    //         if (_coapDownloader.isDownloading()) {
+    //             cout << "FwUpdateImpl: CoAP downloader is already downloading" << endl;
+    //             return;
+    //         }
+    //         if (isCoapsScheme(uri)) _coapDownloader.startDownloading(uri, string(psk_id), vector<uint8_t>(psk_key, psk_key + sizeof(psk_key)), downloadedClb);
+    //         else _coapDownloader.startDownloading(uri, downloadedClb);
+    //     }
+    // }
 }
 
 #ifdef LWM2M_RAW_BLOCK1_REQUESTS

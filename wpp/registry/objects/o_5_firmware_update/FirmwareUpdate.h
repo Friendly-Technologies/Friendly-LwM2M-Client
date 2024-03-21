@@ -16,7 +16,9 @@
 #include "WppTaskQueue.h"
 #include "FwTypes.h"
 #include "o_5_firmware_update/interfaces/FwUpdater.h"
+#if RES_5_8
 #include "o_5_firmware_update/interfaces/FwExternalDl.h"
+#endif
 #include "o_5_firmware_update/interfaces/FwAutoDl.h"
 /* --------------- Сode_h block 0 end --------------- */
 
@@ -115,7 +117,9 @@ private:
 	
 	/* --------------- Code_h block 4 start --------------- */
 	void pkgUpdaterHandler();
+	#if RES_5_8
 	void externalDownloaderHandler();
+	#endif
 	void autoDownloaderHandler();
 
 	void changeUpdRes(FwUpdRes res);
@@ -141,10 +145,11 @@ private:
 	/* --------------- Class private properties --------------- */
 	/* --------------- Code_h block 5 start --------------- */
 	FwUpdater *_pkgUpdater;
-	FwExternalDl *_uriDownloader;
 	FwAutoDl *_autoDownloader;
-
-	WppTaskQueue::task_id_t _uriDownloaderTaskId;
+	#if RES_5_8
+	FwExternalDl *_externalDownloader;
+	WppTaskQueue::task_id_t _externalDownloaderTaskId;
+	#endif
 	WppTaskQueue::task_id_t _updaterTaskId;
 	/* --------------- Code_h block 5 end --------------- */
 };

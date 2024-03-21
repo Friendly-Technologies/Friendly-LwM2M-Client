@@ -45,8 +45,12 @@ public:
      * corresponds to the version and name of the last successfully
      * installed package.
      */
+    #if RES_5_6
     virtual STRING_T pkgName() = 0;
+    #endif
+    #if RES_5_7
     virtual STRING_T pkgVersion() = 0;
+    #endif
 };
 
 }

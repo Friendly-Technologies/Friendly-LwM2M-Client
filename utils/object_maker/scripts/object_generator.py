@@ -105,34 +105,6 @@ class ObjectGenerator:
 
         return resource_type
 
-    def parse_type(self, xml_type):
-        resource_type = ""
-        match xml_type:
-            case "INTEGER":
-                resource_type += "INT_T"
-            case "UNSIGNED_INTEGER":
-                resource_type += "UINT_T"
-            case "BOOLEAN":
-                resource_type += "BOOL_T"
-            case "STRING":
-                resource_type += "STRING_T"
-            case "EXECUTE":
-                resource_type += "EXECUTE_T"
-            case "OPAQUE":
-                resource_type += "OPAQUE_T"
-            case "FLOAT":
-                resource_type += "FLOAT_T"  # TODO: check case
-            case "OBJLNK":
-                resource_type += "OBJ_LINK_T"
-            case "TIME":
-                resource_type += "TIME_T"
-            case "CORE_LINK":
-                resource_type += "CORE_LINK_T"  # TODO: check case
-            case default:
-                resource_type += "NONE"  # TODO: check case
-
-        return resource_type
-
     def get_map_of_resources(self, resources_list_xml):
         resources_enum = ""
         x = PrettyTable()

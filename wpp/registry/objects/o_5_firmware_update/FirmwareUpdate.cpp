@@ -295,7 +295,7 @@ void FirmwareUpdate::externalDownloaderHandler() {
 		if (_uriDownloader->downloadResult() != R_INITIAL) changeState(S_IDLE);
 		else changeState(S_DOWNLOADED);
 
-		changeUpdRes(_autoDownloader->downloadResult());
+		changeUpdRes(_uriDownloader->downloadResult());
 
 		return true;
 	});

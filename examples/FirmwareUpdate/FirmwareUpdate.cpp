@@ -1,9 +1,5 @@
 #include "FirmwareUpdate.h"
 
-// TODO: Find other way to share credentials with the COAP downloader
-// const char psk_id[] = "SINAI_TEST_DEV_ID_VS";
-// const uint8_t psk_key[] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0x99, 0x88, 0x77, 0x66, 0x55, 0x44};
-
 FirmwareUpdateImpl::FirmwareUpdateImpl() {}
 
 FirmwareUpdateImpl::~FirmwareUpdateImpl() {}

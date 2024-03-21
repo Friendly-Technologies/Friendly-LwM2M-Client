@@ -79,7 +79,7 @@ void FirmwareUpdate::serverOperationNotifier(ResOp::TYPE type, const ResLink &re
 	case ResOp::WRITE_UPD:
 	case ResOp::WRITE_REPLACE_RES: {
 		if (resId.resId == PACKAGE_0) autoDownloaderHandler();
-		else if (resId.resId == PACKAGE_URI_1) uriDownloaderHandler();
+		else if (resId.resId == PACKAGE_URI_1) externalDownloaderHandler();
 		break;
 	}
 	case ResOp::EXECUTE: {
@@ -272,7 +272,7 @@ void FirmwareUpdate::pkgUpdaterHandler() {
 	});
 }
 
-void FirmwareUpdate::uriDownloaderHandler() {
+void FirmwareUpdate::externalDownloaderHandler() {
 	if (!_uriDownloader) return;
 
 	STRING_T pkgUri;

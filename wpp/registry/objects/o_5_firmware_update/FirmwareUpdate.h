@@ -115,7 +115,7 @@ private:
 	
 	/* --------------- Code_h block 4 start --------------- */
 	void pkgUpdaterHandler();
-	void uriDownloaderHandler();
+	void externalDownloaderHandler();
 	void autoDownloaderHandler();
 
 	void changeUpdRes(FwUpdRes res);

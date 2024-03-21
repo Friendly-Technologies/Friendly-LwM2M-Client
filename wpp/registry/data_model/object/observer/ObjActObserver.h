@@ -1,7 +1,7 @@
 #ifndef WPP_OBJ_ACT_OBSERVER_H_
 #define WPP_OBJ_ACT_OBSERVER_H_
 
-#include "types.h"
+#include "WppTypes.h"
 
 namespace wpp {
 

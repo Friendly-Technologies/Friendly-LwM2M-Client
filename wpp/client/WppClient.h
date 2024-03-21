@@ -12,7 +12,7 @@
 #include <functional>
 
 #include "liblwm2m.h"
-#include "types.h"
+#include "WppTypes.h"
 #include "WppRegistry.h"
 #include "WppConnection.h"
 #include "WppGuard.h"

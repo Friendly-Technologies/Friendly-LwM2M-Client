@@ -216,6 +216,30 @@ class ObjectChanger:
                 return True
         return False
 
+    def move_user_files_and_folders(self, path_to_new_object):
+        # print(f"{self.log_tag} {self.move_user_files_and_folders.__name__}")
+        items_to_move = os.listdir(self.obj_folder_to_change)
+        errcode, json_data = func.get_json_from_file(f"{self.obj_folder_to_change}/{const.FILE_OBJ_METADATA}")
+        if not errcode:
+            func.LOG(self.log_tag, self.set_relations.__name__, f'the "{file_path}" file not found.')
+            return False
+
+        items_to_move.remove(const.FILE_OBJ_METADATA)
+        for key, value in json_data[const.KEY_DICT_OBJ_FILES].items():
+            if value in items_to_move:
+                items_to_move.remove(value)
+
+        for item in items_to_move:
+            src_item = f"{self.obj_folder_to_change}/{item}"
+            if os.path.isfile(src_item):
+                func.copy_file(src_item, path_to_new_object)
+            elif os.path.isdir(src_item):
+                func.copy_folder(src_item, path_to_new_object + "/" + item)
+            else:
+                func.LOG(self.log_tag, self.move_user_files_and_folders.__name__, f"Skipping {src_item}: not a file or directory")
+
+        return True
+            
     def change(self):
         # 1. generate new code from file/link/meta in current folder:
         param_file = self.obj_metadata_to_use if not self.is_metadata_is_link() else None
@@ -234,13 +258,18 @@ class ObjectChanger:
         user_code_blocks = self.get_updated_user_code(obj_g)
         self.write_files(path_to_new_object, user_code_blocks)
 
-        # 4. remove old Object code:
+        # 4. move user files and folders to the new Object folder:
+        if not self.move_user_files_and_folders(path_to_new_object):
+            func.LOG(self.log_tag, self.change.__name__, "unable to move user files and folders. Operation interrupted.")
+            return False
+
+        # 5. remove old Object code:
         obj_r = object_remover.ObjectRemover(self.obj_folder_to_change)
         if not obj_r.remove_object():
             func.LOG(self.log_tag, self.change.__name__, "unable to remove old data. Operation interrupted.")
             return False
 
-        # 5. integrate new code of the Object:
+        # 6. integrate new code of the Object:
         obj_i = object_integrator.ObjectIntegrator(path_to_new_object)
         if not obj_i.update_files():
             func.LOG(self.log_tag, self.update_files.__name__, "please, check the existing Object and try again")

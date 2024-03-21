@@ -42,18 +42,16 @@ class ObjectGenerator:
         obj_id = self.object_data[const.DATA_KEYS[const.KEY_ID_OBJ]]                                         # 1
         obj_name_folder = f"{obj_requirement_short.lower()}_" \
                           f"{obj_id}_" \
-                          f"{obj_name_underline_lw}_"\
-                          f"v{obj_version}"                                     # 'm_1_lwm2m_server_v13'
+                          f"{obj_name_underline_lw}"                                    # 'm_1_lwm2m_server'
         obj_name_path_to_folder = f"../../wpp/registry/objects/"                # '../../wpp/registry/objects/'
         obj_name_define = f"OBJ_{obj_requirement_short}_" \
                           f"{obj_id}_" \
-                          f"{obj_name_underline_up}_" \
-                          f"V{obj_version}"                                     # 'OBJ_M_1_LWM2M_SERVER_V13'
+                          f"{obj_name_underline_up}"                                  # 'OBJ_M_1_LWM2M_SERVER'
 
         object_names[const.KEY_NAME_CLASS] = obj_name_class                     # 'Lwm2mServer'
         object_names[const.KEY_NAME_CAMELCASE] = obj_name_camelcase             # 'lwm2mServer'
-        object_names[const.KEY_NAME_DEFINE] = obj_name_define                   # 'OBJ_M_1_LWM2M_SERVER_V13'
-        object_names[const.KEY_NAME_OF_FOLDER] = obj_name_folder                # 'm_1_lwm2m_server_v13'
+        object_names[const.KEY_NAME_DEFINE] = obj_name_define                   # 'OBJ_M_1_LWM2M_SERVER'
+        object_names[const.KEY_NAME_OF_FOLDER] = obj_name_folder                # 'm_1_lwm2m_server'
         object_names[const.KEY_PATH_TO_FOLDER] = obj_name_path_to_folder        # '../../wpp/registry/objects/'
         object_names[const.KEY_NAME_UNDERLINE] = obj_name_underline_up          # 'LWM2M_SERVER'
 

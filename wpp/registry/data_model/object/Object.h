@@ -13,7 +13,7 @@
 
 #include "ObjSubject.h"
 #include "Instance.h"
-#include "types.h"
+#include "WppTypes.h"
 #include "WppLogs.h"
 
 namespace wpp {

@@ -7,7 +7,7 @@
 
 #include "ObjectInfo.h"
 #include "ResOp.h"
-#include "types.h"
+#include "WppTypes.h"
 
 #define RES_METHODS_PROT_SET_FOR(_TYPE_) bool set(const _TYPE_ &value, ID_T resInstId = SINGLE_INSTANCE_ID); \
 										 bool setMove(_TYPE_ &value, ID_T resInstId = SINGLE_INSTANCE_ID); \

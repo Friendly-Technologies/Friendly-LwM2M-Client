@@ -5,19 +5,18 @@
 #include <fstream>
 #include "WppRegistry.h"
 #include "ObjActObserver.h"
-#include "InstEventObserver.h"
-#include "InstBlockOpObserver.h"
 #include "WppClient.h"
-#include "Device.h"
 #include "WppTaskQueue.h"
 
-#include "FwDownloaderHttp.h"
-#include "FwDownloaderCoap.h"
+#if RES_5_8
+#include "FwUriDownloader.h"
+#endif
+#include "FwAutoDownloader.h"
 
 using namespace wpp;
 using namespace std;
 
-class FirmwareUpdateImpl: public wpp::ObjActObserver, public wpp::InstEventObserver, public wpp::InstBlockOpObserver {
+class FirmwareUpdateImpl: public ObjActObserver, public FwUpdater {
 public:
     FirmwareUpdateImpl();
     ~FirmwareUpdateImpl();
@@ -26,21 +25,18 @@ public:
 
 private:
     void objectRestore(Object &object) override;
-	void instEvent(Instance &inst, EVENT_ID_T eventId) override;
-    #ifdef LWM2M_RAW_BLOCK1_REQUESTS
-    void resourceBlockWrite(Instance &inst, const ResLink &resource, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock) override;
-    #endif
-    
-    FirmwareUpdate::UpdRes getLastUpdResult();
-    void fwIsDownloaded();
-    void update(Instance& inst);
-    string getFileName(Instance& inst);
-    void writeToFile(STRING_T fileName, const OPAQUE_T &buff);
-    bool isHttpScheme(const string &uri);
+
+    void startUpdating() override;
+    bool isUpdated() override;
+    FwUpdRes lastUpdateResult() override;
+    STRING_T pkgName() override;
+    STRING_T pkgVersion() override;
 
 private:
-    FwDownloaderHttp _httpDownloader;
-    FwDownloaderCoap _coapDownloader;
+    #if RES_5_8
+    FwUriDownloader _uriDownloader;
+    #endif
+    FwAutoDownloader _autoDownloader;
 };
 
 #endif // FIRMWARE_UPDATE_H_

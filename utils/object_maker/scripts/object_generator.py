@@ -42,11 +42,11 @@ class ObjectGenerator:
         obj_id = self.object_data[const.DATA_KEYS[const.KEY_ID_OBJ]]                                         # 1
         obj_name_folder = f"{obj_requirement_short.lower()}_" \
                           f"{obj_id}_" \
-                          f"{obj_name_underline_lw}"                                    # 'm_1_lwm2m_server'
+                          f"{obj_name_underline_lw}"                            # 'm_1_lwm2m_server'
         obj_name_path_to_folder = f"../../wpp/registry/objects/"                # '../../wpp/registry/objects/'
         obj_name_define = f"OBJ_{obj_requirement_short}_" \
                           f"{obj_id}_" \
-                          f"{obj_name_underline_up}"                                  # 'OBJ_M_1_LWM2M_SERVER'
+                          f"{obj_name_underline_up}"                            # 'OBJ_M_1_LWM2M_SERVER'
 
         object_names[const.KEY_NAME_CLASS] = obj_name_class                     # 'Lwm2mServer'
         object_names[const.KEY_NAME_CAMELCASE] = obj_name_camelcase             # 'lwm2mServer'

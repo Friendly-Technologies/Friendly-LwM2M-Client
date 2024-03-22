@@ -19,7 +19,7 @@
 #if RES_5_8
 #include "o_5_firmware_update/interfaces/FwExternalDl.h"
 #endif
-#include "o_5_firmware_update/interfaces/FwAutoDl.h"
+#include "o_5_firmware_update/interfaces/FwInternalDl.h"
 /* --------------- Сode_h block 0 end --------------- */
 
 namespace wpp {
@@ -76,12 +76,12 @@ public:
 	#endif
 
 	/**
-	 * @brief Set the FwAutoDl object for auto downloading firmware.
-	 * @param downloader - FwAutoDl object.
+	 * @brief Set the FwInternalDl object for auto downloading firmware.
+	 * @param downloader - FwInternalDl object.
 	 * @note Call of this method is reset the current state of the FirmwareUpdate object.
-	 * @return true if the FwAutoDl object is set successfully, otherwise false.
+	 * @return true if the FwInternalDl object is set successfully, otherwise false.
 	 */
-	bool setFwAutoDownloader(FwAutoDl &downloader);
+	bool setFwInternalDownloader(FwInternalDl &downloader);
 	/* --------------- Code_h block 2 end --------------- */
 
 protected:
@@ -120,7 +120,7 @@ private:
 	#if RES_5_8
 	void externalDownloaderHandler();
 	#endif
-	void autoDownloaderHandler();
+	void internalDownloaderHandler();
 
 	void changeUpdRes(FwUpdRes res);
 	void changeState(FwUpdState state);
@@ -145,12 +145,12 @@ private:
 	/* --------------- Class private properties --------------- */
 	/* --------------- Code_h block 5 start --------------- */
 	FwUpdater *_pkgUpdater;
-	FwAutoDl *_autoDownloader;
+	FwInternalDl *_internalDownloader;
 	#if RES_5_8
 	FwExternalDl *_externalDownloader;
 	WppTaskQueue::task_id_t _externalDownloaderTaskId;
 	#endif
-	WppTaskQueue::task_id_t _autoDownloaderTaskId;
+	WppTaskQueue::task_id_t _internalDownloaderTaskId;
 	WppTaskQueue::task_id_t _updaterTaskId;
 	/* --------------- Code_h block 5 end --------------- */
 };

@@ -9,7 +9,7 @@ void FirmwareUpdateImpl::init(Object &obj) {
 	FirmwareUpdate *fwInst = static_cast<FirmwareUpdate *>(obj.createInstance(0));
 
     fwInst->setFwUpdater(*this);
-    fwInst->setFwAutoDownloader(_autoDownloader);
+    fwInst->setFwInternalDownloader(_internalDownloader);
     #if RES_5_8
     fwInst->setFwExternalDownloader(_uriDownloader);
     #endif

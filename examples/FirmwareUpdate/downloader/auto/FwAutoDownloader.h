@@ -7,7 +7,7 @@
 using namespace wpp;
 using namespace std;
 
-class FwAutoDownloader : public FwAutoDl {
+class FwAutoDownloader : public FwInternalDl {
 public:
     void downloadIsStarted() override {
         cout << "FwAutoDownloader::downloadIsStarted" << endl;

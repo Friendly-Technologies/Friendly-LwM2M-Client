@@ -7,17 +7,17 @@
 namespace wpp {
 
 /**
- * @interface FwAutoDl Interface for auto downloading the firmware through uri and package resource.
- * The FwAutoDl is registered in the FirmwareUpdate object. With using this interface, FirmwareUpdate
+ * @interface FwInternalDl Interface for auto downloading the firmware through uri and package resource.
+ * The FwInternalDl is registered in the FirmwareUpdate object. With using this interface, FirmwareUpdate
  * notifies user about downloaded blocks, required operation and gets the result of the operation. 
- * Downloading process is occured on the FirmwareUpdate object side.
+ * Downloading process is occured on the Wpp lib side.
  * @note The implementation of each method must not use blocking functions and must terminate as quickly as
  * possible. If possible, operations that take a long time should be performed asynchronously.
  */
-class FwAutoDl {
+class FwInternalDl {
 public:
-    FwAutoDl() = default;
-    virtual ~FwAutoDl() = default;
+    FwInternalDl() = default;
+    virtual ~FwInternalDl() = default;
     
     /**
      * @brief Notify about dwnloading process start.

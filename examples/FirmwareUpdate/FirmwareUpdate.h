@@ -40,7 +40,7 @@ private:
     #if RES_5_8
     FwUriDownloader _uriDownloader;
     #endif
-    FwAutoDownloader _autoDownloader;
+    FwAutoDownloader _internalDownloader;
 };
 
 #endif // FIRMWARE_UPDATE_H_

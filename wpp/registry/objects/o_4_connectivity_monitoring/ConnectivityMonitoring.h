@@ -117,7 +117,7 @@ protected:
 	/*
 	 * Handles information about resource operation that made server
 	 */
-	void serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) override;
+	void serverOperationNotifier(ID_T securityInstId, ResOp::TYPE type, const ResLink &resId) override;
 	/*
 	 * Handles information about resource operation that made user
 	 */

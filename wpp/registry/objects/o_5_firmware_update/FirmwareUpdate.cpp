@@ -84,7 +84,7 @@ void FirmwareUpdate::setDefaultState() {
 	/* --------------- Code_cpp block 5 end --------------- */
 }
 
-void FirmwareUpdate::serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
+void FirmwareUpdate::serverOperationNotifier(ID_T securityInstId, ResOp::TYPE type, const ResLink &resId) {
 	/* --------------- Code_cpp block 6 start --------------- */
 	WPP_LOGD(TAG, "Server operation -> type: %d, resId: %d, resInstId: %d", type, resId.resId, resId.resInstId);
 	switch (type) {
@@ -92,7 +92,7 @@ void FirmwareUpdate::serverOperationNotifier(ResOp::TYPE type, const ResLink &re
 	case ResOp::WRITE_REPLACE_RES: {
 		if (resId.resId == PACKAGE_0) internalDownloaderHandler();
 		#if RES_5_8
-		if (resId.resId == PACKAGE_URI_1) externalDownloaderHandler();
+		if (resId.resId == PACKAGE_URI_1) externalDownloaderHandler(securityInstId);
 		#endif
 		break;
 	}
@@ -291,7 +291,7 @@ void FirmwareUpdate::pkgUpdaterHandler() {
 }
 
 #if RES_5_8
-void FirmwareUpdate::externalDownloaderHandler() {
+void FirmwareUpdate::externalDownloaderHandler(ID_T securityInstId) {
 	if (!_externalDownloader) return;
 
 	STRING_T pkgUri;

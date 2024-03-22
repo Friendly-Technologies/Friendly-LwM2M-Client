@@ -47,7 +47,7 @@ void AudioClip::setDefaultState() {
 	/* --------------- Code_cpp block 5 end --------------- */
 }
 
-void AudioClip::serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
+void AudioClip::serverOperationNotifier(ID_T securityInstId, ResOp::TYPE type, const ResLink &resId) {
 	/* --------------- Code_cpp block 6 start --------------- */
 	/* --------------- Code_cpp block 6 end --------------- */
 

@@ -93,7 +93,7 @@ protected:
 	/*
 	 * Handles information about resource operation that made server
 	 */
-	void serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) override;
+	void serverOperationNotifier(ID_T securityInstId, ResOp::TYPE type, const ResLink &resId) override;
 	/*
 	 * Handles information about resource operation that made user
 	 */
@@ -118,7 +118,7 @@ private:
 	/* --------------- Code_h block 4 start --------------- */
 	void pkgUpdaterHandler();
 	#if RES_5_8
-	void externalDownloaderHandler();
+	void externalDownloaderHandler(ID_T securityInstId);
 	#endif
 	void internalDownloaderHandler();
 

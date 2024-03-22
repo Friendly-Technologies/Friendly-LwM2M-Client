@@ -215,7 +215,7 @@ class ObjectGenerator:
     def get_content_serverOperationNotifier(self):
         cases = ["READ", "WRITE_UPD", "WRITE_REPLACE_INST", "WRITE_REPLACE_RES", "EXECUTE", "DISCOVER", "DELETE"]
         base = \
-            f"""void __CLASS_NAME__::serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) {{\n""" \
+            f"""void __CLASS_NAME__::serverOperationNotifier(ID_T securityInstId, ResOp::TYPE type, const ResLink &resId) {{\n""" \
             f"""\t/* --------------- Code_cpp block 6 start --------------- */\n""" \
             f"""\t/* --------------- Code_cpp block 6 end --------------- */\n""" \
             f"""\n\toperationNotify(*this, resId, type);\n\n""" \

@@ -25,6 +25,7 @@ public:
      * @param pkgVersion - Version of the firmware package.
      */
     virtual void downloadIsStarted() = 0;
+    
     /**
      * @brief Request to save downloaded block of the firmware package.
      * @param dataBlock - Block of the firmware package.
@@ -33,16 +34,18 @@ public:
      * @return true if the block is saved successfully, otherwise false.
      */
     virtual bool saveDownloadedBlock(const OPAQUE_T &dataBlock) = 0;
+    
     /**
      * @brief Notify about dwnloading process completion.
      * Regardless of the reason for the termination, whether it
      * is a complete firmware downloading or an downloading error.
      */
     virtual void downloadIsCompleted() = 0;
+
     /**
      * @brief Contains the result of the download process.
      * Possible results when download is successful: R_INITIAL
-     * Possible results when error occured: R_NOT_ENOUGH_FLASH, R_OUT_OF_RAM, R_CONN_LOST, R_INTEGRITY_CHECK_FAIL, R_UNSUPPORTED_PKG_TYPE
+     * Possible results when error occured: R_NOT_ENOUGH_FLASH, R_OUT_OF_RAM, R_INTEGRITY_CHECK_FAIL, R_UNSUPPORTED_PKG_TYPE
      */
     virtual FwUpdRes downloadResult() = 0;
 

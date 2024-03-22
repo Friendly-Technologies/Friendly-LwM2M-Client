@@ -35,12 +35,16 @@ FwUpdRes FirmwareUpdateImpl::lastUpdateResult() {
     return FwUpdRes::R_FW_UPD_SUCCESS;
 }
 
+#if RES_5_6
 STRING_T FirmwareUpdateImpl::pkgName() {
     cout << "FwUpdateImpl: pkgName" << endl;
     return "test";
 }
+#endif
 
+#if RES_5_7
 STRING_T FirmwareUpdateImpl::pkgVersion() {
     cout << "FwUpdateImpl: pkgVersion" << endl;
     return "1.0";
 }
+#endif

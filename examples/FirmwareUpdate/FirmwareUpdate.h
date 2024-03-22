@@ -29,8 +29,12 @@ private:
     void startUpdating() override;
     bool isUpdated() override;
     FwUpdRes lastUpdateResult() override;
+    #if RES_5_6
     STRING_T pkgName() override;
+    #endif
+    #if RES_5_7
     STRING_T pkgVersion() override;
+    #endif
 
 private:
     #if RES_5_8

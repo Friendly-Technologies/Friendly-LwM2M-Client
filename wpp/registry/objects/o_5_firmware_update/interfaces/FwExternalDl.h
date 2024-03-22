@@ -36,12 +36,14 @@ public:
      * For notify download result, downloadResult() method should return the result of the download process.
      */
     virtual void startDownloading(const STRING_T &uri, Lwm2mSecurity &security) = 0;
+
     /**
      * @brief Returns true if the download process is completed.
      * For notify download result, downloadResult() method should return the result of the download process.
      * Regardless of the reason for the termination, whether it is a complete firmware download or a download error.
      */
     virtual bool isDownloaded() = 0;
+    
     /**
      * @brief Contains the result of the download process.
      * Possible results when download is successful: R_INITIAL

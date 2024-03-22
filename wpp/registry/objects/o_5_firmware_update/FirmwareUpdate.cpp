@@ -32,9 +32,12 @@ FirmwareUpdate::FirmwareUpdate(lwm2m_context_t &context, const OBJ_LINK_T &id): 
 
 	/* --------------- Code_cpp block 1 start --------------- */
 	_pkgUpdater = NULL;
-	_uriDownloader = NULL;
 	_autoDownloader = NULL;
-	_uriDownloaderTaskId = WPP_ERR_TASK_ID;
+	#if RES_5_8
+	_externalDownloader = NULL;
+	_externalDownloaderTaskId = WPP_ERR_TASK_ID;
+	#endif
+	_autoDownloaderTaskId = WPP_ERR_TASK_ID;
 	_updaterTaskId = WPP_ERR_TASK_ID;
 	/* --------------- Code_cpp block 1 end --------------- */
 
@@ -47,7 +50,10 @@ FirmwareUpdate::FirmwareUpdate(lwm2m_context_t &context, const OBJ_LINK_T &id): 
 
 FirmwareUpdate::~FirmwareUpdate() {
 	/* --------------- Code_cpp block 3 start --------------- */
-	WppTaskQueue::requestToRemoveTask(_uriDownloaderTaskId);
+	#if RES_5_8
+	WppTaskQueue::requestToRemoveTask(_externalDownloaderTaskId);
+	#endif
+	WppTaskQueue::requestToRemoveTask(_autoDownloaderTaskId);
 	WppTaskQueue::requestToRemoveTask(_updaterTaskId);
 	/* --------------- Code_cpp block 3 end --------------- */
 }
@@ -55,12 +61,18 @@ FirmwareUpdate::~FirmwareUpdate() {
 void FirmwareUpdate::setDefaultState() {
 	/* --------------- Code_cpp block 4 start --------------- */
 	_pkgUpdater = NULL;
-	_uriDownloader = NULL;
+	#if RES_5_8
+	_externalDownloader = NULL;
+	#endif
 	_autoDownloader = NULL;
 	
-	WppTaskQueue::requestToRemoveTask(_uriDownloaderTaskId);
+	#if RES_5_8
+	WppTaskQueue::requestToRemoveTask(_externalDownloaderTaskId);
+	_externalDownloaderTaskId = WPP_ERR_TASK_ID;
+	#endif
+	WppTaskQueue::requestToRemoveTask(_autoDownloaderTaskId);
+	_autoDownloaderTaskId = WPP_ERR_TASK_ID;
 	WppTaskQueue::requestToRemoveTask(_updaterTaskId);
-	_uriDownloaderTaskId = WPP_ERR_TASK_ID;
 	_updaterTaskId = WPP_ERR_TASK_ID;
 	/* --------------- Code_cpp block 4 end --------------- */
 
@@ -79,7 +91,9 @@ void FirmwareUpdate::serverOperationNotifier(ResOp::TYPE type, const ResLink &re
 	case ResOp::WRITE_UPD:
 	case ResOp::WRITE_REPLACE_RES: {
 		if (resId.resId == PACKAGE_0) autoDownloaderHandler();
-		else if (resId.resId == PACKAGE_URI_1) externalDownloaderHandler();
+		#if RES_5_8
+		if (resId.resId == PACKAGE_URI_1) externalDownloaderHandler();
+		#endif
 		break;
 	}
 	case ResOp::EXECUTE: {
@@ -198,11 +212,11 @@ std::vector<FwUpdProtocol> FirmwareUpdate::supportedProtocols() {
 bool FirmwareUpdate::setFwExternalDownloader(FwExternalDl &downloader) {
 	resetStateMachine();
 
-	_uriDownloader = &downloader;
+	_externalDownloader = &downloader;
 
-	std::vector<FwUpdProtocol> dlSupportedProtocols = _uriDownloader->supportedProtocols();
+	std::vector<FwUpdProtocol> dlSupportedProtocols = _externalDownloader->supportedProtocols();
 	if (dlSupportedProtocols.empty()) {
-		_uriDownloader = NULL;
+		_externalDownloader = NULL;
 		return false;
 	}
 
@@ -231,10 +245,14 @@ bool FirmwareUpdate::setFwAutoDownloader(FwAutoDl &downloader) {
 	resetStateMachine();
 
 	_autoDownloader = &downloader;
-
+	
 	// Setup delivery type
-	if (_uriDownloader) resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set(INT_T(BOTH));
+	#if RES_5_8
+	if (_externalDownloader) resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set(INT_T(BOTH));
 	else resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set(INT_T(PUSH));
+	#else
+	resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set(INT_T(PUSH));
+	#endif
 	notifyServerResChanged({FIRMWARE_UPDATE_DELIVERY_METHOD_9,});
 
 	return true;
@@ -250,7 +268,7 @@ void FirmwareUpdate::pkgUpdaterHandler() {
 	changeState(S_UPDATING);
 	_pkgUpdater->startUpdating();
 
-	_updaterTaskId = WppTaskQueue::addTask(WPP_TASK_DEF_DELAY_S, [this](WppClient &client, void *ctx) -> bool {
+	_updaterTaskId = WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, [this](WppClient &client, void *ctx) -> bool {
 		if (!_pkgUpdater->isUpdated()) return false;
 
 		changeState(S_IDLE);
@@ -272,34 +290,36 @@ void FirmwareUpdate::pkgUpdaterHandler() {
 	});
 }
 
+#if RES_5_8
 void FirmwareUpdate::externalDownloaderHandler() {
-	if (!_uriDownloader) return;
+	if (!_externalDownloader) return;
 
 	STRING_T pkgUri;
 	resource(PACKAGE_URI_1)->get(pkgUri);
 	if (pkgUri.empty()) {
 		WPP_LOGD(TAG, "Server reset state machine through PACKAGE_URI_1");
 		resetStateMachine();
-		_uriDownloader->reset();
+		_externalDownloader->reset();
 		return;
 	}
 
 	changeState(S_DOWNLOADING);
 	// TODO: Should be used correct Lwm2mSecurity object
 	Lwm2mSecurity security(getContext(), OBJ_LINK_T{0, 0});
-	_uriDownloader->startDownloading(pkgUri, security);
+	_externalDownloader->startDownloading(pkgUri, security);
 
-	_uriDownloaderTaskId = WppTaskQueue::addTask(WPP_TASK_DEF_DELAY_S, [this](WppClient &client, void *ctx) -> bool {
-		if (!_uriDownloader->isDownloaded()) return false;
+	_externalDownloaderTaskId = WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, [this](WppClient &client, void *ctx) -> bool {
+		if (!_externalDownloader->isDownloaded()) return false;
 
-		if (_uriDownloader->downloadResult() != R_INITIAL) changeState(S_IDLE);
+		if (_externalDownloader->downloadResult() != R_INITIAL) changeState(S_IDLE);
 		else changeState(S_DOWNLOADED);
 
-		changeUpdRes(_uriDownloader->downloadResult());
+		changeUpdRes(_externalDownloader->downloadResult());
 
 		return true;
 	});
 }
+#endif
 
 void FirmwareUpdate::autoDownloaderHandler() {
 	// TODO: Update the implementation of this method after creating an
@@ -318,12 +338,20 @@ void FirmwareUpdate::autoDownloaderHandler() {
 	
 	changeState(S_DOWNLOADING);
 	_autoDownloader->downloadIsStarted();
-	_autoDownloader->saveDownloadedBlock(*pkg);
-	_autoDownloader->downloadIsCompleted();
-	if (_autoDownloader->downloadResult() != R_INITIAL) changeState(S_IDLE);
-	else changeState(S_DOWNLOADED);
 
-	changeUpdRes(_autoDownloader->downloadResult());
+	_autoDownloaderTaskId = WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, [this](WppClient &client, void *ctx) -> bool {
+		OPAQUE_T *pkg;
+		resource(PACKAGE_0)->ptr(&pkg);	
+
+		_autoDownloader->saveDownloadedBlock(*pkg);
+		_autoDownloader->downloadIsCompleted();
+		if (_autoDownloader->downloadResult() != R_INITIAL) changeState(S_IDLE);
+		else changeState(S_DOWNLOADED);
+
+		changeUpdRes(_autoDownloader->downloadResult());
+
+		return true;
+	});
 }
 
 void FirmwareUpdate::changeUpdRes(FwUpdRes res) {
@@ -337,6 +365,13 @@ void FirmwareUpdate::changeState(FwUpdState state) {
 }
 
 void FirmwareUpdate::resetStateMachine() {
+	#if RES_5_8
+	WppTaskQueue::requestToRemoveTask(_externalDownloaderTaskId);
+	_externalDownloaderTaskId = WPP_ERR_TASK_ID;
+	#endif
+	WppTaskQueue::requestToRemoveTask(_autoDownloaderTaskId);
+	_autoDownloaderTaskId = WPP_ERR_TASK_ID;
+
 	resource(PACKAGE_0)->set(OPAQUE_T());
 	notifyServerResChanged({PACKAGE_0,});
 	resource(PACKAGE_URI_1)->set(STRING_T(""));

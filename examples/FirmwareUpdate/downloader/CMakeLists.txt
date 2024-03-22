@@ -1,4 +1,5 @@
-# Update SOURCES variable from parent scope.
-# set(SOURCES ${SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/Connection.cpp PARENT_SCOPE)
+add_subdirectory(auto)
+add_subdirectory(uri)
+
 # Update INCLUDES variable from parent scope.
 set(INCLUDES ${INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/ PARENT_SCOPE)

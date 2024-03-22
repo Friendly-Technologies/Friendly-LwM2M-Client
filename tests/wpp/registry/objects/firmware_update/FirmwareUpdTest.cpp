@@ -1,5 +1,5 @@
 #include "catch_amalgamated.hpp"
-#include "o_5_firmware_update_v11/FirmwareUpdate.h"
+#include "o_5_firmware_update/FirmwareUpdate.h"
 
 using namespace wpp;
 

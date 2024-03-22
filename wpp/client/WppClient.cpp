@@ -102,7 +102,11 @@ time_t WppClient::loop() {
 
 	WPP_LOGD(TAG_WPP_CLIENT, "Handling server packets if they exists");
 	// Handles packets retreived from server
-	if (connection().getPacketQueueSize()) connection().handlePacketsInQueue(*this);
+	if (connection().getPacketQueueSize()) {
+		connection().handlePacketsInQueue(*this);
+		// Handle observe step after handling packets for avoid missing notifications
+		lwm2m_observe_step(_lwm2m_context);
+	}
 
 	WPP_LOGD(TAG_WPP_CLIENT, "Handling wpp tasks if they exists");
 	// Handles Wpp tasks in the WppClient context and return next call interval

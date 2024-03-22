@@ -47,7 +47,7 @@ def main():
             and not options.remove
             and not options.change
             and not options.initialize):
-        parser.error("no options selected. Use -h for help")
+        parser.error("no options selected. Choose one from: -g, -i, -c, -r, -z.\n\nUse -h for help.")
 
     # ============================= generation =============================
     if options.generate:

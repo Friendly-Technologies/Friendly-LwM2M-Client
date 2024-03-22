@@ -42,11 +42,11 @@ class ObjectGenerator:
         obj_id = self.object_data[const.DATA_KEYS[const.KEY_ID_OBJ]]                                         # 1
         obj_name_folder = f"{obj_requirement_short.lower()}_" \
                           f"{obj_id}_" \
-                          f"{obj_name_underline_lw}"                                    # 'm_1_lwm2m_server'
+                          f"{obj_name_underline_lw}"                            # 'm_1_lwm2m_server'
         obj_name_path_to_folder = f"../../wpp/registry/objects/"                # '../../wpp/registry/objects/'
         obj_name_define = f"OBJ_{obj_requirement_short}_" \
                           f"{obj_id}_" \
-                          f"{obj_name_underline_up}"                                  # 'OBJ_M_1_LWM2M_SERVER'
+                          f"{obj_name_underline_up}"                            # 'OBJ_M_1_LWM2M_SERVER'
 
         object_names[const.KEY_NAME_CLASS] = obj_name_class                     # 'Lwm2mServer'
         object_names[const.KEY_NAME_CAMELCASE] = obj_name_camelcase             # 'lwm2mServer'
@@ -61,8 +61,8 @@ class ObjectGenerator:
         return self.object_names[const.KEY_NAME_OF_FOLDER]
 
     def parse_operation(self, xml_operation):
-        type = const.TYPE_OPERATION
-        operation = f"{type}({type}::"
+        operation_type = const.TYPE_OPERATION
+        operation = f"{operation_type}({operation_type}::"
         match xml_operation:
             case "E":
                 operation += "EXECUTE"
@@ -71,15 +71,17 @@ class ObjectGenerator:
             case "W":
                 operation += "WRITE"
             case "RW":
-                operation = f"{type}({type}::READ|{type}::WRITE"
+                operation += f"READ|{operation_type}::WRITE"
             case default:
-                operation = f"{type}({type}::READ|{type}::WRITE"
+                operation += f"READ|{operation_type}::WRITE"
         operation += "),"
         return operation
 
     def parse_resource_data_type(self, xml_type):
-        resource_type = "TYPE_ID::"
+        resource_type = f"{const.TYPE_ID}::"
         match xml_type:
+            case "NONE":
+                resource_type += "EXECUTE"
             case "INTEGER":
                 resource_type += "INT"
             case "UNSIGNED_INTEGER":
@@ -88,49 +90,19 @@ class ObjectGenerator:
                 resource_type += "BOOL"
             case "STRING":
                 resource_type += "STRING"
-            case "EXECUTE":
-                resource_type += "EXECUTE"
             case "OPAQUE":
                 resource_type += "OPAQUE"
-            case "?":
-                resource_type += "FLOAT"  # TODO: check case
-            case "OBJLNK":
-                resource_type += "OBJ_LINK"
+            case "FLOAT":
+                resource_type += "FLOAT"
             case "TIME":
                 resource_type += "TIME"
-            case "?":
-                resource_type += "CORE_LINK"  # TODO: check case
-            case default:
-                resource_type += "EXECUTE"  # TODO: check case
-
-        return resource_type
-
-    def parse_type(self, xml_type):
-        resource_type = ""
-        match xml_type:
-            case "INTEGER":
-                resource_type += "INT_T"
-            case "UNSIGNED_INTEGER":
-                resource_type += "UINT_T"
-            case "BOOLEAN":
-                resource_type += "BOOL_T"
-            case "STRING":
-                resource_type += "STRING_T"
-            case "EXECUTE":
-                resource_type += "EXECUTE_T"
-            case "OPAQUE":
-                resource_type += "OPAQUE_T"
-            case "FLOAT":
-                resource_type += "FLOAT_T"  # TODO: check case
             case "OBJLNK":
-                resource_type += "OBJ_LINK_T"
-            case "TIME":
-                resource_type += "TIME_T"
-            case "CORE_LINK":
-                resource_type += "CORE_LINK_T"  # TODO: check case
+                resource_type += "OBJ_LINK"
+            case "CORELNK":
+                resource_type += "CORE_LINK"
             case default:
-                resource_type += "NONE"  # TODO: check case
-
+                raise Exception(f"Undefined type of the resource ({xml_type})")
+        resource_type += " },"
         return resource_type
 
     def get_map_of_resources(self, resources_list_xml):
@@ -154,7 +126,7 @@ class ObjectGenerator:
                             self.parse_operation(resource_xml[const.DATA_KEYS[const.KEY_OPERATIONS]]),
                             f"IS_SINGLE::{resource_xml[const.DATA_KEYS[const.KEY_IS_MULTIPLE]]},",
                             f"IS_MANDATORY::{resource_xml[const.DATA_KEYS[const.KEY_IS_MANDATORY]]},",
-                            f"{self.parse_resource_data_type(resource_xml[const.DATA_KEYS[const.KEY_TYPE]])} }},"]
+                            self.parse_resource_data_type(resource_xml[const.DATA_KEYS[const.KEY_TYPE]])]
 
             # wrap into "#if-directive" if the resource is not mandatory:
             if resource_xml[const.DATA_KEYS[const.KEY_IS_MANDATORY]] != "MANDATORY":

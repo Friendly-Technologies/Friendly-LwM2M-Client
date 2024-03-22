@@ -108,10 +108,10 @@ void AudioClip::resourcesCreate() {
 		{TRIGGER_5523,          ResOp(ResOp::EXECUTE),           IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::EXECUTE }, 
 		#endif                                                                                                                                                      
 		#if RES_3339_5548                                                                                                                                           
-		{LEVEL_5548,            ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::EXECUTE }, 
+		{LEVEL_5548,            ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::FLOAT }, 
 		#endif                                                                                                                                                      
 		#if RES_3339_5524                                                                                                                                           
-		{DURATION_5524,         ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::EXECUTE }, 
+		{DURATION_5524,         ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::FLOAT }, 
 		#endif                                                                                                                                                      
 		#if RES_3339_5750                                                                                                                                           
 		{APPLICATION_TYPE_5750, ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::STRING },  

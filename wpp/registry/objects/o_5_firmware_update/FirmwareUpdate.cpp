@@ -84,7 +84,7 @@ void FirmwareUpdate::setDefaultState() {
 	/* --------------- Code_cpp block 5 end --------------- */
 }
 
-void FirmwareUpdate::serverOperationNotifier(ID_T securityInstId, ResOp::TYPE type, const ResLink &resId) {
+void FirmwareUpdate::serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resId) {
 	/* --------------- Code_cpp block 6 start --------------- */
 	WPP_LOGD(TAG, "Server operation -> type: %d, resId: %d, resInstId: %d", type, resId.resId, resId.resInstId);
 	switch (type) {
@@ -92,7 +92,7 @@ void FirmwareUpdate::serverOperationNotifier(ID_T securityInstId, ResOp::TYPE ty
 	case ResOp::WRITE_REPLACE_RES: {
 		if (resId.resId == PACKAGE_0) internalDownloaderHandler();
 		#if RES_5_8
-		if (resId.resId == PACKAGE_URI_1) externalDownloaderHandler(securityInstId);
+		if (resId.resId == PACKAGE_URI_1) externalDownloaderHandler(securityInst);
 		#endif
 		break;
 	}
@@ -265,8 +265,8 @@ void FirmwareUpdate::pkgUpdaterHandler() {
 	resource(STATE_3)->get(state);
 	if (state != S_DOWNLOADED) return;
 
-	changeState(S_UPDATING);
 	_pkgUpdater->startUpdating();
+	changeState(S_UPDATING);
 
 	_updaterTaskId = WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, [this](WppClient &client, void *ctx) -> bool {
 		if (!_pkgUpdater->isUpdated()) return false;
@@ -283,7 +283,7 @@ void FirmwareUpdate::pkgUpdaterHandler() {
 		notifyServerResChanged({PKGVERSION_7,});
 		#endif
 		#if RES_3_3
-        client.registry().device().instance()->set(Device::FIRMWARE_VERSION_3, updater.pkgVersion());
+        client.registry().device().instance()->set(Device::FIRMWARE_VERSION_3, _pkgUpdater->pkgVersion());
         #endif
 
 		return true;
@@ -291,8 +291,12 @@ void FirmwareUpdate::pkgUpdaterHandler() {
 }
 
 #if RES_5_8
-void FirmwareUpdate::externalDownloaderHandler(ID_T securityInstId) {
+void FirmwareUpdate::externalDownloaderHandler(Instance *securityInst) {
 	if (!_externalDownloader) return;
+	if (!securityInst) {
+		WPP_LOGE(TAG, "Security object instance is not set");
+		return;
+	}
 
 	STRING_T pkgUri;
 	resource(PACKAGE_URI_1)->get(pkgUri);
@@ -302,10 +306,8 @@ void FirmwareUpdate::externalDownloaderHandler(ID_T securityInstId) {
 		return;
 	}
 
+	_externalDownloader->startDownloading(pkgUri, *static_cast<Lwm2mSecurity*>(securityInst));
 	changeState(S_DOWNLOADING);
-	// TODO: Should be used correct Lwm2mSecurity object
-	Lwm2mSecurity security(getContext(), OBJ_LINK_T{0, 0});
-	_externalDownloader->startDownloading(pkgUri, security);
 
 	_externalDownloaderTaskId = WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, [this](WppClient &client, void *ctx) -> bool {
 		if (!_externalDownloader->isDownloaded()) return false;
@@ -334,8 +336,8 @@ void FirmwareUpdate::internalDownloaderHandler() {
 		return;
 	} 
 	
-	changeState(S_DOWNLOADING);
 	_internalDownloader->downloadIsStarted();
+	changeState(S_DOWNLOADING);
 
 	_internalDownloaderTaskId = WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, [this](WppClient &client, void *ctx) -> bool {
 		OPAQUE_T *pkg;

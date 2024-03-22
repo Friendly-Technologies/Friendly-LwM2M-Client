@@ -93,7 +93,7 @@ protected:
 	/*
 	 * Handles information about resource operation that made server
 	 */
-	void serverOperationNotifier(ID_T securityInstId, ResOp::TYPE type, const ResLink &resId) override;
+	void serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resId) override;
 	/*
 	 * Handles information about resource operation that made user
 	 */
@@ -118,15 +118,13 @@ private:
 	/* --------------- Code_h block 4 start --------------- */
 	void pkgUpdaterHandler();
 	#if RES_5_8
-	void externalDownloaderHandler(ID_T securityInstId);
+	void externalDownloaderHandler(Instance *securityInst);
 	#endif
 	void internalDownloaderHandler();
 
 	void changeUpdRes(FwUpdRes res);
 	void changeState(FwUpdState state);
 	void resetStateMachine();
-
-	bool isPkgValid(OPAQUE_T uri);
 
 	bool isUriValid(STRING_T uri);
 	STRING_T extractSchemeFromUri(STRING_T uri);
@@ -135,8 +133,6 @@ private:
 	bool isSchemeSupported(STRING_T scheme);
 	FwUpdProtocol schemeToProtId(STRING_T scheme);
 	#endif
-
-	bool isNewStateValid(FwUpdState newState);
 
 	bool isDeliveryTypeSupported(FwUpdDelivery type);
 	/* --------------- Code_h block 4 end --------------- */

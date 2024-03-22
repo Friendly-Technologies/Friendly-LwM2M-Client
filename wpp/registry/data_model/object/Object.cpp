@@ -133,28 +133,28 @@ uint8_t Object::serverRead_clb(lwm2m_context_t * contextP, lwm2m_server_t *serve
     Object *obj = static_cast<Object *>(objectP->userData);
 	WPP_LOGD(TAG_WPP_OBJ, "wakaama read %d:%d", obj->getObjectID(), instanceId);
 	if (!obj->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
-	return obj->instance(instanceId)->readAsServer((server)? server->secObjInstID : ID_T_MAX_VAL, numDataP, dataArrayP);
+	return obj->instance(instanceId)->readAsServer(server, numDataP, dataArrayP);
 }
 
 uint8_t Object::serverWrite_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP, lwm2m_write_type_t writeType) {
 	Object *obj = static_cast<Object *>(objectP->userData);
     WPP_LOGD(TAG_WPP_OBJ, "wakaama write %d:%d", obj->getObjectID(), instanceId);
 	if (!obj->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
-	return obj->instance(instanceId)->writeAsServer((server)? server->secObjInstID : ID_T_MAX_VAL, numData, dataArray, writeType);
+	return obj->instance(instanceId)->writeAsServer(server, numData, dataArray, writeType);
 }
 
 uint8_t Object::serverExecute_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, ID_T instanceId, ID_T resId, uint8_t * buffer, int length, lwm2m_object_t * objectP) {
 	Object *obj = static_cast<Object *>(objectP->userData);
     WPP_LOGD(TAG_WPP_OBJ, "wakaama execute %d:%d", obj->getObjectID(), instanceId);
 	if (!obj->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
-	return obj->instance(instanceId)->executeAsServer((server)? server->secObjInstID : ID_T_MAX_VAL, resId, buffer, length);
+	return obj->instance(instanceId)->executeAsServer(server, resId, buffer, length);
 }
 
 uint8_t Object::serverDiscover_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP) {
 	Object *obj = static_cast<Object *>(objectP->userData);
     WPP_LOGD(TAG_WPP_OBJ, "wakaama discover %d:%d", obj->getObjectID(), instanceId);
 	if (!obj->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
-	return obj->instance(instanceId)->discoverAsServer((server)? server->secObjInstID : ID_T_MAX_VAL, numDataP, dataArrayP);
+	return obj->instance(instanceId)->discoverAsServer(server, numDataP, dataArrayP);
 }
 
 uint8_t Object::serverCreate_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP) {
@@ -194,14 +194,14 @@ uint8_t Object::serverBlockWrite_clb(lwm2m_context_t * contextP, lwm2m_server_t 
 	Object *obj = static_cast<Object *>(objectP->userData);
     WPP_LOGD(TAG_WPP_OBJ, "wakaama block write %d:%d", obj->getObjectID(), uriP->instanceId);
 	if (!obj->isInstanceExist(uriP->instanceId)) return COAP_404_NOT_FOUND;
-	return obj->instance(uriP->instanceId)->blockWriteAsServer(uriP, format, buffer, length, block_num, block_more);
+	return obj->instance(uriP->instanceId)->blockWriteAsServer(server, uriP, format, buffer, length, block_num, block_more);
 }
 
 uint8_t Object::serverBlockExecute_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, lwm2m_uri_t * uriP, uint8_t * buffer, int length, lwm2m_object_t * objectP, uint32_t block_num, uint8_t block_more) {
 	Object *obj = static_cast<Object *>(objectP->userData);
     WPP_LOGD(TAG_WPP_OBJ, "wakaama block execute %d:%d", obj->getObjectID(), uriP->instanceId);
 	if (!obj->isInstanceExist(uriP->instanceId)) return COAP_404_NOT_FOUND;
-	return obj->instance(uriP->instanceId)->blockExecuteAsServer(uriP, buffer, length, block_num, block_more);
+	return obj->instance(uriP->instanceId)->blockExecuteAsServer(server, uriP, buffer, length, block_num, block_more);
 }
 #endif
 

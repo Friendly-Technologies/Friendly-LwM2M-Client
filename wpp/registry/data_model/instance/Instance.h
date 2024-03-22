@@ -18,6 +18,8 @@
 
 namespace wpp {
 
+class WppRegistry;
+
 /**
  * @brief Instance is interface class that implements manipulation with derived class resources.
  * The main target of this class is to encapsulate operations like resource write and read by core, for avoid
@@ -127,13 +129,13 @@ public:
 	 * @param securityInst - Contains security instance ID when request retrieved
 	 * 						 from server or ID_T_MAX_VAL if request initiated by core.
 	 */
-	uint8_t readAsServer(ID_T securityInstId, int *numDataP, lwm2m_data_t **dataArray);
-	uint8_t writeAsServer(ID_T securityInstId, int numData, lwm2m_data_t *dataArray, lwm2m_write_type_t writeType);
-	uint8_t executeAsServer(ID_T securityInstId, ID_T resId, uint8_t *buffer, int length);
-	uint8_t discoverAsServer(ID_T securityInstId, int * numDataP, lwm2m_data_t **dataArray);
+	uint8_t readAsServer(lwm2m_server_t *server, int *numDataP, lwm2m_data_t **dataArray);
+	uint8_t writeAsServer(lwm2m_server_t *server, int numData, lwm2m_data_t *dataArray, lwm2m_write_type_t writeType);
+	uint8_t executeAsServer(lwm2m_server_t *server, ID_T resId, uint8_t *buffer, int length);
+	uint8_t discoverAsServer(lwm2m_server_t *server, int * numDataP, lwm2m_data_t **dataArray);
 	#ifdef LWM2M_RAW_BLOCK1_REQUESTS
-	uint8_t blockWriteAsServer(ID_T securityInstId, lwm2m_uri_t *uri, lwm2m_media_type_t format, uint8_t *buffer, int length, uint32_t blockNum, uint8_t blockMore);
-	uint8_t blockExecuteAsServer(ID_T securityInstId, lwm2m_uri_t *uri, uint8_t *buffer, int length, uint32_t blockNum, uint8_t blockMore);
+	uint8_t blockWriteAsServer(lwm2m_server_t *server, lwm2m_uri_t *uri, lwm2m_media_type_t format, uint8_t *buffer, int length, uint32_t blockNum, uint8_t blockMore);
+	uint8_t blockExecuteAsServer(lwm2m_server_t *server, lwm2m_uri_t *uri, uint8_t *buffer, int length, uint32_t blockNum, uint8_t blockMore);
 	#endif
 
 protected: /* Interface that can be used by derived class */
@@ -156,6 +158,10 @@ protected: /* Interface that can be used by derived class */
  	 * @brief Return context that can be used by derived class.
 	 */
 	lwm2m_context_t& getContext();
+	/**
+	 * @brief Helpfull methods to get registry instances. 
+	 */
+	WppRegistry& getRegistry();
 
 protected: /* Interface that must be implemented by derived class */
 	/**
@@ -170,10 +176,10 @@ protected: /* Interface that must be implemented by derived class */
 	 * resource operation performed by SERVER if the operation is  
 	 * READ/WRITE_UPD/WRITE_REPLACE_INST/WRITE_REPLACE_RES/DISCOVER, 
 	 * if the operation is EXECUTE then called before this operation.
-	 * @param securityInst - Contains security instance ID when request retrieved
-	 * 						 from server or ID_T_MAX_VAL if request initiated by core.
+	 * @param securityInst - Contains security instance when the request received
+	 * 						 from the server or NULL if the request is initiated by core.
 	 */
-	virtual void serverOperationNotifier(ID_T securityInstId, ResOp::TYPE type, const ResLink &resId) = 0;
+	virtual void serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resId) = 0;
 	/**
  	 * @brief This method must be implemented by the derived class, and handle
      * information about resource operation (READ, WRITE_UPD, DELETE).
@@ -195,6 +201,7 @@ protected: /* Interface that must be implemented by derived class */
 	#endif
 
 private: /* Interface used by Object or Instance class */
+	Instance *getSecurityInst(lwm2m_server_t *server);
 	/* ------------- Compatibility with core data structure ------------- */
 	/**
  	 * @brief This methods can be used for convert resource to lwm2m_data_t
@@ -204,9 +211,9 @@ private: /* Interface used by Object or Instance class */
 	bool lwm2mDataToResource(const lwm2m_data_t &data, Resource &res, ID_T instanceId);
 	/* ------------- Helpful methods for server callbacks ------------- */
 	Resource* getValidatedResForWrite(const lwm2m_data_t &data, lwm2m_write_type_t writeType, uint8_t &errCode);
-	uint8_t resourceWrite(ID_T securityInstId, Resource &res, const lwm2m_data_t &data, lwm2m_write_type_t writeType);
+	uint8_t resourceWrite(lwm2m_server_t *server, Resource &res, const lwm2m_data_t &data, lwm2m_write_type_t writeType);
 	Resource* getValidatedResForRead(const lwm2m_data_t &data, uint8_t &errCode);
-	uint8_t resourceRead(ID_T securityInstId, lwm2m_data_t &data, Resource &res);
+	uint8_t resourceRead(lwm2m_server_t *server, lwm2m_data_t &data, Resource &res);
 	Resource* getValidatedResForExecute(ID_T resId, uint8_t &errCode);
 	uint8_t createEmptyLwm2mDataArray(std::vector<Resource*> resources, lwm2m_data_t **dataArray, int *numData);
 

@@ -299,7 +299,6 @@ void FirmwareUpdate::externalDownloaderHandler() {
 	if (pkgUri.empty()) {
 		WPP_LOGD(TAG, "Server reset state machine through PACKAGE_URI_1");
 		resetStateMachine();
-		_externalDownloader->reset();
 		return;
 	}
 
@@ -332,7 +331,6 @@ void FirmwareUpdate::internalDownloaderHandler() {
 	if (pkg->empty()) {
 		WPP_LOGD(TAG, "Server reset state machine through PACKAGE_0");
 		resetStateMachine();
-		_internalDownloader->reset();
 		return;
 	} 
 	
@@ -371,6 +369,14 @@ void FirmwareUpdate::resetStateMachine() {
 	#endif
 	WppTaskQueue::requestToRemoveTask(_internalDownloaderTaskId);
 	_internalDownloaderTaskId = WPP_ERR_TASK_ID;
+	WppTaskQueue::requestToRemoveTask(_updaterTaskId);
+	_updaterTaskId = WPP_ERR_TASK_ID;
+	
+	if (_internalDownloader) _internalDownloader->reset();
+	#if RES_5_8
+	if (_externalDownloader) _externalDownloader->reset();
+	#endif
+	if (_pkgUpdater) _pkgUpdater->reset();
 
 	resource(PACKAGE_0)->set(OPAQUE_T());
 	notifyServerResChanged({PACKAGE_0,});

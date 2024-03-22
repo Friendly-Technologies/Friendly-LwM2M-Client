@@ -5,6 +5,8 @@ FirmwareUpdateImpl::FirmwareUpdateImpl() {}
 FirmwareUpdateImpl::~FirmwareUpdateImpl() {}
 
 void FirmwareUpdateImpl::init(Object &obj) {
+    _lastUpdateResult = FwUpdRes::R_INITIAL;
+
 	obj.actSubscribe(this);
 	FirmwareUpdate *fwInst = static_cast<FirmwareUpdate *>(obj.createInstance(0));
 
@@ -23,6 +25,7 @@ void FirmwareUpdateImpl::objectRestore(Object &object) {
 
 void FirmwareUpdateImpl::startUpdating() {
     cout << "FwUpdateImpl: startUpdating" << endl;
+    _lastUpdateResult = FwUpdRes::R_FW_UPD_SUCCESS;
 }
 
 bool FirmwareUpdateImpl::isUpdated() {
@@ -32,7 +35,7 @@ bool FirmwareUpdateImpl::isUpdated() {
 
 FwUpdRes FirmwareUpdateImpl::lastUpdateResult() {
     cout << "FwUpdateImpl: lastUpdateResult" << endl;
-    return FwUpdRes::R_FW_UPD_SUCCESS;
+    return _lastUpdateResult;
 }
 
 #if RES_5_6
@@ -48,3 +51,8 @@ STRING_T FirmwareUpdateImpl::pkgVersion() {
     return "1.0";
 }
 #endif
+
+void FirmwareUpdateImpl::reset() {
+    cout << "FwUpdateImpl: reset" << endl;
+    _lastUpdateResult = FwUpdRes::R_INITIAL;
+}

@@ -49,7 +49,7 @@ public:
      */
     virtual FwUpdRes downloadResult() = 0;
 
-    /*
+    /**
      * @brief Reset the download process.
      * When this method is called, the download process is reset and the download
      * process can be started again. This methos can not be called when the updeate

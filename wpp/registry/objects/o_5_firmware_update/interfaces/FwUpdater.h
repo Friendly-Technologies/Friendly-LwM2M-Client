@@ -51,6 +51,14 @@ public:
     #if RES_5_7
     virtual STRING_T pkgVersion() = 0;
     #endif
+
+    /**
+     * @brief Reset the update process.
+     * This methos can not be called when the updeate
+     * process is started. All the information about the previous updating process
+     * is cleared. So lastUpdateResult() should return R_INITIAL.
+     */
+    virtual void reset() = 0;
 };
 
 }

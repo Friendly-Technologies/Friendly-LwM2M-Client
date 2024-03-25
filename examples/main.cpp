@@ -94,6 +94,7 @@ int main() {
 	#ifdef OBJ_O_3339_AUDIO_CLIP
 	cout << endl << "---- Initialization wpp AudioClip ----" << endl;
 	registry.registerObj(registry.audioClip());
+	registry.audioClip().createInstance();
 	#endif
 	
 	// Giving ownership to registry

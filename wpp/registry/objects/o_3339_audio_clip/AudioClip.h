@@ -54,7 +54,7 @@ protected:
 	/*
 	 * Handles information about resource operation that made server
 	 */
-	void serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) override;
+	void serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resId) override;
 	/*
 	 * Handles information about resource operation that made user
 	 */

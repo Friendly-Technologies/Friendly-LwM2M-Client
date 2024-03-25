@@ -60,7 +60,10 @@ class ObjectXmlParser:
             for i in root[0]:
                 if i.tag == key:
                     object_data[key] = i.text
-
+	
+        # Replacing the dot characters with spac
+        object_data[const.DATA_KEYS[const.KEY_NAME]] = object_data[const.DATA_KEYS[const.KEY_NAME]].replace('.', ' ')
+	
         # convert the "is_mandatory" to bool
         if object_data[const.DATA_KEYS[const.KEY_IS_MANDATORY]] not in const.OPTIONS_MANDATORY:
             func.LOG(self.log_tag, self.set_parsed_data.__name__,

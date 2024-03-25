@@ -56,7 +56,7 @@ void Lwm2mServer::setDefaultState() {
 	/* --------------- Code_cpp block 5 end --------------- */
 }
 
-void Lwm2mServer::serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
+void Lwm2mServer::serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resId) {
 	/* --------------- Code_cpp block 6 start --------------- */
 	if (type == ResOp::WRITE_REPLACE_INST || ((type & ResOp::WRITE) && resId.resId == LIFETIME_1)) {
 		INT_T serverId;

@@ -35,12 +35,14 @@ private:
     #if RES_5_7
     STRING_T pkgVersion() override;
     #endif
+    void reset() override;
 
 private:
     #if RES_5_8
     FwUriDownloader _uriDownloader;
     #endif
-    FwAutoDownloader _autoDownloader;
+    FwAutoDownloader _internalDownloader;
+    FwUpdRes _lastUpdateResult;
 };
 
 #endif // FIRMWARE_UPDATE_H_

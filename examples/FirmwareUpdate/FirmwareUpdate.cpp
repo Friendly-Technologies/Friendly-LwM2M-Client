@@ -5,11 +5,13 @@ FirmwareUpdateImpl::FirmwareUpdateImpl() {}
 FirmwareUpdateImpl::~FirmwareUpdateImpl() {}
 
 void FirmwareUpdateImpl::init(Object &obj) {
+    _lastUpdateResult = FwUpdRes::R_INITIAL;
+
 	obj.actSubscribe(this);
 	FirmwareUpdate *fwInst = static_cast<FirmwareUpdate *>(obj.createInstance(0));
 
     fwInst->setFwUpdater(*this);
-    fwInst->setFwAutoDownloader(_autoDownloader);
+    fwInst->setFwInternalDownloader(_internalDownloader);
     #if RES_5_8
     fwInst->setFwExternalDownloader(_uriDownloader);
     #endif
@@ -23,6 +25,7 @@ void FirmwareUpdateImpl::objectRestore(Object &object) {
 
 void FirmwareUpdateImpl::startUpdating() {
     cout << "FwUpdateImpl: startUpdating" << endl;
+    _lastUpdateResult = FwUpdRes::R_FW_UPD_SUCCESS;
 }
 
 bool FirmwareUpdateImpl::isUpdated() {
@@ -32,7 +35,7 @@ bool FirmwareUpdateImpl::isUpdated() {
 
 FwUpdRes FirmwareUpdateImpl::lastUpdateResult() {
     cout << "FwUpdateImpl: lastUpdateResult" << endl;
-    return FwUpdRes::R_FW_UPD_SUCCESS;
+    return _lastUpdateResult;
 }
 
 STRING_T read_metadata(uint8_t line_num) {
@@ -69,3 +72,8 @@ STRING_T FirmwareUpdateImpl::pkgVersion() {
     return res == "default" ? "1.0.0" : res;
 }
 #endif
+
+void FirmwareUpdateImpl::reset() {
+    cout << "FwUpdateImpl: reset" << endl;
+    _lastUpdateResult = FwUpdRes::R_INITIAL;
+}

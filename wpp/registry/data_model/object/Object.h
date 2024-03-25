@@ -150,18 +150,20 @@ protected:
 	 * @brief The read callback function for the Lwm2m core.
 	 * 
 	 * @param contextP The lwm2m_context_t object.
+	 * @param server Contains valid pointer when request retrieved from server or NULL if request initiated by core.
 	 * @param instanceId The instance ID.
 	 * @param numDataP The number of data.
 	 * @param dataArrayP The data array.
 	 * @param objectP The lwm2m_object_t object.
 	 * @return The result of the read operation.
 	 */
-	static uint8_t serverRead_clb(lwm2m_context_t * contextP, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP);
+	static uint8_t serverRead_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP);
 
 	/**
 	 * @brief The write callback function for the Lwm2m core.
 	 * 
 	 * @param contextP The lwm2m_context_t object.
+	 * @param server Contains valid pointer when request retrieved from server or NULL if request initiated by core.
 	 * @param instanceId The instance ID.
 	 * @param numData The number of data.
 	 * @param dataArray The data array.
@@ -169,12 +171,13 @@ protected:
 	 * @param writeType The write type.
 	 * @return The result of the write operation.
 	 */
-	static uint8_t serverWrite_clb(lwm2m_context_t * contextP, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP, lwm2m_write_type_t writeType);
+	static uint8_t serverWrite_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP, lwm2m_write_type_t writeType);
 
 	/**
 	 * @brief The execute callback function for the Lwm2m core.
 	 * 
 	 * @param contextP The lwm2m_context_t object.
+	 * @param server Contains valid pointer when request retrieved from server or NULL if request initiated by core.
 	 * @param instanceId The instance ID.
 	 * @param resId The resource ID.
 	 * @param buffer The buffer.
@@ -182,47 +185,51 @@ protected:
 	 * @param objectP The lwm2m_object_t object.
 	 * @return The result of the execute operation.
 	 */
-	static uint8_t serverExecute_clb(lwm2m_context_t * contextP, ID_T instanceId, ID_T resId, uint8_t * buffer, int length, lwm2m_object_t * objectP);
+	static uint8_t serverExecute_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, ID_T instanceId, ID_T resId, uint8_t * buffer, int length, lwm2m_object_t * objectP);
 
 	/**
 	 * @brief The discover callback function for the Lwm2m core.
 	 * 
 	 * @param contextP The lwm2m_context_t object.
+	 * @param server Contains valid pointer when request retrieved from server or NULL if request initiated by core.
 	 * @param instanceId The instance ID.
 	 * @param numDataP The number of data.
 	 * @param dataArrayP The data array.
 	 * @param objectP The lwm2m_object_t object.
 	 * @return The result of the discover operation.
 	 */
-	static uint8_t serverDiscover_clb(lwm2m_context_t * contextP, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP);
+	static uint8_t serverDiscover_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP);
 
 	/**
 	 * @brief The create callback function for the Lwm2m core.
 	 * 
 	 * @param contextP The lwm2m_context_t object.
+	 * @param server Contains valid pointer when request retrieved from server or NULL if request initiated by core.
 	 * @param instanceId The instance ID.
 	 * @param numData The number of data.
 	 * @param dataArray The data array.
 	 * @param objectP The lwm2m_object_t object.
 	 * @return The result of the create operation.
 	 */
-	static uint8_t serverCreate_clb(lwm2m_context_t * contextP, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP);
+	static uint8_t serverCreate_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP);
 
 	/**
 	 * @brief The delete callback function for the Lwm2m core.
 	 * 
 	 * @param contextP The lwm2m_context_t object.
+	 * @param server Contains valid pointer when request retrieved from server or NULL if request initiated by core.
 	 * @param instanceId The instance ID.
 	 * @param objectP The lwm2m_object_t object.
 	 * @return The result of the delete operation.
 	 */
-	static uint8_t serverDelete_clb(lwm2m_context_t * contextP, ID_T instanceId, lwm2m_object_t * objectP);
+	static uint8_t serverDelete_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, ID_T instanceId, lwm2m_object_t * objectP);
 
 #ifdef LWM2M_RAW_BLOCK1_REQUESTS
 	/**
 	 * @brief The block create callback function for the Lwm2m core.
 	 * 
 	 * @param contextP The lwm2m_context_t object.
+	 * @param server Contains valid pointer when request retrieved from server or NULL if request initiated by core.
 	 * @param uriP The lwm2m_uri_t object.
 	 * @param format The media type format.
 	 * @param buffer The buffer.
@@ -232,12 +239,13 @@ protected:
 	 * @param block_more The block more flag.
 	 * @return The result of the block create operation.
 	 */
-	static uint8_t serverBlockCreate_clb(lwm2m_context_t * contextP, lwm2m_uri_t * uriP, lwm2m_media_type_t format, uint8_t * buffer, int length, lwm2m_object_t * objectP, uint32_t block_num, uint8_t block_more);
+	static uint8_t serverBlockCreate_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, lwm2m_uri_t * uriP, lwm2m_media_type_t format, uint8_t * buffer, int length, lwm2m_object_t * objectP, uint32_t block_num, uint8_t block_more);
 
 	/**
 	 * @brief The block write callback function for the Lwm2m core.
 	 * 
 	 * @param contextP The lwm2m_context_t object.
+	 * @param server Contains valid pointer when request retrieved from server or NULL if request initiated by core.
 	 * @param uriP The lwm2m_uri_t object.
 	 * @param format The media type format.
 	 * @param buffer The buffer.
@@ -247,12 +255,13 @@ protected:
 	 * @param block_more The block more flag.
 	 * @return The result of the block write operation.
 	 */
-	static uint8_t serverBlockWrite_clb(lwm2m_context_t * contextP, lwm2m_uri_t * uriP, lwm2m_media_type_t format, uint8_t * buffer, int length, lwm2m_object_t * objectP, uint32_t block_num, uint8_t block_more);
+	static uint8_t serverBlockWrite_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, lwm2m_uri_t * uriP, lwm2m_media_type_t format, uint8_t * buffer, int length, lwm2m_object_t * objectP, uint32_t block_num, uint8_t block_more);
 
 	/**
 	 * @brief The block execute callback function for the Lwm2m core.
 	 * 
 	 * @param contextP The lwm2m_context_t object.
+	 * @param server Contains valid pointer when request retrieved from server or NULL if request initiated by core.
 	 * @param uriP The lwm2m_uri_t object.
 	 * @param buffer The buffer.
 	 * @param length The length.
@@ -261,7 +270,7 @@ protected:
 	 * @param block_more The block more flag.
 	 * @return The result of the block execute operation.
 	 */
-	static uint8_t serverBlockExecute_clb(lwm2m_context_t * contextP, lwm2m_uri_t * uriP, uint8_t * buffer, int length, lwm2m_object_t * objectP, uint32_t block_num, uint8_t block_more);
+	static uint8_t serverBlockExecute_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, lwm2m_uri_t * uriP, uint8_t * buffer, int length, lwm2m_object_t * objectP, uint32_t block_num, uint8_t block_more);
 #endif
 
 protected:

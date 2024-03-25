@@ -10,10 +10,6 @@
 using namespace wpp;
 using namespace std;
 
-// TODO: Find other way to share credentials with the COAP downloader
-const char psk_id[] = "SINAI_TEST_DEV_ID_VS";
-const uint8_t psk_key[] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0x99, 0x88, 0x77, 0x66, 0x55, 0x44};
-
 class FwUriDownloader : public FwExternalDl {
 public:
     std::vector<FwUpdProtocol> supportedProtocols() override {
@@ -35,8 +31,10 @@ public:
         } else if (isCoapScheme(uri)) {
             _coapDownloader.startDownloading(uri, downloadedClb);
         } else if (isCoapsScheme(uri)) {
-            // TODO use Lwm2mSecurity to get the credentials
-            _coapDownloader.startDownloading(uri, string(psk_id), vector<uint8_t>(psk_key, psk_key + sizeof(psk_key)), downloadedClb);
+            OPAQUE_T psk_id, psk_key;
+            security.get(Lwm2mSecurity::PUBLIC_KEY_OR_IDENTITY_3, psk_id);
+            security.get(Lwm2mSecurity::SECRET_KEY_5, psk_key);
+            _coapDownloader.startDownloading(uri, string(psk_id.begin(), psk_id.end()), psk_key, downloadedClb);
         }
     }
 

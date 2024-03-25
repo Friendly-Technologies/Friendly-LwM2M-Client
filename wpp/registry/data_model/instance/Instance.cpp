@@ -7,6 +7,7 @@
 
 #include "Instance.h"
 #include "WppLogs.h"
+#include "WppClient.h"
 
 #define IS_PTR_VALID_AND_RES_EXISTS(resPtr) (resPtr && !resPtr->isEmpty())
 #define IS_ITER_VALID_AND_RES_EXISTS(iter) (iter != _resources.end() && !iter->isEmpty())
@@ -70,11 +71,20 @@ lwm2m_context_t& Instance::getContext() {
 	return _context; 
 }
 
+WppRegistry& Instance::getRegistry() {
+	return static_cast<wpp::WppClient *>(getContext().userData)->registry();
+}
+
 #ifdef LWM2M_RAW_BLOCK1_REQUESTS
 void Instance::serverBlockOperationNotifier(ResOp::TYPE type, const ResLink &resId, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock) {
 	WPP_LOGI(TAG_WPP_INST, "Block operation notifier not implemented for: %d:%d:%d, operation type: %d", _id.objId, resId.resId, resId.resInstId, type);
 }
 #endif
+
+Instance* Instance::getSecurityInst(lwm2m_server_t *server) {
+	if (!server) return NULL;
+	return getRegistry().object(OBJ_ID::LWM2M_SECURITY)->instance(server->secObjInstID);
+}
 
 bool Instance::resourceToLwm2mData(Resource &res, ID_T instanceId, lwm2m_data_t &data) {
 	switch(res.getTypeId()) {
@@ -217,7 +227,7 @@ Resource* Instance::getValidatedResForWrite(const lwm2m_data_t &data, lwm2m_writ
 	return &(*res);
 }
 
-uint8_t Instance::resourceWrite(Resource &res, const lwm2m_data_t &data, lwm2m_write_type_t writeType) {
+uint8_t Instance::resourceWrite(lwm2m_server_t *server, Resource &res, const lwm2m_data_t &data, lwm2m_write_type_t writeType) {
 	bool isReplace = (writeType == LWM2M_WRITE_REPLACE_INSTANCE || writeType == LWM2M_WRITE_REPLACE_RESOURCES);
 	Resource resBackup;
 
@@ -246,10 +256,10 @@ uint8_t Instance::resourceWrite(Resource &res, const lwm2m_data_t &data, lwm2m_w
 			return COAP_400_BAD_REQUEST;
 		}
 		// Notify implementation about update operation
-		if (writeType == LWM2M_WRITE_PARTIAL_UPDATE) serverOperationNotifier(ResOp::WRITE_UPD, {res.getId(), (res.isSingle()? ID_T_MAX_VAL : resInstId)});
+		if (writeType == LWM2M_WRITE_PARTIAL_UPDATE) serverOperationNotifier(getSecurityInst(server), ResOp::WRITE_UPD, {res.getId(), (res.isSingle()? ID_T_MAX_VAL : resInstId)});
 	}
 	// Notify implementation about replace resource operation
-	if (writeType == LWM2M_WRITE_REPLACE_RESOURCES) serverOperationNotifier(ResOp::WRITE_REPLACE_RES, {res.getId(), ID_T_MAX_VAL});
+	if (writeType == LWM2M_WRITE_REPLACE_RESOURCES) serverOperationNotifier(getSecurityInst(server), ResOp::WRITE_REPLACE_RES, {res.getId(), ID_T_MAX_VAL});
 
 	return COAP_NO_ERROR;
 }
@@ -287,7 +297,7 @@ Resource* Instance::getValidatedResForRead(const lwm2m_data_t &data, uint8_t &er
 	return &(*res);
 }
 
-uint8_t Instance::resourceRead(lwm2m_data_t &data, Resource &res) {
+uint8_t Instance::resourceRead(lwm2m_server_t *server, lwm2m_data_t &data, Resource &res) {
 	// if has been received data for multiple resource with not allocated memory
 	// then we ourselves allocate memory for instances
 	if (res.isMultiple() && data.type != LWM2M_TYPE_MULTIPLE_RESOURCE) {
@@ -313,7 +323,7 @@ uint8_t Instance::resourceRead(lwm2m_data_t &data, Resource &res) {
 			return COAP_400_BAD_REQUEST;
 		}
 		// Notify implementation about read resource operation
-		serverOperationNotifier(ResOp::READ, {res.getId(), (res.isSingle()? ID_T_MAX_VAL : resInstId)});
+		serverOperationNotifier(getSecurityInst(server), ResOp::READ, {res.getId(), (res.isSingle()? ID_T_MAX_VAL : resInstId)});
 	}
 
 	return COAP_NO_ERROR;
@@ -347,7 +357,7 @@ uint8_t Instance::createEmptyLwm2mDataArray(std::vector<Resource*> resources, lw
 	return COAP_NO_ERROR;
 }
 
-uint8_t Instance::readAsServer(int *numData, lwm2m_data_t **dataArray) {
+uint8_t Instance::readAsServer(lwm2m_server_t *server, int *numData, lwm2m_data_t **dataArray) {
 	// TODO: Read-Composite Operation for now not supported
 	if (numData == NULL || dataArray == NULL) return COAP_500_INTERNAL_SERVER_ERROR;
 
@@ -382,7 +392,7 @@ uint8_t Instance::readAsServer(int *numData, lwm2m_data_t **dataArray) {
 			else return errCode;
 		}
 		
-		errCode = resourceRead(*data, *res);
+		errCode = resourceRead(server, *data, *res);
 		if (errCode != COAP_NO_ERROR) {
 			WPP_LOGE(TAG_WPP_INST, "Resource %d:%d:%d read error: %d", _id.objId, _id.objInstId, data->id, errCode);
 			return errCode;
@@ -392,7 +402,7 @@ uint8_t Instance::readAsServer(int *numData, lwm2m_data_t **dataArray) {
 	return COAP_205_CONTENT;
 }
 
-uint8_t Instance::writeAsServer(int numData, lwm2m_data_t *dataArray, lwm2m_write_type_t writeType) {
+uint8_t Instance::writeAsServer(lwm2m_server_t *server, int numData, lwm2m_data_t *dataArray, lwm2m_write_type_t writeType) {
 	// TODO: Write-Composite Operation for now not supported
 	if (!numData) return COAP_204_CHANGED;
 	if (dataArray == NULL) return COAP_500_INTERNAL_SERVER_ERROR;
@@ -424,19 +434,19 @@ uint8_t Instance::writeAsServer(int numData, lwm2m_data_t *dataArray, lwm2m_writ
 			else return errCode;
 		}
 
-		errCode = resourceWrite(*res, dataArray[i], writeType);
+		errCode = resourceWrite(server, *res, dataArray[i], writeType);
 		if (errCode != COAP_NO_ERROR) {
 			WPP_LOGE(TAG_WPP_INST, "Resource %d:%d:%d write error: %d", _id.objId, _id.objInstId, dataArray[i].id, errCode);
 			return errCode;
 		}
 	}
 	// Notify implementation about replace instance operation
-	if (isReplaceInstance) serverOperationNotifier(ResOp::WRITE_REPLACE_INST, {ID_T_MAX_VAL, ID_T_MAX_VAL});
+	if (isReplaceInstance) serverOperationNotifier(getSecurityInst(server), ResOp::WRITE_REPLACE_INST, {ID_T_MAX_VAL, ID_T_MAX_VAL});
 
 	return COAP_204_CHANGED;
 }
 
-uint8_t Instance::executeAsServer(ID_T resId, uint8_t * buffer, int length) {
+uint8_t Instance::executeAsServer(lwm2m_server_t *server, ID_T resId, uint8_t * buffer, int length) {
 	WPP_LOGD(TAG_WPP_INST, "Execute %d:%d:%d, buffer length: %d", _id.objId, _id.objInstId, resId, length);
 	uint8_t errCode = COAP_NO_ERROR;
 	Resource *res = getValidatedResForExecute(resId, errCode);
@@ -452,13 +462,13 @@ uint8_t Instance::executeAsServer(ID_T resId, uint8_t * buffer, int length) {
 	}
 
 	// Notify implementation about execute resource operation
-	serverOperationNotifier(ResOp::EXECUTE, {res->getId(), ID_T_MAX_VAL});
+	serverOperationNotifier(getSecurityInst(server), ResOp::EXECUTE, {res->getId(), ID_T_MAX_VAL});
 
 	WPP_LOGD(TAG_WPP_INST, "Resource execute: %d:%d:%d, buffer length: %d", _id.objId, _id.objInstId, resId, length);
 	return execute(*this, resId, OPAQUE_T(buffer, buffer + length))? COAP_204_CHANGED : COAP_405_METHOD_NOT_ALLOWED;
 }
 
-uint8_t Instance::discoverAsServer(int * numData, lwm2m_data_t ** dataArray) {
+uint8_t Instance::discoverAsServer(lwm2m_server_t *server, int * numData, lwm2m_data_t ** dataArray) {
 	if (numData == NULL || dataArray == NULL) return COAP_500_INTERNAL_SERVER_ERROR;
 	
 	bool discoverAllAvailableRes = *numData == 0;
@@ -489,20 +499,20 @@ uint8_t Instance::discoverAsServer(int * numData, lwm2m_data_t ** dataArray) {
 				(dataCnt++)->id = id;
 				WPP_LOGD(TAG_WPP_INST, "Resource instance discover: %d:%d:%d:%d", _id.objId, _id.objInstId, data->id, id);
 				// Notify implementation about discover resource instance operation
-				serverOperationNotifier(ResOp::DISCOVER, {res->getId(), id});
+				serverOperationNotifier(getSecurityInst(server), ResOp::DISCOVER, {res->getId(), id});
 			}
 			lwm2m_data_encode_instances(subData, res->instanceCnt(), data);
 		} else {
 			WPP_LOGD(TAG_WPP_INST, "Resource discover: %d:%d:%d", _id.objId, _id.objInstId, data->id);
 			// Notify implementation about discover resource operation
-			serverOperationNotifier(ResOp::DISCOVER, {res->getId(), ID_T_MAX_VAL});
+			serverOperationNotifier(getSecurityInst(server), ResOp::DISCOVER, {res->getId(), ID_T_MAX_VAL});
 		}
 	}
 	return COAP_205_CONTENT;
 }
 
 #ifdef LWM2M_RAW_BLOCK1_REQUESTS
-uint8_t Instance::blockWriteAsServer(lwm2m_uri_t * uri, lwm2m_media_type_t format, uint8_t * buffer, int length, uint32_t blockNum, uint8_t blockMore) {
+uint8_t Instance::blockWriteAsServer(lwm2m_server_t *server, lwm2m_uri_t * uri, lwm2m_media_type_t format, uint8_t * buffer, int length, uint32_t blockNum, uint8_t blockMore) {
 	if (uri == NULL) return COAP_500_INTERNAL_SERVER_ERROR;
 
 	WPP_LOGD(TAG_WPP_INST, "Block write parameters: %d:%d:%d:%d, format: %d, len: %d, block number: %d, blockMore %d",
@@ -546,7 +556,7 @@ uint8_t Instance::blockWriteAsServer(lwm2m_uri_t * uri, lwm2m_media_type_t forma
 	return blockMore? COAP_231_CONTINUE : COAP_204_CHANGED;
 }
 
-uint8_t Instance::blockExecuteAsServer(lwm2m_uri_t * uri, uint8_t * buffer, int length, uint32_t blockNum, uint8_t blockMore) {
+uint8_t Instance::blockExecuteAsServer(lwm2m_server_t *server, lwm2m_uri_t * uri, uint8_t * buffer, int length, uint32_t blockNum, uint8_t blockMore) {
 	if (uri == NULL) return COAP_500_INTERNAL_SERVER_ERROR;
 	
 	WPP_LOGD(TAG_WPP_INST, "Block execute parameters: %d:%d:%d, len: %d, block number: %d, blockMoreL %d", uri->objectId, uri->instanceId, uri->resourceId, length, blockNum, blockMore);

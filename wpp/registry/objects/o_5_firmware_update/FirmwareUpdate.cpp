@@ -32,12 +32,12 @@ FirmwareUpdate::FirmwareUpdate(lwm2m_context_t &context, const OBJ_LINK_T &id): 
 
 	/* --------------- Code_cpp block 1 start --------------- */
 	_pkgUpdater = NULL;
-	_autoDownloader = NULL;
+	_internalDownloader = NULL;
 	#if RES_5_8
 	_externalDownloader = NULL;
 	_externalDownloaderTaskId = WPP_ERR_TASK_ID;
 	#endif
-	_autoDownloaderTaskId = WPP_ERR_TASK_ID;
+	_internalDownloaderTaskId = WPP_ERR_TASK_ID;
 	_updaterTaskId = WPP_ERR_TASK_ID;
 	/* --------------- Code_cpp block 1 end --------------- */
 
@@ -53,7 +53,7 @@ FirmwareUpdate::~FirmwareUpdate() {
 	#if RES_5_8
 	WppTaskQueue::requestToRemoveTask(_externalDownloaderTaskId);
 	#endif
-	WppTaskQueue::requestToRemoveTask(_autoDownloaderTaskId);
+	WppTaskQueue::requestToRemoveTask(_internalDownloaderTaskId);
 	WppTaskQueue::requestToRemoveTask(_updaterTaskId);
 	/* --------------- Code_cpp block 3 end --------------- */
 }
@@ -64,14 +64,14 @@ void FirmwareUpdate::setDefaultState() {
 	#if RES_5_8
 	_externalDownloader = NULL;
 	#endif
-	_autoDownloader = NULL;
+	_internalDownloader = NULL;
 	
 	#if RES_5_8
 	WppTaskQueue::requestToRemoveTask(_externalDownloaderTaskId);
 	_externalDownloaderTaskId = WPP_ERR_TASK_ID;
 	#endif
-	WppTaskQueue::requestToRemoveTask(_autoDownloaderTaskId);
-	_autoDownloaderTaskId = WPP_ERR_TASK_ID;
+	WppTaskQueue::requestToRemoveTask(_internalDownloaderTaskId);
+	_internalDownloaderTaskId = WPP_ERR_TASK_ID;
 	WppTaskQueue::requestToRemoveTask(_updaterTaskId);
 	_updaterTaskId = WPP_ERR_TASK_ID;
 	/* --------------- Code_cpp block 4 end --------------- */
@@ -84,15 +84,15 @@ void FirmwareUpdate::setDefaultState() {
 	/* --------------- Code_cpp block 5 end --------------- */
 }
 
-void FirmwareUpdate::serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
+void FirmwareUpdate::serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resId) {
 	/* --------------- Code_cpp block 6 start --------------- */
 	WPP_LOGD(TAG, "Server operation -> type: %d, resId: %d, resInstId: %d", type, resId.resId, resId.resInstId);
 	switch (type) {
 	case ResOp::WRITE_UPD:
 	case ResOp::WRITE_REPLACE_RES: {
-		if (resId.resId == PACKAGE_0) autoDownloaderHandler();
+		if (resId.resId == PACKAGE_0) internalDownloaderHandler();
 		#if RES_5_8
-		if (resId.resId == PACKAGE_URI_1) externalDownloaderHandler();
+		if (resId.resId == PACKAGE_URI_1) externalDownloaderHandler(securityInst);
 		#endif
 		break;
 	}
@@ -221,7 +221,7 @@ bool FirmwareUpdate::setFwExternalDownloader(FwExternalDl &downloader) {
 	}
 
 	// Setup delivery type
-	if (_autoDownloader) resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set(INT_T(BOTH));
+	if (_internalDownloader) resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set(INT_T(BOTH));
 	else resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set(INT_T(PULL));
 	notifyServerResChanged({FIRMWARE_UPDATE_DELIVERY_METHOD_9,});
 
@@ -238,13 +238,13 @@ bool FirmwareUpdate::setFwExternalDownloader(FwExternalDl &downloader) {
 }
 #endif
 
-bool FirmwareUpdate::setFwAutoDownloader(FwAutoDl &downloader) {
+bool FirmwareUpdate::setFwInternalDownloader(FwInternalDl &downloader) {
 	// TODO: Update the implementation of this method after creating an
 	// interface for downloading firmware via uri using the wpp library.
-	// Currently, FwAutoDl only supports loading through the PACKAGE_0 resource.
+	// Currently, FwInternalDl only supports loading through the PACKAGE_0 resource.
 	resetStateMachine();
 
-	_autoDownloader = &downloader;
+	_internalDownloader = &downloader;
 	
 	// Setup delivery type
 	#if RES_5_8
@@ -265,8 +265,8 @@ void FirmwareUpdate::pkgUpdaterHandler() {
 	resource(STATE_3)->get(state);
 	if (state != S_DOWNLOADED) return;
 
-	changeState(S_UPDATING);
 	_pkgUpdater->startUpdating();
+	changeState(S_UPDATING);
 
 	_updaterTaskId = WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, [this](WppClient &client, void *ctx) -> bool {
 		if (!_pkgUpdater->isUpdated()) return false;
@@ -283,7 +283,7 @@ void FirmwareUpdate::pkgUpdaterHandler() {
 		notifyServerResChanged({PKGVERSION_7,});
 		#endif
 		#if RES_3_3
-        client.registry().device().instance()->set(Device::FIRMWARE_VERSION_3, updater.pkgVersion());
+        client.registry().device().instance()->set(Device::FIRMWARE_VERSION_3, _pkgUpdater->pkgVersion());
         #endif
 
 		return true;
@@ -291,22 +291,23 @@ void FirmwareUpdate::pkgUpdaterHandler() {
 }
 
 #if RES_5_8
-void FirmwareUpdate::externalDownloaderHandler() {
+void FirmwareUpdate::externalDownloaderHandler(Instance *securityInst) {
 	if (!_externalDownloader) return;
+	if (!securityInst) {
+		WPP_LOGE(TAG, "Security object instance is not set");
+		return;
+	}
 
 	STRING_T pkgUri;
 	resource(PACKAGE_URI_1)->get(pkgUri);
 	if (pkgUri.empty()) {
 		WPP_LOGD(TAG, "Server reset state machine through PACKAGE_URI_1");
 		resetStateMachine();
-		_externalDownloader->reset();
 		return;
 	}
 
+	_externalDownloader->startDownloading(pkgUri, *static_cast<Lwm2mSecurity*>(securityInst));
 	changeState(S_DOWNLOADING);
-	// TODO: Should be used correct Lwm2mSecurity object
-	Lwm2mSecurity security(getContext(), OBJ_LINK_T{0, 0});
-	_externalDownloader->startDownloading(pkgUri, security);
 
 	_externalDownloaderTaskId = WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, [this](WppClient &client, void *ctx) -> bool {
 		if (!_externalDownloader->isDownloaded()) return false;
@@ -321,34 +322,33 @@ void FirmwareUpdate::externalDownloaderHandler() {
 }
 #endif
 
-void FirmwareUpdate::autoDownloaderHandler() {
+void FirmwareUpdate::internalDownloaderHandler() {
 	// TODO: Update the implementation of this method after creating an
 	// interface for downloading firmware via uri using the wpp library.
-	// Currently, FwAutoDl only supports loading through the PACKAGE_0 resource.
-	if (!_autoDownloader) return;
+	// Currently, FwInternalDl only supports loading through the PACKAGE_0 resource.
+	if (!_internalDownloader) return;
 
 	OPAQUE_T *pkg;
 	resource(PACKAGE_0)->ptr(&pkg);	
 	if (pkg->empty()) {
 		WPP_LOGD(TAG, "Server reset state machine through PACKAGE_0");
 		resetStateMachine();
-		_autoDownloader->reset();
 		return;
 	} 
 	
+	_internalDownloader->downloadIsStarted();
 	changeState(S_DOWNLOADING);
-	_autoDownloader->downloadIsStarted();
 
-	_autoDownloaderTaskId = WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, [this](WppClient &client, void *ctx) -> bool {
+	_internalDownloaderTaskId = WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, [this](WppClient &client, void *ctx) -> bool {
 		OPAQUE_T *pkg;
 		resource(PACKAGE_0)->ptr(&pkg);	
 
-		_autoDownloader->saveDownloadedBlock(*pkg);
-		_autoDownloader->downloadIsCompleted();
-		if (_autoDownloader->downloadResult() != R_INITIAL) changeState(S_IDLE);
+		_internalDownloader->saveDownloadedBlock(*pkg);
+		_internalDownloader->downloadIsCompleted();
+		if (_internalDownloader->downloadResult() != R_INITIAL) changeState(S_IDLE);
 		else changeState(S_DOWNLOADED);
 
-		changeUpdRes(_autoDownloader->downloadResult());
+		changeUpdRes(_internalDownloader->downloadResult());
 
 		return true;
 	});
@@ -369,8 +369,16 @@ void FirmwareUpdate::resetStateMachine() {
 	WppTaskQueue::requestToRemoveTask(_externalDownloaderTaskId);
 	_externalDownloaderTaskId = WPP_ERR_TASK_ID;
 	#endif
-	WppTaskQueue::requestToRemoveTask(_autoDownloaderTaskId);
-	_autoDownloaderTaskId = WPP_ERR_TASK_ID;
+	WppTaskQueue::requestToRemoveTask(_internalDownloaderTaskId);
+	_internalDownloaderTaskId = WPP_ERR_TASK_ID;
+	WppTaskQueue::requestToRemoveTask(_updaterTaskId);
+	_updaterTaskId = WPP_ERR_TASK_ID;
+	
+	if (_internalDownloader) _internalDownloader->reset();
+	#if RES_5_8
+	if (_externalDownloader) _externalDownloader->reset();
+	#endif
+	if (_pkgUpdater) _pkgUpdater->reset();
 
 	resource(PACKAGE_0)->set(OPAQUE_T());
 	notifyServerResChanged({PACKAGE_0,});

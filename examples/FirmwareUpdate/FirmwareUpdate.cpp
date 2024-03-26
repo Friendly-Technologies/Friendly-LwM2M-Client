@@ -40,7 +40,7 @@ FwUpdRes FirmwareUpdateImpl::lastUpdateResult() {
 
 #if RES_5_6
 STRING_T FirmwareUpdateImpl::pkgName() {
-    string res = read_metadata(2);
+    string res = FwAutoDownloader::read_metadata(2);
     cout << "FwUpdateImpl: pkgName: " << res << endl;
     return res == "default" ? "current_fw" : res;
 }
@@ -48,7 +48,7 @@ STRING_T FirmwareUpdateImpl::pkgName() {
 
 #if RES_5_7
 STRING_T FirmwareUpdateImpl::pkgVersion() {
-    string res = read_metadata(3);
+    string res = FwAutoDownloader::read_metadata(3);
     cout << "FwUpdateImpl: pkgVersion: " << res << endl;
     return res == "default" ? "1.0.0" : res;
 }

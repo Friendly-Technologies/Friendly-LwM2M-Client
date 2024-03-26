@@ -38,25 +38,6 @@ FwUpdRes FirmwareUpdateImpl::lastUpdateResult() {
     return _lastUpdateResult;
 }
 
-STRING_T read_metadata(uint8_t line_num) {
-    ifstream is;
-    string str = "default";
-   
-    cout << "FwUpdateImpl: read_metadata" << endl;
-
-    is.open("test_http.fw", ios::binary);
-    if (is.is_open()) {
-        // if file can't be opened it means it's not exists. Will return "default"
-        for (uint8_t i = 0; i < line_num; i++) {
-            getline(is, str);
-            // TODO: split by ":=" str
-        }
-    }
-    is.close();
-
-    return str;
-}
-
 #if RES_5_6
 STRING_T FirmwareUpdateImpl::pkgName() {
     string res = read_metadata(2);

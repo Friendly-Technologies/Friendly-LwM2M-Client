@@ -71,6 +71,25 @@ private:
         return uri.find("coaps://") == 0;
     }
 
+    STRING_T read_metadata(uint8_t line_num) {
+        ifstream is;
+        string str = "default";
+    
+        cout << "FwUpdateImpl: read_metadata" << endl;
+
+        is.open("test_http.fw", ios::binary);
+        if (is.is_open()) {
+            // if file can't be opened it means it's not exists. Will return "default"
+            for (uint8_t i = 0; i < line_num; i++) {
+                getline(is, str);
+                // TODO: split by ":=" str
+            }
+        }
+        is.close();
+
+        return str;
+    }
+
 private:
     bool _isDownloaded = false;
     FwUpdRes _downloadResult = R_INITIAL;

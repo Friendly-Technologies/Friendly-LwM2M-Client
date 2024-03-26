@@ -45,13 +45,27 @@ public:
 
     FwUpdRes downloadResult() override {
         cout << "FwUriDownloader::downloadResult " << _downloadResult << endl;
-        return _downloadResult;
+        if (!check_integrity(true)) return R_INTEGRITY_CHECK_FAIL;
+        if (!check_package_type()) return R_UNSUPPORTED_PKG_TYPE;
+        return R_INITIAL;
     }
 
     void reset() override {
         cout << "FwUriDownloader::reset" << endl;
         _isDownloaded = false;
         _downloadResult = R_INITIAL;
+    }
+
+    bool check_integrity(bool valid_checksum) {
+        // TODO: use the checksum algorithm suits you to check the downloaded firmware.
+        // Now here used the @param valid_checksum to control the returned value.
+        return valid_checksum;
+    }
+
+    bool check_package_type() {
+        string res = read_metadata(1);
+        cout << "FwUpdateImpl: pkgType: " << res << endl;
+        return "/package_type:=1" == res;
     }
 
 private:

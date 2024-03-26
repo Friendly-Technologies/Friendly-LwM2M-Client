@@ -62,7 +62,7 @@ public:
                     cout << "curl_easy_init() failed" << endl;
                 }
                 
-                cout << "Downloading is compleated" << endl;
+                cout << "Downloading is completed" << endl;
                 downloadedClb("test_http.fw");
                 _job.downloading = false;
             }

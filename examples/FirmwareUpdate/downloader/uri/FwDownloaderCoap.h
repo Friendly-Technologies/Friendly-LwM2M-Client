@@ -162,7 +162,7 @@ public:
                 coap_cleanup();
                 coap_delete_optlist(optlist);
                 
-                cout << "Downloading is compleated" << endl;
+                cout << "Downloading is completed" << endl;
                 downloadedClb("test_coap.fw");
                 _job.downloading = false;
             }

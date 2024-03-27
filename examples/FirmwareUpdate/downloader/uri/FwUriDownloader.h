@@ -45,6 +45,7 @@ public:
 
     FwUpdRes downloadResult() override {
         cout << "FwUriDownloader::downloadResult " << _downloadResult << endl;
+        if (_downloadResult == R_NOT_ENOUGH_FLASH) return R_NOT_ENOUGH_FLASH;
         if (!check_integrity(true)) return R_INTEGRITY_CHECK_FAIL;
         if (!check_package_type()) return R_UNSUPPORTED_PKG_TYPE;
         return R_INITIAL;
@@ -54,6 +55,10 @@ public:
         cout << "FwUriDownloader::reset" << endl;
         _isDownloaded = false;
         _downloadResult = R_INITIAL;
+    }
+
+    bool outOfRamImitation(bool isRamEnough) {
+        return isRamEnough;
     }
 
     bool check_integrity(bool valid_checksum) {

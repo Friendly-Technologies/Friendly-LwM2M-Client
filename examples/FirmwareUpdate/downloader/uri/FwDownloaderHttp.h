@@ -13,7 +13,7 @@ using namespace std;
 class FwDownloaderHttp {
     struct DownloadJob {
         string url = "";
-        function<void(string)> downloadedClb;
+        function<void(string, wpp::FwUpdRes)> downloadedClb;
         bool downloading = false;
     };
 
@@ -28,7 +28,7 @@ public:
 
                 this->_jobGuard.lock();
                 string url = this->_job.url;
-                function<void(string)> downloadedClb = this->_job.downloadedClb;
+                function<void(string, wpp::FwUpdRes)> downloadedClb = this->_job.downloadedClb;
                 this->_jobGuard.unlock();
                 string file = "test_http.fw";
                 cout << "Start downloading from url: " << url << endl;
@@ -36,6 +36,7 @@ public:
                 CURL *curl;
                 FILE *fp;
                 CURLcode res;
+                wpp::FwUpdRes fwUpdRes = wpp::R_INITIAL;
 
                 curl = curl_easy_init();
                 if (curl) {
@@ -63,7 +64,7 @@ public:
                 }
                 
                 cout << "Downloading is completed" << endl;
-                downloadedClb("test_http.fw");
+                downloadedClb("test_http.fw", fwUpdRes);
                 _job.downloading = false;
             }
             cout << "Downloading thread is terminated" << endl;
@@ -81,7 +82,7 @@ public:
         }
     }
 
-	void startDownloading(string url, function<void(string)> downloadedClb) {
+	void startDownloading(string url, function<void(string, wpp::FwUpdRes)> downloadedClb) {
         // TODO befor starting download check if not already downloading
         _jobGuard.lock();
         _job = {url, downloadedClb, true};

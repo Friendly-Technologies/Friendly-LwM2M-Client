@@ -20,10 +20,10 @@ public:
     void startDownloading(const STRING_T &uri, Lwm2mSecurity &security) override {
         cout << "FwUriDownloader::startDownloading, uri: " << uri << endl;
 
-        auto downloadedClb = [this](string file) { 
+        auto downloadedClb = [this](string file, wpp::FwUpdRes fwUpdRes) { 
             cout << "FwUriDownloader FW is downloaded to file: " << file << endl;
             _isDownloaded = true;
-            _downloadResult = R_INITIAL;
+            _downloadResult = fwUpdRes;
         };
 
         if (isHttpScheme(uri) || isHttpsScheme(uri)) {

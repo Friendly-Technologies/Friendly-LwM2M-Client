@@ -15,7 +15,7 @@ class FwDownloaderCoap {
         string url = "";
         std::string psk_id = "";
         std::vector<uint8_t> psk_key;
-        function<void(string)> downloadedClb;
+        function<void(string, wpp::FwUpdRes)> downloadedClb;
         bool downloading = false;
     };
 
@@ -32,7 +32,8 @@ public:
                 string url = this->_job.url;
                 std::string pskId = this->_job.psk_id;
                 std::vector<uint8_t> pskKey = this->_job.psk_key;
-                function<void(string)> downloadedClb = this->_job.downloadedClb;
+                function<void(string, wpp::FwUpdRes fwUpdRes)> downloadedClb = this->_job.downloadedClb;
+                wpp::FwUpdRes fwUpdRes = wpp::R_INITIAL;
                 this->_jobGuard.unlock();
                 cout << "Start downloading from url: " << url << endl;
                 
@@ -163,7 +164,7 @@ public:
                 coap_delete_optlist(optlist);
                 
                 cout << "Downloading is completed" << endl;
-                downloadedClb("test_coap.fw");
+                downloadedClb("test_coap.fw", fwUpdRes);
                 _job.downloading = false;
             }
             cout << "Downloading thread is terminated" << endl;
@@ -181,14 +182,14 @@ public:
         }
     }
 
-	void startDownloading(string url, function<void(string)> downloadedClb) {
+	void startDownloading(string url, function<void(string, wpp::FwUpdRes)> downloadedClb) {
         // TODO befor starting download check if not already downloading
         _jobGuard.lock();
         _job = {url, "", {}, downloadedClb, true};
         _jobGuard.unlock();
     }
 
-    void startDownloading(string url, std::string pskId, std::vector<uint8_t> pskKey, function<void(string)> downloadedClb) {
+    void startDownloading(string url, std::string pskId, std::vector<uint8_t> pskKey, function<void(string, wpp::FwUpdRes)> downloadedClb) {
         // TODO befor starting download check if not already downloading
         _jobGuard.lock();
         _job = {url, pskId, pskKey, downloadedClb, true};

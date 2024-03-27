@@ -423,7 +423,12 @@ uint8_t Instance::writeAsServer(lwm2m_server_t *server, int numData, lwm2m_data_
 	// this operation, we notify the instance only one time after the 
 	// writing is completed.
 	bool isReplaceInstance = writeType == LWM2M_WRITE_REPLACE_INSTANCE;
-	if (isReplaceInstance) setDefaultState();
+
+	// Container with updated resources that is used during
+	// replace instance operation we do not want to change
+	// the original resources to avoid data corruption. After
+	// successful writing, we will replace the original resources.
+	std::vector<Resource> replacedResources;
 	
 	for (int i = 0; i < numData; i++) {
 		uint8_t errCode = COAP_NO_ERROR;
@@ -433,15 +438,25 @@ uint8_t Instance::writeAsServer(lwm2m_server_t *server, int numData, lwm2m_data_
 			if (ignore) continue;
 			else return errCode;
 		}
-
-		errCode = resourceWrite(server, *res, dataArray[i], writeType);
+		// If we are replacing instance then we should copy original resources
+		if (isReplaceInstance) replacedResources.push_back(*res);
+		// Write resource with new data
+		errCode = resourceWrite(server, (isReplaceInstance)? replacedResources.back() : *res, dataArray[i], writeType);
 		if (errCode != COAP_NO_ERROR) {
 			WPP_LOGE(TAG_WPP_INST, "Resource %d:%d:%d write error: %d", _id.objId, _id.objInstId, dataArray[i].id, errCode);
 			return errCode;
 		}
 	}
-	// Notify implementation about replace instance operation
-	if (isReplaceInstance) serverOperationNotifier(getSecurityInst(server), ResOp::WRITE_REPLACE_INST, {ID_T_MAX_VAL, ID_T_MAX_VAL});
+	
+	// Update original resources if we have to replace instance
+	if (isReplaceInstance) {
+		// Set instance to default state
+		setDefaultState();
+		// Replace original resources with updated resources
+		for (auto &res : replacedResources) *resource(res.getId()) = std::move(res);
+		// Notify implementation about replace instance operation
+		serverOperationNotifier(getSecurityInst(server), ResOp::WRITE_REPLACE_INST, {ID_T_MAX_VAL, ID_T_MAX_VAL});
+	}
 
 	return COAP_204_CHANGED;
 }

@@ -44,12 +44,19 @@ public:
     }
 
     FwUpdRes downloadResult() override {
-        cout << "FwUriDownloader::downloadResult " << (int)_downloadResult << endl;
+        // cout << "FwUriDownloader::downloadResult " << (int)_downloadResult << endl;
+
         if (_downloadResult == R_CONN_LOST) return R_CONN_LOST;
-        if (_downloadResult == R_NOT_ENOUGH_FLASH) return R_NOT_ENOUGH_FLASH;
-        if (outOfRamImitation(false)) return R_OUT_OF_RAM;
-        if (!check_integrity(true)) return R_INTEGRITY_CHECK_FAIL;
+
+        if (!check_integrity()) return R_INTEGRITY_CHECK_FAIL;
         if (!check_package_type()) return R_UNSUPPORTED_PKG_TYPE;
+        
+        if (getFileSize() > 2000000) {
+            string res = readMetadata(4);
+            if (res == "/memory_location:=flash") return R_NOT_ENOUGH_FLASH;
+            else if (res == "/memory_location:=RAM") return R_OUT_OF_RAM;
+        }
+
         return R_INITIAL;
     }
 
@@ -59,18 +66,14 @@ public:
         _downloadResult = R_INITIAL;
     }
 
-    bool outOfRamImitation(bool isOutOfRam) {
-        return isOutOfRam;
-    }
-
-    bool check_integrity(bool valid_checksum) {
-        // TODO: use the checksum algorithm suits you to check the downloaded firmware.
-        // Now here used the @param valid_checksum to control the returned value.
-        return valid_checksum;
+    bool check_integrity() {
+        string res = readMetadata(5);
+        return res == "/pass_integrity:=true";
     }
 
     bool check_package_type() {
-        string res = read_metadata(1);
+        // TODO:
+        string res = readMetadata(1);
         cout << "FwUpdateImpl: pkgType: " << res << endl;
         return "/package_type:=1" == res;
     }
@@ -92,7 +95,7 @@ private:
         return uri.find("coaps://") == 0;
     }
 
-    STRING_T read_metadata(uint8_t line_num) {
+    STRING_T readMetadata(uint8_t line_num) {
         ifstream is;
         string str = "default";
     
@@ -103,12 +106,20 @@ private:
             // if file can't be opened it means it's not exists. Will return "default"
             for (uint8_t i = 0; i < line_num; i++) {
                 getline(is, str);
-                // TODO: split by ":=" str
             }
         }
         is.close();
 
         return str;
+    }
+
+    int getFileSize() {
+        FILE* p_file = NULL;
+        p_file = fopen("test_http.fw", "rb");
+        fseek(p_file, 0, SEEK_END);
+        int size = ftell(p_file);
+        fclose(p_file);
+        return size;
     }
 
 private:

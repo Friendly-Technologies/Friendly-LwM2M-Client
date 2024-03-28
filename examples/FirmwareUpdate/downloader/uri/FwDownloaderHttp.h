@@ -54,7 +54,6 @@ public:
                     /* Check for errors */
                     if (res != CURLE_OK) {
                         if (res == CURLcode::CURLE_COULDNT_CONNECT) fwUpdRes = wpp::R_CONN_LOST;
-                        else if (res == CURLcode::CURLE_OUT_OF_MEMORY) fwUpdRes = wpp::R_NOT_ENOUGH_FLASH;
                         cout << "curl_easy_perform() failed: " << curl_easy_strerror(res) << endl;
                     }
 

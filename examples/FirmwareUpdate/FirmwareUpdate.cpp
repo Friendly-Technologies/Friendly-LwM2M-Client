@@ -25,7 +25,7 @@ void FirmwareUpdateImpl::objectRestore(Object &object) {
 
 void FirmwareUpdateImpl::startUpdating() {
     cout << "FwUpdateImpl: startUpdating" << endl;
-    _lastUpdateResult = FwUpdRes::R_FW_UPD_SUCCESS;
+    _lastUpdateResult = imitateFirmwareUpdResult(true);
 }
 
 bool FirmwareUpdateImpl::isUpdated() {
@@ -57,4 +57,8 @@ STRING_T FirmwareUpdateImpl::pkgVersion() {
 void FirmwareUpdateImpl::reset() {
     cout << "FwUpdateImpl: reset" << endl;
     _lastUpdateResult = FwUpdRes::R_INITIAL;
+}
+
+FwUpdRes FirmwareUpdateImpl::imitateFirmwareUpdResult(bool isUpdatedSuccess) {
+    return isUpdatedSuccess ? FwUpdRes::R_FW_UPD_SUCCESS : FwUpdRes::R_FW_UPD_FAIL;
 }

@@ -30,7 +30,7 @@ public:
                 string url = this->_job.url;
                 function<void(string, wpp::FwUpdRes)> downloadedClb = this->_job.downloadedClb;
                 this->_jobGuard.unlock();
-                string file = "test_http.fw";
+                string file = "test_fw.fw";
                 cout << "Start downloading from url: " << url << endl;
                 
                 CURL *curl;
@@ -65,7 +65,7 @@ public:
                 }
                 
                 cout << "Downloading is completed" << endl;
-                downloadedClb("test_http.fw", fwUpdRes);
+                downloadedClb("test_fw.fw", fwUpdRes);
                 _job.downloading = false;
             }
             cout << "Downloading thread is terminated" << endl;

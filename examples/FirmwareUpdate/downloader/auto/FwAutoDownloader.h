@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include "WppRegistry.h"
+#include "FirmwareChecker.h"
 
 using namespace wpp;
 using namespace std;
@@ -21,12 +22,13 @@ public:
 
     void downloadIsCompleted() override {
         cout << "FwAutoDownloader::downloadIsCompleted" << endl;
-        writeToFile("fw_package.fw", _fwPackage);
+        remove("test_fw.fw");
+        writeToFile("test_fw.fw", _fwPackage);
     }
 
     FwUpdRes downloadResult() override {
-        cout << "FwAutoDownloader::downloadResult" << endl;
-        return R_INITIAL;
+        cout << "FwAutoDownloader::downloadResult()" << endl;
+        return FirmwareChecker::getFwDownloadRes();
     }
 
     void reset() override {

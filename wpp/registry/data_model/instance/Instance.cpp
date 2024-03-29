@@ -211,7 +211,7 @@ Resource* Instance::getValidatedResForWrite(const lwm2m_data_t &data, lwm2m_writ
 }
 
 uint8_t Instance::resourceWrite(lwm2m_server_t *server, Resource &res, const lwm2m_data_t &data, lwm2m_write_type_t writeType) {
-	bool isReplace = writeType == LWM2M_WRITE_REPLACE_RESOURCES;
+	bool isReplace = (writeType == LWM2M_WRITE_REPLACE_INSTANCE || writeType == LWM2M_WRITE_REPLACE_RESOURCES);
 	Resource resBackup;
 
 	// Clear resource data if we need to replace it

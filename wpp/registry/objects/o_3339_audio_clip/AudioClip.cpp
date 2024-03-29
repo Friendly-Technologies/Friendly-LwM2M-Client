@@ -35,63 +35,42 @@ AudioClip::~AudioClip() {
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
-void AudioClip::setDefaultState() {
-	/* --------------- Code_cpp block 4 start --------------- */
-	/* --------------- Code_cpp block 4 end --------------- */
-
-	_resources.clear();
-	resourcesCreate();
-	resourcesInit();
-
-	/* --------------- Code_cpp block 5 start --------------- */
-	/* --------------- Code_cpp block 5 end --------------- */
-}
-
-void AudioClip::serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resId) {
+void AudioClip::serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resLink) {
 	/* --------------- Code_cpp block 6 start --------------- */
 	/* --------------- Code_cpp block 6 end --------------- */
 
-	operationNotify(*this, resId, type);
+	operationNotify(*this, resLink, type);
 
 	/* --------------- Code_cpp block 7 start --------------- */
 	switch (type) {
 	case ResOp::READ:
-		WPP_LOGD(TAG, "Server READ -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
+		WPP_LOGD(TAG, "Server READ -> resId: %d, resInstId: %d", resLink.resId, resLink.resInstId);
 		break;
-	case ResOp::WRITE_UPD:
-		WPP_LOGD(TAG, "Server WRITE_UPD -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case ResOp::WRITE_REPLACE_INST:
-		WPP_LOGD(TAG, "Server WRITE_REPLACE_INST -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case ResOp::WRITE_REPLACE_RES:
-		WPP_LOGD(TAG, "Server WRITE_REPLACE_RES -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
+	case ResOp::WRITE:
+		WPP_LOGD(TAG, "Server WRITE -> resId: %d, resInstId: %d", resLink.resId, resLink.resInstId);
 		break;
 	case ResOp::EXECUTE:
-		WPP_LOGD(TAG, "Server EXECUTE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
+		WPP_LOGD(TAG, "Server EXECUTE -> resId: %d, resInstId: %d", resLink.resId, resLink.resInstId);
 		break;
 	case ResOp::DISCOVER:
-		WPP_LOGD(TAG, "Server DISCOVER -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
-		break;
-	case ResOp::DELETE:
-		WPP_LOGD(TAG, "Server DELETE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
+		WPP_LOGD(TAG, "Server DISCOVER -> resId: %d, resInstId: %d", resLink.resId, resLink.resInstId);
 		break;
 	default: break;
 	}
 	/* --------------- Code_cpp block 7 end --------------- */
 }
 
-void AudioClip::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
+void AudioClip::userOperationNotifier(ResOp::TYPE type, const ResLink &resLink) {
 	/* --------------- Code_cpp block 8 start --------------- */
 	switch (type) {
 	case ResOp::READ:
-		WPP_LOGD(TAG, "User READ -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
+		WPP_LOGD(TAG, "User READ -> resId: %d, resInstId: %d", resLink.resId, resLink.resInstId);
 		break;
-	case ResOp::WRITE_UPD:
-		WPP_LOGD(TAG, "User WRITE_UPD -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
+	case ResOp::WRITE:
+		WPP_LOGD(TAG, "User WRITE -> resId: %d, resInstId: %d", resLink.resId, resLink.resInstId);
 		break;
 	case ResOp::DELETE:
-		WPP_LOGD(TAG, "User DELETE -> resId: %d, resInstId: %d", resId.resId, resId.resInstId);
+		WPP_LOGD(TAG, "User DELETE -> resId: %d, resInstId: %d", resLink.resId, resLink.resInstId);
 		break;
 	default: break;
 	}

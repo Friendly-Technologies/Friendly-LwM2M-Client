@@ -27,22 +27,22 @@ bool Instance::clear(ID_T resId) {
 	return result;
 }
 
-bool Instance::remove(const ResLink &resId) {
-	auto res = resource(resId.resId);
+bool Instance::remove(const ResLink &resLink) {
+	auto res = resource(resLink.resId);
 	if (res == _resources.end()) return false;
 
-	bool result = res->remove(resId.resInstId);
+	bool result = res->remove(resLink.resInstId);
 	if (result) {
-		userOperationNotifier(ResOp::DELETE, {resId.resId, resId.resInstId});
-		notifyServerResChanged({resId.resId, resId.resInstId});
+		userOperationNotifier(ResOp::DELETE, {resLink.resId, resLink.resInstId});
+		notifyServerResChanged({resLink.resId, resLink.resInstId});
 	}
 
 	return result;
 }
 
-void Instance::notifyServerResChanged(const ResLink &resId) {
-	WPP_LOGD(TAG_WPP_INST, "Notify value changed: objID=%d, instID=%d, resID=%d, resInstID=%d", getObjectID(), getInstanceID(), resId.resId, resId.resInstId);	
-	lwm2m_uri_t uri = {(ID_T)getObjectID(), getInstanceID(), resId.resId, resId.resInstId};
+void Instance::notifyServerResChanged(const ResLink &resLink) {
+	WPP_LOGD(TAG_WPP_INST, "Notify value changed: objID=%d, instID=%d, resID=%d, resInstID=%d", getObjectID(), getInstanceID(), resLink.resId, resLink.resInstId);	
+	lwm2m_uri_t uri = {(ID_T)getObjectID(), getInstanceID(), resLink.resId, resLink.resInstId};
 	lwm2m_resource_value_changed(&_context, &uri);
 }
 
@@ -76,8 +76,8 @@ WppRegistry& Instance::getRegistry() {
 }
 
 #ifdef LWM2M_RAW_BLOCK1_REQUESTS
-void Instance::serverBlockOperationNotifier(ResOp::TYPE type, const ResLink &resId, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock) {
-	WPP_LOGI(TAG_WPP_INST, "Block operation notifier not implemented for: %d:%d:%d, operation type: %d", _id.objId, resId.resId, resId.resInstId, type);
+void Instance::serverBlockOperationNotifier(ResOp::TYPE type, const ResLink &resLink, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock) {
+	WPP_LOGI(TAG_WPP_INST, "Block operation notifier not implemented for: %d:%d:%d, operation type: %d", _id.objId, resLink.resId, resLink.resInstId, type);
 }
 #endif
 
@@ -194,26 +194,10 @@ bool Instance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &res, ID_T
 }
 
 Resource* Instance::getValidatedResForWrite(const lwm2m_data_t &data, lwm2m_write_type_t writeType, uint8_t &errCode) {
-	// TODO: In some cases, according to the implementation of the wakaama,
-	// the resources marked as R can be written by the server during the
-	// instance creation operation (Ex: ACL object resource 0). I did not
-	// find the necessary description in the documentation, so this question
-	// needs to be investigated in detail.
-
 	auto res = resource(data.id);
 	if (!IS_ITER_VALID_AND_RES_EXISTS(res)) {
 		WPP_LOGW(TAG_WPP_INST, "Resource does not exist: %d:%d:%d", _id.objId, _id.objInstId, data.id);
 		errCode = COAP_404_NOT_FOUND;
-		return NULL;
-	}
-	// Check the server operation permission for resource.
-	// Bootstrap server can write evan if resource is not writable.
-	// Also allowed to write R resources during instance creation.
-	if (!res->getOperation().isWrite() && 
-	      (_context.state != STATE_BOOTSTRAPPING) && 
-	      (writeType != LWM2M_WRITE_REPLACE_INSTANCE)) {
-		WPP_LOGW(TAG_WPP_INST, "Server does not have permission for write resource: %d:%d:%d", _id.objId, _id.objInstId, data.id);
-		errCode = COAP_405_METHOD_NOT_ALLOWED;
 		return NULL;
 	}
 	// Check resource type (single/multiple) matches with data type
@@ -223,12 +207,11 @@ Resource* Instance::getValidatedResForWrite(const lwm2m_data_t &data, lwm2m_writ
 		errCode = COAP_405_METHOD_NOT_ALLOWED;
 		return NULL;
 	}
-
 	return &(*res);
 }
 
 uint8_t Instance::resourceWrite(lwm2m_server_t *server, Resource &res, const lwm2m_data_t &data, lwm2m_write_type_t writeType) {
-	bool isReplace = (writeType == LWM2M_WRITE_REPLACE_INSTANCE || writeType == LWM2M_WRITE_REPLACE_RESOURCES);
+	bool isReplace = writeType == LWM2M_WRITE_REPLACE_RESOURCES;
 	Resource resBackup;
 
 	// Clear resource data if we need to replace it
@@ -256,10 +239,10 @@ uint8_t Instance::resourceWrite(lwm2m_server_t *server, Resource &res, const lwm
 			return COAP_400_BAD_REQUEST;
 		}
 		// Notify implementation about update operation
-		if (writeType == LWM2M_WRITE_PARTIAL_UPDATE) serverOperationNotifier(getSecurityInst(server), ResOp::WRITE_UPD, {res.getId(), (res.isSingle()? ID_T_MAX_VAL : resInstId)});
+		if (writeType == LWM2M_WRITE_PARTIAL_UPDATE) serverOperationNotifier(getSecurityInst(server), ResOp::WRITE, {res.getId(), (res.isSingle()? ID_T_MAX_VAL : resInstId)});
 	}
 	// Notify implementation about replace resource operation
-	if (writeType == LWM2M_WRITE_REPLACE_RESOURCES) serverOperationNotifier(getSecurityInst(server), ResOp::WRITE_REPLACE_RES, {res.getId(), ID_T_MAX_VAL});
+	if (writeType == LWM2M_WRITE_REPLACE_RESOURCES) serverOperationNotifier(getSecurityInst(server), ResOp::WRITE, {res.getId(), ID_T_MAX_VAL});
 
 	return COAP_NO_ERROR;
 }
@@ -357,6 +340,91 @@ uint8_t Instance::createEmptyLwm2mDataArray(std::vector<Resource*> resources, lw
 	return COAP_NO_ERROR;
 }
 
+bool Instance::isAllMandatoryResourcesPresent(int numData, lwm2m_data_t *data){
+	// During the replace instance operation, request should contains all
+	// mandatory resources for write
+	std::vector<Resource *> mandatoryResources;
+	for (auto &res : _resources) {
+		if (!res.isMandatory() || !res.getOperation().isWrite()) continue;
+		bool found = false;
+		for (int i = 0; i < numData; i++) {
+			if (data[i].id == res.getId()) { 
+				found = true;
+				break;
+			}
+		}
+		if (!found) {
+			WPP_LOGE(TAG_WPP_INST, "Mandatory resource %d:%d:%d does not found", _id.objId, _id.objInstId, res.getId());
+			return false;
+		}
+	}
+	return true;
+}
+
+uint8_t Instance::replaceInstance(lwm2m_server_t *server, int numData, lwm2m_data_t *dataArray) {
+	// Container with updated resources that is used during
+	// replace instance operation we do not want to change
+	// the original resources to avoid data corruption. After
+	// successful writing, we will replace the original resources.
+	std::vector<Resource> replaceInstResources;
+	// During the replace instance operation, request should contains all
+	// mandatory resources for write
+	if (!isAllMandatoryResourcesPresent(numData, dataArray)) return COAP_400_BAD_REQUEST;
+	
+	for (int i = 0; i < numData; i++) {
+		uint8_t errCode = COAP_NO_ERROR;
+		Resource *res = getValidatedResForWrite(dataArray[i], LWM2M_WRITE_REPLACE_INSTANCE, errCode);
+		if (!res) {
+			// If resource does not exist that means it is optional resource
+			// and optional resources can be missing during write operation
+			if (errCode != COAP_404_NOT_FOUND) {
+				WPP_LOGW(TAG_WPP_INST, "Resource %d:%d:%d write not possible, error: %d", _id.objId, _id.objInstId, dataArray[i].id, errCode);
+				return errCode;
+			}
+			continue;
+		}
+		replaceInstResources.push_back(*res);
+		errCode = resourceWrite(server, replaceInstResources.back(), dataArray[i], LWM2M_WRITE_REPLACE_INSTANCE);
+		if (errCode != COAP_NO_ERROR) {
+			WPP_LOGE(TAG_WPP_INST, "Resource %d:%d:%d write error: %d", _id.objId, _id.objInstId, dataArray[i].id, errCode);
+			return errCode;
+		}
+	}
+
+	// Replace original resources with updated resources
+	for (auto &res : replaceInstResources) {
+		*resource(res.getId()) = std::move(res);
+		serverOperationNotifier(getSecurityInst(server), ResOp::WRITE, {res.getId(), ID_T_MAX_VAL});
+	}
+
+	return COAP_NO_ERROR;
+}
+
+uint8_t Instance::replaceResource(lwm2m_server_t *server, int numData, lwm2m_data_t *dataArray, lwm2m_write_type_t writeType) {
+	for (int i = 0; i < numData; i++) {
+		uint8_t errCode = COAP_NO_ERROR;
+		Resource *res = getValidatedResForWrite(dataArray[i], writeType, errCode);
+		if (!res) {
+			// TODO: According to the documentation, optional resources can be missing when a write
+			// or read attempt is made, allowing us to ignore a request to read/write these 
+			// resources, but wakaama is implemented in such a way that the behavior of ignoring
+			// optional resources results in an incorrect internal registration system state. 
+			if (server == NULL) {
+				WPP_LOGW(TAG_WPP_INST, "Resource %d:%d:%d write not possible, error: %d", _id.objId, _id.objInstId, dataArray[i].id, errCode);
+				return errCode;
+			}
+			continue;
+		}
+		errCode = resourceWrite(server, *res, dataArray[i], writeType);
+		if (errCode != COAP_NO_ERROR) {
+			WPP_LOGE(TAG_WPP_INST, "Resource %d:%d:%d write error: %d", _id.objId, _id.objInstId, dataArray[i].id, errCode);
+			return errCode;
+		}
+	}
+
+	return COAP_NO_ERROR;
+}
+
 uint8_t Instance::readAsServer(lwm2m_server_t *server, int *numData, lwm2m_data_t **dataArray) {
 	// TODO: Read-Composite Operation for now not supported
 	if (numData == NULL || dataArray == NULL) return COAP_500_INTERNAL_SERVER_ERROR;
@@ -406,59 +474,24 @@ uint8_t Instance::writeAsServer(lwm2m_server_t *server, int numData, lwm2m_data_
 	// TODO: Write-Composite Operation for now not supported
 	if (!numData) return COAP_204_CHANGED;
 	if (dataArray == NULL) return COAP_500_INTERNAL_SERVER_ERROR;
+	WPP_LOGD(TAG_WPP_INST, "Write %d:%d, numData: %d, write type %d", _id.objId, _id.objInstId, numData, writeType);
 
-	// TODO: According to the documentation, optional resources can be missing when a write
-	// or read attempt is made, allowing us to ignore a request to read/write these 
-	// resources, but wakaama is implemented in such a way that the behavior of ignoring
-	// optional resources results in an incorrect internal registration system state. 
-	// One of the workarounds is to determine the number of resources that are read or 
-	// written, wakaama reads resources only one at a time, this allows to determine that
-	// the reading or writing is done by wakaama core and set the correct behavior in the
-	// absence of a resource.
-	bool ignore = numData > 1;
-	WPP_LOGD(TAG_WPP_INST, "Write %d:%d, ignore: %d, numData: %d, write type %d", _id.objId, _id.objInstId, ignore, numData, writeType);
-
-	// During the replace instance we should reset instance to default
-	// state and then write with replace all resources in array. During
-	// this operation, we notify the instance only one time after the 
-	// writing is completed.
-	bool isReplaceInstance = writeType == LWM2M_WRITE_REPLACE_INSTANCE;
-
-	// Container with updated resources that is used during
-	// replace instance operation we do not want to change
-	// the original resources to avoid data corruption. After
-	// successful writing, we will replace the original resources.
-	std::vector<Resource> replacedResources;
-	
+	// Check the server operation permission for resource.
+	// Bootstrap server can write even if resource is not writable.
 	for (int i = 0; i < numData; i++) {
-		uint8_t errCode = COAP_NO_ERROR;
-		Resource *res = getValidatedResForWrite(dataArray[i], writeType, errCode);
-		if (!res) {
-			WPP_LOGW(TAG_WPP_INST, "Resource %d:%d:%d write not possible, ignore: %d", _id.objId, _id.objInstId, dataArray[i].id, ignore);
-			if (ignore) continue;
-			else return errCode;
+		auto res = resource(dataArray[i].id);
+		if (!IS_ITER_VALID_AND_RES_EXISTS(res)) continue;
+		if (!res->getOperation().isWrite() && (_context.state != STATE_BOOTSTRAPPING)) {
+			WPP_LOGE(TAG_WPP_INST, "Trying to write read-only resource %d:%d:%d", _id.objId, _id.objInstId, dataArray[i].id);
+			return COAP_400_BAD_REQUEST;
 		}
-		// If we are replacing instance then we should copy original resources
-		if (isReplaceInstance) replacedResources.push_back(*res);
-		// Write resource with new data
-		errCode = resourceWrite(server, (isReplaceInstance)? replacedResources.back() : *res, dataArray[i], writeType);
-		if (errCode != COAP_NO_ERROR) {
-			WPP_LOGE(TAG_WPP_INST, "Resource %d:%d:%d write error: %d", _id.objId, _id.objInstId, dataArray[i].id, errCode);
-			return errCode;
-		}
-	}
-	
-	// Update original resources if we have to replace instance
-	if (isReplaceInstance) {
-		// Set instance to default state
-		setDefaultState();
-		// Replace original resources with updated resources
-		for (auto &res : replacedResources) *resource(res.getId()) = std::move(res);
-		// Notify implementation about replace instance operation
-		serverOperationNotifier(getSecurityInst(server), ResOp::WRITE_REPLACE_INST, {ID_T_MAX_VAL, ID_T_MAX_VAL});
 	}
 
-	return COAP_204_CHANGED;
+	uint8_t errCode = COAP_NO_ERROR;
+	if (writeType == LWM2M_WRITE_REPLACE_INSTANCE) errCode = replaceInstance(server, numData, dataArray);
+	else errCode = replaceResource(server, numData, dataArray, writeType);
+
+	return (errCode == COAP_NO_ERROR)? COAP_204_CHANGED : errCode;
 }
 
 uint8_t Instance::executeAsServer(lwm2m_server_t *server, ID_T resId, uint8_t * buffer, int length) {

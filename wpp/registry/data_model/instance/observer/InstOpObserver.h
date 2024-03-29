@@ -32,11 +32,6 @@ public:
      * Resource is already executed during this call.
      */
     virtual void resourceExecute(Instance &inst, const ResLink &resource) {};
-    /**
-     * @brief Notifies observer immediately after replace instance by server. 
-     * Instance and resource are already written during this call.
-     */
-    virtual void resourcesReplaced(Instance &inst) {};
 };
 
 } // namespace wpp

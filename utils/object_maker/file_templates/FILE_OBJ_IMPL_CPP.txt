@@ -35,18 +35,6 @@ __CLASS_NAME__::~__CLASS_NAME__() {
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
-void __CLASS_NAME__::setDefaultState() {
-	/* --------------- Code_cpp block 4 start --------------- */
-	/* --------------- Code_cpp block 4 end --------------- */
-
-	_resources.clear();
-	resourcesCreate();
-	resourcesInit();
-
-	/* --------------- Code_cpp block 5 start --------------- */
-	/* --------------- Code_cpp block 5 end --------------- */
-}
-
 __F_SERVER_OPERATION_NOTIFIER__
 
 __F_USER_OPERATION_NOTIFIER__

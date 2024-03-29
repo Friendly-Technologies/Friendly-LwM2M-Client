@@ -58,61 +58,34 @@ FirmwareUpdate::~FirmwareUpdate() {
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
-void FirmwareUpdate::setDefaultState() {
-	/* --------------- Code_cpp block 4 start --------------- */
-	_pkgUpdater = NULL;
-	#if RES_5_8
-	_externalDownloader = NULL;
-	#endif
-	_internalDownloader = NULL;
-	
-	#if RES_5_8
-	WppTaskQueue::requestToRemoveTask(_externalDownloaderTaskId);
-	_externalDownloaderTaskId = WPP_ERR_TASK_ID;
-	#endif
-	WppTaskQueue::requestToRemoveTask(_internalDownloaderTaskId);
-	_internalDownloaderTaskId = WPP_ERR_TASK_ID;
-	WppTaskQueue::requestToRemoveTask(_updaterTaskId);
-	_updaterTaskId = WPP_ERR_TASK_ID;
-	/* --------------- Code_cpp block 4 end --------------- */
-
-	_resources.clear();
-	resourcesCreate();
-	resourcesInit();
-
-	/* --------------- Code_cpp block 5 start --------------- */
-	/* --------------- Code_cpp block 5 end --------------- */
-}
-
-void FirmwareUpdate::serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resId) {
+void FirmwareUpdate::serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resLink) {
 	/* --------------- Code_cpp block 6 start --------------- */
-	WPP_LOGD(TAG, "Server operation -> type: %d, resId: %d, resInstId: %d", type, resId.resId, resId.resInstId);
+	WPP_LOGD(TAG, "Server operation -> type: %d, resId: %d, resInstId: %d", type, resLink.resId, resLink.resInstId);
 	switch (type) {
-	case ResOp::WRITE_UPD:
-	case ResOp::WRITE_REPLACE_RES: {
-		if (resId.resId == PACKAGE_0) internalDownloaderHandler();
+	case ResOp::WRITE: {
+		if (resLink.resId == PACKAGE_0) internalDownloaderHandler();
 		#if RES_5_8
-		if (resId.resId == PACKAGE_URI_1) externalDownloaderHandler(securityInst);
+		if (resLink.resId == PACKAGE_URI_1) externalDownloaderHandler(securityInst);
 		#endif
 		break;
 	}
 	case ResOp::EXECUTE: {
-		if (resId.resId == UPDATE_2) pkgUpdaterHandler();
+		if (resLink.resId == UPDATE_2) pkgUpdaterHandler();
 		break;
 	}
 	default: break;
 	}
 	/* --------------- Code_cpp block 6 end --------------- */
 
-	operationNotify(*this, resId, type);
+	operationNotify(*this, resLink, type);
 
 	/* --------------- Code_cpp block 7 start --------------- */
 	/* --------------- Code_cpp block 7 end --------------- */
 }
 
-void FirmwareUpdate::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
+void FirmwareUpdate::userOperationNotifier(ResOp::TYPE type, const ResLink &resLink) {
 	/* --------------- Code_cpp block 8 start --------------- */
-	WPP_LOGD(TAG, "User operation -> type: %d, resId: %d, resInstId: %d", type, resId.resId, resId.resInstId);
+	WPP_LOGD(TAG, "User operation -> type: %d, resId: %d, resInstId: %d", type, resLink.resId, resLink.resInstId);
 	/* --------------- Code_cpp block 8 end --------------- */
 }
 

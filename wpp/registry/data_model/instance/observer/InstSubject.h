@@ -103,21 +103,17 @@ protected:
      * @param resId The resource link of the instance resource.
      * @param type The type of operation.
      */
-    void operationNotify(Instance &inst, const ResLink &resId, ResOp::TYPE type) {
+    void operationNotify(Instance &inst, const ResLink &resLink, ResOp::TYPE type) {
         for(InstOpObserver *observer : _opObservers) {
             switch (type) {
             case ResOp::READ: 
-                observer->resourceRead(inst, resId);
+                observer->resourceRead(inst, resLink);
                 break;
-            case ResOp::WRITE_UPD:
-            case ResOp::WRITE_REPLACE_RES:
-                observer->resourceWrite(inst, resId);
-                break;
-            case ResOp::WRITE_REPLACE_INST:
-                observer->resourcesReplaced(inst);
+            case ResOp::WRITE:
+                observer->resourceWrite(inst, resLink);
                 break;
             case ResOp::EXECUTE:
-                 observer->resourceExecute(inst, resId);
+                 observer->resourceExecute(inst, resLink);
                 break;
             default: break;
             }
@@ -138,7 +134,7 @@ protected:
      * @param blockNum The block number.
      * @param isLastBlock Indicates whether this is the last block of the operation.
      */
-    void blockOperationNotify(Instance &inst, const ResLink &resId, ResOp::TYPE type, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock) {
+    void blockOperationNotify(Instance &inst, const ResLink &resLink, ResOp::TYPE type, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock) {
         for(InstBlockOpObserver *observer : _blockOpObservers) {
             switch (type) {
             case ResOp::BLOCK_WRITE: 

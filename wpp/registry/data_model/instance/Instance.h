@@ -65,7 +65,7 @@ public:
  	 * @brief Sets resource value, this version of the method is used with MULTIPLE resources.
 	 */
 	template<typename T>
-	bool set(const ResLink &resId, const T &value);
+	bool set(const ResLink &resLink, const T &value);
 	/**
  	 * @brief Sets resource value by moving user data to resource to avoid extra copy.
 	 * This version of the method is used with SINGLE resources.
@@ -78,7 +78,7 @@ public:
 	 * This version of the method is used with MULTIPLE resources.
 	 */
 	template<typename T>
-	bool setMove(const ResLink &resId, T &value);
+	bool setMove(const ResLink &resLink, T &value);
 	/**
  	 * @brief Returns copy of resource value.
 	 * This version of the method is used with SINGLE resources.
@@ -91,7 +91,7 @@ public:
 	 * This version of the method is used with MULTIPLE resources.
 	 */
 	template<typename T>
-	bool get(const ResLink &resId, T &value);
+	bool get(const ResLink &resLink, T &value);
 	/**
  	 * @brief Returns const ptr to resource data for avoid extra copy.
 	 * This version of the method is used with SINGLE resources.
@@ -104,7 +104,7 @@ public:
 	 * This version of the method is used with MULTIPLE resources.
 	 */
 	template<typename T>
-	bool getPtr(const ResLink &resId, const T **value);
+	bool getPtr(const ResLink &resLink, const T **value);
 	/**
  	 * @brief It is quite dangerous to leave a resource without instances,
 	 * because when the server tries to read its value, the server
@@ -119,7 +119,7 @@ public:
 	 * if the resource is SINGLE or it has the last instance remove is not
 	 * possible. Because instantiated resources must have at least one instance.
 	 */
-	bool remove(const ResLink &resId);
+	bool remove(const ResLink &resLink);
 
 	/* ------------- Server operation methods ------------- */
 	/**
@@ -142,7 +142,7 @@ protected: /* Interface that can be used by derived class */
 	/**
  	 * @brief Notify server about resource value change.
 	 */
-	void notifyServerResChanged(const ResLink &resId);
+	void notifyServerResChanged(const ResLink &resLink);
 	/**
  	 * @brief This method return list with resources that has been instantiated.
 	 * If resources does not exist then return empty list.
@@ -165,27 +165,21 @@ protected: /* Interface that can be used by derived class */
 
 protected: /* Interface that must be implemented by derived class */
 	/**
- 	 * @brief This method must be implemented by derived class.
-	 * Reset all resources values and internal state to default.
-	 */
-	virtual void setDefaultState() = 0;
-	/**
  	 * @brief This method must be implemented by the derived class, and handle
-	 * information about resource operation (READ, WRITE_UPD, WRITE_REPLACE_INST,
-	 * WRITE_REPLACE_RES, EXECUTE, DISCOVER). Called by Instance after 
-	 * resource operation performed by SERVER if the operation is  
-	 * READ/WRITE_UPD/WRITE_REPLACE_INST/WRITE_REPLACE_RES/DISCOVER, 
+	 * information about resource operation (READ, WRITE, EXECUTE, DISCOVER). 
+	 * Called by Instance after resource operation performed by SERVER if the operation is  
+	 * READ/WRITE/DISCOVER, 
 	 * if the operation is EXECUTE then called before this operation.
 	 * @param securityInst - Contains security instance when the request received
 	 * 						 from the server or NULL if the request is initiated by core.
 	 */
-	virtual void serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resId) = 0;
+	virtual void serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resLink) = 0;
 	/**
  	 * @brief This method must be implemented by the derived class, and handle
-     * information about resource operation (READ, WRITE_UPD, DELETE).
+     * information about resource operation (READ, WRITE, DELETE).
 	 * Called by Instance after resource operation performed by the USER.
 	 */
-	virtual void userOperationNotifier(ResOp::TYPE type, const ResLink &resId) = 0;
+	virtual void userOperationNotifier(ResOp::TYPE type, const ResLink &resLink) = 0;
 	#ifdef LWM2M_RAW_BLOCK1_REQUESTS
 	/**
  	 * @brief This method must be implemented by the derived class, and handle
@@ -197,7 +191,7 @@ protected: /* Interface that must be implemented by derived class */
 	 * Instance class, which decides on the necessary actions. This is done 
 	 * to minimize memory usage.
 	 */
-	virtual void serverBlockOperationNotifier(ResOp::TYPE type, const ResLink &resId, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock);
+	virtual void serverBlockOperationNotifier(ResOp::TYPE type, const ResLink &resLink, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock);
 	#endif
 
 private: /* Interface used by Object or Instance class */
@@ -216,6 +210,9 @@ private: /* Interface used by Object or Instance class */
 	uint8_t resourceRead(lwm2m_server_t *server, lwm2m_data_t &data, Resource &res);
 	Resource* getValidatedResForExecute(ID_T resId, uint8_t &errCode);
 	uint8_t createEmptyLwm2mDataArray(std::vector<Resource*> resources, lwm2m_data_t **dataArray, int *numData);
+	bool isAllMandatoryResourcesPresent(int numData, lwm2m_data_t *data);
+	uint8_t replaceInstance(lwm2m_server_t *server, int numData, lwm2m_data_t *dataArray);
+	uint8_t replaceResource(lwm2m_server_t *server, int numData, lwm2m_data_t *dataArray, lwm2m_write_type_t writeType);
 
 protected:
 	lwm2m_context_t &_context;
@@ -234,14 +231,14 @@ bool Instance::set(ID_T resId, const T &value) {
 }
 
 template<typename T>
-bool Instance::set(const ResLink &resId, const T &value)  {
-	auto res = resource(resId.resId);
+bool Instance::set(const ResLink &resLink, const T &value)  {
+	auto res = resource(resLink.resId);
 	if (res == _resources.end()) return false;
 
-	if (!res->set(value, resId.resInstId)) return false;
+	if (!res->set(value, resLink.resInstId)) return false;
 
-	const ResLink &link = res->isMultiple()? resId : ResLink {resId.resId,};
-	userOperationNotifier(ResOp::WRITE_UPD, link);
+	const ResLink &link = res->isMultiple()? resLink : ResLink {resLink.resId,};
+	userOperationNotifier(ResOp::WRITE, link);
 	notifyServerResChanged(link);
 
 	return true;
@@ -256,13 +253,13 @@ bool Instance::setMove(ID_T resId, T &value) {
 }
 
 template<typename T>
-bool Instance::setMove(const ResLink &resId, T &value) {
-	auto res = resource(resId.resId);
+bool Instance::setMove(const ResLink &resLink, T &value) {
+	auto res = resource(resLink.resId);
 	if (res == _resources.end()) return false;
-	if (!res->setMove(value, resId.resInstId)) return false;
+	if (!res->setMove(value, resLink.resInstId)) return false;
 
-	const ResLink &link = res->isMultiple()? resId : ResLink {resId.resId,};
-	userOperationNotifier(ResOp::WRITE_UPD, link);
+	const ResLink &link = res->isMultiple()? resLink : ResLink {resLink.resId,};
+	userOperationNotifier(ResOp::WRITE, link);
 	notifyServerResChanged(link);
 
 	return true;
@@ -277,14 +274,14 @@ bool Instance::get(ID_T resId, T &value) {
 }
 
 template<typename T>
-bool Instance::get(const ResLink &resId, T &value) {
-	auto res = resource(resId.resId);
+bool Instance::get(const ResLink &resLink, T &value) {
+	auto res = resource(resLink.resId);
 	if (res == _resources.end()) return false;
 
-	if (!res->get(value, resId.resInstId)) return false;
+	if (!res->get(value, resLink.resInstId)) return false;
 	
-	if (res->isMultiple()) userOperationNotifier(ResOp::READ, resId);
-	else userOperationNotifier(ResOp::READ, {resId,});
+	if (res->isMultiple()) userOperationNotifier(ResOp::READ, resLink);
+	else userOperationNotifier(ResOp::READ, {resLink.resId,});
 
 	return true;
 }
@@ -298,16 +295,16 @@ bool Instance::getPtr(ID_T resId, const T **value) {
 }
 
 template<typename T>
-bool Instance::getPtr(const ResLink &resId, const T **value) {
-	auto res = resource(resId.resId);
+bool Instance::getPtr(const ResLink &resLink, const T **value) {
+	auto res = resource(resLink.resId);
 	if (res == _resources.end()) return false;
 
 	T *tmpValue = NULL;
-	if (!res->ptr(&tmpValue, resId.resInstId) || !tmpValue) return false;
+	if (!res->ptr(&tmpValue, resLink.resInstId) || !tmpValue) return false;
 	*value = tmpValue;
 
-	if (res->isMultiple()) userOperationNotifier(ResOp::READ, resId);
-	else userOperationNotifier(ResOp::READ, {resId,});
+	if (res->isMultiple()) userOperationNotifier(ResOp::READ, resLink);
+	else userOperationNotifier(ResOp::READ, {resLink.resId,});
 
 	return true;
 }

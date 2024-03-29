@@ -45,32 +45,17 @@ Device::~Device() {
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
-void Device::setDefaultState() {
-	/* --------------- Code_cpp block 4 start --------------- */
-	#if RES_3_13
-	WppTaskQueue::requestToRemoveTask(_currentTimeTaskId);
-	#endif
-	/* --------------- Code_cpp block 4 end --------------- */
-
-	_resources.clear();
-	resourcesCreate();
-	resourcesInit();
-
-	/* --------------- Code_cpp block 5 start --------------- */
-	/* --------------- Code_cpp block 5 end --------------- */
-}
-
-void Device::serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resId) {
+void Device::serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resLink) {
 	/* --------------- Code_cpp block 6 start --------------- */
 	/* --------------- Code_cpp block 6 end --------------- */
 
-	operationNotify(*this, resId, type);
+	operationNotify(*this, resLink, type);
 
 	/* --------------- Code_cpp block 7 start --------------- */
 	/* --------------- Code_cpp block 7 end --------------- */
 }
 
-void Device::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
+void Device::userOperationNotifier(ResOp::TYPE type, const ResLink &resLink) {
 	/* --------------- Code_cpp block 8 start --------------- */
 	/* --------------- Code_cpp block 8 end --------------- */
 }

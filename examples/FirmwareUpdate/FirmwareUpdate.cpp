@@ -1,4 +1,5 @@
 #include "FirmwareUpdate.h"
+#include "FirmwareChecker.h"
 
 FirmwareUpdateImpl::FirmwareUpdateImpl() {}
 
@@ -40,7 +41,7 @@ FwUpdRes FirmwareUpdateImpl::lastUpdateResult() {
 
 #if RES_5_6
 STRING_T FirmwareUpdateImpl::pkgName() {
-    string res = FwAutoDownloader::read_metadata(2);
+    string res = FirmwareChecker::getPkgName();
     cout << "FwUpdateImpl: pkgName: " << res << endl;
     return res == "default" ? "current_fw" : res;
 }
@@ -48,7 +49,7 @@ STRING_T FirmwareUpdateImpl::pkgName() {
 
 #if RES_5_7
 STRING_T FirmwareUpdateImpl::pkgVersion() {
-    string res = FwAutoDownloader::read_metadata(3);
+    string res = FirmwareChecker::getPkgVersion();
     cout << "FwUpdateImpl: pkgVersion: " << res << endl;
     return res == "default" ? "1.0.0" : res;
 }

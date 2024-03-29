@@ -204,7 +204,7 @@ Resource* Instance::getValidatedResForWrite(const lwm2m_data_t &data, lwm2m_writ
 	if ((data.type == LWM2M_TYPE_MULTIPLE_RESOURCE && res->isSingle()) ||
 		  (data.type != LWM2M_TYPE_MULTIPLE_RESOURCE && res->isMultiple())) {
 		WPP_LOGW(TAG_WPP_INST, "Server can not write multiple resource to single and vise verse: %d:%d:%d", _id.objId, _id.objInstId, data.id);
-		errCode = COAP_405_METHOD_NOT_ALLOWED;
+		errCode = COAP_400_BAD_REQUEST;
 		return NULL;
 	}
 	return &(*res);
@@ -257,13 +257,13 @@ Resource* Instance::getValidatedResForRead(const lwm2m_data_t &data, uint8_t &er
 	// Check the server operation permission for resource
 	if (!res->getOperation().isRead()) {
 		WPP_LOGE(TAG_WPP_INST, "Server does not have permission for read resource: %d:%d:%d", _id.objId, _id.objInstId, data.id);
-		errCode = COAP_405_METHOD_NOT_ALLOWED;
+		errCode = COAP_400_BAD_REQUEST;
 		return NULL;
 	}
 	// Check resource type (single/multiple) matches with data type
 	if (data.type == LWM2M_TYPE_MULTIPLE_RESOURCE && res->isSingle()) {
 		WPP_LOGW(TAG_WPP_INST, "Server can not read single resource to multiple: %d:%d:%d", _id.objId, _id.objInstId, data.id);
-		errCode = COAP_405_METHOD_NOT_ALLOWED;
+		errCode = COAP_400_BAD_REQUEST;
 		return NULL;
 	}
 	// If resource is multile then we should check that all instances are exists

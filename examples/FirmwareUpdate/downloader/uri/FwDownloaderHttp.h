@@ -13,7 +13,7 @@ using namespace std;
 class FwDownloaderHttp {
     struct DownloadJob {
         string url = "";
-        function<void(string, wpp::FwUpdRes)> downloadedClb;
+        function<void(string)> downloadedClb;
         bool downloading = false;
     };
 
@@ -28,7 +28,7 @@ public:
 
                 this->_jobGuard.lock();
                 string url = this->_job.url;
-                function<void(string, wpp::FwUpdRes)> downloadedClb = this->_job.downloadedClb;
+                function<void(string)> downloadedClb = this->_job.downloadedClb;
                 this->_jobGuard.unlock();
                 string file = "test_fw.fw";
                 cout << "Start downloading from url: " << url << endl;
@@ -36,7 +36,6 @@ public:
                 CURL *curl;
                 FILE *fp;
                 CURLcode res;
-                wpp::FwUpdRes fwUpdRes = wpp::R_INITIAL;
 
                 curl = curl_easy_init();
                 if (curl) {
@@ -53,7 +52,6 @@ public:
 
                     /* Check for errors */
                     if (res != CURLE_OK) {
-                        if (res == CURLcode::CURLE_COULDNT_CONNECT) fwUpdRes = wpp::R_CONN_LOST;
                         cout << "curl_easy_perform() failed: " << curl_easy_strerror(res) << endl;
                     }
 
@@ -65,7 +63,7 @@ public:
                 }
                 
                 cout << "Downloading is completed" << endl;
-                downloadedClb("test_fw.fw", fwUpdRes);
+                downloadedClb("test_fw.fw");
                 _job.downloading = false;
             }
             cout << "Downloading thread is terminated" << endl;
@@ -83,7 +81,7 @@ public:
         }
     }
 
-	void startDownloading(string url, function<void(string, wpp::FwUpdRes)> downloadedClb) {
+	void startDownloading(string url, function<void(string)> downloadedClb) {
         // TODO befor starting download check if not already downloading
         _jobGuard.lock();
         _job = {url, downloadedClb, true};

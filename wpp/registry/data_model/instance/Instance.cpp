@@ -450,7 +450,7 @@ uint8_t Instance::readAsServer(lwm2m_server_t *server, int *numData, lwm2m_data_
 			// resources, but wakaama is implemented in such a way that the behavior of ignoring
 			// optional resources results in an incorrect internal registration system state. 
 			if (server == NULL || errCode != COAP_404_NOT_FOUND) {
-				WPP_LOGW(TAG_WPP_INST, "Resource %d:%d:%d read not possible, ignore: %d", _id.objId, _id.objInstId, data->id);
+				WPP_LOGW(TAG_WPP_INST, "Resource %d:%d:%d read not possible, error: %d", _id.objId, _id.objInstId, data->id, errCode);
 				return errCode;
 			}
 			continue;

@@ -67,6 +67,15 @@ void Lwm2mServer::userOperationNotifier(ResOp::TYPE type, const ResLink &resLink
 		resource(LIFETIME_1)->get(lifetime);
 		lwm2m_update_server_lifetime(&getContext(), serverId, lifetime);
 	}
+	#if defined(LWM2M_SUPPORT_SENML_JSON) && RES_1_23
+	if (type == ResOp::WRITE && resLink.resId == MUTE_SEND_23) {
+		INT_T serverId;
+		BOOL_T mute;
+		resource(SHORT_SERVER_ID_0)->get(serverId);
+		resource(MUTE_SEND_23)->get(mute);
+		lwm2m_update_server_mute(&getContext(), serverId, mute);
+	}
+	#endif
 	/* --------------- Code_cpp block 8 end --------------- */
 }
 

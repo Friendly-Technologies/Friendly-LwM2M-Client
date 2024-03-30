@@ -164,7 +164,7 @@ public:
 	 */
 	void deregister();
 
-	#if RES_1_23
+	#if defined(LWM2M_SUPPORT_SENML_JSON) && RES_1_23
 	/**
 	 * @brief Sending occurs immediately, without checking the response from the server,
 	 * checking only the parameters. Data is sent to all servers with which a successful
@@ -174,7 +174,7 @@ public:
 	 * @return True if the data link is correct and sent successfully, false otherwise.
 	 */
 	bool send(const DataLink &link);
-	#endif
+	#endif // LWM2M_SUPPORT_SENML_JSON && RES_1_23
 
 private:
 	/* ------------- Wakaama client initialisation ------------- */

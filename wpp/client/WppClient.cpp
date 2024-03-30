@@ -131,6 +131,8 @@ time_t WppClient::loop() {
 	return sleepTimeSec;
 }
 
+/* ------------- WppClient server operations ------------- */
+
 bool WppClient::updateServerRegistration(INT_T serverId, bool withLifetime, bool withObjects) {
 	WPP_LOGD(TAG_WPP_CLIENT, "Update registration to server: ID -> %d, withLifetime -> %d, withObjects -> %d", serverId, withLifetime, withObjects);
 	return !lwm2m_update_registration(_lwm2m_context, serverId, withLifetime, withObjects);
@@ -145,6 +147,16 @@ void WppClient::deregister() {
 	WPP_LOGI(TAG_WPP_CLIENT, "Unregister with each server");
 	lwm2m_deregister(_lwm2m_context);
 }
+
+#if RES_1_23
+bool WppClient::send(DataLink link) {
+
+}
+
+bool WppClient::send(OPAQUE_T data) {
+
+}
+#endif
 
 
 /* ------------- Wakaama client initialisation ------------- */

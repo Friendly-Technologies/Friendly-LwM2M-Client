@@ -27,7 +27,7 @@
 #define RES_1_20 0
 #define RES_1_21 0
 #define RES_1_22 0
-#define RES_1_23 0
+#define RES_1_23 1
 
 /* --------------- Config block 0 end --------------- */
 

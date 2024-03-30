@@ -149,12 +149,11 @@ void WppClient::deregister() {
 }
 
 #if RES_1_23
-bool WppClient::send(DataLink link) {
-
-}
-
-bool WppClient::send(OPAQUE_T data) {
-
+bool WppClient::send(const DataLink &link) {
+	WPP_LOGD(TAG_WPP_CLIENT, "Send data to servers: object ID -> %d, instance ID -> %d, resource ID -> %d, resource instance ID -> %d",
+				link.instance.objId, link.instance.objInstId, link.resource.resId, link.resource.resInstId);
+	lwm2m_uri_t uri = {link.instance.objId, link.instance.objInstId, link.resource.resId, link.resource.resInstId};
+	return !lwm2m_send_operation(_lwm2m_context, &uri);
 }
 #endif
 

@@ -33,6 +33,12 @@ public:
         return readMetadata(2);
     }
 
+    static bool getUpdateResult() {
+        string res = readMetadata(6);
+        cout << "FirmwareChecker: update res: " << res << endl;
+        return res == "/pass_updating:=true";
+    }
+
 private:
 
     static bool checkPackageType() {

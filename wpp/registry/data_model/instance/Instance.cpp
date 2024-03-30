@@ -409,7 +409,7 @@ uint8_t Instance::replaceResource(lwm2m_server_t *server, int numData, lwm2m_dat
 			// or read attempt is made, allowing us to ignore a request to read/write these 
 			// resources, but wakaama is implemented in such a way that the behavior of ignoring
 			// optional resources results in an incorrect internal registration system state. 
-			if (server == NULL) {
+			if (server == NULL || errCode != COAP_404_NOT_FOUND) {
 				WPP_LOGW(TAG_WPP_INST, "Resource %d:%d:%d write not possible, error: %d", _id.objId, _id.objInstId, dataArray[i].id, errCode);
 				return errCode;
 			}
@@ -439,25 +439,21 @@ uint8_t Instance::readAsServer(lwm2m_server_t *server, int *numData, lwm2m_data_
 			return errCode;
 		}
 	}
-
-	// TODO: According to the documentation, optional resources can be missing when a write
-	// or read attempt is made, allowing us to ignore a request to read/write these 
-	// resources, but wakaama is implemented in such a way that the behavior of ignoring
-	// optional resources results in an incorrect internal registration system state. 
-	// One of the workarounds is to determine the number of resources that are read or 
-	// written, wakaama reads resources only one at a time, this allows to determine that
-	// the reading or writing is done by wakaama core and set the correct behavior in the
-	// absence of a resource.
-	bool ignore = *numData > 1;
 	
 	for (int i = 0; i < *numData; i++) {
 		uint8_t errCode = COAP_NO_ERROR;
 		lwm2m_data_t *data = (*dataArray) + i;
 		Resource *res = getValidatedResForRead(*data, errCode);
 		if (!res) {
-			WPP_LOGW(TAG_WPP_INST, "Resource %d:%d:%d read not possible, ignore: %d", _id.objId, _id.objInstId, data->id, ignore);
-			if (ignore) continue;
-			else return errCode;
+			// TODO: According to the documentation, optional resources can be missing when a write
+			// or read attempt is made, allowing us to ignore a request to read/write these 
+			// resources, but wakaama is implemented in such a way that the behavior of ignoring
+			// optional resources results in an incorrect internal registration system state. 
+			if (server == NULL || errCode != COAP_404_NOT_FOUND) {
+				WPP_LOGW(TAG_WPP_INST, "Resource %d:%d:%d read not possible, ignore: %d", _id.objId, _id.objInstId, data->id);
+				return errCode;
+			}
+			continue;
 		}
 		
 		errCode = resourceRead(server, *data, *res);

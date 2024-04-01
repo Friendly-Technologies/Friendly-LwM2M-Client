@@ -93,7 +93,11 @@ bool Instance::resourceToLwm2mData(Resource &res, ID_T instanceId, lwm2m_data_t 
 		if (res.get(value, instanceId)) lwm2m_data_encode_bool(value, &data);
 		break;
 	}
-	case TYPE_ID::TIME:
+	case TYPE_ID::TIME:  {
+		TIME_T value;
+		if (res.get(value, instanceId)) lwm2m_data_encode_time(value, &data);
+		break;
+	}
 	case TYPE_ID::INT: {
 		INT_T value;
 		if (res.get(value, instanceId)) lwm2m_data_encode_int(value, &data);
@@ -142,7 +146,11 @@ bool Instance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &res, ID_T
 		if (!lwm2m_data_decode_bool(&data, &value) || !res.set(value, instanceId)) return false;
 		break;
 	}
-	case TYPE_ID::TIME:
+	case TYPE_ID::TIME:{
+		TIME_T value;
+		if (!lwm2m_data_decode_time(&data, &value) || !res.set(value, instanceId)) return false;
+		break;
+	}
 	case TYPE_ID::INT: {
 		INT_T value;
 		if (!lwm2m_data_decode_int(&data, &value) || !res.set(value, instanceId)) return false;

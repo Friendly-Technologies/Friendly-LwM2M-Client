@@ -37,8 +37,6 @@ private:
     #endif
     void reset() override;
 
-    FwUpdRes imitateFirmwareUpdResult(bool isUpdatedSuccess);
-
 private:
     #if RES_5_8
     FwUriDownloader _uriDownloader;

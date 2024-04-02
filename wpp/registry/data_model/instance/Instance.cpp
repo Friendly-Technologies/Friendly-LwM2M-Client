@@ -167,8 +167,9 @@ bool Instance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &res, ID_T
 		break;
 	}
 	case TYPE_ID::OBJ_LINK: {
-		if (data.type != LWM2M_TYPE_OBJECT_LINK) return false;
-		if (!res.set(OBJ_LINK_T{data.value.asObjLink.objectId, data.value.asObjLink.objectInstanceId}, instanceId)) return false;
+		OBJ_LINK_T value;
+		if (data.type != LWM2M_TYPE_OPAQUE && data.type != LWM2M_TYPE_STRING && data.type != LWM2M_TYPE_OBJECT_LINK) return false;
+		if (!lwm2m_data_decode_objlink(&data, &value.objId, &value.objInstId) || !res.setMove(value, instanceId)) return false;
 		break;
 	}
 	case TYPE_ID::OPAQUE: {

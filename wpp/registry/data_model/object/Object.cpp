@@ -113,6 +113,7 @@ std::vector<Instance*>::iterator Object::getInstIter(ID_T instanceID) {
 	return std::find_if(_instances.begin(), _instances.end(), finder);
 }
 
+// TODO: Redundant implementation, it is better to use the lwm2m_list_newId() instead
 ID_T Object::getFirstAvailableInstanceID() {
 	// Usually, each subsequent free index will be equal to the number of created objects
 	ID_T id = _instances.size();

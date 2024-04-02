@@ -185,9 +185,9 @@ class ObjectGenerator:
             return f"""WPP_LOGD(TAG, {text});"""
 
     def get_content_serverOperationNotifier(self):
-        cases = ["READ", "WRITE_UPD", "WRITE_REPLACE_INST", "WRITE_REPLACE_RES", "EXECUTE", "DISCOVER", "DELETE"]
+        cases = ["READ", "WRITE", "EXECUTE", "DISCOVER"]
         base = \
-            f"""void __CLASS_NAME__::serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resId) {{\n""" \
+            f"""void __CLASS_NAME__::serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resLink) {{\n""" \
             f"""\t/* --------------- Code_cpp block 6 start --------------- */\n""" \
             f"""\t/* --------------- Code_cpp block 6 end --------------- */\n""" \
             f"""\n\toperationNotify(*this, resId, type);\n\n""" \
@@ -196,22 +196,22 @@ class ObjectGenerator:
         for case in cases:
             base += f"""case {const.TYPE_OPERATION}::{case}:\n\t\t{self.create_log_string(
                 f"Server {case} -> resId: %d, resInstId: %d",
-                ["resId.resId", "resId.resInstId"],
+                ["resLink.resId", "resLink.resInstId"],
                 False
             )}\n\t\tbreak;\n\t"""
         return f"""{base}default: break;\n\t}}\n\t""" \
                f"""/* --------------- Code_cpp block 7 end --------------- */\n}}"""
 
     def get_content_userOperationNotifier(self):
-        cases = ["READ", "WRITE_UPD", "DELETE"]
+        cases = ["READ", "WRITE", "DELETE"]
         prefix = \
-            f"""void __CLASS_NAME__::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) {{\n""" \
+            f"""void __CLASS_NAME__::userOperationNotifier(ResOp::TYPE type, const ResLink &resLink) {{\n""" \
             f"""\t/* --------------- Code_cpp block 8 start --------------- */\n""" \
             f"""\tswitch (type) {{\n\t"""
         for case in cases:
             prefix += f"""case {const.TYPE_OPERATION}::{case}:\n\t\t{self.create_log_string(
                 f"User {case} -> resId: %d, resInstId: %d",
-                ["resId.resId", "resId.resInstId"],
+                ["resLink.resId", "resLink.resInstId"],
                 False
             )}\n\t\tbreak;\n\t"""
         postfix = f"""default: break;\n\t}}\n""" \

@@ -44,36 +44,24 @@ Lwm2mServer::~Lwm2mServer() {
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
-void Lwm2mServer::setDefaultState() {
-	/* --------------- Code_cpp block 4 start --------------- */
-	/* --------------- Code_cpp block 4 end --------------- */
-
-	_resources.clear();
-	resourcesCreate();
-	resourcesInit();
-
-	/* --------------- Code_cpp block 5 start --------------- */
-	/* --------------- Code_cpp block 5 end --------------- */
-}
-
-void Lwm2mServer::serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resId) {
+void Lwm2mServer::serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resLink) {
 	/* --------------- Code_cpp block 6 start --------------- */
-	if (type == ResOp::WRITE_REPLACE_INST || ((type & ResOp::WRITE) && resId.resId == LIFETIME_1)) {
+	if (type == ResOp::WRITE && resLink.resId == LIFETIME_1) {
 		INT_T serverId;
 		resource(SHORT_SERVER_ID_0)->get(serverId);
 		lwm2m_update_registration(&getContext(), serverId, true, false);
 	}
 	/* --------------- Code_cpp block 6 end --------------- */
 
-	operationNotify(*this, resId, type);
+	operationNotify(*this, resLink, type);
 
 	/* --------------- Code_cpp block 7 start --------------- */
 	/* --------------- Code_cpp block 7 end --------------- */
 }
 
-void Lwm2mServer::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
+void Lwm2mServer::userOperationNotifier(ResOp::TYPE type, const ResLink &resLink) {
 	/* --------------- Code_cpp block 8 start --------------- */
-	if (type == ResOp::WRITE && resId.resId == LIFETIME_1 && getContext().state == STATE_READY){
+	if (type == ResOp::WRITE && resLink.resId == LIFETIME_1 && getContext().state == STATE_READY){
 		INT_T serverId, lifetime;
 		resource(SHORT_SERVER_ID_0)->get(serverId);
 		resource(LIFETIME_1)->get(lifetime);

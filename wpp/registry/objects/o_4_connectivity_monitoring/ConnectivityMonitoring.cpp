@@ -61,29 +61,17 @@ ConnectivityMonitoring::~ConnectivityMonitoring() {
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
-void ConnectivityMonitoring::setDefaultState() {
-	/* --------------- Code_cpp block 4 start --------------- */
-	/* --------------- Code_cpp block 4 end --------------- */
-
-	_resources.clear();
-	resourcesCreate();
-	resourcesInit();
-
-	/* --------------- Code_cpp block 5 start --------------- */
-	/* --------------- Code_cpp block 5 end --------------- */
-}
-
-void ConnectivityMonitoring::serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resId) {
+void ConnectivityMonitoring::serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resLink) {
 	/* --------------- Code_cpp block 6 start --------------- */
 	/* --------------- Code_cpp block 6 end --------------- */
 
-	operationNotify(*this, resId, type);
+	operationNotify(*this, resLink, type);
 
 	/* --------------- Code_cpp block 7 start --------------- */
 	/* --------------- Code_cpp block 7 end --------------- */
 }
 
-void ConnectivityMonitoring::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) {
+void ConnectivityMonitoring::userOperationNotifier(ResOp::TYPE type, const ResLink &resLink) {
 	/* --------------- Code_cpp block 8 start --------------- */
 	/* --------------- Code_cpp block 8 end --------------- */
 }

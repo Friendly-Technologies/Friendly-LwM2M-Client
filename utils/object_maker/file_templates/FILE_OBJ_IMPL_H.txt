@@ -35,10 +35,6 @@ public:
 protected:
 	/* --------------- Instance implementation part --------------- */
 	/*
-	 * Reset all resources values and internal state to default.
-	 */
-	void setDefaultState() override;
-	/*
 	 * Handles information about resource operation that made server
 	 */
 	void serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resId) override;

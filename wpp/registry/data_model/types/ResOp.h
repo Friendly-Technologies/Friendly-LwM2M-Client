@@ -26,19 +26,16 @@ public:
 	/**
 	 * @brief Enum representing the different types of operations.
 	 */
-	enum TYPE: uint16_t {
+	enum TYPE: uint8_t {
 		NONE = 0,                   /**< No operation */
 	    READ = 1,                   /**< Read operation */
-	    WRITE_UPD = 2,              /**< Write update operation */
-		WRITE_REPLACE_RES = 4,      /**< Write replace resource operation */
-		WRITE_REPLACE_INST = 8,     /**< Write replace instance operation */
-		WRITE = WRITE_UPD | WRITE_REPLACE_RES | WRITE_REPLACE_INST, /**< Write operation */
-	    EXECUTE = 16,               /**< Execute operation */
-	    DISCOVER = 32,              /**< Discover operation */
-		DELETE = 64,                /**< Delete operation */
+	    WRITE = 2,              	/**< Write update/replace operation */
+	    EXECUTE = 4,               /**< Execute operation */
+	    DISCOVER = 8,              /**< Discover operation */
+		DELETE = 16,                /**< Delete operation */
 	    #ifdef LWM2M_RAW_BLOCK1_REQUESTS
-		BLOCK_WRITE = 128,          /**< Block write operation */
-	    BLOCK_EXECUTE = 256,        /**< Block execute operation */
+		BLOCK_WRITE = 32,          /**< Block write operation */
+	    BLOCK_EXECUTE = 64,        /**< Block execute operation */
 		#endif
 	};
 
@@ -48,7 +45,7 @@ public:
 	 * 
 	 * @param flags The flags representing the operations.
 	 */
-	ResOp(uint16_t flags = TYPE::NONE): _flags(flags) {}
+	ResOp(uint8_t flags = TYPE::NONE): _flags(flags) {}
 
 	/**
 	 * @brief Checks if a specific operation is supported.
@@ -124,7 +121,7 @@ public:
 	 * 
 	 * @return The flags representing the operations.
 	 */
-	inline uint16_t getFlags() const { return _flags; }
+	inline uint8_t getFlags() const { return _flags; }
 
 	/**
 	 * @brief Converts the flags into a vector of operation types.
@@ -134,14 +131,14 @@ public:
 	inline std::vector<TYPE> asVector() const {
 		uint32_t flags = _flags;
 		std::vector<TYPE> operations;
-		for (size_t i = 1; i != 0x1000; i <<= 1) {
+		for (size_t i = 1; i != 0x100; i <<= 1) {
 			if (flags & i) operations.push_back((TYPE)i);
 		}
 		return operations;
 	}
 
 private:
-	uint16_t _flags;
+	uint8_t _flags;
 };
 
 } // namespace wpp

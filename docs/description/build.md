@@ -216,12 +216,14 @@ PATH - `wpp/configs/wakaama_config.cmake`
 **LWM2M_SUPPORT_SENML_JSON** - enable SenML JSON payload support (default: **OFF**)<br />
 **LWM2M_SUPPORT_JSON** - enable JSON payload support (default: **OFF**)<br />
 **LWM2M_SUPPORT_TLV** - enable TLV payload support (default: **ON**)<br />
+**LWM2M_SUPPORT_CBOR** - enable CBOR payload support (default: **ON**)<br />
+**LWM2M_SUPPORT_SENML_CBOR** - enable SenML CBOR payload support (default: **ON**)<br />
 **LWM2M_OLD_CONTENT_FORMAT_SUPPORT** - support the deprecated content format values for TLV and JSON (default: **OFF**)<br />
 **LWM2M_BS_PREFERRED_CONTENT_TYPE** - to set preferred content type for bootstrap server (default: **110**)<br />
 **LWM2M_REG_PREFERRED_CONTENT_TYPE** - to set preferred content type for registration (default: **110**)<br />
 **LWM2M_VERSION_1_0** - support only version 1.0 (default: **OFF**)<br />
 **LWM2M_RAW_BLOCK1_REQUESTS** - ror low memory client devices where it is not possible to keep a large post or put request in memory to be parsed. Control over such operations is provided entirely to the user. At the moment, there are certain restrictions regarding the use of this mode, only two operations are supported BLOCK_EXECUTE without restrictions, and BLOCK_WRITE with the following restrictions: recording only one SINGLE resource, recording is possible in the following formats: TEXT, OPAQUE, TLV. (default: **OFF**)<br />
-**LWM2M_WITH_LOGS** - enable logs for wakaama core (default: **OFF**)<br />
+**LWM2M_WITH_LOGS** - enable logs for wakaama core (default: **ON**)<br />
 **LWM2M_COAP_DEFAULT_BLOCK_SIZE** - CoAP block size used by CoAP layer when performing block-wise transfers. Possible values: 16, 32, 64, 128, 256, 512 and 1024  (default: **1024**)
 
 Define your own endian if the endian is different from the platform default.<br />

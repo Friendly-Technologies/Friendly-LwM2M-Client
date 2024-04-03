@@ -100,6 +100,16 @@ int main() {
 	// Giving ownership to registry
 	client->giveOwnership();
 
+	// Add tasks with send operation
+	#if defined(LWM2M_SUPPORT_SENML_JSON) && RES_1_23 && RES_3_13
+	WppTaskQueue::addTask(5, [](WppClient &client, void *ctx) {
+		WPP_LOGD(TAG_WPP_TASK, "Task: Send operation, sending current time to the server");
+		DataLink dataLink = {{OBJ_ID::DEVICE, 0}, {Device::CURRENT_TIME_13,}};
+		client.send(dataLink);
+		return false;
+	});
+	#endif
+
 	cout << endl << "---- Starting Connection thread ----" << endl;
 	thread my_thread(socketPolling, &connection, &device);
 

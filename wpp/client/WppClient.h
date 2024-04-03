@@ -140,6 +140,8 @@ public:
 	 */
 	time_t loop();
 
+	/* ------------- WppClient server operations ------------- */
+
 	/**
 	 * @brief Updates the server registration for the specified server ID.
 	 * @param serverId The ID of the server to update the registration for.
@@ -158,9 +160,21 @@ public:
 	bool updateServerRegistration(bool withLifetime = false, bool withObjects = false);
 
 	/**
-	 * @brief Deregisters the client from the server.
+	 * @brief Deregisters the client from the servers.
 	 */
 	void deregister();
+
+	#if defined(LWM2M_SUPPORT_SENML_JSON) && RES_1_23
+	/**
+	 * @brief Sending occurs immediately, without checking the response from the server,
+	 * checking only the parameters. Data is sent to all servers with which a successful
+	 * connection is established, the exception serves only to explicitly disable the send
+	 * operation through resource 23 in the object 1.
+	 * @param link The link to object/instance/resource to send.
+	 * @return True if the data link is correct and sent successfully, false otherwise.
+	 */
+	bool send(const DataLink &link);
+	#endif // LWM2M_SUPPORT_SENML_JSON && RES_1_23
 
 private:
 	/* ------------- Wakaama client initialisation ------------- */

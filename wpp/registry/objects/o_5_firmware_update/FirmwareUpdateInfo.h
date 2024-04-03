@@ -1,5 +1,5 @@
 /*
- * Generated on: 2024-03-19 13:06:08
+ * Generated on: 2024-04-03 15:26:42
  * Created by: SinaiR&D
  */
 
@@ -18,11 +18,11 @@ inline const ObjectInfo FIRMWARE_UPDATE_OBJ_INFO = {
 	/* Object ID */
 	OBJ_ID::FIRMWARE_UPDATE,
 	/* URN */
-	"urn:oma:lwm2m:oma:5",
+	"urn:oma:lwm2m:oma:5:1.1",
 	/* Object version */
-	{1,0},
+	{1,1},
 	/* Lwm2m version */
-	{1,0},
+	{1,1},
 	/* Is single */
 	IS_SINGLE::SINGLE,
 	/* Is Mandatory */

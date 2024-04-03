@@ -1,6 +1,6 @@
 /*
  * FirmwareUpdate
- * Generated on: 2024-03-19 13:06:08
+ * Generated on: 2024-04-03 15:26:42
  * Created by: SinaiR&D
  */
 
@@ -109,6 +109,18 @@ void FirmwareUpdate::resourcesCreate() {
 		{FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8, ResOp(ResOp::READ),              IS_SINGLE::MULTIPLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },     
 		#endif                                                                                                                                                                     
 		{FIRMWARE_UPDATE_DELIVERY_METHOD_9,  ResOp(ResOp::READ),              IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::INT },     
+		#if RES_5_10                                                                                                                                                               
+		{CANCEL_10,                          ResOp(ResOp::EXECUTE),           IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::EXECUTE }, 
+		#endif                                                                                                                                                                     
+		#if RES_5_11                                                                                                                                                               
+		{SEVERITY_11,                        ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },     
+		#endif                                                                                                                                                                     
+		#if RES_5_12                                                                                                                                                               
+		{LAST_STATE_CHANGE_TIME_12,          ResOp(ResOp::READ),              IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::TIME },    
+		#endif                                                                                                                                                                     
+		#if RES_5_13                                                                                                                                                               
+		{MAXIMUM_DEFER_PERIOD_13,            ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::UINT },    
+		#endif                                                                                                                                                                     
 	};
 	_resources = std::move(resources);
 }

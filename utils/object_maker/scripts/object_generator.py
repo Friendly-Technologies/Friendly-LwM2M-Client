@@ -190,7 +190,7 @@ class ObjectGenerator:
             f"""void __CLASS_NAME__::serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resLink) {{\n""" \
             f"""\t/* --------------- Code_cpp block 6 start --------------- */\n""" \
             f"""\t/* --------------- Code_cpp block 6 end --------------- */\n""" \
-            f"""\n\toperationNotify(*this, resId, type);\n\n""" \
+            f"""\n\toperationNotify(*this, resLink, type);\n\n""" \
             f"""\t/* --------------- Code_cpp block 7 start --------------- */\n""" \
             f"""\tswitch (type) {{\n\t"""
         for case in cases:

@@ -150,7 +150,7 @@ void FirmwareUpdate::resourcesInit() {
 
 /* --------------- Code_cpp block 11 start --------------- */
 bool FirmwareUpdate::setFwUpdater(FwUpdater &updater) {
-	resetStateMachine();
+	resetStateMachine(false);
 
 	_pkgUpdater = &updater;
 
@@ -183,7 +183,7 @@ std::vector<FwUpdProtocol> FirmwareUpdate::supportedProtocols() {
 }
 
 bool FirmwareUpdate::setFwExternalDownloader(FwExternalDl &downloader) {
-	resetStateMachine();
+	resetStateMachine(false);
 
 	_externalDownloader = &downloader;
 
@@ -215,7 +215,7 @@ bool FirmwareUpdate::setFwInternalDownloader(FwInternalDl &downloader) {
 	// TODO: Update the implementation of this method after creating an
 	// interface for downloading firmware via uri using the wpp library.
 	// Currently, FwInternalDl only supports loading through the PACKAGE_0 resource.
-	resetStateMachine();
+	resetStateMachine(false);
 
 	_internalDownloader = &downloader;
 	
@@ -272,10 +272,10 @@ void FirmwareUpdate::externalDownloaderHandler(Instance *securityInst) {
 	}
 
 	STRING_T pkgUri;
+	resetStateMachine(true);
 	resource(PACKAGE_URI_1)->get(pkgUri);
 	if (pkgUri.empty()) {
 		WPP_LOGD(TAG, "Server reset state machine through PACKAGE_URI_1");
-		resetStateMachine();
 		return;
 	}
 
@@ -302,10 +302,10 @@ void FirmwareUpdate::internalDownloaderHandler() {
 	if (!_internalDownloader) return;
 
 	OPAQUE_T *pkg;
+	resetStateMachine(true);
 	resource(PACKAGE_0)->ptr(&pkg);	
 	if (pkg->empty()) {
 		WPP_LOGD(TAG, "Server reset state machine through PACKAGE_0");
-		resetStateMachine();
 		return;
 	} 
 	
@@ -337,7 +337,7 @@ void FirmwareUpdate::changeState(FwUpdState state) {
 	notifyServerResChanged({STATE_3,});
 }
 
-void FirmwareUpdate::resetStateMachine() {
+void FirmwareUpdate::resetStateMachine(bool by_empty_url) {
 	#if RES_5_8
 	WppTaskQueue::requestToRemoveTask(_externalDownloaderTaskId);
 	_externalDownloaderTaskId = WPP_ERR_TASK_ID;
@@ -353,10 +353,13 @@ void FirmwareUpdate::resetStateMachine() {
 	#endif
 	if (_pkgUpdater) _pkgUpdater->reset();
 
-	resource(PACKAGE_0)->set(OPAQUE_T());
-	notifyServerResChanged({PACKAGE_0,});
-	resource(PACKAGE_URI_1)->set(STRING_T(""));
-	notifyServerResChanged({PACKAGE_URI_1,});
+	if (!by_empty_url) {
+		resource(PACKAGE_0)->set(OPAQUE_T());
+		notifyServerResChanged({PACKAGE_0,});
+		resource(PACKAGE_URI_1)->set(STRING_T(""));
+		notifyServerResChanged({PACKAGE_URI_1,});
+	}
+
 	changeState(S_IDLE);
 	changeUpdRes(R_INITIAL);
 }

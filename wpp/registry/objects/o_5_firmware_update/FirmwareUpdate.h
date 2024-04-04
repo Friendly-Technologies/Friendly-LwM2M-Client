@@ -112,7 +112,7 @@ private:
 	void resourcesInit();
 	
 	/* --------------- Code_h block 4 start --------------- */
-	void pkgUpdaterHandler();
+	bool pkgUpdaterHandler();
 	#if RES_5_8
 	void externalDownloaderHandler(Instance *securityInst);
 	#endif

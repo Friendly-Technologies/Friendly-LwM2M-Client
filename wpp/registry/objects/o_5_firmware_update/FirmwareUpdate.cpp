@@ -63,14 +63,10 @@ void FirmwareUpdate::serverOperationNotifier(Instance *securityInst, ResOp::TYPE
 	WPP_LOGD(TAG, "Server operation -> type: %d, resId: %d, resInstId: %d", type, resLink.resId, resLink.resInstId);
 	switch (type) {
 	case ResOp::WRITE: {
-		if (resLink.resId == PACKAGE_0) internalDownloaderHandler();
+		if (resLink.resId == PACKAGE_0 && _internalDownloader) internalDownloaderHandler();
 		#if RES_5_8
-		if (resLink.resId == PACKAGE_URI_1) externalDownloaderHandler(securityInst);
+		if (resLink.resId == PACKAGE_URI_1 && _externalDownloader) externalDownloaderHandler(securityInst);
 		#endif
-		break;
-	}
-	case ResOp::EXECUTE: {
-		if (resLink.resId == UPDATE_2) pkgUpdaterHandler();
 		break;
 	}
 	default: break;
@@ -154,11 +150,12 @@ bool FirmwareUpdate::setFwUpdater(FwUpdater &updater) {
 	clearArtifacts();
 
 	_pkgUpdater = &updater;
-
+	// Set the update method
+	resource(UPDATE_2)->set((EXECUTE_T)[this](Instance& inst, ID_T resId, const OPAQUE_T& data) { return pkgUpdaterHandler(); });
 	// Set last update result
 	resource(UPDATE_RESULT_5)->set(INT_T(updater.lastUpdateResult()));
 	notifyServerResChanged({UPDATE_RESULT_5,});
-
+	// Set the package name and version
 	#if RES_5_6
 	resource(PKGNAME_6)->set(updater.pkgName());
 	notifyServerResChanged({PKGNAME_6,});
@@ -234,12 +231,10 @@ bool FirmwareUpdate::setFwInternalDownloader(FwInternalDl &downloader) {
 	return true;
 }
 
-void FirmwareUpdate::pkgUpdaterHandler() {
-	if (!_pkgUpdater) return;
-
+bool FirmwareUpdate::pkgUpdaterHandler() {
 	INT_T state;
 	resource(STATE_3)->get(state);
-	if (state != S_DOWNLOADED) return;
+	if (state != S_DOWNLOADED) return false;
 
 	_pkgUpdater->startUpdating();
 	changeState(S_UPDATING);
@@ -267,11 +262,12 @@ void FirmwareUpdate::pkgUpdaterHandler() {
 
 		return true;
 	});
+
+	return true;
 }
 
 #if RES_5_8
 void FirmwareUpdate::externalDownloaderHandler(Instance *securityInst) {
-	if (!_externalDownloader) return;
 	if (!securityInst) {
 		WPP_LOGE(TAG, "Security object instance is not set");
 		return;
@@ -307,8 +303,6 @@ void FirmwareUpdate::internalDownloaderHandler() {
 	// TODO: Update the implementation of this method after creating an
 	// interface for downloading firmware via uri using the wpp library.
 	// Currently, FwInternalDl only supports loading through the PACKAGE_0 resource.
-	if (!_internalDownloader) return;
-
 	OPAQUE_T *pkg;
 	resetStateMachine();
 	resource(PACKAGE_0)->ptr(&pkg);	

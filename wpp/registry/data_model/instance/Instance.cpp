@@ -93,7 +93,11 @@ bool Instance::resourceToLwm2mData(Resource &res, ID_T instanceId, lwm2m_data_t 
 		if (res.get(value, instanceId)) lwm2m_data_encode_bool(value, &data);
 		break;
 	}
-	case TYPE_ID::TIME:
+	case TYPE_ID::TIME:  {
+		TIME_T value;
+		if (res.get(value, instanceId)) lwm2m_data_encode_time(value, &data);
+		break;
+	}
 	case TYPE_ID::INT: {
 		INT_T value;
 		if (res.get(value, instanceId)) lwm2m_data_encode_int(value, &data);
@@ -142,7 +146,11 @@ bool Instance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &res, ID_T
 		if (!lwm2m_data_decode_bool(&data, &value) || !res.set(value, instanceId)) return false;
 		break;
 	}
-	case TYPE_ID::TIME:
+	case TYPE_ID::TIME:{
+		TIME_T value;
+		if (!lwm2m_data_decode_time(&data, &value) || !res.set(value, instanceId)) return false;
+		break;
+	}
 	case TYPE_ID::INT: {
 		INT_T value;
 		if (!lwm2m_data_decode_int(&data, &value) || !res.set(value, instanceId)) return false;
@@ -159,8 +167,8 @@ bool Instance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &res, ID_T
 		break;
 	}
 	case TYPE_ID::OBJ_LINK: {
-		if (data.type != LWM2M_TYPE_OBJECT_LINK) return false;
-		if (!res.set(OBJ_LINK_T{data.value.asObjLink.objectId, data.value.asObjLink.objectInstanceId}, instanceId)) return false;
+		OBJ_LINK_T value;
+		if (!lwm2m_data_decode_objlink(&data, &value.objId, &value.objInstId) || !res.setMove(value, instanceId)) return false;
 		break;
 	}
 	case TYPE_ID::OPAQUE: {
@@ -204,7 +212,7 @@ Resource* Instance::getValidatedResForWrite(const lwm2m_data_t &data, lwm2m_writ
 	if ((data.type == LWM2M_TYPE_MULTIPLE_RESOURCE && res->isSingle()) ||
 		  (data.type != LWM2M_TYPE_MULTIPLE_RESOURCE && res->isMultiple())) {
 		WPP_LOGW(TAG_WPP_INST, "Server can not write multiple resource to single and vise verse: %d:%d:%d", _id.objId, _id.objInstId, data.id);
-		errCode = COAP_405_METHOD_NOT_ALLOWED;
+		errCode = COAP_400_BAD_REQUEST;
 		return NULL;
 	}
 	return &(*res);
@@ -257,13 +265,13 @@ Resource* Instance::getValidatedResForRead(const lwm2m_data_t &data, uint8_t &er
 	// Check the server operation permission for resource
 	if (!res->getOperation().isRead()) {
 		WPP_LOGE(TAG_WPP_INST, "Server does not have permission for read resource: %d:%d:%d", _id.objId, _id.objInstId, data.id);
-		errCode = COAP_405_METHOD_NOT_ALLOWED;
+		errCode = COAP_400_BAD_REQUEST;
 		return NULL;
 	}
 	// Check resource type (single/multiple) matches with data type
 	if (data.type == LWM2M_TYPE_MULTIPLE_RESOURCE && res->isSingle()) {
 		WPP_LOGW(TAG_WPP_INST, "Server can not read single resource to multiple: %d:%d:%d", _id.objId, _id.objInstId, data.id);
-		errCode = COAP_405_METHOD_NOT_ALLOWED;
+		errCode = COAP_400_BAD_REQUEST;
 		return NULL;
 	}
 	// If resource is multile then we should check that all instances are exists
@@ -409,7 +417,7 @@ uint8_t Instance::replaceResource(lwm2m_server_t *server, int numData, lwm2m_dat
 			// or read attempt is made, allowing us to ignore a request to read/write these 
 			// resources, but wakaama is implemented in such a way that the behavior of ignoring
 			// optional resources results in an incorrect internal registration system state. 
-			if (server == NULL) {
+			if (server == NULL || errCode != COAP_404_NOT_FOUND) {
 				WPP_LOGW(TAG_WPP_INST, "Resource %d:%d:%d write not possible, error: %d", _id.objId, _id.objInstId, dataArray[i].id, errCode);
 				return errCode;
 			}
@@ -439,25 +447,21 @@ uint8_t Instance::readAsServer(lwm2m_server_t *server, int *numData, lwm2m_data_
 			return errCode;
 		}
 	}
-
-	// TODO: According to the documentation, optional resources can be missing when a write
-	// or read attempt is made, allowing us to ignore a request to read/write these 
-	// resources, but wakaama is implemented in such a way that the behavior of ignoring
-	// optional resources results in an incorrect internal registration system state. 
-	// One of the workarounds is to determine the number of resources that are read or 
-	// written, wakaama reads resources only one at a time, this allows to determine that
-	// the reading or writing is done by wakaama core and set the correct behavior in the
-	// absence of a resource.
-	bool ignore = *numData > 1;
 	
 	for (int i = 0; i < *numData; i++) {
 		uint8_t errCode = COAP_NO_ERROR;
 		lwm2m_data_t *data = (*dataArray) + i;
 		Resource *res = getValidatedResForRead(*data, errCode);
 		if (!res) {
-			WPP_LOGW(TAG_WPP_INST, "Resource %d:%d:%d read not possible, ignore: %d", _id.objId, _id.objInstId, data->id, ignore);
-			if (ignore) continue;
-			else return errCode;
+			// TODO: According to the documentation, optional resources can be missing when a write
+			// or read attempt is made, allowing us to ignore a request to read/write these 
+			// resources, but wakaama is implemented in such a way that the behavior of ignoring
+			// optional resources results in an incorrect internal registration system state. 
+			if (server == NULL || errCode != COAP_404_NOT_FOUND) {
+				WPP_LOGW(TAG_WPP_INST, "Resource %d:%d:%d read not possible, error: %d", _id.objId, _id.objInstId, data->id, errCode);
+				return errCode;
+			}
+			continue;
 		}
 		
 		errCode = resourceRead(server, *data, *res);

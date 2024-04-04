@@ -124,7 +124,7 @@ private:
 	void resourcesInit();
 	
 	/* --------------- Code_h block 4 start --------------- */
-	void pkgUpdaterHandler();
+	bool pkgUpdaterHandler();
 	#if RES_5_8
 	void externalDownloaderHandler(Instance *securityInst);
 	#endif
@@ -133,6 +133,7 @@ private:
 	void changeUpdRes(FwUpdRes res);
 	void changeState(FwUpdState state);
 	void resetStateMachine();
+	void clearArtifacts();
 
 	bool isUriValid(STRING_T uri);
 	STRING_T extractSchemeFromUri(STRING_T uri);

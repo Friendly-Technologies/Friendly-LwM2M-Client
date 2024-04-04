@@ -120,7 +120,8 @@ private:
 
 	void changeUpdRes(FwUpdRes res);
 	void changeState(FwUpdState state);
-	void resetStateMachine(bool by_empty_url);
+	void resetStateMachine();
+	void clearArtifacts();
 
 	bool isUriValid(STRING_T uri);
 	STRING_T extractSchemeFromUri(STRING_T uri);

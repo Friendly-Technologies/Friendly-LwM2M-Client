@@ -150,7 +150,8 @@ void FirmwareUpdate::resourcesInit() {
 
 /* --------------- Code_cpp block 11 start --------------- */
 bool FirmwareUpdate::setFwUpdater(FwUpdater &updater) {
-	resetStateMachine(false);
+	resetStateMachine();
+	clearArtifacts();
 
 	_pkgUpdater = &updater;
 
@@ -183,7 +184,8 @@ std::vector<FwUpdProtocol> FirmwareUpdate::supportedProtocols() {
 }
 
 bool FirmwareUpdate::setFwExternalDownloader(FwExternalDl &downloader) {
-	resetStateMachine(false);
+	resetStateMachine();
+	clearArtifacts();
 
 	_externalDownloader = &downloader;
 
@@ -215,7 +217,8 @@ bool FirmwareUpdate::setFwInternalDownloader(FwInternalDl &downloader) {
 	// TODO: Update the implementation of this method after creating an
 	// interface for downloading firmware via uri using the wpp library.
 	// Currently, FwInternalDl only supports loading through the PACKAGE_0 resource.
-	resetStateMachine(false);
+	resetStateMachine();
+	clearArtifacts();
 
 	_internalDownloader = &downloader;
 	
@@ -272,9 +275,10 @@ void FirmwareUpdate::externalDownloaderHandler(Instance *securityInst) {
 	}
 
 	STRING_T pkgUri;
-	resetStateMachine(true);
+	resetStateMachine();
 	resource(PACKAGE_URI_1)->get(pkgUri);
 	if (pkgUri.empty()) {
+		clearArtifacts();
 		WPP_LOGD(TAG, "Server reset state machine through PACKAGE_URI_1");
 		return;
 	}
@@ -302,9 +306,10 @@ void FirmwareUpdate::internalDownloaderHandler() {
 	if (!_internalDownloader) return;
 
 	OPAQUE_T *pkg;
-	resetStateMachine(true);
+	resetStateMachine();
 	resource(PACKAGE_0)->ptr(&pkg);	
 	if (pkg->empty()) {
+		clearArtifacts();
 		WPP_LOGD(TAG, "Server reset state machine through PACKAGE_0");
 		return;
 	} 
@@ -337,7 +342,7 @@ void FirmwareUpdate::changeState(FwUpdState state) {
 	notifyServerResChanged({STATE_3,});
 }
 
-void FirmwareUpdate::resetStateMachine(bool by_empty_url) {
+void FirmwareUpdate::resetStateMachine() {
 	#if RES_5_8
 	WppTaskQueue::requestToRemoveTask(_externalDownloaderTaskId);
 	_externalDownloaderTaskId = WPP_ERR_TASK_ID;
@@ -353,15 +358,15 @@ void FirmwareUpdate::resetStateMachine(bool by_empty_url) {
 	#endif
 	if (_pkgUpdater) _pkgUpdater->reset();
 
-	if (!by_empty_url) {
-		resource(PACKAGE_0)->set(OPAQUE_T());
-		notifyServerResChanged({PACKAGE_0,});
-		resource(PACKAGE_URI_1)->set(STRING_T(""));
-		notifyServerResChanged({PACKAGE_URI_1,});
-	}
-
 	changeState(S_IDLE);
 	changeUpdRes(R_INITIAL);
+}
+
+void FirmwareUpdate::clearArtifacts() {
+	resource(PACKAGE_0)->set(OPAQUE_T());
+	notifyServerResChanged({PACKAGE_0,});
+	resource(PACKAGE_URI_1)->set(STRING_T(""));
+	notifyServerResChanged({PACKAGE_URI_1,});
 }
 
 bool FirmwareUpdate::isUriValid(STRING_T uri) {

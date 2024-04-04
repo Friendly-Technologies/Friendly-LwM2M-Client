@@ -247,20 +247,23 @@ void FirmwareUpdate::pkgUpdaterHandler() {
 	_updaterTaskId = WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, [this](WppClient &client, void *ctx) -> bool {
 		if (!_pkgUpdater->isUpdated()) return false;
 
+		FwUpdRes res = _pkgUpdater->lastUpdateResult();
 		changeState(S_IDLE);
-		changeUpdRes(_pkgUpdater->lastUpdateResult());
+		changeUpdRes(res);
 
-		#if RES_5_6
-		resource(PKGNAME_6)->set(_pkgUpdater->pkgName());
-		notifyServerResChanged({PKGNAME_6,});
-		#endif
-		#if RES_5_7
-		resource(PKGVERSION_7)->set(_pkgUpdater->pkgVersion());
-		notifyServerResChanged({PKGVERSION_7,});
-		#endif
-		#if RES_3_3
-        client.registry().device().instance()->set(Device::FIRMWARE_VERSION_3, _pkgUpdater->pkgVersion());
-        #endif
+		if (res == R_FW_UPD_SUCCESS) {
+			#if RES_5_6
+			resource(PKGNAME_6)->set(_pkgUpdater->pkgName());
+			notifyServerResChanged({PKGNAME_6,});
+			#endif
+			#if RES_5_7
+			resource(PKGVERSION_7)->set(_pkgUpdater->pkgVersion());
+			notifyServerResChanged({PKGVERSION_7,});
+			#endif
+			#if RES_3_3
+			client.registry().device().instance()->set(Device::FIRMWARE_VERSION_3, _pkgUpdater->pkgVersion());
+			#endif
+		}
 
 		return true;
 	});
@@ -289,10 +292,11 @@ void FirmwareUpdate::externalDownloaderHandler(Instance *securityInst) {
 	_externalDownloaderTaskId = WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, [this](WppClient &client, void *ctx) -> bool {
 		if (!_externalDownloader->isDownloaded()) return false;
 
-		if (_externalDownloader->downloadResult() != R_INITIAL) changeState(S_IDLE);
+		FwUpdRes res = _externalDownloader->downloadResult();
+		if (res != R_INITIAL) changeState(S_IDLE);
 		else changeState(S_DOWNLOADED);
 
-		changeUpdRes(_externalDownloader->downloadResult());
+		changeUpdRes(res);
 
 		return true;
 	});

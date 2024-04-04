@@ -11,28 +11,29 @@ using namespace std;
 class FwAutoDownloader : public FwInternalDl {
 public:
     void downloadIsStarted() override {
-        cout << "FwAutoDownloader::downloadIsStarted" << endl;
+        cout << "FwAutoDownloader::downloadIsStarted()" << endl;
     }
 
     bool saveDownloadedBlock(const OPAQUE_T &dataBlock) override {
-        cout << "FwAutoDownloader::saveDownloadedBlock, size: " << dataBlock.size() << endl;
+        cout << "FwAutoDownloader::saveDownloadedBlock(), size: " << dataBlock.size() << endl;
         _fwPackage.insert(_fwPackage.end(), dataBlock.begin(), dataBlock.end());
         return true;
     }
 
     void downloadIsCompleted() override {
-        cout << "FwAutoDownloader::downloadIsCompleted" << endl;
+        cout << "FwAutoDownloader::downloadIsCompleted()" << endl;
         remove("test_fw.fw");
         writeToFile("test_fw.fw", _fwPackage);
     }
 
     FwUpdRes downloadResult() override {
-        cout << "FwAutoDownloader::downloadResult()" << endl;
-        return FirmwareChecker::getFwDownloadRes();
+        FwUpdRes res = FirmwareChecker::getFwDownloadRes();
+        cout << "FwAutoDownloader::downloadResult(): " << (int)res << endl;
+        return res;
     }
 
     void reset() override {
-        cout << "FwAutoDownloader::reset" << endl;
+        cout << "FwAutoDownloader::reset()" << endl;
         _fwPackage.clear();
     }
 

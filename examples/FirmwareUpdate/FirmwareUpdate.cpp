@@ -30,12 +30,12 @@ void FirmwareUpdateImpl::startUpdating() {
 }
 
 bool FirmwareUpdateImpl::isUpdated() {
-    cout << "FwUpdateImpl: isUpdated" << endl;
+    cout << "FwUpdateImpl: isUpdated: true" << endl;
     return true;
 }
 
 FwUpdRes FirmwareUpdateImpl::lastUpdateResult() {
-    cout << "FwUpdateImpl: lastUpdateResult" << endl;
+    cout << "FwUpdateImpl: lastUpdateResult: " << (int)_lastUpdateResult << endl;
     return _lastUpdateResult;
 }
 

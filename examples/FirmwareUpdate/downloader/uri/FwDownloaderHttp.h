@@ -30,7 +30,7 @@ public:
                 string url = this->_job.url;
                 function<void(string)> downloadedClb = this->_job.downloadedClb;
                 this->_jobGuard.unlock();
-                string file = "test_http.fw";
+                string file = "test_fw.fw";
                 cout << "Start downloading from url: " << url << endl;
                 
                 CURL *curl;
@@ -62,8 +62,8 @@ public:
                     cout << "curl_easy_init() failed" << endl;
                 }
                 
-                cout << "Downloading is compleated" << endl;
-                downloadedClb("test_http.fw");
+                cout << "Downloading is completed" << endl;
+                downloadedClb("test_fw.fw");
                 _job.downloading = false;
             }
             cout << "Downloading thread is terminated" << endl;

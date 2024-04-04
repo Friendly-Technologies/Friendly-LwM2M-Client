@@ -162,8 +162,8 @@ public:
                 coap_cleanup();
                 coap_delete_optlist(optlist);
                 
-                cout << "Downloading is compleated" << endl;
-                downloadedClb("test_coap.fw");
+                cout << "Downloading is completed" << endl;
+                downloadedClb("test_fw.fw");
                 _job.downloading = false;
             }
             cout << "Downloading thread is terminated" << endl;
@@ -214,13 +214,13 @@ private:
         if (COAP_RESPONSE_CLASS(rcv_code) == 2) {
             if (coap_get_data_large(received, &len, &databuf, &offset, &total)) {
                 cout << "Received " << len << " bytes" << endl;
-                FILE *file = fopen("test_coap.fw", "a");
+                FILE *file = fopen("test_fw.fw", "a");
                 if (file != NULL) {
                     size_t written = fwrite(databuf, 1, len, file);
                     if (written != len) {
                         perror("Failed to write all bytes to file");
                     } else {
-                        printf("Payload saved to 'test_coap.fw'\n");
+                        printf("Payload saved to 'test_fw.fw'\n");
                     }
                     fclose(file);
                 } else {

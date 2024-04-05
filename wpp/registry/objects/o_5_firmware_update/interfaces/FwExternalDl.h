@@ -47,7 +47,7 @@ public:
     /**
      * @brief Contains the result of the download process.
      * Possible results when download is successful: R_INITIAL
-     * Possible results when error occured: R_NOT_ENOUGH_FLASH, R_OUT_OF_RAM, R_CONN_LOST, R_INTEGRITY_CHECK_FAIL, R_UNSUPPORTED_PKG_TYPE
+     * Possible results when error occured: R_NOT_ENOUGH_FLASH, R_OUT_OF_RAM, R_CONN_LOST, R_INTEGRITY_CHECK_FAIL, R_UNSUPPORTED_PKG_TYPE, R_INVALID_URI (file does not exist)
      */
     virtual FwUpdRes downloadResult() = 0;
 

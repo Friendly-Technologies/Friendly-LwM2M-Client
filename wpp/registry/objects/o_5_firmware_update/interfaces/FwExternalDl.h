@@ -30,7 +30,8 @@ public:
     
     /**
      * @brief Request to start downloading the firmware package from the specified URI.
-     * @param uri - URI of the firmware package.
+     * @param uri - URI of the firmware package. The URI that comes as a parameter is already
+     *              checked syntactically and the protocol is one of the supported ones.
      * @param security - Security object that contains the information necessary to download the firmware package.
      * For notify that the download is completed, isDownloaded() method should return true.
      * For notify download result, downloadResult() method should return the result of the download process.

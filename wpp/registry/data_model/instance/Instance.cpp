@@ -485,7 +485,7 @@ uint8_t Instance::writeAsServer(lwm2m_server_t *server, int numData, lwm2m_data_
 	for (int i = 0; i < numData; i++) {
 		auto res = resource(dataArray[i].id);
 		if (!IS_ITER_VALID_AND_RES_EXISTS(res)) continue;
-		if (!res->getOperation().isWrite() && (_context.state != STATE_BOOTSTRAPPING)) {
+		if (!res->getOperation().isWrite() && (_context.state != STATE_BOOTSTRAPPING) && server != NULL) {
 			WPP_LOGE(TAG_WPP_INST, "Trying to write read-only resource %d:%d:%d", _id.objId, _id.objInstId, dataArray[i].id);
 			return COAP_400_BAD_REQUEST;
 		}

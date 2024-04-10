@@ -17,6 +17,7 @@ class FwDownloaderCoap {
         std::vector<uint8_t> psk_key;
         function<void(string)> downloadedClb;
         bool downloading = false;
+        bool isResourceExists = true;
     };
 
 public:
@@ -88,6 +89,8 @@ public:
                     _job.downloading = false;
                     continue;
                 }
+
+                coap_set_app_data(ctx, &(this->_job.isResourceExists));
 
                 /* Add COAP_BLOCK_USE_LIBCOAP | COAP_BLOCK_SINGLE_BODY to receive large responses*/
                 coap_context_set_block_mode(ctx, COAP_BLOCK_USE_LIBCOAP);
@@ -210,6 +213,15 @@ private:
         size_t offset;
         size_t total;
         coap_pdu_code_t rcv_code = coap_pdu_get_code(received);
+
+        if (rcv_code == COAP_RESPONSE_CODE(404)) {
+            cout << "VADZAKR rcv_code: 404" << endl;
+            coap_context_t *context = coap_session_get_context(session);
+            bool* asd = (bool*)coap_get_app_data(context);
+            * asd = false;
+           
+            return COAP_RESPONSE_OK;
+        }
 
         if (COAP_RESPONSE_CLASS(rcv_code) == 2) {
             if (coap_get_data_large(received, &len, &databuf, &offset, &total)) {

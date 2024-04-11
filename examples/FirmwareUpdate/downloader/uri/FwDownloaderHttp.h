@@ -36,6 +36,7 @@ public:
                 CURL *curl;
                 FILE *fp;
                 CURLcode res;
+                long http_resp_code = 0;
 
                 curl = curl_easy_init();
                 if (curl) {
@@ -49,6 +50,15 @@ public:
                     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0);
     
                     res = curl_easy_perform(curl);
+
+                    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_resp_code);
+                    cout << "http response code: " << http_resp_code << endl;
+                    
+                    if (http_resp_code == 404) {
+                        fclose(fp);
+                        curl_easy_cleanup(curl);
+                        break;
+                    }
 
                     /* Check for errors */
                     if (res != CURLE_OK) {

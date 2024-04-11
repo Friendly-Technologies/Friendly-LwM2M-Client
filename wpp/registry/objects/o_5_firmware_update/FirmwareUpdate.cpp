@@ -298,10 +298,14 @@ void FirmwareUpdate::externalDownloaderHandler(Instance *securityInst) {
 	changeState(S_DOWNLOADING);
 
 	_externalDownloaderTaskId = WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, [this](WppClient &client, void *ctx) -> bool {
+		if (!_externalDownloader->isDownloaded()) return false;
+
 		FwUpdRes res = _externalDownloader->downloadResult();
 		if (res != R_INITIAL) changeState(S_IDLE);
 		else changeState(S_DOWNLOADED);
+
 		changeUpdRes(res);
+		
 		return _externalDownloader->isDownloaded();
 	});
 }

@@ -305,8 +305,8 @@ void FirmwareUpdate::externalDownloaderHandler(Instance *securityInst) {
 		else changeState(S_DOWNLOADED);
 
 		changeUpdRes(res);
-		
-		return _externalDownloader->isDownloaded();
+
+		return true;
 	});
 }
 #endif

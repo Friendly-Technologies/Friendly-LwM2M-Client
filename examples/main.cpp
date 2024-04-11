@@ -15,9 +15,6 @@
 #ifdef OBJ_O_4_CONNECTIVITY_MONITORING
 #include "ConnectivityMonitoring.h"
 #endif
-#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL
-#include "Lwm2mAccessControl.h"
-#endif
 #ifdef OBJ_O_5_FIRMWARE_UPDATE
 #include "FirmwareUpdate.h"
 #endif
@@ -35,6 +32,18 @@ void socketPolling(Connection *connection, DeviceImpl *device) {
 	}
 }
 
+void initAudioClipObj(WppRegistry &registry) {
+	#ifdef OBJ_O_3339_AUDIO_CLIP
+	Object &audioObj = registry.audioClip();
+	Instance *audioInst = audioObj.createInstance(0);
+	registry.registerObj(audioObj);
+	#if OBJ_O_2_LWM2M_ACCESS_CONTROL
+	Lwm2mAccessControl::createInst(audioObj);
+	Lwm2mAccessControl::createInst(*audioInst, TEST_SERVER_SHORT_ID);
+	#endif
+	#endif
+}
+
 // Found Wakaama bugs:
 // TODO: Coap post not working correctly for write
 // TODO: Observation with set pmin attribute did not work properly
@@ -48,9 +57,6 @@ int main() {
 	DeviceImpl device;
 	#ifdef OBJ_O_4_CONNECTIVITY_MONITORING
 	ConnectivityMonitoringImpl conn_mon;
-	#endif
-	#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL
-	Lwm2mAccessControlImpl accessCtrl;
 	#endif
 	#ifdef OBJ_O_5_FIRMWARE_UPDATE
 	FirmwareUpdateImpl fwUpd;
@@ -83,7 +89,6 @@ int main() {
 	#endif
 	#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL
 	cout << endl << "---- Initialization wpp AccessControl ----" << endl;
-	accessCtrl.init(registry.lwm2mAccessControl());
 	registry.registerObj(registry.lwm2mAccessControl());
 	#endif
 	#ifdef OBJ_O_5_FIRMWARE_UPDATE
@@ -93,8 +98,7 @@ int main() {
 	#endif
 	#ifdef OBJ_O_3339_AUDIO_CLIP
 	cout << endl << "---- Initialization wpp AudioClip ----" << endl;
-	registry.registerObj(registry.audioClip());
-	registry.audioClip().createInstance();
+	initAudioClipObj(registry);
 	#endif
 	
 	// Giving ownership to registry

@@ -1,4 +1,5 @@
 #include "Device.h"
+#include "Lwm2mServer.h"
 
 DeviceImpl::DeviceImpl(): _reboot(false) {}
 
@@ -18,6 +19,11 @@ void DeviceImpl::init(Object &obj) {
     inst0->set(Device::MANUFACTURER_0, (STRING_T)"Wakaama Plus");
     inst0->set(Device::MODEL_NUMBER_1, (STRING_T)"Lightweight M2M Client");
     inst0->set(Device::SERIAL_NUMBER_2, (STRING_T)"0123456789");
+
+    #if OBJ_O_2_LWM2M_ACCESS_CONTROL
+	Lwm2mAccessControl::createInst(obj, Lwm2mAccessControl::ALL_OBJ_RIGHTS);
+	Lwm2mAccessControl::createInst(*inst0, TEST_SERVER_SHORT_ID);
+	#endif
 }
 
 void DeviceImpl::objectRestore(Object &object) {

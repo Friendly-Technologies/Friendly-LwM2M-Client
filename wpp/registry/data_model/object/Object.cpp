@@ -1,4 +1,5 @@
 #include "Object.h"
+#include "WppClient.h"
 
 namespace wpp {
 
@@ -49,6 +50,18 @@ lwm2m_object_t& Object::getLwm2mObject() {
 
 const ObjectInfo& Object::getObjectInfo() const { 
     return _objInfo; 
+}
+
+lwm2m_context_t& Object::getContext() { 
+	return _context; 
+}
+
+WppClient& Object::getClient() {
+	return *static_cast<wpp::WppClient *>(getContext().userData);
+}
+
+WppRegistry& Object::getRegistry() {
+	return static_cast<wpp::WppClient *>(getContext().userData)->registry();
 }
 
 void Object::clear() {

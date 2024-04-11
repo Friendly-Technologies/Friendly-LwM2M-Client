@@ -5,6 +5,8 @@
 #include "WppRegistry.h"
 #include "ObjActObserver.h"
 
+#define TEST_SERVER_SHORT_ID 123
+
 using namespace wpp;
 using namespace std;
 

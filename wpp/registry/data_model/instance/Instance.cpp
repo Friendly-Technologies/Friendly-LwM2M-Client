@@ -71,6 +71,10 @@ lwm2m_context_t& Instance::getContext() {
 	return _context; 
 }
 
+WppClient& Instance::getClient() {
+	return *static_cast<wpp::WppClient *>(getContext().userData);
+}
+
 WppRegistry& Instance::getRegistry() {
 	return static_cast<wpp::WppClient *>(getContext().userData)->registry();
 }

@@ -8,7 +8,7 @@
 #ifndef WPP_OBJECT_H_
 #define WPP_OBJECT_H_
 
-#include <unordered_map>
+#include <vector>
 #include <variant>
 
 #include "ObjSubject.h"
@@ -17,6 +17,9 @@
 #include "WppLogs.h"
 
 namespace wpp {
+
+class WppRegistry;
+class WppClient;
 
 /**
  * @class Object
@@ -69,6 +72,21 @@ public:
 	 * @return The lwm2m_object_t object.
 	 */
 	lwm2m_object_t& getLwm2mObject();
+
+	/**
+	 * @brief Return context that can be used by derived class.
+	 */
+	lwm2m_context_t& getContext();
+
+	/**
+ 	 * @brief Helpfull methods to get client instances. 
+	 */
+	WppClient& getClient();
+
+	/**
+	 * @brief Helpfull methods to get registry instances. 
+	 */
+	WppRegistry& getRegistry();
 
 	/**
 	 * @brief Clears the object.

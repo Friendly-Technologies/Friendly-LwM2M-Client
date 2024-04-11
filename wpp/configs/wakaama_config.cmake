@@ -69,7 +69,7 @@ if (LWM2M_RAW_BLOCK1_REQUESTS)
     set(WPP_DEFINITIONS ${WPP_DEFINITIONS} LWM2M_RAW_BLOCK1_REQUESTS)
 endif()
 
-option(LWM2M_WITH_LOGS "Enable logs for wakaama core" OFF)
+option(LWM2M_WITH_LOGS "Enable logs for wakaama core" ON)
 if (LWM2M_WITH_LOGS)
     set(WPP_DEFINITIONS ${WPP_DEFINITIONS} LWM2M_WITH_LOGS)
 endif()

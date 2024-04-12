@@ -45,8 +45,6 @@ void initAudioClipObj(WppRegistry &registry) {
 }
 
 // Found Wakaama bugs:
-// TODO: Coap post not working correctly for write
-// TODO: Observation with set pmin attribute did not work properly
 // TODO: Device work with NON confirmation messages
 
 int main() {

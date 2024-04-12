@@ -14,7 +14,7 @@
 /* --------------- Code_cpp block 0 start --------------- */
 #include "WppClient.h"
 
-#define AC_OBJ_ID_MIN 1
+#define AC_OBJ_ID_MIN 0
 #define AC_OBJ_ID_MAX (ID_T_MAX_VAL-1)
 #define AC_OBJ_INST_ID_MIN 0
 #define AC_OBJ_INST_ID_MAX ID_T_MAX_VAL

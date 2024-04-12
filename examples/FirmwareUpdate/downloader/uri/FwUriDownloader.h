@@ -23,7 +23,7 @@ public:
         cout << "FwUriDownloader::startDownloading(), uri: " << uri << endl;
 
         auto downloadedClb = [this](string file, wpp::FwUpdRes fwUpdRes) {
-            _isDownloaded = fwUpdRes == R_INITIAL;
+            _isDownloaded = true;
             _downloadResult = fwUpdRes;
             // cout << "FwUriDownloader FW is downloaded to file: " << file << " with error: " << (int)fwUpdRes << endl;    // TODO: update comment
         };

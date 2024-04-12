@@ -53,7 +53,7 @@ public:
 	 * @param instanceID The ID of the instance to retrieve. Defaults to 0.
 	 * @return A pointer to the instance specialized type, or nullptr if the instance does not exist.
 	 */
-	T* instanceSpec(ID_T instanceID = 0);
+	T* instanceSpec(ID_T instanceID = ID_T_MAX_VAL);
 
 	/**
 	 * @brief Gets all instances of the object.

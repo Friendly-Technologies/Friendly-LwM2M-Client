@@ -35,11 +35,11 @@ void socketPolling(Connection *connection, DeviceImpl *device) {
 void initAudioClipObj(WppRegistry &registry) {
 	#ifdef OBJ_O_3339_AUDIO_CLIP
 	Object &audioObj = registry.audioClip();
-	Instance *audioInst = audioObj.createInstance(0);
+	audioObj.createInstance();
 	registry.registerObj(audioObj);
 	#if OBJ_O_2_LWM2M_ACCESS_CONTROL
 	Lwm2mAccessControl::createInst(audioObj);
-	Lwm2mAccessControl::createInst(*audioInst, TEST_SERVER_SHORT_ID);
+	Lwm2mAccessControl::createInst(*audioObj.instance(), TEST_SERVER_SHORT_ID);
 	#endif
 	#endif
 }

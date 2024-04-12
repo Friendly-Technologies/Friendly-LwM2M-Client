@@ -105,7 +105,7 @@ bool Object::removeInstance(ID_T instanceId) {
 
 Instance* Object::instance(ID_T instanceID) {
 	// If user want to access instance with ID that does not exist, then we can not do it
-	auto inst = getInstIter(instanceID);
+	auto inst = (instanceID != ID_T_MAX_VAL)? getInstIter(instanceID) : _instances.begin();
 	return inst != _instances.end()? *inst : NULL;
 }
 

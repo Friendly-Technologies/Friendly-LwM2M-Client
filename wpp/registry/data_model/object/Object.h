@@ -119,10 +119,10 @@ public:
 	/**
 	 * @brief Gets an instance of the object.
 	 * 
-	 * @param instanceID The instance ID.
+	 * @param instanceID The instance ID. If not provided, the first available instance is returned.
 	 * @return A pointer to the Instance object.
 	 */
-	Instance* instance(ID_T instanceID = 0);
+	Instance* instance(ID_T instanceID = ID_T_MAX_VAL);
 
 	/**
 	 * @brief Gets all instances of the object.

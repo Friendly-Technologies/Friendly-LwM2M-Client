@@ -1,5 +1,5 @@
-#ifndef WPP_OPERATION_H
-#define WPP_OPERATION_H
+#ifndef WPP_ITEM_OPERATION_H
+#define WPP_ITEM_OPERATION_H
 
 #include <vector>
 
@@ -8,20 +8,20 @@
 namespace wpp {
 
 /**
- * @brief The Operation struct represents the operations that can be performed on a instance/resource.
+ * @brief The ItemOp struct represents the operations that can be performed on a instance/resource.
  * 
  * This struct defines a set of operations that can be performed on a instance/resource. Each operation is represented
  * by a flag value, which can be combined using bitwise OR to represent multiple operations.
  * 
- * The Operation struct provides methods to check if a specific operation is supported, check compatibility
- * with another Operation object, and retrieve the flags representing the operations.
+ * The ItemOp struct provides methods to check if a specific operation is supported, check compatibility
+ * with another ItemOp object, and retrieve the flags representing the operations.
  * 
- * The Operation struct also provides methods to check if an operation is of a specific type, such as read, write,
+ * The ItemOp struct also provides methods to check if an operation is of a specific type, such as read, write,
  * execute, discover, delete or create.
  * 
- * Additionally, the Operation struct provides a method to convert the flags into a vector of operation types.
+ * Additionally, the ItemOp struct provides a method to convert the flags into a vector of operation types.
  */
-struct Operation {
+struct ItemOp {
 public:
 	/**
 	 * @brief Enum representing the different types of operations.
@@ -38,11 +38,11 @@ public:
 
 public:
 	/**
-	 * @brief Constructs a Operation object with the specified flags.
+	 * @brief Constructs a ItemOp object with the specified flags.
 	 * 
 	 * @param flags The flags representing the operations.
 	 */
-	Operation(uint8_t flags = TYPE::NONE): _flags(flags) {}
+	ItemOp(uint8_t flags = TYPE::NONE): _flags(flags) {}
 
 	/**
 	 * @brief Checks if a specific operation is supported.
@@ -53,38 +53,38 @@ public:
 	inline bool isSupported(TYPE type) const { return _flags & type; };
 
 	/**
-	 * @brief Checks if the Operation object is compatible with another Operation object.
+	 * @brief Checks if the ItemOp object is compatible with another ItemOp object.
 	 * 
-	 * Two Operation objects are compatible if their flags have the same operations.
+	 * Two ItemOp objects are compatible if their flags have the same operations.
 	 * 
-	 * @param operation The Operation object to check compatibility with.
+	 * @param operation The ItemOp object to check compatibility with.
 	 * @return true if the objects are compatible, false otherwise.
 	 */
-	inline bool isCompatible(const Operation& operation) const { return (_flags & operation._flags) == _flags; };
+	inline bool isCompatible(const ItemOp& operation) const { return (_flags & operation._flags) == _flags; };
 
 	/**
-	 * @brief Checks if the Operation object represents a read operation.
+	 * @brief Checks if the ItemOp object represents a read operation.
 	 * 
 	 * @return true if the object represents a read operation, false otherwise.
 	 */
 	inline bool isRead() const { return _flags & READ; }
 
 	/**
-	 * @brief Checks if the Operation object represents a write operation.
+	 * @brief Checks if the ItemOp object represents a write operation.
 	 * 
 	 * @return true if the object represents a write operation, false otherwise.
 	 */
 	inline bool isWrite() const { return _flags & WRITE; }
 
 	/**
-	 * @brief Checks if the Operation object represents an execute operation.
+	 * @brief Checks if the ItemOp object represents an execute operation.
 	 * 
 	 * @return true if the object represents an execute operation, false otherwise.
 	 */
 	inline bool isExecute() const { return _flags & EXECUTE; }
 
 	/**
-	 * @brief Checks if the Operation object represents a discover operation.
+	 * @brief Checks if the ItemOp object represents a discover operation.
 	 * 
 	 * @return true if the object represents a discover operation, false otherwise.
 	 */
@@ -131,4 +131,4 @@ private:
 
 } // namespace wpp
 
-#endif //WPP_OPERATION_H
+#endif //WPP_ITEM_OPERATION_H

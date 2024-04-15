@@ -29,12 +29,12 @@ inline const ObjectInfo LWM2M_SECURITY_OBJ_INFO = {
 	IS_MANDATORY::MANDATORY,
 	/* Object supported operations */
 	/* --------------- Info block 0 start --------------- */
-	InstOp(	InstOp::CREATE |
-			InstOp::DELETE),
-	ResOp(	ResOp::READ|
-			ResOp::WRITE|
-			ResOp::DISCOVER|
-			ResOp::EXECUTE),
+	ItemOp(ItemOp::CREATE|
+		   ItemOp::DELETE|
+		   ItemOp::READ|
+		   ItemOp::WRITE|
+		   ItemOp::DISCOVER|
+		   ItemOp::EXECUTE),
 	/* --------------- Info block 0 end --------------- */
 };
 

@@ -29,11 +29,10 @@ inline const ObjectInfo CONNECTIVITY_MONITORING_OBJ_INFO = {
 	IS_MANDATORY::OPTIONAL,
 	/* Object supported operations */
 	/* --------------- Info block 0 start --------------- */
-	InstOp(),
-	ResOp(	ResOp::READ|
-			ResOp::WRITE|
-			ResOp::DISCOVER|
-			ResOp::EXECUTE),
+	ItemOp(ItemOp::READ|
+		   ItemOp::WRITE|
+		   ItemOp::DISCOVER|
+		   ItemOp::EXECUTE),
 	/* --------------- Info block 0 end --------------- */
 };
 

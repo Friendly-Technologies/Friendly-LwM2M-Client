@@ -6,7 +6,7 @@
 #include <variant>
 
 #include "ObjectInfo.h"
-#include "Operation.h"
+#include "ItemOp.h"
 #include "WppTypes.h"
 
 #define RES_METHODS_PROT_SET_FOR(_TYPE_) bool set(const _TYPE_ &value, ID_T resInstId = SINGLE_INSTANCE_ID); \
@@ -73,7 +73,7 @@ public: /* ---------- Public subtypes ----------*/
 
 public: /* ---------- Public methods for common usage ----------*/
     Resource();
-    Resource(ID_T id, const Operation &operation, IS_SINGLE isSingle, IS_MANDATORY isMandatory, TYPE_ID dataType);
+    Resource(ID_T id, const ItemOp &operation, IS_SINGLE isSingle, IS_MANDATORY isMandatory, TYPE_ID dataType);
     Resource(const Resource& resource);
     Resource(Resource&& resource);
 	Resource& operator=(const Resource& other);
@@ -82,7 +82,7 @@ public: /* ---------- Public methods for common usage ----------*/
 	/* ---------- Methods for get resource metadata ----------*/
     ID_T getId() const;
     TYPE_ID getTypeId() const;
-    const Operation& getOperation() const;
+    const ItemOp& getOperation() const;
     bool isMandatory() const;
     bool isOptional() const;
     bool isSingle() const;
@@ -94,7 +94,7 @@ public: /* ---------- Public methods for common usage ----------*/
 	template<typename T>
 	bool isDataValueValid(const T &data) const;
 	bool isDataVerifierValid(const DATA_VERIFIER_T &verifier) const;
-	bool isOperationValid(Operation::TYPE type) const;
+	bool isOperationValid(ItemOp::TYPE type) const;
 	bool isInstanceIdPossible(ID_T resInstId) const;
 	bool isInstanceExist(ID_T resInstId) const;
 	bool isTypeIdCompatible(TYPE_ID type) const;
@@ -164,7 +164,7 @@ private:
 
 private: /* ---------- Private properties ----------*/
     ID_T _id;
-    Operation _operation;
+    ItemOp _operation;
     IS_SINGLE _isSingle;
     IS_MANDATORY _isMandatory;
     TYPE_ID _typeID;

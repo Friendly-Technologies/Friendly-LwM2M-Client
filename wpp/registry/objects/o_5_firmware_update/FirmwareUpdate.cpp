@@ -7,7 +7,7 @@
 #include "o_5_firmware_update/FirmwareUpdate.h"
 
 #include "Resource.h"
-#include "ResOp.h"
+#include "ItemOp.h"
 #include "WppTypes.h"
 #include "WppLogs.h"
 
@@ -58,11 +58,11 @@ FirmwareUpdate::~FirmwareUpdate() {
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
-void FirmwareUpdate::serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resLink) {
+void FirmwareUpdate::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resLink) {
 	/* --------------- Code_cpp block 6 start --------------- */
 	WPP_LOGD(TAG, "Server operation -> type: %d, resId: %d, resInstId: %d", type, resLink.resId, resLink.resInstId);
 	switch (type) {
-	case ResOp::WRITE: {
+	case ItemOp::WRITE: {
 		if (resLink.resId == PACKAGE_0 && _internalDownloader) internalDownloaderHandler();
 		#if RES_5_8
 		if (resLink.resId == PACKAGE_URI_1 && _externalDownloader) externalDownloaderHandler(securityInst);
@@ -79,7 +79,7 @@ void FirmwareUpdate::serverOperationNotifier(Instance *securityInst, ResOp::TYPE
 	/* --------------- Code_cpp block 7 end --------------- */
 }
 
-void FirmwareUpdate::userOperationNotifier(ResOp::TYPE type, const ResLink &resLink) {
+void FirmwareUpdate::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) {
 	/* --------------- Code_cpp block 8 start --------------- */
 	WPP_LOGD(TAG, "User operation -> type: %d, resId: %d, resInstId: %d", type, resLink.resId, resLink.resInstId);
 	/* --------------- Code_cpp block 8 end --------------- */
@@ -90,32 +90,32 @@ void FirmwareUpdate::userOperationNotifier(ResOp::TYPE type, const ResLink &resL
 
 void FirmwareUpdate::resourcesCreate() {
 	std::vector<Resource> resources = {
-		{PACKAGE_0,                          ResOp(ResOp::WRITE),             IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::OPAQUE },  
-		{PACKAGE_URI_1,                      ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::STRING },  
-		{UPDATE_2,                           ResOp(ResOp::EXECUTE),           IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::EXECUTE }, 
-		{STATE_3,                            ResOp(ResOp::READ),              IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::INT },     
-		{UPDATE_RESULT_5,                    ResOp(ResOp::READ),              IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::INT },     
+		{PACKAGE_0,                          ItemOp(ItemOp::WRITE),             IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::OPAQUE },  
+		{PACKAGE_URI_1,                      ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::STRING },  
+		{UPDATE_2,                           ItemOp(ItemOp::EXECUTE),           IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::EXECUTE }, 
+		{STATE_3,                            ItemOp(ItemOp::READ),              IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::INT },     
+		{UPDATE_RESULT_5,                    ItemOp(ItemOp::READ),              IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::INT },     
 		#if RES_5_6                                                                                                                                                                
-		{PKGNAME_6,                          ResOp(ResOp::READ),              IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::STRING },  
+		{PKGNAME_6,                          ItemOp(ItemOp::READ),              IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::STRING },  
 		#endif                                                                                                                                                                     
 		#if RES_5_7                                                                                                                                                                
-		{PKGVERSION_7,                       ResOp(ResOp::READ),              IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::STRING },  
+		{PKGVERSION_7,                       ItemOp(ItemOp::READ),              IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::STRING },  
 		#endif                                                                                                                                                                     
 		#if RES_5_8                                                                                                                                                                
-		{FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8, ResOp(ResOp::READ),              IS_SINGLE::MULTIPLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },     
+		{FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8, ItemOp(ItemOp::READ),              IS_SINGLE::MULTIPLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },     
 		#endif                                                                                                                                                                     
-		{FIRMWARE_UPDATE_DELIVERY_METHOD_9,  ResOp(ResOp::READ),              IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::INT },     
+		{FIRMWARE_UPDATE_DELIVERY_METHOD_9,  ItemOp(ItemOp::READ),              IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::INT },     
 		#if RES_5_10                                                                                                                                                               
-		{CANCEL_10,                          ResOp(ResOp::EXECUTE),           IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::EXECUTE }, 
+		{CANCEL_10,                          ItemOp(ItemOp::EXECUTE),           IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::EXECUTE }, 
 		#endif                                                                                                                                                                     
 		#if RES_5_11                                                                                                                                                               
-		{SEVERITY_11,                        ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },     
+		{SEVERITY_11,                        ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },     
 		#endif                                                                                                                                                                     
 		#if RES_5_12                                                                                                                                                               
-		{LAST_STATE_CHANGE_TIME_12,          ResOp(ResOp::READ),              IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::TIME },    
+		{LAST_STATE_CHANGE_TIME_12,          ItemOp(ItemOp::READ),              IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::TIME },    
 		#endif                                                                                                                                                                     
 		#if RES_5_13                                                                                                                                                               
-		{MAXIMUM_DEFER_PERIOD_13,            ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::UINT },    
+		{MAXIMUM_DEFER_PERIOD_13,            ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::UINT },    
 		#endif                                                                                                                                                                     
 	};
 	_resources = std::move(resources);

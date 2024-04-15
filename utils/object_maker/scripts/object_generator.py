@@ -187,7 +187,7 @@ class ObjectGenerator:
     def get_content_serverOperationNotifier(self):
         cases = ["READ", "WRITE", "EXECUTE"]
         base = \
-            f"""void __CLASS_NAME__::serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resLink) {{\n""" \
+            f"""void __CLASS_NAME__::serverOperationNotifier(Instance *securityInst, Operation::TYPE type, const ResLink &resLink) {{\n""" \
             f"""\t/* --------------- Code_cpp block 6 start --------------- */\n""" \
             f"""\t/* --------------- Code_cpp block 6 end --------------- */\n""" \
             f"""\n\toperationNotify(*this, resLink, type);\n\n""" \
@@ -205,7 +205,7 @@ class ObjectGenerator:
     def get_content_userOperationNotifier(self):
         cases = ["READ", "WRITE", "DELETE"]
         prefix = \
-            f"""void __CLASS_NAME__::userOperationNotifier(ResOp::TYPE type, const ResLink &resLink) {{\n""" \
+            f"""void __CLASS_NAME__::userOperationNotifier(Operation::TYPE type, const ResLink &resLink) {{\n""" \
             f"""\t/* --------------- Code_cpp block 8 start --------------- */\n""" \
             f"""\tswitch (type) {{\n\t"""
         for case in cases:
@@ -254,7 +254,7 @@ class ObjectGenerator:
     def generate_content_info_header(self):
         is_multiple = "MULTIPLE" if self.object_data[const.DATA_KEYS[const.KEY_IS_MULTIPLE]] else "SINGLE"
         is_mandatory = "MANDATORY" if self.object_data[const.DATA_KEYS[const.KEY_IS_MANDATORY]] else "OPTIONAL"
-        inst_operations = "InstOp::CREATE | InstOp::DELETE" if self.object_data[const.DATA_KEYS[const.KEY_IS_MULTIPLE]] else ""
+        inst_operations = "Operation::CREATE|\n\t\t   Operation::DELETE|" if self.object_data[const.DATA_KEYS[const.KEY_IS_MULTIPLE]] else ""
 
         content = func.get_content_from_file(const.FILE_TMPLT_INFO)[1]
         content = content.replace("__DATETIME__", DATETIME)

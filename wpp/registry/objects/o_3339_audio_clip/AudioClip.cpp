@@ -7,7 +7,7 @@
 #include "o_3339_audio_clip/AudioClip.h"
 
 #include "Resource.h"
-#include "ResOp.h"
+#include "ItemOp.h"
 #include "WppTypes.h"
 #include "WppLogs.h"
 
@@ -35,7 +35,7 @@ AudioClip::~AudioClip() {
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
-void AudioClip::serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resLink) {
+void AudioClip::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resLink) {
 	/* --------------- Code_cpp block 6 start --------------- */
 	/* --------------- Code_cpp block 6 end --------------- */
 
@@ -43,13 +43,13 @@ void AudioClip::serverOperationNotifier(Instance *securityInst, ResOp::TYPE type
 
 	/* --------------- Code_cpp block 7 start --------------- */
 	switch (type) {
-	case ResOp::READ:
+	case ItemOp::READ:
 		WPP_LOGD(TAG, "Server READ -> resId: %d, resInstId: %d", resLink.resId, resLink.resInstId);
 		break;
-	case ResOp::WRITE:
+	case ItemOp::WRITE:
 		WPP_LOGD(TAG, "Server WRITE -> resId: %d, resInstId: %d", resLink.resId, resLink.resInstId);
 		break;
-	case ResOp::EXECUTE:
+	case ItemOp::EXECUTE:
 		WPP_LOGD(TAG, "Server EXECUTE -> resId: %d, resInstId: %d", resLink.resId, resLink.resInstId);
 		break;
 	default: break;
@@ -57,16 +57,16 @@ void AudioClip::serverOperationNotifier(Instance *securityInst, ResOp::TYPE type
 	/* --------------- Code_cpp block 7 end --------------- */
 }
 
-void AudioClip::userOperationNotifier(ResOp::TYPE type, const ResLink &resLink) {
+void AudioClip::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) {
 	/* --------------- Code_cpp block 8 start --------------- */
 	switch (type) {
-	case ResOp::READ:
+	case ItemOp::READ:
 		WPP_LOGD(TAG, "User READ -> resId: %d, resInstId: %d", resLink.resId, resLink.resInstId);
 		break;
-	case ResOp::WRITE:
+	case ItemOp::WRITE:
 		WPP_LOGD(TAG, "User WRITE -> resId: %d, resInstId: %d", resLink.resId, resLink.resInstId);
 		break;
-	case ResOp::DELETE:
+	case ItemOp::DELETE:
 		WPP_LOGD(TAG, "User DELETE -> resId: %d, resInstId: %d", resLink.resId, resLink.resInstId);
 		break;
 	default: break;
@@ -79,18 +79,18 @@ void AudioClip::userOperationNotifier(ResOp::TYPE type, const ResLink &resLink) 
 
 void AudioClip::resourcesCreate() {
 	std::vector<Resource> resources = {
-		{CLIP_5522,             ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::OPAQUE },  
+		{CLIP_5522,             ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::OPAQUE },  
 		#if RES_3339_5523                                                                                                                                           
-		{TRIGGER_5523,          ResOp(ResOp::EXECUTE),           IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::EXECUTE }, 
+		{TRIGGER_5523,          ItemOp(ItemOp::EXECUTE),           IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::EXECUTE }, 
 		#endif                                                                                                                                                      
 		#if RES_3339_5548                                                                                                                                           
-		{LEVEL_5548,            ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::FLOAT }, 
+		{LEVEL_5548,            ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::FLOAT }, 
 		#endif                                                                                                                                                      
 		#if RES_3339_5524                                                                                                                                           
-		{DURATION_5524,         ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::FLOAT }, 
+		{DURATION_5524,         ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::FLOAT }, 
 		#endif                                                                                                                                                      
 		#if RES_3339_5750                                                                                                                                           
-		{APPLICATION_TYPE_5750, ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::STRING },  
+		{APPLICATION_TYPE_5750, ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::STRING },  
 		#endif                                                                                                                                                      
 	};
 	_resources = std::move(resources);

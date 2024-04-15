@@ -50,11 +50,11 @@ protected:
 	/*
 	 * Handles information about resource operation that made server
 	 */
-	void serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resLink) override;
+	void serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resLink) override;
 	/*
 	 * Handles information about resource operation that made user
 	 */
-	void userOperationNotifier(ResOp::TYPE type, const ResLink &resLink) override;
+	void userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) override;
 
 	/* --------------- Code_h block 3 start --------------- */
 	/* --------------- Code_h block 3 end --------------- */

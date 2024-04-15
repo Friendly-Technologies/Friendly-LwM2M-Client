@@ -20,7 +20,7 @@ bool Instance::clear(ID_T resId) {
 
 	bool result = res->clear();
 	if (result) {
-		userOperationNotifier(Operation::DELETE, {resId,});
+		userOperationNotifier(ItemOp::DELETE, {resId,});
 		notifyServerResChanged({resId,});
 	}
 
@@ -33,7 +33,7 @@ bool Instance::remove(const ResLink &resLink) {
 
 	bool result = res->remove(resLink.resInstId);
 	if (result) {
-		userOperationNotifier(Operation::DELETE, {resLink.resId, resLink.resInstId});
+		userOperationNotifier(ItemOp::DELETE, {resLink.resId, resLink.resInstId});
 		notifyServerResChanged({resLink.resId, resLink.resInstId});
 	}
 
@@ -54,7 +54,7 @@ std::vector<Resource *> Instance::getInstantiatedResList() {
 	return list;
 }
 
-std::vector<Resource *> Instance::getInstantiatedResList(const Operation& filter) {
+std::vector<Resource *> Instance::getInstantiatedResList(const ItemOp& filter) {
 	std::vector<Resource *> list;
 	for (auto &res : _resources) {
 		if (!res.isEmpty() && filter.isCompatible(res.getOperation())) list.push_back(&res);
@@ -245,10 +245,10 @@ uint8_t Instance::resourceWrite(lwm2m_server_t *server, Resource &res, const lwm
 			return COAP_400_BAD_REQUEST;
 		}
 		// Notify implementation about update operation
-		if (writeType == LWM2M_WRITE_PARTIAL_UPDATE) serverOperationNotifier(getSecurityInst(server), Operation::WRITE, {res.getId(), (res.isSingle()? ID_T_MAX_VAL : resInstId)});
+		if (writeType == LWM2M_WRITE_PARTIAL_UPDATE) serverOperationNotifier(getSecurityInst(server), ItemOp::WRITE, {res.getId(), (res.isSingle()? ID_T_MAX_VAL : resInstId)});
 	}
 	// Notify implementation about replace resource operation
-	if (writeType == LWM2M_WRITE_REPLACE_RESOURCES) serverOperationNotifier(getSecurityInst(server), Operation::WRITE, {res.getId(), ID_T_MAX_VAL});
+	if (writeType == LWM2M_WRITE_REPLACE_RESOURCES) serverOperationNotifier(getSecurityInst(server), ItemOp::WRITE, {res.getId(), ID_T_MAX_VAL});
 
 	return COAP_NO_ERROR;
 }
@@ -312,7 +312,7 @@ uint8_t Instance::resourceRead(lwm2m_server_t *server, lwm2m_data_t &data, Resou
 			return COAP_400_BAD_REQUEST;
 		}
 		// Notify implementation about read resource operation
-		serverOperationNotifier(getSecurityInst(server), Operation::READ, {res.getId(), (res.isSingle()? ID_T_MAX_VAL : resInstId)});
+		serverOperationNotifier(getSecurityInst(server), ItemOp::READ, {res.getId(), (res.isSingle()? ID_T_MAX_VAL : resInstId)});
 	}
 
 	return COAP_NO_ERROR;
@@ -400,7 +400,7 @@ uint8_t Instance::replaceInstance(lwm2m_server_t *server, int numData, lwm2m_dat
 	// Replace original resources with updated resources
 	for (auto &res : replaceInstResources) {
 		*resource(res.getId()) = std::move(res);
-		serverOperationNotifier(getSecurityInst(server), Operation::WRITE, {res.getId(), ID_T_MAX_VAL});
+		serverOperationNotifier(getSecurityInst(server), ItemOp::WRITE, {res.getId(), ID_T_MAX_VAL});
 	}
 
 	return COAP_NO_ERROR;
@@ -438,7 +438,7 @@ uint8_t Instance::readAsServer(lwm2m_server_t *server, int *numData, lwm2m_data_
 	bool readAllAvailableRes = *numData == 0;
 	WPP_LOGD(TAG_WPP_INST, "Read %d:%d, readAllAvailableRes: %d, numData: %d", _id.objId, _id.objInstId, readAllAvailableRes, *numData);
 	if (readAllAvailableRes) {
-		std::vector<Resource *> readResources = getInstantiatedResList(Operation(Operation::READ));
+		std::vector<Resource *> readResources = getInstantiatedResList(ItemOp(ItemOp::READ));
 		uint8_t errCode = createEmptyLwm2mDataArray(readResources, dataArray, numData);
 		if (errCode != COAP_NO_ERROR) {
 			WPP_LOGE(TAG_WPP_INST, "Error during creating lwm2m_data_t for read instance %d:%d", _id.objId, _id.objInstId);
@@ -512,7 +512,7 @@ uint8_t Instance::executeAsServer(lwm2m_server_t *server, ID_T resId, uint8_t * 
 	}
 
 	// Notify implementation about execute resource operation
-	serverOperationNotifier(getSecurityInst(server), Operation::EXECUTE, {res->getId(), ID_T_MAX_VAL});
+	serverOperationNotifier(getSecurityInst(server), ItemOp::EXECUTE, {res->getId(), ID_T_MAX_VAL});
 
 	WPP_LOGD(TAG_WPP_INST, "Resource execute: %d:%d:%d, buffer length: %d", _id.objId, _id.objInstId, resId, length);
 	return execute(*this, resId, OPAQUE_T(buffer, buffer + length))? COAP_204_CHANGED : COAP_405_METHOD_NOT_ALLOWED;

@@ -79,12 +79,6 @@ WppRegistry& Instance::getRegistry() {
 	return static_cast<wpp::WppClient *>(getContext().userData)->registry();
 }
 
-#ifdef LWM2M_RAW_BLOCK1_REQUESTS
-void Instance::serverBlockOperationNotifier(ResOp::TYPE type, const ResLink &resLink, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock) {
-	WPP_LOGI(TAG_WPP_INST, "Block operation notifier not implemented for: %d:%d:%d, operation type: %d", _id.objId, resLink.resId, resLink.resInstId, type);
-}
-#endif
-
 Instance* Instance::getSecurityInst(lwm2m_server_t *server) {
 	if (!server) return NULL;
 	return getRegistry().object(OBJ_ID::LWM2M_SECURITY)->instance(server->secObjInstID);
@@ -562,60 +556,6 @@ uint8_t Instance::discoverAsServer(lwm2m_server_t *server, int * numData, lwm2m_
 	}
 	return COAP_205_CONTENT;
 }
-
-#ifdef LWM2M_RAW_BLOCK1_REQUESTS
-uint8_t Instance::blockWriteAsServer(lwm2m_server_t *server, lwm2m_uri_t * uri, lwm2m_media_type_t format, uint8_t * buffer, int length, uint32_t blockNum, uint8_t blockMore) {
-	if (uri == NULL) return COAP_500_INTERNAL_SERVER_ERROR;
-
-	WPP_LOGD(TAG_WPP_INST, "Block write parameters: %d:%d:%d:%d, format: %d, len: %d, block number: %d, blockMore %d",
-								uri->objectId, uri->instanceId, uri->resourceId, uri->resourceInstanceId, format, length, blockNum, blockMore);
-	// TODO: For now is not supported writing multiple resources or whole instance at once
-	if (!LWM2M_URI_IS_SET_RESOURCE(uri) || LWM2M_URI_IS_SET_RESOURCE_INSTANCE(uri)) {
-		WPP_LOGW(TAG_WPP_INST, "Not possible to apply block write operation for: %d:%d:%d:%d", uri->objectId, uri->instanceId, uri->resourceId, uri->resourceInstanceId);
-		return COAP_400_BAD_REQUEST;
-	}
-	ResLink resLink = {uri->resourceId, ID_T_MAX_VAL};
-
-	switch (format) {
-    case LWM2M_CONTENT_TEXT:
-    case LWM2M_CONTENT_OPAQUE:
-        serverBlockOperationNotifier(ResOp::BLOCK_WRITE, resLink, OPAQUE_T(buffer, buffer+length), blockNum, !blockMore);
-		break;
-	#ifdef LWM2M_SUPPORT_TLV
-	case LWM2M_CONTENT_TLV: {
-		if (!blockNum) {
-			lwm2m_data_type_t dataType;
-			ID_T id;
-			size_t dataStart, dataLen;
-			lwm2m_decode_TLV(buffer, length, &dataType, &id, &dataStart, &dataLen);
-			// TODO: For now is not supported writing multiple resources or whole instance at once
-			if (dataType == LWM2M_TYPE_MULTIPLE_RESOURCE) {
-				WPP_LOGW(TAG_WPP_INST, "Not possible to apply block write operation for TLV with multiple resources");
-				return COAP_400_BAD_REQUEST;
-			}
-			serverBlockOperationNotifier(ResOp::BLOCK_WRITE, resLink, OPAQUE_T(buffer+dataStart, buffer+length), blockNum, !blockMore);
-		} else {
-			serverBlockOperationNotifier(ResOp::BLOCK_WRITE, resLink, OPAQUE_T(buffer, buffer+length), blockNum, !blockMore);
-		}
-		break;
-	}
-	#endif
-	default: 
-		WPP_LOGW(TAG_WPP_INST, "Unsupported format: %d", format);
-		return COAP_405_METHOD_NOT_ALLOWED;
-	}
-
-	return blockMore? COAP_231_CONTINUE : COAP_204_CHANGED;
-}
-
-uint8_t Instance::blockExecuteAsServer(lwm2m_server_t *server, lwm2m_uri_t * uri, uint8_t * buffer, int length, uint32_t blockNum, uint8_t blockMore) {
-	if (uri == NULL) return COAP_500_INTERNAL_SERVER_ERROR;
-	
-	WPP_LOGD(TAG_WPP_INST, "Block execute parameters: %d:%d:%d, len: %d, block number: %d, blockMoreL %d", uri->objectId, uri->instanceId, uri->resourceId, length, blockNum, blockMore);
-	serverBlockOperationNotifier(ResOp::BLOCK_EXECUTE, {uri->resourceId, uri->resourceInstanceId}, OPAQUE_T(buffer, buffer+length), blockNum, !blockMore);
-	return blockMore? COAP_231_CONTINUE : COAP_204_CHANGED;
-}
-#endif
 
 } // namespcae wpp
 

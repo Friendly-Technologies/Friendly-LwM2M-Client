@@ -132,7 +132,6 @@ time_t WppClient::loop() {
 }
 
 /* ------------- WppClient server operations ------------- */
-
 void WppClient::deregister() {
 	WPP_LOGI(TAG_WPP_CLIENT, "Unregister with each server");
 	lwm2m_deregister(_lwm2m_context);
@@ -146,7 +145,6 @@ bool WppClient::send(const DataLink &link) {
 	return !lwm2m_send_operation(_lwm2m_context, &uri);
 }
 #endif
-
 
 /* ------------- Wakaama client initialisation ------------- */
 bool WppClient::lwm2mContextOpen() {

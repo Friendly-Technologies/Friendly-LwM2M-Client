@@ -13,17 +13,17 @@ Object::Object(lwm2m_context_t &context, const ObjectInfo &info):  _context(cont
 	_lwm2m_object.versionMinor = _objInfo.objVersion.minor;
 	_lwm2m_object.userData     = this;
 
-	if (_objInfo.resOperation.isRead()) _lwm2m_object.readFunc = serverRead_clb;
+	if (_objInfo.operations.isRead()) _lwm2m_object.readFunc = serverRead_clb;
 	else  _lwm2m_object.readFunc = NULL;
-	if (_objInfo.resOperation.isDiscover()) _lwm2m_object.discoverFunc = serverDiscover_clb;
+	if (_objInfo.operations.isDiscover()) _lwm2m_object.discoverFunc = serverDiscover_clb;
 	else  _lwm2m_object.discoverFunc = NULL;
-	if (_objInfo.resOperation.isWrite()) _lwm2m_object.writeFunc = serverWrite_clb;
+	if (_objInfo.operations.isWrite()) _lwm2m_object.writeFunc = serverWrite_clb;
 	else  _lwm2m_object.writeFunc = NULL;
-	if (_objInfo.resOperation.isExecute()) _lwm2m_object.executeFunc = serverExecute_clb;
+	if (_objInfo.operations.isExecute()) _lwm2m_object.executeFunc = serverExecute_clb;
 	else  _lwm2m_object.executeFunc = NULL;
-	if (_objInfo.instOperation.isCreate()) _lwm2m_object.createFunc = serverCreate_clb;
+	if (_objInfo.operations.isCreate()) _lwm2m_object.createFunc = serverCreate_clb;
 	else  _lwm2m_object.createFunc = NULL;
-	if (_objInfo.instOperation.isDelete()) _lwm2m_object.deleteFunc = serverDelete_clb;
+	if (_objInfo.operations.isDelete()) _lwm2m_object.deleteFunc = serverDelete_clb;
 	else  _lwm2m_object.deleteFunc = NULL;
 }
 
@@ -168,7 +168,7 @@ uint8_t Object::serverCreate_clb(lwm2m_context_t * contextP, lwm2m_server_t *ser
     WPP_LOGD(TAG_WPP_OBJ, "wakaama create %d:%d", obj->getObjectID(), instanceId);
 	if (!obj->createInstance(instanceId)) return COAP_500_INTERNAL_SERVER_ERROR;
 	// Notify user about creating instance
-	obj->operationNotify(*obj, instanceId, InstOp::CREATE);
+	obj->operationNotify(*obj, instanceId, Operation::CREATE);
 
 	uint8_t result = serverWrite_clb(contextP, server, instanceId, numData, dataArray, objectP, LWM2M_WRITE_REPLACE_RESOURCES);
 	if (result != COAP_204_CHANGED) {
@@ -184,7 +184,7 @@ uint8_t Object::serverDelete_clb(lwm2m_context_t * contextP, lwm2m_server_t *ser
     WPP_LOGD(TAG_WPP_OBJ, "wakaama delete %d:%d", obj->getObjectID(), instanceId);
 	if (!obj->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
 	// Notify user about deleting instance
-	obj->operationNotify(*obj, instanceId, InstOp::DELETE);
+	obj->operationNotify(*obj, instanceId, Operation::DELETE);
 
 	return obj->removeInstance(instanceId)? COAP_202_DELETED : COAP_404_NOT_FOUND;
 }

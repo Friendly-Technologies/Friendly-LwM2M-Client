@@ -1,5 +1,5 @@
-#ifndef WPP_RES_OPERATION_H
-#define WPP_RES_OPERATION_H
+#ifndef WPP_OPERATION_H
+#define WPP_OPERATION_H
 
 #include <vector>
 
@@ -8,20 +8,20 @@
 namespace wpp {
 
 /**
- * @brief The ResOp struct represents the operations that can be performed on a resource.
+ * @brief The Operation struct represents the operations that can be performed on a instance/resource.
  * 
- * This struct defines a set of operations that can be performed on a resource. Each operation is represented
+ * This struct defines a set of operations that can be performed on a instance/resource. Each operation is represented
  * by a flag value, which can be combined using bitwise OR to represent multiple operations.
  * 
- * The ResOp struct provides methods to check if a specific operation is supported, check compatibility
- * with another ResOp object, and retrieve the flags representing the operations.
+ * The Operation struct provides methods to check if a specific operation is supported, check compatibility
+ * with another Operation object, and retrieve the flags representing the operations.
  * 
- * The ResOp struct also provides methods to check if an operation is of a specific type, such as read, write,
- * execute, discover, delete, block write, or block execute.
+ * The Operation struct also provides methods to check if an operation is of a specific type, such as read, write,
+ * execute, discover, delete or create.
  * 
- * Additionally, the ResOp struct provides a method to convert the flags into a vector of operation types.
+ * Additionally, the Operation struct provides a method to convert the flags into a vector of operation types.
  */
-struct ResOp {
+struct Operation {
 public:
 	/**
 	 * @brief Enum representing the different types of operations.
@@ -30,18 +30,19 @@ public:
 		NONE = 0,                   /**< No operation */
 	    READ = 1,                   /**< Read operation */
 	    WRITE = 2,              	/**< Write update/replace operation */
-	    EXECUTE = 4,               /**< Execute operation */
-	    DISCOVER = 8,              /**< Discover operation */
-		DELETE = 16,                /**< Delete operation */
+	    EXECUTE = 4,                /**< Execute operation */
+	    DISCOVER = 8,               /**< Discover operation */
+		CREATE = 16,                 /**< Create operation */
+	    DELETE = 32,                 /**< Delete operation */
 	};
 
 public:
 	/**
-	 * @brief Constructs a ResOp object with the specified flags.
+	 * @brief Constructs a Operation object with the specified flags.
 	 * 
 	 * @param flags The flags representing the operations.
 	 */
-	ResOp(uint8_t flags = TYPE::NONE): _flags(flags) {}
+	Operation(uint8_t flags = TYPE::NONE): _flags(flags) {}
 
 	/**
 	 * @brief Checks if a specific operation is supported.
@@ -52,47 +53,54 @@ public:
 	inline bool isSupported(TYPE type) const { return _flags & type; };
 
 	/**
-	 * @brief Checks if the ResOp object is compatible with another ResOp object.
+	 * @brief Checks if the Operation object is compatible with another Operation object.
 	 * 
-	 * Two ResOp objects are compatible if their flags have the same operations.
+	 * Two Operation objects are compatible if their flags have the same operations.
 	 * 
-	 * @param operation The ResOp object to check compatibility with.
+	 * @param operation The Operation object to check compatibility with.
 	 * @return true if the objects are compatible, false otherwise.
 	 */
-	inline bool isCompatible(const ResOp& operation) const { return (_flags & operation._flags) == _flags; };
+	inline bool isCompatible(const Operation& operation) const { return (_flags & operation._flags) == _flags; };
 
 	/**
-	 * @brief Checks if the ResOp object represents a read operation.
+	 * @brief Checks if the Operation object represents a read operation.
 	 * 
 	 * @return true if the object represents a read operation, false otherwise.
 	 */
 	inline bool isRead() const { return _flags & READ; }
 
 	/**
-	 * @brief Checks if the ResOp object represents a write operation.
+	 * @brief Checks if the Operation object represents a write operation.
 	 * 
 	 * @return true if the object represents a write operation, false otherwise.
 	 */
 	inline bool isWrite() const { return _flags & WRITE; }
 
 	/**
-	 * @brief Checks if the ResOp object represents an execute operation.
+	 * @brief Checks if the Operation object represents an execute operation.
 	 * 
 	 * @return true if the object represents an execute operation, false otherwise.
 	 */
 	inline bool isExecute() const { return _flags & EXECUTE; }
 
 	/**
-	 * @brief Checks if the ResOp object represents a discover operation.
+	 * @brief Checks if the Operation object represents a discover operation.
 	 * 
 	 * @return true if the object represents a discover operation, false otherwise.
 	 */
 	inline bool isDiscover() const { return _flags & DISCOVER; }
 
 	/**
-	 * @brief Checks if the ResOp object represents a delete operation.
+	 * @brief Checks if the operation is of type CREATE.
 	 * 
-	 * @return true if the object represents a delete operation, false otherwise.
+	 * @return true if the operation is of type CREATE, false otherwise.
+	 */
+	inline bool isCreate() const { return _flags & CREATE; }
+
+	/**
+	 * @brief Checks if the operation is of type DELETE.
+	 * 
+	 * @return true if the operation is of type DELETE, false otherwise.
 	 */
 	inline bool isDelete() const { return _flags & DELETE; }
 
@@ -123,4 +131,4 @@ private:
 
 } // namespace wpp
 
-#endif //WPP_RES_OPERATION_H
+#endif //WPP_OPERATION_H

@@ -1,7 +1,7 @@
 #ifndef WPP_INST_SUBJECT_H_
 #define WPP_INST_SUBJECT_H_
 
-#include "ResOp.h"
+#include "Operation.h"
 #include "InstOpObserver.h"
 #include "InstEventObserver.h"
 
@@ -75,16 +75,16 @@ protected:
      * @param resId The resource link of the instance resource.
      * @param type The type of operation.
      */
-    void operationNotify(Instance &inst, const ResLink &resLink, ResOp::TYPE type) {
+    void operationNotify(Instance &inst, const ResLink &resLink, Operation::TYPE type) {
         for(InstOpObserver *observer : _opObservers) {
             switch (type) {
-            case ResOp::READ: 
+            case Operation::READ: 
                 observer->resourceRead(inst, resLink);
                 break;
-            case ResOp::WRITE:
+            case Operation::WRITE:
                 observer->resourceWrite(inst, resLink);
                 break;
-            case ResOp::EXECUTE:
+            case Operation::EXECUTE:
                  observer->resourceExecute(inst, resLink);
                 break;
             default: break;

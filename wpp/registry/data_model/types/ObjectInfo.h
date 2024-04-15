@@ -1,8 +1,7 @@
 #ifndef WPP_OBJECT_INFO_H
 #define WPP_OBJECT_INFO_H
 
-#include "InstOp.h"
-#include "ResOp.h"
+#include "Operation.h"
 #include "ObjectID.h"
 
 namespace wpp {
@@ -22,8 +21,7 @@ struct ObjectInfo {
 	Version lwm2mVersion;
 	IS_SINGLE isSingle;
 	IS_MANDATORY isMandatory;
-	InstOp instOperation;
-	ResOp resOperation;
+	Operation operations;
 };
 
 }; // wpp

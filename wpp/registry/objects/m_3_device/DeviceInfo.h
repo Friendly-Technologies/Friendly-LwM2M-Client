@@ -33,8 +33,7 @@ inline const ObjectInfo DEVICE_OBJ_INFO = {
 	ResOp(	ResOp::READ|
 			ResOp::WRITE|
 			ResOp::DISCOVER|
-			ResOp::EXECUTE|
-			ResOp::DELETE),
+			ResOp::EXECUTE),
 	/* --------------- Info block 0 end --------------- */
 };
 

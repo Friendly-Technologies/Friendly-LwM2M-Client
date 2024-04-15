@@ -185,7 +185,7 @@ class ObjectGenerator:
             return f"""WPP_LOGD(TAG, {text});"""
 
     def get_content_serverOperationNotifier(self):
-        cases = ["READ", "WRITE", "EXECUTE", "DISCOVER"]
+        cases = ["READ", "WRITE", "EXECUTE"]
         base = \
             f"""void __CLASS_NAME__::serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resLink) {{\n""" \
             f"""\t/* --------------- Code_cpp block 6 start --------------- */\n""" \

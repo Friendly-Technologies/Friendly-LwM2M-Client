@@ -33,8 +33,7 @@ inline const ObjectInfo CONNECTIVITY_MONITORING_OBJ_INFO = {
 	ResOp(	ResOp::READ|
 			ResOp::WRITE|
 			ResOp::DISCOVER|
-			ResOp::EXECUTE|
-			ResOp::DELETE),
+			ResOp::EXECUTE),
 	/* --------------- Info block 0 end --------------- */
 };
 

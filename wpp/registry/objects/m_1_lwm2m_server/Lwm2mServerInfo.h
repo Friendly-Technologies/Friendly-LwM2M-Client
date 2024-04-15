@@ -34,8 +34,7 @@ inline const ObjectInfo LWM2M_SERVER_OBJ_INFO = {
 	ResOp(	ResOp::READ|
 			ResOp::WRITE|
 			ResOp::DISCOVER|
-			ResOp::EXECUTE|
-			ResOp::DELETE),
+			ResOp::EXECUTE),
 	/* --------------- Info block 0 end --------------- */
 };
 

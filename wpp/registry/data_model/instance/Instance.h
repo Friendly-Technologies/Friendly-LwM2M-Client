@@ -171,9 +171,9 @@ protected: /* Interface that can be used by derived class */
 protected: /* Interface that must be implemented by derived class */
 	/**
  	 * @brief This method must be implemented by the derived class, and handle
-	 * information about resource operation (READ, WRITE, EXECUTE, DISCOVER). 
+	 * information about resource operation (READ, WRITE, EXECUTE). 
 	 * Called by Instance after resource operation performed by SERVER if the operation is  
-	 * READ/WRITE/DISCOVER, if the operation is EXECUTE then called before this operation.
+	 * READ/WRITE, if the operation is EXECUTE then called before this operation.
 	 * When the EXECUTE operation, the handler that was set before the serverOperationNotifier()
 	 * call is used.
 	 * @param securityInst - Contains security instance when the request received

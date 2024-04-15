@@ -554,14 +554,10 @@ uint8_t Instance::discoverAsServer(lwm2m_server_t *server, int * numData, lwm2m_
 			for (auto id : res->getInstIds()) {
 				(dataCnt++)->id = id;
 				WPP_LOGD(TAG_WPP_INST, "Resource instance discover: %d:%d:%d:%d", _id.objId, _id.objInstId, data->id, id);
-				// Notify implementation about discover resource instance operation
-				serverOperationNotifier(getSecurityInst(server), ResOp::DISCOVER, {res->getId(), id});
 			}
 			lwm2m_data_encode_instances(subData, res->instanceCnt(), data);
 		} else {
 			WPP_LOGD(TAG_WPP_INST, "Resource discover: %d:%d:%d", _id.objId, _id.objInstId, data->id);
-			// Notify implementation about discover resource operation
-			serverOperationNotifier(getSecurityInst(server), ResOp::DISCOVER, {res->getId(), ID_T_MAX_VAL});
 		}
 	}
 	return COAP_205_CONTENT;

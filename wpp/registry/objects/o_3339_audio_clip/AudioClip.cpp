@@ -52,9 +52,6 @@ void AudioClip::serverOperationNotifier(Instance *securityInst, ResOp::TYPE type
 	case ResOp::EXECUTE:
 		WPP_LOGD(TAG, "Server EXECUTE -> resId: %d, resInstId: %d", resLink.resId, resLink.resInstId);
 		break;
-	case ResOp::DISCOVER:
-		WPP_LOGD(TAG, "Server DISCOVER -> resId: %d, resInstId: %d", resLink.resId, resLink.resInstId);
-		break;
 	default: break;
 	}
 	/* --------------- Code_cpp block 7 end --------------- */

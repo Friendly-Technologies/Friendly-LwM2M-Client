@@ -36,8 +36,7 @@ inline const ObjectInfo FIRMWARE_UPDATE_OBJ_INFO = {
 			ResOp::BLOCK_WRITE|
 			#endif
 			ResOp::DISCOVER|
-			ResOp::EXECUTE|
-			ResOp::DELETE),
+			ResOp::EXECUTE),
 	/* --------------- Info block 0 end --------------- */
 };
 

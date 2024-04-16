@@ -38,6 +38,7 @@ public:
                 FILE *fp;
                 CURLcode res;
                 long http_resp_code = 0;
+                FwUpdRes fwUpdRes = R_INITIAL;
 
                 curl = curl_easy_init();
                 if (curl) {
@@ -60,18 +61,16 @@ public:
                     curl_easy_cleanup(curl);
 
                     /* Check for errors */
-                    if ((http_resp_code == 404) || (res != CURLE_OK)) {
-                        cout << "Downloading is not completed" << endl;
-                        downloadedClb("test_fw.fw", R_INVALID_URI);
-                        _job.downloading = false;
-                        break;
-                    }
+                    if ((http_resp_code != 200) || (res != CURLE_OK)) fwUpdRes = R_INVALID_URI;
                 } else {
-                    cout << "curl_easy_init() failed" << endl;
+                    cout << "curl_easy_init() failed. The R_CONN_LOST was set here." << endl;
+                    fwUpdRes = R_CONN_LOST;
                 }
                 
-                cout << "Downloading is completed" << endl;
-                downloadedClb("test_fw.fw", R_INITIAL);
+                if (fwUpdRes == R_INITIAL) cout << "Downloading finished successfully" << endl;
+                else cout << "Downloading failed" << endl;
+
+                downloadedClb("test_fw.fw", fwUpdRes);
                 _job.downloading = false;
             }
             cout << "Downloading thread is terminated" << endl;

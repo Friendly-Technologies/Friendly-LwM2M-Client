@@ -245,8 +245,8 @@ private:
         size_t total;
         coap_pdu_code_t rcv_code = coap_pdu_get_code(received);
 
-        if (rcv_code == COAP_RESPONSE_CODE(404)) {
-            cout << "Response code: 404" << endl;
+        if (rcv_code != COAP_RESPONSE_CODE_CONTENT) {
+            cout << "Response code is not 205" << endl;
             coap_context_t *context = coap_session_get_context(session);
             bool* asd = (bool*)coap_get_app_data(context);
             * asd = false;

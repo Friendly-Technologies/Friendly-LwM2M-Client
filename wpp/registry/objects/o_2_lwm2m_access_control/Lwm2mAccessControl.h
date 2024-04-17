@@ -13,6 +13,13 @@
 #include "InstSubject.h"
 
 /* --------------- Сode_h block 0 start --------------- */
+#define AC_CLIENT_OWNER ID_T_MAX_VAL
+#define AC_ACL_DEFAULT_ID LWM2M_AC_ACL_DEFAULT_ID
+#define AC_OBJ_INST_NOT_SET ID_T_MAX_VAL
+
+namespace wpp {
+	class Object;
+}
 /* --------------- Сode_h block 0 end --------------- */
 
 namespace wpp {
@@ -32,13 +39,14 @@ public:
 
 	#if RES_2_2
 	enum ACL: uint8_t {
-		R_O_W_ATTR = 1,
-		WRITE = 2,
-		EXECUTE = 4,
-		DELETE = 8,
-		CREATE = 16,
-		ALL_RIGHTS = R_O_W_ATTR | WRITE | EXECUTE | DELETE | CREATE,
-		ACL_MAX,
+		NO_ACCESS = LWM2M_AC_NO_ACCESS,
+		R_O_W_ATTR = LWM2M_AC_READ_OP,
+		WRITE = LWM2M_AC_WRITE_OP,
+		EXECUTE = LWM2M_AC_EXECUTE_OP,
+		DELETE = LWM2M_AC_DELETE_OP,
+		CREATE = LWM2M_AC_CREATE_OP,
+		ALL_OBJ_RIGHTS = CREATE,
+		ALL_INST_RIGHTS = R_O_W_ATTR | WRITE | EXECUTE | DELETE,
 	};
 	#endif
 
@@ -49,6 +57,61 @@ public:
 	~Lwm2mAccessControl();
 
 	/* --------------- Code_h block 2 start --------------- */
+	/**
+	 * @brief Create Lwm2mAccessControl object instance for target object 
+	 * @param targetObj Target object
+	 * @param defaultAcl Default ACL for target object, can be NO_ACCESS or ALL_OBJ_RIGHTS
+	 */
+	static bool createInst(Object &targetObj, uint8_t defaultAcl = NO_ACCESS);
+
+	/**
+	 * @brief Delete Lwm2mAccessControl object instance for target object
+	 * @param targetObj Target object
+	 */
+	static void deleteInst(Object &targetObj);
+
+	/**
+	 * @brief Add ACL for target object
+	 * @param targetObj Target object
+	 * @param serverShortId Server short ID
+	 * @param acl ACL for target object, can be NO_ACCESS or ALL_OBJ_RIGHTS
+	 */
+	static bool addAcl(Object &targetObj, ID_T serverShortId, uint8_t acl = ALL_OBJ_RIGHTS);
+
+	/**
+	 * @brief Remove ACL for target object
+	 * @param targetObj Target object
+	 * @param serverShortId Server short ID
+	 */
+	static void removeAcl(Object &targetObj, ID_T serverShortId);
+
+	/**
+	 * @brief Get Lwm2mAccessControl object instance for target object instance
+	 * @param owner Target object instance owner, should be set to AC_CLIENT_OWNER or server short id
+	 * @param defaultAcl Default ACL for target object, can be NO_ACCESS or ALL_INST_RIGHTS
+	 */
+	static bool createInst(Instance &targetInst, ID_T owner = AC_CLIENT_OWNER, uint8_t defaultAcl = NO_ACCESS);
+
+	/**
+	 * @brief Delete Lwm2mAccessControl object instance for target object instance
+	 * @param targetInst Target object instance
+	 */
+	static void deleteInst(Instance &targetInst);
+
+	/**
+	 * @brief Add ACL for target object instance
+	 * @param targetInst Target object instance
+	 * @param serverShortId Server short ID
+	 * @param acl ACL for target object instance, can be NO_ACCESS or ALL_INST_RIGHTS
+	 */
+	static bool addAcl(Instance &targetInst, ID_T serverShortId, uint8_t acl = ALL_INST_RIGHTS);
+
+	/**
+	 * @brief Remove ACL for target object instance
+	 * @param targetInst Target object instance
+	 * @param serverShortId Server short ID
+	 */
+	static void removeAcl(Instance &targetInst, ID_T serverShortId);
 	/* --------------- Code_h block 2 end --------------- */
 
 protected:
@@ -79,6 +142,7 @@ private:
 	void resourcesInit();
 	
 	/* --------------- Code_h block 4 start --------------- */
+	static Lwm2mAccessControl * getAcInstForTarget(Object &acObj, ID_T objId, ID_T objInstId);
 	/* --------------- Code_h block 4 end --------------- */
 
 private:

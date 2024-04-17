@@ -1,5 +1,6 @@
 #include "FirmwareUpdate.h"
 #include "FirmwareChecker.h"
+#include "Lwm2mServer.h"
 
 FirmwareUpdateImpl::FirmwareUpdateImpl() {}
 
@@ -16,6 +17,11 @@ void FirmwareUpdateImpl::init(Object &obj) {
     #if RES_5_8
     fwInst->setFwExternalDownloader(_uriDownloader);
     #endif
+
+    #if OBJ_O_2_LWM2M_ACCESS_CONTROL
+	Lwm2mAccessControl::createInst(obj, Lwm2mAccessControl::ALL_OBJ_RIGHTS);
+	Lwm2mAccessControl::createInst(*fwInst, TEST_SERVER_SHORT_ID);
+	#endif
 }
 
 void FirmwareUpdateImpl::objectRestore(Object &object) {

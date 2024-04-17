@@ -8,7 +8,7 @@
 #ifndef WPP_OBJECT_H_
 #define WPP_OBJECT_H_
 
-#include <unordered_map>
+#include <vector>
 #include <variant>
 
 #include "ObjSubject.h"
@@ -17,6 +17,9 @@
 #include "WppLogs.h"
 
 namespace wpp {
+
+class WppRegistry;
+class WppClient;
 
 /**
  * @class Object
@@ -71,6 +74,21 @@ public:
 	lwm2m_object_t& getLwm2mObject();
 
 	/**
+	 * @brief Return context that can be used by derived class.
+	 */
+	lwm2m_context_t& getContext();
+
+	/**
+ 	 * @brief Helpfull methods to get client instances. 
+	 */
+	WppClient& getClient();
+
+	/**
+	 * @brief Helpfull methods to get registry instances. 
+	 */
+	WppRegistry& getRegistry();
+
+	/**
 	 * @brief Clears the object.
 	 */
 	void clear();
@@ -101,10 +119,10 @@ public:
 	/**
 	 * @brief Gets an instance of the object.
 	 * 
-	 * @param instanceID The instance ID.
+	 * @param instanceID The instance ID. If not provided, the first available instance is returned.
 	 * @return A pointer to the Instance object.
 	 */
-	Instance* instance(ID_T instanceID = 0);
+	Instance* instance(ID_T instanceID = ID_T_MAX_VAL);
 
 	/**
 	 * @brief Gets all instances of the object.

@@ -19,6 +19,7 @@
 namespace wpp {
 
 class WppRegistry;
+class WppClient;
 
 /**
  * @brief Instance is interface class that implements manipulation with derived class resources.
@@ -54,6 +55,18 @@ public:
 	OBJ_LINK_T getLink() const { return _id; }
 	OBJ_ID getObjectID() const { return (OBJ_ID)_id.objId; }
 	ID_T getInstanceID() const { return _id.objInstId; }
+	/**
+	 * @brief Return context that can be used by derived class.
+	 */
+	lwm2m_context_t& getContext();
+	/**
+ 	 * @brief Helpfull methods to get client instances. 
+	 */
+	WppClient& getClient();
+	/**
+	 * @brief Helpfull methods to get registry instances. 
+	 */
+	WppRegistry& getRegistry();
 	/**
  	 * @brief Sets resource value.
 	 * This version of the method is used with SINGLE resources.
@@ -154,14 +167,6 @@ protected: /* Interface that can be used by derived class */
 	 * If resources does not exist then return empty list.
 	 */
 	std::vector<Resource>::iterator resource(ID_T resId);
-	/**
- 	 * @brief Return context that can be used by derived class.
-	 */
-	lwm2m_context_t& getContext();
-	/**
-	 * @brief Helpfull methods to get registry instances. 
-	 */
-	WppRegistry& getRegistry();
 
 protected: /* Interface that must be implemented by derived class */
 	/**

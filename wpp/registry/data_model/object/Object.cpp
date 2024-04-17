@@ -1,4 +1,5 @@
 #include "Object.h"
+#include "WppClient.h"
 
 namespace wpp {
 
@@ -51,6 +52,18 @@ const ObjectInfo& Object::getObjectInfo() const {
     return _objInfo; 
 }
 
+lwm2m_context_t& Object::getContext() { 
+	return _context; 
+}
+
+WppClient& Object::getClient() {
+	return *static_cast<wpp::WppClient *>(getContext().userData);
+}
+
+WppRegistry& Object::getRegistry() {
+	return static_cast<wpp::WppClient *>(getContext().userData)->registry();
+}
+
 void Object::clear() {
 	WPP_LOGD(TAG_WPP_OBJ, "Clearing object with ID -> %d", getObjectID());
 	// Deleting registered instances from core object
@@ -92,7 +105,7 @@ bool Object::removeInstance(ID_T instanceId) {
 
 Instance* Object::instance(ID_T instanceID) {
 	// If user want to access instance with ID that does not exist, then we can not do it
-	auto inst = getInstIter(instanceID);
+	auto inst = (instanceID != ID_T_MAX_VAL)? getInstIter(instanceID) : _instances.begin();
 	return inst != _instances.end()? *inst : NULL;
 }
 

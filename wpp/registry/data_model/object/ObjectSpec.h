@@ -53,7 +53,14 @@ public:
 	 * @param instanceID The ID of the instance to retrieve. Defaults to 0.
 	 * @return A pointer to the instance specialized type, or nullptr if the instance does not exist.
 	 */
-	T* instanceSpec(ID_T instanceID = 0);
+	T* instanceSpec(ID_T instanceID = ID_T_MAX_VAL);
+
+	/**
+	 * @brief Gets all instances of the object.
+	 * 
+	 * @return A vector of pointers to the Instance objects.
+	 */
+	const std::vector<T*>& getSpecInstances();
 };
 
 /* ---------- Implementation of methods ----------*/
@@ -97,6 +104,15 @@ template<typename T>
 T* ObjectSpec<T>::instanceSpec(ID_T instanceID) {
     Instance *inst = instance(instanceID);
     return inst? static_cast<T*>(inst) : NULL;
+}
+
+template<typename T>
+const std::vector<T*>& ObjectSpec<T>::getSpecInstances() {
+	std::vector<T*> specInstances;
+	for (auto inst : _instances) {
+		specInstances.push_back(static_cast<T*>(inst));
+	}
+	return specInstances;
 }
 
 } // namespace wpp

@@ -1,4 +1,5 @@
 #include "Lwm2mSecurity.h"
+#include "Lwm2mServer.h"
 
 Lwm2mSecurityImpl::Lwm2mSecurityImpl() {}
 
@@ -39,7 +40,7 @@ void Lwm2mSecurityImpl::init(Object &obj) {
     #endif
 
     inst0->set(Lwm2mSecurity::LWM2M_SERVER_URI_0, (STRING_T)url);
-    inst0->set(Lwm2mSecurity::SHORT_SERVER_ID_10, (INT_T)123);
+    inst0->set(Lwm2mSecurity::SHORT_SERVER_ID_10, (INT_T)TEST_SERVER_SHORT_ID);
 }
 
 void Lwm2mSecurityImpl::objectRestore(Object &object) {

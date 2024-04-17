@@ -9,11 +9,12 @@
 #include <curl/curl.h>
 
 using namespace std;
+using namespace wpp;
 
 class FwDownloaderHttp {
     struct DownloadJob {
         string url = "";
-        function<void(string)> downloadedClb;
+        function<void(string, FwUpdRes)> downloadedClb;
         bool downloading = false;
     };
 
@@ -28,7 +29,7 @@ public:
 
                 this->_jobGuard.lock();
                 string url = this->_job.url;
-                function<void(string)> downloadedClb = this->_job.downloadedClb;
+                function<void(string, FwUpdRes)> downloadedClb = this->_job.downloadedClb;
                 this->_jobGuard.unlock();
                 string file = "test_fw.fw";
                 cout << "Start downloading from url: " << url << endl;
@@ -36,6 +37,8 @@ public:
                 CURL *curl;
                 FILE *fp;
                 CURLcode res;
+                long http_resp_code = 0;
+                FwUpdRes fwUpdRes = R_INITIAL;
 
                 curl = curl_easy_init();
                 if (curl) {
@@ -50,20 +53,24 @@ public:
     
                     res = curl_easy_perform(curl);
 
-                    /* Check for errors */
-                    if (res != CURLE_OK) {
-                        cout << "curl_easy_perform() failed: " << curl_easy_strerror(res) << endl;
-                    }
+                    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_resp_code);
+                    cout << "http response code: " << http_resp_code << endl;
 
                     /* Cleanup */
                     fclose(fp);
                     curl_easy_cleanup(curl);
+
+                    /* Check for errors */
+                    if ((http_resp_code != 200) || (res != CURLE_OK)) fwUpdRes = R_INVALID_URI;
                 } else {
-                    cout << "curl_easy_init() failed" << endl;
+                    cout << "curl_easy_init() failed. The R_CONN_LOST was set here." << endl;
+                    fwUpdRes = R_CONN_LOST;
                 }
                 
-                cout << "Downloading is completed" << endl;
-                downloadedClb("test_fw.fw");
+                if (fwUpdRes == R_INITIAL) cout << "Downloading finished successfully" << endl;
+                else cout << "Downloading failed" << endl;
+
+                downloadedClb("test_fw.fw", fwUpdRes);
                 _job.downloading = false;
             }
             cout << "Downloading thread is terminated" << endl;
@@ -81,7 +88,7 @@ public:
         }
     }
 
-	void startDownloading(string url, function<void(string)> downloadedClb) {
+	void startDownloading(string url, function<void(string, FwUpdRes)> downloadedClb) {
         // TODO befor starting download check if not already downloading
         _jobGuard.lock();
         _job = {url, downloadedClb, true};

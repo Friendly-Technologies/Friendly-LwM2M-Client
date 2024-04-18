@@ -130,7 +130,7 @@ public: /* ---------- Public methods for common usage ----------*/
 	template<typename T>
 	bool get(T &value, ID_T resInstId = SINGLE_INSTANCE_ID) const  = delete;
 	template<typename T>
-	bool ptr(T **value, ID_T resInstId = SINGLE_INSTANCE_ID)  = delete;
+	bool ptr(T *&value, ID_T resInstId = SINGLE_INSTANCE_ID)  = delete;
 
 	/**
  	 * @brief Remove resource instance if resource is multiple and instance exists,

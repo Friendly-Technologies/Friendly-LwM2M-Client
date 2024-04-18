@@ -12,7 +12,7 @@
 
 #include "liblwm2m.h"
 #include "Resource.h"
-#include "ResOp.h"
+#include "ItemOp.h"
 #include "WppTypes.h"
 #include "InstSubject.h"
 
@@ -146,10 +146,6 @@ public:
 	uint8_t writeAsServer(lwm2m_server_t *server, int numData, lwm2m_data_t *dataArray, lwm2m_write_type_t writeType);
 	uint8_t executeAsServer(lwm2m_server_t *server, ID_T resId, uint8_t *buffer, int length);
 	uint8_t discoverAsServer(lwm2m_server_t *server, int * numDataP, lwm2m_data_t **dataArray);
-	#ifdef LWM2M_RAW_BLOCK1_REQUESTS
-	uint8_t blockWriteAsServer(lwm2m_server_t *server, lwm2m_uri_t *uri, lwm2m_media_type_t format, uint8_t *buffer, int length, uint32_t blockNum, uint8_t blockMore);
-	uint8_t blockExecuteAsServer(lwm2m_server_t *server, lwm2m_uri_t *uri, uint8_t *buffer, int length, uint32_t blockNum, uint8_t blockMore);
-	#endif
 
 protected: /* Interface that can be used by derived class */
 	/**
@@ -161,7 +157,7 @@ protected: /* Interface that can be used by derived class */
 	 * If resources does not exist then return empty list.
 	 */
 	std::vector<Resource *> getInstantiatedResList();
-	std::vector<Resource *> getInstantiatedResList(const ResOp& filter);
+	std::vector<Resource *> getInstantiatedResList(const ItemOp& filter);
 	/**
  	 * @brief This method return iterator for resource if it exists.
 	 * If resources does not exist then return empty list.
@@ -171,34 +167,21 @@ protected: /* Interface that can be used by derived class */
 protected: /* Interface that must be implemented by derived class */
 	/**
  	 * @brief This method must be implemented by the derived class, and handle
-	 * information about resource operation (READ, WRITE, EXECUTE, DISCOVER). 
+	 * information about resource operation (READ, WRITE, EXECUTE). 
 	 * Called by Instance after resource operation performed by SERVER if the operation is  
-	 * READ/WRITE/DISCOVER, if the operation is EXECUTE then called before this operation.
+	 * READ/WRITE, if the operation is EXECUTE then called before this operation.
 	 * When the EXECUTE operation, the handler that was set before the serverOperationNotifier()
 	 * call is used.
 	 * @param securityInst - Contains security instance when the request received
 	 * 						 from the server or NULL if the request is initiated by the core.
 	 */
-	virtual void serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resLink) = 0;
+	virtual void serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resLink) = 0;
 	/**
  	 * @brief This method must be implemented by the derived class, and handle
      * information about resource operation (READ, WRITE, DELETE).
 	 * Called by Instance after resource operation performed by the USER.
 	 */
-	virtual void userOperationNotifier(ResOp::TYPE type, const ResLink &resLink) = 0;
-	#ifdef LWM2M_RAW_BLOCK1_REQUESTS
-	/**
- 	 * @brief This method must be implemented by the derived class, and handle
-	 * information about resource block operation (BLOCK_WRITE, BLOCK_EXECUTE).
-	 * During block operation resource value is not changed, instead user
-	 * dirrectly handle block data. Also, the EXECUTE_T resource is not
-	 * called, all information and data about the block operation is
-	 * transferred through this method to the final implementation of the
-	 * Instance class, which decides on the necessary actions. This is done 
-	 * to minimize memory usage.
-	 */
-	virtual void serverBlockOperationNotifier(ResOp::TYPE type, const ResLink &resLink, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock);
-	#endif
+	virtual void userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) = 0;
 
 private: /* Interface used by Object or Instance class */
 	Instance *getSecurityInst(lwm2m_server_t *server);
@@ -244,7 +227,7 @@ bool Instance::set(const ResLink &resLink, const T &value)  {
 	if (!res->set(value, resLink.resInstId)) return false;
 
 	const ResLink &link = res->isMultiple()? resLink : ResLink {resLink.resId,};
-	userOperationNotifier(ResOp::WRITE, link);
+	userOperationNotifier(ItemOp::WRITE, link);
 	notifyServerResChanged(link);
 
 	return true;
@@ -265,7 +248,7 @@ bool Instance::setMove(const ResLink &resLink, T &value) {
 	if (!res->setMove(value, resLink.resInstId)) return false;
 
 	const ResLink &link = res->isMultiple()? resLink : ResLink {resLink.resId,};
-	userOperationNotifier(ResOp::WRITE, link);
+	userOperationNotifier(ItemOp::WRITE, link);
 	notifyServerResChanged(link);
 
 	return true;
@@ -286,8 +269,8 @@ bool Instance::get(const ResLink &resLink, T &value) {
 
 	if (!res->get(value, resLink.resInstId)) return false;
 	
-	if (res->isMultiple()) userOperationNotifier(ResOp::READ, resLink);
-	else userOperationNotifier(ResOp::READ, {resLink.resId,});
+	if (res->isMultiple()) userOperationNotifier(ItemOp::READ, resLink);
+	else userOperationNotifier(ItemOp::READ, {resLink.resId,});
 
 	return true;
 }
@@ -309,8 +292,8 @@ bool Instance::getPtr(const ResLink &resLink, const T **value) {
 	if (!res->ptr(&tmpValue, resLink.resInstId) || !tmpValue) return false;
 	*value = tmpValue;
 
-	if (res->isMultiple()) userOperationNotifier(ResOp::READ, resLink);
-	else userOperationNotifier(ResOp::READ, {resLink.resId,});
+	if (res->isMultiple()) userOperationNotifier(ItemOp::READ, resLink);
+	else userOperationNotifier(ItemOp::READ, {resLink.resId,});
 
 	return true;
 }

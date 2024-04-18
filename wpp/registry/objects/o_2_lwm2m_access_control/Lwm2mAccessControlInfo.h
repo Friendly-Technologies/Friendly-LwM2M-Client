@@ -29,13 +29,12 @@ inline const ObjectInfo LWM2M_ACCESS_CONTROL_OBJ_INFO = {
 	IS_MANDATORY::OPTIONAL,
 	/* Object supported operations */
 	/* --------------- Info block 0 start --------------- */
-	InstOp(	InstOp::CREATE |
-			InstOp::DELETE),
-	ResOp(	ResOp::READ|
-			ResOp::WRITE|
-			ResOp::DISCOVER|
-			ResOp::EXECUTE|
-			ResOp::DELETE),
+	ItemOp(ItemOp::CREATE|
+		   ItemOp::DELETE|
+		   ItemOp::READ|
+		   ItemOp::WRITE|
+		   ItemOp::DISCOVER|
+		   ItemOp::EXECUTE),
 	/* --------------- Info block 0 end --------------- */
 };
 

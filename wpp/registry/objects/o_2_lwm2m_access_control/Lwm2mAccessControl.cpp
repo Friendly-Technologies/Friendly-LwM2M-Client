@@ -7,7 +7,7 @@
 #include "o_2_lwm2m_access_control/Lwm2mAccessControl.h"
 
 #include "Resource.h"
-#include "ResOp.h"
+#include "ItemOp.h"
 #include "WppTypes.h"
 #include "WppLogs.h"
 
@@ -47,7 +47,7 @@ Lwm2mAccessControl::~Lwm2mAccessControl() {
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
-void Lwm2mAccessControl::serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resLink) {
+void Lwm2mAccessControl::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resLink) {
 	/* --------------- Code_cpp block 6 start --------------- */
 	/* --------------- Code_cpp block 6 end --------------- */
 
@@ -57,7 +57,7 @@ void Lwm2mAccessControl::serverOperationNotifier(Instance *securityInst, ResOp::
 	/* --------------- Code_cpp block 7 end --------------- */
 }
 
-void Lwm2mAccessControl::userOperationNotifier(ResOp::TYPE type, const ResLink &resLink) {
+void Lwm2mAccessControl::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) {
 	/* --------------- Code_cpp block 8 start --------------- */
 	/* --------------- Code_cpp block 8 end --------------- */
 }
@@ -67,12 +67,12 @@ void Lwm2mAccessControl::userOperationNotifier(ResOp::TYPE type, const ResLink &
 
 void Lwm2mAccessControl::resourcesCreate() {
 	std::vector<Resource> resources = {
-		{OBJECT_ID_0,            ResOp(ResOp::READ),              IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::INT }, 
-		{OBJECT_INSTANCE_ID_1,   ResOp(ResOp::READ),              IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::INT }, 
+		{OBJECT_ID_0,            ItemOp(ItemOp::READ),              IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::INT }, 
+		{OBJECT_INSTANCE_ID_1,   ItemOp(ItemOp::READ),              IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::INT }, 
 		#if RES_2_2                                                                                                                                                
-		{ACL_2,                  ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::MULTIPLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::INT }, 
+		{ACL_2,                  ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::MULTIPLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::INT }, 
 		#endif                                                                                                                                                     
-		{ACCESS_CONTROL_OWNER_3, ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::INT }, 
+		{ACCESS_CONTROL_OWNER_3, ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::INT }, 
 	};
 	_resources = std::move(resources);
 }

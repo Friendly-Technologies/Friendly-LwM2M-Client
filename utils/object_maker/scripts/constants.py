@@ -69,7 +69,7 @@ KEY_IS_MANDATORY = "is_mandatory"
 KEY_OPERATIONS = "operations"
 KEY_DEFINE_RES = "res_define"
 
-TYPE_OPERATION = "ResOp"
+TYPE_OPERATION = "ItemOp"
 TYPE_OBJECT = "ObjectSpec"
 TYPE_ID = "TYPE_ID"
 

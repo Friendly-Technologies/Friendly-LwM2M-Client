@@ -7,7 +7,7 @@
 #include "__OBJ_FOLDER__/__CLASS_NAME__.h"
 
 #include "Resource.h"
-#include "ResOp.h"
+#include "ItemOp.h"
 #include "WppTypes.h"
 #include "WppLogs.h"
 

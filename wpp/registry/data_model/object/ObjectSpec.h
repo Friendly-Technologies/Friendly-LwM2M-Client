@@ -91,6 +91,10 @@ Instance* ObjectSpec<T>::createInstance(ID_T instanceId) {
 	// Creating new instance
 	T *inst = new T(_context, {(ID_T)_objInfo.objID, instanceId});
 	_instances.push_back(inst);
+
+	// Update server registration
+	lwm2m_update_registration(&getContext(), 0, false, true);
+
 	return inst;
 }
 

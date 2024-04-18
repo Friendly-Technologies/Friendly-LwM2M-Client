@@ -7,7 +7,7 @@
 #include "o_4_connectivity_monitoring/ConnectivityMonitoring.h"
 
 #include "Resource.h"
-#include "ResOp.h"
+#include "ItemOp.h"
 #include "WppTypes.h"
 #include "WppLogs.h"
 
@@ -61,7 +61,7 @@ ConnectivityMonitoring::~ConnectivityMonitoring() {
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
-void ConnectivityMonitoring::serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resLink) {
+void ConnectivityMonitoring::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resLink) {
 	/* --------------- Code_cpp block 6 start --------------- */
 	/* --------------- Code_cpp block 6 end --------------- */
 
@@ -71,7 +71,7 @@ void ConnectivityMonitoring::serverOperationNotifier(Instance *securityInst, Res
 	/* --------------- Code_cpp block 7 end --------------- */
 }
 
-void ConnectivityMonitoring::userOperationNotifier(ResOp::TYPE type, const ResLink &resLink) {
+void ConnectivityMonitoring::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) {
 	/* --------------- Code_cpp block 8 start --------------- */
 	/* --------------- Code_cpp block 8 end --------------- */
 }
@@ -81,39 +81,39 @@ void ConnectivityMonitoring::userOperationNotifier(ResOp::TYPE type, const ResLi
 
 void ConnectivityMonitoring::resourcesCreate() {
 	std::vector<Resource> resources = {
-		{NETWORK_BEARER_0,              ResOp(ResOp::READ), IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::INT },    
-		{AVAILABLE_NETWORK_BEARER_1,    ResOp(ResOp::READ), IS_SINGLE::MULTIPLE, IS_MANDATORY::MANDATORY, TYPE_ID::INT },    
-		{RADIO_SIGNAL_STRENGTH_2,       ResOp(ResOp::READ), IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::INT },    
+		{NETWORK_BEARER_0,              ItemOp(ItemOp::READ), IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::INT },    
+		{AVAILABLE_NETWORK_BEARER_1,    ItemOp(ItemOp::READ), IS_SINGLE::MULTIPLE, IS_MANDATORY::MANDATORY, TYPE_ID::INT },    
+		{RADIO_SIGNAL_STRENGTH_2,       ItemOp(ItemOp::READ), IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::INT },    
 		#if RES_4_3                                                                                                                                             
-		{LINK_QUALITY_3,                ResOp(ResOp::READ), IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },    
+		{LINK_QUALITY_3,                ItemOp(ItemOp::READ), IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },    
 		#endif                                                                                                                                                  
-		{IP_ADDRESSES_4,                ResOp(ResOp::READ), IS_SINGLE::MULTIPLE, IS_MANDATORY::MANDATORY, TYPE_ID::STRING }, 
+		{IP_ADDRESSES_4,                ItemOp(ItemOp::READ), IS_SINGLE::MULTIPLE, IS_MANDATORY::MANDATORY, TYPE_ID::STRING }, 
 		#if RES_4_5                                                                                                                                             
-		{ROUTER_IP_ADDRESSES_5,         ResOp(ResOp::READ), IS_SINGLE::MULTIPLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::STRING }, 
+		{ROUTER_IP_ADDRESSES_5,         ItemOp(ItemOp::READ), IS_SINGLE::MULTIPLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::STRING }, 
 		#endif                                                                                                                                                  
 		#if RES_4_6                                                                                                                                             
-		{LINK_UTILIZATION_6,            ResOp(ResOp::READ), IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },    
+		{LINK_UTILIZATION_6,            ItemOp(ItemOp::READ), IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },    
 		#endif                                                                                                                                                  
 		#if RES_4_7                                                                                                                                             
-		{APN_7,                         ResOp(ResOp::READ), IS_SINGLE::MULTIPLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::STRING }, 
+		{APN_7,                         ItemOp(ItemOp::READ), IS_SINGLE::MULTIPLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::STRING }, 
 		#endif                                                                                                                                                  
 		#if RES_4_8                                                                                                                                             
-		{CELL_ID_8,                     ResOp(ResOp::READ), IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },    
+		{CELL_ID_8,                     ItemOp(ItemOp::READ), IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },    
 		#endif                                                                                                                                                  
 		#if RES_4_9                                                                                                                                             
-		{SMNC_9,                        ResOp(ResOp::READ), IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },    
+		{SMNC_9,                        ItemOp(ItemOp::READ), IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },    
 		#endif                                                                                                                                                  
 		#if RES_4_10                                                                                                                                            
-		{SMCC_10,                       ResOp(ResOp::READ), IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },    
+		{SMCC_10,                       ItemOp(ItemOp::READ), IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },    
 		#endif                                                                                                                                                  
 		#if RES_4_11                                                                                                                                            
-		{SIGNALSNR_11,                  ResOp(ResOp::READ), IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },    
+		{SIGNALSNR_11,                  ItemOp(ItemOp::READ), IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },    
 		#endif                                                                                                                                                  
 		#if RES_4_12                                                                                                                                            
-		{LAC_12,                        ResOp(ResOp::READ), IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },    
+		{LAC_12,                        ItemOp(ItemOp::READ), IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },    
 		#endif                                                                                                                                                  
 		#if RES_4_13                                                                                                                                            
-		{COVERAGE_ENHANCEMENT_LEVEL_13, ResOp(ResOp::READ), IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },    
+		{COVERAGE_ENHANCEMENT_LEVEL_13, ItemOp(ItemOp::READ), IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },    
 		#endif                                                                                                                                                  
 	};
 	_resources = std::move(resources);

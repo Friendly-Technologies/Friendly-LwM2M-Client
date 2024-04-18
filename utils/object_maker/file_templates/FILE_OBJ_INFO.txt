@@ -29,12 +29,11 @@ inline const ObjectInfo __UPNAME___OBJ_INFO = {
 	IS_MANDATORY::__MANDATORY__,
 	/* Object supported operations */
 	/* --------------- Info block 0 start --------------- */
-	InstOp(__INST_OP__),
-	ResOp(ResOp::READ|
-		  ResOp::WRITE|
-		  ResOp::DISCOVER|
-		  ResOp::EXECUTE|
-		  ResOp::DELETE),
+	ItemOp(__INST_OP__
+		   ItemOp::READ|
+		   ItemOp::WRITE|
+		   ItemOp::DISCOVER|
+		   ItemOp::EXECUTE),
 	/* --------------- Info block 0 end --------------- */
 };
 

@@ -12,7 +12,7 @@
 #define RES_METHODS_PROT_SET_FOR(_TYPE_) bool set(const _TYPE_ &value, ID_T resInstId = SINGLE_INSTANCE_ID); \
 										 bool setMove(_TYPE_ &value, ID_T resInstId = SINGLE_INSTANCE_ID); \
 								   		 bool get(_TYPE_ &value, ID_T resInstId = SINGLE_INSTANCE_ID) const; \
-								   		 bool ptr(_TYPE_ **value, ID_T resInstId = SINGLE_INSTANCE_ID)
+								   		 bool ptr(_TYPE_ *&value, ID_T resInstId = SINGLE_INSTANCE_ID)
 
 namespace wpp {
 
@@ -160,7 +160,7 @@ private:
 	bool _get(T &value, ID_T resInstId) const;
 
 	template<typename T>
-	bool _ptr(T **value, ID_T resInstId);
+	bool _ptr(T *&value, ID_T resInstId);
 
 private: /* ---------- Private properties ----------*/
     ID_T _id;
@@ -223,13 +223,12 @@ bool Resource::_get(T &value, ID_T resInstId) const {
 }
 
 template<typename T>
-bool Resource::_ptr(T **value, ID_T resInstId) {
-	if (value == NULL) return false;
+bool Resource::_ptr(T *&value, ID_T resInstId) {
 	if (!isDataTypeValid<T>()) return false;
 	if (!isInstanceExist(resInstId)) return false;
 
 	auto instIter = getResInstIter(resInstId);
-	*value = &std::get<T>(instIter->data);
+	value = &std::get<T>(instIter->data);
 
 	return true;
 }

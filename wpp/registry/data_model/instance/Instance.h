@@ -111,13 +111,13 @@ public:
 	 * If resource is multiple then resource instance will be set to 0.
 	 */
 	template<typename T>
-	bool getPtr(ID_T resId, const T **value);
+	bool getPtr(ID_T resId, const T *&value);
 	/**
  	 * @brief Returns const ptr to resource data for avoid extra copy.
 	 * This version of the method is used with MULTIPLE resources.
 	 */
 	template<typename T>
-	bool getPtr(const ResLink &resLink, const T **value);
+	bool getPtr(const ResLink &resLink, const T *&value);
 	/**
  	 * @brief It is quite dangerous to leave a resource without instances,
 	 * because when the server tries to read its value, the server
@@ -279,18 +279,18 @@ bool Instance::get(const ResLink &resLink, T &value) {
  * @brief Returns const ptr to resource data for avoid extra copy
  */
 template<typename T>
-bool Instance::getPtr(ID_T resId, const T **value) {
+bool Instance::getPtr(ID_T resId, const T *&value) {
 	return getPtr({resId, SINGLE_INSTANCE_ID}, value);
 }
 
 template<typename T>
-bool Instance::getPtr(const ResLink &resLink, const T **value) {
+bool Instance::getPtr(const ResLink &resLink, const T *&value) {
 	auto res = resource(resLink.resId);
 	if (res == _resources.end()) return false;
 
 	T *tmpValue = NULL;
-	if (!res->ptr(&tmpValue, resLink.resInstId) || !tmpValue) return false;
-	*value = tmpValue;
+	if (!res->ptr(tmpValue, resLink.resInstId) || !tmpValue) return false;
+	value = tmpValue;
 
 	if (res->isMultiple()) userOperationNotifier(ItemOp::READ, resLink);
 	else userOperationNotifier(ItemOp::READ, {resLink.resId,});

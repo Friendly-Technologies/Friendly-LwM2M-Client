@@ -317,7 +317,7 @@ void FirmwareUpdate::internalDownloaderHandler() {
 	// Currently, FwInternalDl only supports loading through the PACKAGE_0 resource.
 	OPAQUE_T *pkg;
 	resetStateMachine();
-	resource(PACKAGE_0)->ptr(&pkg);	
+	resource(PACKAGE_0)->ptr(pkg);	
 	if (pkg->empty()) {
 		clearArtifacts();
 		WPP_LOGD(TAG, "Server reset state machine through PACKAGE_0");
@@ -329,7 +329,7 @@ void FirmwareUpdate::internalDownloaderHandler() {
 
 	_internalDownloaderTaskId = WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, [this](WppClient &client, void *ctx) -> bool {
 		OPAQUE_T *pkg;
-		resource(PACKAGE_0)->ptr(&pkg);	
+		resource(PACKAGE_0)->ptr(pkg);	
 
 		_internalDownloader->saveDownloadedBlock(*pkg);
 		_internalDownloader->downloadIsCompleted();

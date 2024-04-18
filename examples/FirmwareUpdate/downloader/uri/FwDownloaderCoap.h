@@ -9,14 +9,16 @@
 #include <coap3/coap.h>
 
 using namespace std;
+using namespace wpp;
 
 class FwDownloaderCoap {
     struct DownloadJob {
         string url = "";
         std::string psk_id = "";
         std::vector<uint8_t> psk_key;
-        function<void(string)> downloadedClb;
+        function<void(string, FwUpdRes)> downloadedClb;
         bool downloading = false;
+        bool isResourceExists = true;
     };
 
 public:
@@ -32,7 +34,8 @@ public:
                 string url = this->_job.url;
                 std::string pskId = this->_job.psk_id;
                 std::vector<uint8_t> pskKey = this->_job.psk_key;
-                function<void(string)> downloadedClb = this->_job.downloadedClb;
+                function<void(string, FwUpdRes)> downloadedClb = this->_job.downloadedClb;
+                FwUpdRes fwUpdRes = R_INITIAL;
                 this->_jobGuard.unlock();
                 cout << "Start downloading from url: " << url << endl;
                 
@@ -89,6 +92,8 @@ public:
                     continue;
                 }
 
+                coap_set_app_data(ctx, &(this->_job.isResourceExists));
+
                 /* Add COAP_BLOCK_USE_LIBCOAP | COAP_BLOCK_SINGLE_BODY to receive large responses*/
                 coap_context_set_block_mode(ctx, COAP_BLOCK_USE_LIBCOAP);
                 if (uri.scheme == COAP_URI_SCHEME_COAP) {
@@ -112,6 +117,7 @@ public:
                 }
 
                 coap_register_response_handler(ctx, message_handler);
+                coap_register_nack_handler(ctx, nack_handler);
 
                 /* Convert provided uri into CoAP options */
                 if (coap_uri_into_options(&uri, &dst, &optlist, 1, buf, sizeof(buf)) < 0) {
@@ -140,6 +146,7 @@ public:
                 }
 
                 while (coap_io_pending(ctx)) { /* i/o not yet complete */
+                    if (!_job.isResourceExists) break;
                     uint32_t timeout_ms;
                     int result = -1;
                     timeout_ms = wait_ms;
@@ -161,9 +168,15 @@ public:
                 coap_free_context(ctx);
                 coap_cleanup();
                 coap_delete_optlist(optlist);
+
+                if (!_job.isResourceExists) {
+                    cout << "Bad connection or resource does not exist" << endl;
+                    fwUpdRes = R_INVALID_URI;
+                } else {
+                    cout << "Downloading is completed" << endl;
+                }
                 
-                cout << "Downloading is completed" << endl;
-                downloadedClb("test_fw.fw");
+                downloadedClb("test_fw.fw", fwUpdRes);
                 _job.downloading = false;
             }
             cout << "Downloading thread is terminated" << endl;
@@ -181,14 +194,14 @@ public:
         }
     }
 
-	void startDownloading(string url, function<void(string)> downloadedClb) {
+	void startDownloading(string url, function<void(string, FwUpdRes)> downloadedClb) {
         // TODO befor starting download check if not already downloading
         _jobGuard.lock();
         _job = {url, "", {}, downloadedClb, true};
         _jobGuard.unlock();
     }
 
-    void startDownloading(string url, std::string pskId, std::vector<uint8_t> pskKey, function<void(string)> downloadedClb) {
+    void startDownloading(string url, std::string pskId, std::vector<uint8_t> pskKey, function<void(string, FwUpdRes)> downloadedClb) {
         // TODO befor starting download check if not already downloading
         _jobGuard.lock();
         _job = {url, pskId, pskKey, downloadedClb, true};
@@ -204,12 +217,42 @@ public:
     }
 
 private:
-    static coap_response_t message_handler(coap_session_t *session COAP_UNUSED, const coap_pdu_t *sent, const coap_pdu_t *received, const coap_mid_t id COAP_UNUSED) {
+    /**
+     * Negative Acknowedge handler that is used as callback in coap_context_t.
+     */
+    static void nack_handler(coap_session_t *session,
+                             const coap_pdu_t *sent,
+                             const coap_nack_reason_t reason,
+                             const coap_mid_t id COAP_UNUSED)
+    {
+        cout << "Received NACK for message with reason: " << reason << endl;
+        coap_context_t *context = coap_session_get_context(session);
+        bool* asd = (bool*)coap_get_app_data(context);
+        * asd = false;
+    }
+
+    /**
+     * Response handler that is used as callback in coap_context_t.
+     */
+    static coap_response_t message_handler(coap_session_t *session,
+                                           const coap_pdu_t *sent, 
+                                           const coap_pdu_t *received, 
+                                           const coap_mid_t id COAP_UNUSED)
+    {
         size_t len;
         const uint8_t *databuf;
         size_t offset;
         size_t total;
         coap_pdu_code_t rcv_code = coap_pdu_get_code(received);
+
+        if (rcv_code != COAP_RESPONSE_CODE_CONTENT) {
+            cout << "Response code is not 205" << endl;
+            coap_context_t *context = coap_session_get_context(session);
+            bool* asd = (bool*)coap_get_app_data(context);
+            * asd = false;
+           
+            return COAP_RESPONSE_OK;
+        }
 
         if (COAP_RESPONSE_CLASS(rcv_code) == 2) {
             if (coap_get_data_large(received, &len, &databuf, &offset, &total)) {

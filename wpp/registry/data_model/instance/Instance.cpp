@@ -14,6 +14,16 @@
 
 namespace wpp {
 
+bool Instance::isExist(ID_T resId) {
+	return resource(resId) != _resources.end();
+}
+
+bool Instance::isExist(ID_T resId, ID_T resInstId) {
+	auto res = resource(resId);
+	if (res == _resources.end()) return false;
+	return res->isInstanceExist(resInstId);
+}	
+
 bool Instance::clear(ID_T resId) {
 	auto res = resource(resId);
 	if (res == _resources.end()) return false;
@@ -21,28 +31,28 @@ bool Instance::clear(ID_T resId) {
 	bool result = res->clear();
 	if (result) {
 		userOperationNotifier(ItemOp::DELETE, {resId,});
-		notifyServerResChanged({resId,});
+		notifyServerResChanged(resId);
 	}
 
 	return result;
 }
 
-bool Instance::remove(const ResLink &resLink) {
-	auto res = resource(resLink.resId);
+bool Instance::remove(ID_T resId, ID_T resInstId) {
+	auto res = resource(resId);
 	if (res == _resources.end()) return false;
 
-	bool result = res->remove(resLink.resInstId);
+	bool result = res->remove(resInstId);
 	if (result) {
-		userOperationNotifier(ItemOp::DELETE, {resLink.resId, resLink.resInstId});
-		notifyServerResChanged({resLink.resId, resLink.resInstId});
+		userOperationNotifier(ItemOp::DELETE, {resId, resInstId});
+		notifyServerResChanged(resId, resInstId);
 	}
 
 	return result;
 }
 
-void Instance::notifyServerResChanged(const ResLink &resLink) {
-	WPP_LOGD(TAG_WPP_INST, "Notify value changed: objID=%d, instID=%d, resID=%d, resInstID=%d", getObjectID(), getInstanceID(), resLink.resId, resLink.resInstId);	
-	lwm2m_uri_t uri = {(ID_T)getObjectID(), getInstanceID(), resLink.resId, resLink.resInstId};
+void Instance::notifyServerResChanged(ID_T resId, ID_T resInstId) {
+	WPP_LOGD(TAG_WPP_INST, "Notify value changed: objID=%d, instID=%d, resID=%d, resInstID=%d", getObjectID(), getInstanceID(), resId, resInstId);	
+	lwm2m_uri_t uri = {getObjectID(), getInstanceID(), resId, resInstId};
 	lwm2m_resource_value_changed(&_context, &uri);
 }
 

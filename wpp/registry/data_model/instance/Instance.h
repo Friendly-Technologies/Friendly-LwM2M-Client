@@ -266,11 +266,12 @@ template<typename T>
 bool Instance::get(const ResLink &resLink, T &value) {
 	auto res = resource(resLink.resId);
 	if (res == _resources.end()) return false;
+	if (!res->isInstanceExist(resLink.resInstId) || !res->isDataTypeValid<T>()) return false;
 
-	if (!res->get(value, resLink.resInstId)) return false;
-	
 	if (res->isMultiple()) userOperationNotifier(ItemOp::READ, resLink);
 	else userOperationNotifier(ItemOp::READ, {resLink.resId,});
+
+	value = res->get<T>(resLink.resInstId);
 
 	return true;
 }
@@ -287,13 +288,12 @@ template<typename T>
 bool Instance::getPtr(const ResLink &resLink, const T *&value) {
 	auto res = resource(resLink.resId);
 	if (res == _resources.end()) return false;
-
-	T *tmpValue = NULL;
-	if (!res->ptr(tmpValue, resLink.resInstId) || !tmpValue) return false;
-	value = tmpValue;
+	if (!res->isInstanceExist(resLink.resInstId) || !res->isDataTypeValid<T>()) return false;
 
 	if (res->isMultiple()) userOperationNotifier(ItemOp::READ, resLink);
 	else userOperationNotifier(ItemOp::READ, {resLink.resId,});
+
+	value = &res->get<T>(resLink.resInstId);
 
 	return true;
 }

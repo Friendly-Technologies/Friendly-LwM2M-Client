@@ -11,14 +11,8 @@
 bool Resource::set(const _TYPE_ &value, ID_T resInstId) {					\
 	return _set(value, resInstId);											\
 }																			\
-bool Resource::setMove(_TYPE_ &value, ID_T resInstId) {				\
+bool Resource::setMove(_TYPE_ &value, ID_T resInstId) {						\
 	return _setMove(value, resInstId);										\
-}																			\
-bool Resource::get(_TYPE_ &value, ID_T resInstId) const {					\
-	return _get(value, resInstId);											\
-}																			\
-bool Resource::ptr(_TYPE_ *&value, ID_T resInstId) {						\
-	return _ptr(value, resInstId);											\
 }																			\
 
 namespace wpp {

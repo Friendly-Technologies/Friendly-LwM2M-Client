@@ -8,11 +8,10 @@
 #include "ObjectInfo.h"
 #include "ItemOp.h"
 #include "WppTypes.h"
+#include "WppLogs.h"
 
 #define RES_METHODS_PROT_SET_FOR(_TYPE_) bool set(const _TYPE_ &value, ID_T resInstId = SINGLE_INSTANCE_ID); \
-										 bool setMove(_TYPE_ &value, ID_T resInstId = SINGLE_INSTANCE_ID); \
-								   		 bool get(_TYPE_ &value, ID_T resInstId = SINGLE_INSTANCE_ID) const; \
-								   		 bool ptr(_TYPE_ *&value, ID_T resInstId = SINGLE_INSTANCE_ID)
+										 bool setMove(_TYPE_ &value, ID_T resInstId = SINGLE_INSTANCE_ID)
 
 namespace wpp {
 
@@ -107,8 +106,8 @@ public: /* ---------- Public methods for common usage ----------*/
 
 	/* ---------- Methods for manage resource data ----------*/
 	/**
- 	 * @brief Generating prototypes of get/set/ptr for each supported type
-	 * The data that will be set through returned ptr() must be manualy
+ 	 * @brief Generating prototypes of get/set/ref for each supported type
+	 * The data that will be set through returned ref() must be manualy
 	 * validated with using isDataValueValid()
 	 */
 	RES_METHODS_PROT_SET_FOR(BOOL_T);
@@ -120,6 +119,9 @@ public: /* ---------- Public methods for common usage ----------*/
 	RES_METHODS_PROT_SET_FOR(STRING_T);
 	RES_METHODS_PROT_SET_FOR(EXECUTE_T);
 
+	template<typename T>
+	T &get(ID_T resInstId = SINGLE_INSTANCE_ID);
+
     /**
  	 * @brief Disabling implicit conversions
      */
@@ -127,10 +129,6 @@ public: /* ---------- Public methods for common usage ----------*/
     bool set(const T &value, ID_T resInstId = SINGLE_INSTANCE_ID) = delete;
 	template<typename T>
 	bool setMove(T &value, ID_T resInstId = SINGLE_INSTANCE_ID) = delete;
-	template<typename T>
-	bool get(T &value, ID_T resInstId = SINGLE_INSTANCE_ID) const  = delete;
-	template<typename T>
-	bool ptr(T *&value, ID_T resInstId = SINGLE_INSTANCE_ID)  = delete;
 
 	/**
  	 * @brief Remove resource instance if resource is multiple and instance exists,
@@ -155,12 +153,6 @@ private:
 
 	template<typename T>
 	bool _setMove(T &value, ID_T resInstId);
-	
-	template<typename T>
-	bool _get(T &value, ID_T resInstId) const;
-
-	template<typename T>
-	bool _ptr(T *&value, ID_T resInstId);
 
 private: /* ---------- Private properties ----------*/
     ID_T _id;
@@ -182,8 +174,10 @@ bool Resource::isDataTypeValid() const {
 
 template<typename T>
 bool Resource::_set(const T &value, ID_T resInstId) {
-	if (!isInstanceIdPossible(resInstId)) return false;
-	if (!isDataValueValid(value)) return false;
+	if (!isInstanceIdPossible(resInstId) || !isDataValueValid(value)) {
+		WPP_LOGE(TAG_WPP_RES, "Invalid data value or instance id is not possible");
+		return false;
+	}
 
 	if (isInstanceExist(resInstId)) {
 		auto instIter = getResInstIter(resInstId);
@@ -197,8 +191,10 @@ bool Resource::_set(const T &value, ID_T resInstId) {
 
 template<typename T>
 bool Resource::_setMove(T &value, ID_T resInstId) {
-	if (!isInstanceIdPossible(resInstId)) return false;
-	if (!isDataValueValid(value)) return false;
+	if (!isInstanceIdPossible(resInstId) || !isDataValueValid(value)) {
+		WPP_LOGE(TAG_WPP_RES, "Invalid data value or instance id is not possible");
+		return false;
+	}
 
 	if (isInstanceExist(resInstId)) {
 		auto instIter = getResInstIter(resInstId);
@@ -212,25 +208,17 @@ bool Resource::_setMove(T &value, ID_T resInstId) {
 }
 
 template<typename T>
-bool Resource::_get(T &value, ID_T resInstId) const {
-	if (!isDataTypeValid<T>()) return false;
-	if (!isInstanceExist(resInstId)) return false;
+T &Resource::get(ID_T resInstId) {
+	if (!isDataTypeValid<T>() || !isInstanceExist(resInstId)) {
+		// Return empty value if the data type is not valid or the instance does not exist
+		static T empty;
+		empty = T();
+		WPP_LOGE(TAG_WPP_RES, "Invalid data type or instance does not exist");
+		return empty;
+	}
 
 	auto instIter = getResInstIter(resInstId);
-	value = std::get<T>(instIter->data);
-
-	return true;
-}
-
-template<typename T>
-bool Resource::_ptr(T *&value, ID_T resInstId) {
-	if (!isDataTypeValid<T>()) return false;
-	if (!isInstanceExist(resInstId)) return false;
-
-	auto instIter = getResInstIter(resInstId);
-	value = &std::get<T>(instIter->data);
-
-	return true;
+	return std::get<T>(instIter->data);
 }
 
 template<typename T>

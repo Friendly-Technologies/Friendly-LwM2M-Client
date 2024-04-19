@@ -85,50 +85,52 @@ Instance* Instance::getSecurityInst(lwm2m_server_t *server) {
 }
 
 bool Instance::resourceToLwm2mData(Resource &res, ID_T instanceId, lwm2m_data_t &data) {
+	if (!res.isInstanceExist(instanceId)) return false;
+
 	switch(res.getTypeId()) {
 	case TYPE_ID::BOOL: {
-		BOOL_T value;
-		if (res.get(value, instanceId)) lwm2m_data_encode_bool(value, &data);
+		BOOL_T value = res.get<BOOL_T>(instanceId);
+		lwm2m_data_encode_bool(value, &data);
 		break;
 	}
 	case TYPE_ID::TIME:  {
-		TIME_T value;
-		if (res.get(value, instanceId)) lwm2m_data_encode_time(value, &data);
+		TIME_T value = res.get<TIME_T>(instanceId);
+		lwm2m_data_encode_bool(value, &data);
 		break;
 	}
 	case TYPE_ID::INT: {
-		INT_T value;
-		if (res.get(value, instanceId)) lwm2m_data_encode_int(value, &data);
+		INT_T value = res.get<INT_T>(instanceId);
+		lwm2m_data_encode_bool(value, &data);
 		break;
 	}
 	case TYPE_ID::UINT: {
-		UINT_T value;
-		if (res.get(value, instanceId)) lwm2m_data_encode_uint(value, &data);
+		UINT_T value = res.get<UINT_T>(instanceId);
+		lwm2m_data_encode_bool(value, &data);
 		break;
 	}
 	case TYPE_ID::FLOAT: {
-		FLOAT_T value;
-		if (res.get(value, instanceId)) lwm2m_data_encode_float(value, &data);
+		FLOAT_T value = res.get<FLOAT_T>(instanceId);
+		lwm2m_data_encode_bool(value, &data);
 		break;
 	}
 	case TYPE_ID::OBJ_LINK: {
-		OBJ_LINK_T value;
-		if (res.get(value, instanceId)) lwm2m_data_encode_objlink(value.objId, value.objInstId, &data);
+		OBJ_LINK_T value = res.get<OBJ_LINK_T>(instanceId);
+		lwm2m_data_encode_objlink(value.objId, value.objInstId, &data);
 		break;
 	}
 	case TYPE_ID::OPAQUE: {
-		OPAQUE_T value;
-		if (res.get(value, instanceId)) lwm2m_data_encode_opaque(value.data(), value.size(), &data);
+		OPAQUE_T value = res.get<OPAQUE_T>(instanceId);
+		lwm2m_data_encode_opaque(value.data(), value.size(), &data);
 		break;
 	}
 	case TYPE_ID::STRING: {
-		STRING_T value;
-		if (res.get(value, instanceId)) lwm2m_data_encode_string(value.c_str(), &data);
+		STRING_T value = res.get<STRING_T>(instanceId);
+		lwm2m_data_encode_string(value.c_str(), &data);
 		break;
 	}
 	case TYPE_ID::CORE_LINK: {
-		CORE_LINK_T value;
-		if (res.get(value, instanceId)) lwm2m_data_encode_corelink(value.c_str(), &data);
+		CORE_LINK_T value = res.get<CORE_LINK_T>(instanceId);
+		lwm2m_data_encode_corelink(value.c_str(), &data);
 		break;
 	}
 	default: return false;
@@ -505,8 +507,8 @@ uint8_t Instance::executeAsServer(lwm2m_server_t *server, ID_T resId, uint8_t * 
 		return errCode;
 	}
 	
-	EXECUTE_T execute;
-	if (!res->get(execute) || !execute) {
+	EXECUTE_T execute = res->get<EXECUTE_T>();
+	if (!execute) {
 		WPP_LOGE(TAG_WPP_INST, "Resource value is not set: %d:%d:%d", _id.objId, _id.objInstId, resId);
 		return COAP_404_NOT_FOUND;
 	}

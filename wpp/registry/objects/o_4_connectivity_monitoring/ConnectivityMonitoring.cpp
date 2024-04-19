@@ -184,8 +184,7 @@ void ConnectivityMonitoring::resourcesInit() {
 /* --------------- Code_cpp block 11 start --------------- */
 
 bool ConnectivityMonitoring::checkLinkQuality(uint8_t linkQuality) {
-	INT_T networkBearer;
-	resource(NETWORK_BEARER_0)->get(networkBearer);
+	INT_T networkBearer = resource(NETWORK_BEARER_0)->get<INT_T>();
     switch (networkBearer) {
         case GSM:
 			return LINK_QUALITY_GSM_MIN <= linkQuality && linkQuality <= LINK_QUALITY_GSM_MAX;
@@ -204,8 +203,7 @@ bool ConnectivityMonitoring::checkLinkQuality(uint8_t linkQuality) {
 }
 
 bool ConnectivityMonitoring::checkCellId(uint32_t cellId) {
-	INT_T networkBearer;
-	resource(NETWORK_BEARER_0)->get(networkBearer);
+	INT_T networkBearer = resource(NETWORK_BEARER_0)->get<INT_T>();
     switch (networkBearer) {
         case GSM:
             return CELL_ID_GSM_MIN <= cellId && cellId <= CELL_ID_GSM_MAX;

@@ -47,8 +47,7 @@ Lwm2mServer::~Lwm2mServer() {
 void Lwm2mServer::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resLink) {
 	/* --------------- Code_cpp block 6 start --------------- */
 	if (type == ItemOp::WRITE && resLink.resId == LIFETIME_1) {
-		INT_T serverId;
-		resource(SHORT_SERVER_ID_0)->get(serverId);
+		INT_T serverId = resource(SHORT_SERVER_ID_0)->get<INT_T>();
 		lwm2m_update_registration(&getContext(), serverId, true, false);
 	}
 	/* --------------- Code_cpp block 6 end --------------- */
@@ -62,17 +61,14 @@ void Lwm2mServer::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE t
 void Lwm2mServer::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) {
 	/* --------------- Code_cpp block 8 start --------------- */
 	if (type == ItemOp::WRITE && resLink.resId == LIFETIME_1 && getContext().state == STATE_READY){
-		INT_T serverId, lifetime;
-		resource(SHORT_SERVER_ID_0)->get(serverId);
-		resource(LIFETIME_1)->get(lifetime);
+		INT_T serverId = resource(SHORT_SERVER_ID_0)->get<INT_T>();
+		INT_T lifetime = resource(LIFETIME_1)->get<INT_T>();
 		lwm2m_update_server_lifetime(&getContext(), serverId, lifetime);
 	}
 	#if defined(LWM2M_SUPPORT_SENML_JSON) && RES_1_23
 	if (type == ItemOp::WRITE && resLink.resId == MUTE_SEND_23) {
-		INT_T serverId;
-		BOOL_T mute;
-		resource(SHORT_SERVER_ID_0)->get(serverId);
-		resource(MUTE_SEND_23)->get(mute);
+		INT_T serverId = resource(SHORT_SERVER_ID_0)->get<INT_T>();
+		BOOL_T mute = resource(MUTE_SEND_23)->get<BOOL_T>();
 		lwm2m_update_server_mute(&getContext(), serverId, mute);
 	}
 	#endif
@@ -201,8 +197,7 @@ void Lwm2mServer::resourcesInit() {
 
 	// TODO: Registration Update (Res id 8) must be implemented by wakaama core
 	resource(REGISTRATION_UPDATE_TRIGGER_8)->set((EXECUTE_T)[this](Instance& inst, ID_T resId, const OPAQUE_T& data) {
-		INT_T serverId;
-		resource(SHORT_SERVER_ID_0)->get(serverId);
+		INT_T serverId = resource(SHORT_SERVER_ID_0)->get<INT_T>();
 		WPP_LOGI(TAG, "Registration Update Trigger: serverId -> %d", serverId);
 		lwm2m_update_registration(&getContext(), serverId, false, true);
 		return true; 

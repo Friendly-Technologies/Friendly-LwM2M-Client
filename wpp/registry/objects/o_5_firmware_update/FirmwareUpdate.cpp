@@ -184,8 +184,7 @@ bool FirmwareUpdate::setFwUpdater(FwUpdater &updater) {
 std::vector<FwUpdProtocol> FirmwareUpdate::supportedProtocols() {
 	std::vector<FwUpdProtocol> supportedProtocols;
 	for (auto id : resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->getInstIds()) {
-		INT_T protocol;
-		resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->get(protocol, id);
+		INT_T protocol = resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->get<INT_T>(id);
 		supportedProtocols.push_back(FwUpdProtocol(protocol));
 	}
 
@@ -244,8 +243,7 @@ bool FirmwareUpdate::setFwInternalDownloader(FwInternalDl &downloader) {
 }
 
 bool FirmwareUpdate::pkgUpdaterHandler() {
-	INT_T state;
-	resource(STATE_3)->get(state);
+	INT_T state = resource(STATE_3)->get<INT_T>();
 	if (state != S_DOWNLOADED) return false;
 
 	_pkgUpdater->startUpdating();
@@ -285,9 +283,8 @@ void FirmwareUpdate::externalDownloaderHandler(Instance *securityInst) {
 		return;
 	}
 
-	STRING_T pkgUri;
 	resetStateMachine();
-	resource(PACKAGE_URI_1)->get(pkgUri);
+	STRING_T pkgUri = resource(PACKAGE_URI_1)->get<STRING_T>();
 	if (pkgUri.empty()) {
 		clearArtifacts();
 		WPP_LOGD(TAG, "Server reset state machine through PACKAGE_URI_1");
@@ -315,10 +312,9 @@ void FirmwareUpdate::internalDownloaderHandler() {
 	// TODO: Update the implementation of this method after creating an
 	// interface for downloading firmware via uri using the wpp library.
 	// Currently, FwInternalDl only supports loading through the PACKAGE_0 resource.
-	OPAQUE_T *pkg;
 	resetStateMachine();
-	resource(PACKAGE_0)->ptr(pkg);	
-	if (pkg->empty()) {
+	OPAQUE_T &pkg = resource(PACKAGE_0)->get<OPAQUE_T>();	
+	if (pkg.empty()) {
 		clearArtifacts();
 		WPP_LOGD(TAG, "Server reset state machine through PACKAGE_0");
 		return;
@@ -328,10 +324,9 @@ void FirmwareUpdate::internalDownloaderHandler() {
 	changeState(S_DOWNLOADING);
 
 	_internalDownloaderTaskId = WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, [this](WppClient &client, void *ctx) -> bool {
-		OPAQUE_T *pkg;
-		resource(PACKAGE_0)->ptr(pkg);	
+		OPAQUE_T &pkg = resource(PACKAGE_0)->get<OPAQUE_T>();	
 
-		_internalDownloader->saveDownloadedBlock(*pkg);
+		_internalDownloader->saveDownloadedBlock(pkg);
 		_internalDownloader->downloadIsCompleted();
 		if (_internalDownloader->downloadResult() != R_INITIAL) changeState(S_IDLE);
 		else changeState(S_DOWNLOADED);
@@ -419,8 +414,7 @@ bool FirmwareUpdate::isSchemeValid(STRING_T scheme) {
 bool FirmwareUpdate::isSchemeSupported(STRING_T scheme) {
 	FwUpdProtocol requiredProt = schemeToProtId(scheme);
 	for (auto id : resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->getInstIds()) {
-		INT_T suppProt;
-		resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->get(suppProt, id);
+		INT_T suppProt = resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->get<INT_T>(id);
 		if (requiredProt == suppProt) return true;
 	}
 	return false;
@@ -438,8 +432,7 @@ FwUpdProtocol FirmwareUpdate::schemeToProtId(STRING_T scheme) {
 #endif
 
 bool FirmwareUpdate::isDeliveryTypeSupported(FwUpdDelivery type) {
-	INT_T deliveryType = FW_UPD_DELIVERY_MAX;
-	resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->get(deliveryType);
+	INT_T deliveryType = resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->get<INT_T>();
 	if (deliveryType == type || deliveryType == BOTH) return true;
 	return false;
 }

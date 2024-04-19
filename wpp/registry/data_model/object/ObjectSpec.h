@@ -93,7 +93,7 @@ Instance* ObjectSpec<T>::createInstance(ID_T instanceId) {
 	_instances.push_back(inst);
 
 	// Update server registration
-	lwm2m_update_registration(&getContext(), 0, false, true);
+	if (getContext().state > STATE_BOOTSTRAPPING) lwm2m_update_registration(&getContext(), 0, false, true);
 
 	return inst;
 }

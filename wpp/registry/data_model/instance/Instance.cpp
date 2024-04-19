@@ -51,6 +51,7 @@ bool Instance::remove(ID_T resId, ID_T resInstId) {
 }
 
 void Instance::notifyServerResChanged(ID_T resId, ID_T resInstId) {
+	if (_context.state <= STATE_BOOTSTRAPPING) return;
 	WPP_LOGD(TAG_WPP_INST, "Notify value changed: objID=%d, instID=%d, resID=%d, resInstID=%d", getObjectID(), getInstanceID(), resId, resInstId);	
 	lwm2m_uri_t uri = {getObjectID(), getInstanceID(), resId, resInstId};
 	lwm2m_resource_value_changed(&_context, &uri);
@@ -105,22 +106,22 @@ bool Instance::resourceToLwm2mData(Resource &res, ID_T instanceId, lwm2m_data_t 
 	}
 	case TYPE_ID::TIME:  {
 		TIME_T value = res.get<TIME_T>(instanceId);
-		lwm2m_data_encode_bool(value, &data);
+		lwm2m_data_encode_time(value, &data);
 		break;
 	}
 	case TYPE_ID::INT: {
 		INT_T value = res.get<INT_T>(instanceId);
-		lwm2m_data_encode_bool(value, &data);
+		lwm2m_data_encode_int(value, &data);
 		break;
 	}
 	case TYPE_ID::UINT: {
 		UINT_T value = res.get<UINT_T>(instanceId);
-		lwm2m_data_encode_bool(value, &data);
+		lwm2m_data_encode_uint(value, &data);
 		break;
 	}
 	case TYPE_ID::FLOAT: {
 		FLOAT_T value = res.get<FLOAT_T>(instanceId);
-		lwm2m_data_encode_bool(value, &data);
+		lwm2m_data_encode_float(value, &data);
 		break;
 	}
 	case TYPE_ID::OBJ_LINK: {

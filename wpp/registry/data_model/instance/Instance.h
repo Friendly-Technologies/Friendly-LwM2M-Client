@@ -219,7 +219,10 @@ protected:
 template<typename T>
 bool Instance::set(ID_T resId, const T &value) { 
 	auto res = resource(resId);
-	if (res == _resources.end() || res->isMultiple()) return false;
+	if (res == _resources.end() || res->isMultiple()) {
+		WPP_LOGE(TAG_WPP_INST, "Invalid resource id or resource is multiple");
+		return false;
+	}
 	if (!res->set<T>(value)) return false;
 
 	userOperationNotifier(ItemOp::WRITE, {resId, ID_T_MAX_VAL});
@@ -231,8 +234,10 @@ bool Instance::set(ID_T resId, const T &value) {
 template<typename T>
 bool Instance::set(ID_T resId, ID_T resInstId, const T &value)  {
 	auto res = resource(resId);
-	if (res == _resources.end()) return false;
-
+	if (res == _resources.end() || res->isSingle()) {
+		WPP_LOGE(TAG_WPP_INST, "Invalid resource id or resource is sinagle");
+		return false;
+	}
 	if (!res->set<T>(value, resInstId)) return false;
 
 	userOperationNotifier(ItemOp::WRITE, {resId, resInstId});
@@ -247,7 +252,10 @@ bool Instance::set(ID_T resId, ID_T resInstId, const T &value)  {
 template<typename T>
 bool Instance::setMove(ID_T resId, T &value) {
 	auto res = resource(resId);
-	if (res == _resources.end() || res->isMultiple()) return false;
+	if (res == _resources.end() || res->isMultiple())  {
+		WPP_LOGE(TAG_WPP_INST, "Invalid resource id or resource is multiple");
+		return false;
+	}
 	if (!res->setMove<T>(value)) return false;
 
 	userOperationNotifier(ItemOp::WRITE, {resId, ID_T_MAX_VAL});
@@ -258,7 +266,10 @@ bool Instance::setMove(ID_T resId, T &value) {
 template<typename T>
 bool Instance::setMove(ID_T resId, ID_T resInstId, T &value) {
 	auto res = resource(resId);
-	if (res == _resources.end() || res->isSingle()) return false;
+	if (res == _resources.end() || res->isSingle()) {
+		WPP_LOGE(TAG_WPP_INST, "Invalid resource id or resource is sinagle");
+		return false;
+	}
 	if (!res->setMove<T>(value, resInstId)) return false;
 
 	userOperationNotifier(ItemOp::WRITE, {resId, resInstId});
@@ -277,7 +288,7 @@ T &Instance::get(ID_T resId) {
 		// Return empty value if the data type is not valid or the instance does not exist
 		static T empty;
 		empty = T();
-		WPP_LOGE(TAG_WPP_RES, "Invalid resource id or data type");
+		WPP_LOGE(TAG_WPP_INST, "Invalid resource id or data type");
 		return empty;
 	}
 

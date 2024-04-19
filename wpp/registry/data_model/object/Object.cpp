@@ -94,7 +94,7 @@ bool Object::removeInstance(ID_T instanceId) {
 	_instances.erase(inst);
 
 	// Update server registration
-	lwm2m_update_registration(&getContext(), 0, false, true);
+	if (getContext().state > STATE_BOOTSTRAPPING) lwm2m_update_registration(&getContext(), 0, false, true);
 	
 	return true;
 }

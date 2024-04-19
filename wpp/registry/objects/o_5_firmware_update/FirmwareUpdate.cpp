@@ -123,35 +123,35 @@ void FirmwareUpdate::resourcesCreate() {
 
 void FirmwareUpdate::resourcesInit() {
 	/* --------------- Code_cpp block 10 start --------------- */
-	resource(PACKAGE_0)->set(OPAQUE_T());
+	resource(PACKAGE_0)->set<OPAQUE_T>({});
 	resource(PACKAGE_0)->setDataVerifier((VERIFY_OPAQUE_T)[this](const OPAQUE_T& value) { 
 		if (value.empty() || isDeliveryTypeSupported(PUSH)) return true;
 		return false;
 	});
-	resource(PACKAGE_URI_1)->set(STRING_T(""));
+	resource(PACKAGE_URI_1)->set<STRING_T>("");
 	resource(PACKAGE_URI_1)->setDataVerifier((VERIFY_STRING_T)[this](const STRING_T& value) { return isUriValid(value); });
-	resource(UPDATE_2)->set((EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
-	resource(STATE_3)->set(INT_T(S_IDLE));
+	resource(UPDATE_2)->set<EXECUTE_T>([](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
+	resource(STATE_3)->set<INT_T>(S_IDLE);
 	resource(STATE_3)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { 
 		if (S_IDLE > value || value >= STATE_MAX) return false;
 		return true;
 	});
-	resource(UPDATE_RESULT_5)->set(INT_T(R_INITIAL));
+	resource(UPDATE_RESULT_5)->set<INT_T>(R_INITIAL);
 	resource(UPDATE_RESULT_5)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { 
 		if (R_INITIAL > value || value >= UPD_RES_MAX) return false;
 		return true; 
 	});
 	#if RES_5_6
-	resource(PKGNAME_6)->set(STRING_T(""));
+	resource(PKGNAME_6)->set<STRING_T>("");
 	#endif
 	#if RES_5_7
-	resource(PKGVERSION_7)->set(STRING_T(""));
+	resource(PKGVERSION_7)->set<STRING_T>("");
 	#endif
 	#if RES_5_8
-	resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->set(INT_T(COAP));
+	resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->set<INT_T>(COAP);
 	resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return COAP <= value && value < FW_UPD_PROTOCOL_MAX; });
 	#endif
-	resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set(INT_T(PUSH));
+	resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(PUSH);
 	resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return PULL <= value && value < FW_UPD_DELIVERY_MAX; });
 	/* --------------- Code_cpp block 10 end --------------- */
 }
@@ -163,17 +163,17 @@ bool FirmwareUpdate::setFwUpdater(FwUpdater &updater) {
 
 	_pkgUpdater = &updater;
 	// Set the update method
-	resource(UPDATE_2)->set((EXECUTE_T)[this](Instance& inst, ID_T resId, const OPAQUE_T& data) { return pkgUpdaterHandler(); });
+	resource(UPDATE_2)->set<EXECUTE_T>([this](Instance& inst, ID_T resId, const OPAQUE_T& data) { return pkgUpdaterHandler(); });
 	// Set last update result
-	resource(UPDATE_RESULT_5)->set(INT_T(updater.lastUpdateResult()));
+	resource(UPDATE_RESULT_5)->set<INT_T>(updater.lastUpdateResult());
 	notifyServerResChanged({UPDATE_RESULT_5,});
 	// Set the package name and version
 	#if RES_5_6
-	resource(PKGNAME_6)->set(updater.pkgName());
+	resource(PKGNAME_6)->set<STRING_T>(updater.pkgName());
 	notifyServerResChanged({PKGNAME_6,});
 	#endif
 	#if RES_5_7
-	resource(PKGVERSION_7)->set(updater.pkgVersion());
+	resource(PKGVERSION_7)->set<STRING_T>(updater.pkgVersion());
 	notifyServerResChanged({PKGVERSION_7,});
 	#endif
 
@@ -204,15 +204,15 @@ bool FirmwareUpdate::setFwExternalDownloader(FwExternalDl &downloader) {
 	}
 
 	// Setup delivery type
-	if (_internalDownloader) resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set(INT_T(BOTH));
-	else resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set(INT_T(PULL));
+	if (_internalDownloader) resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(BOTH);
+	else resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(PULL);
 	notifyServerResChanged({FIRMWARE_UPDATE_DELIVERY_METHOD_9,});
 
 	// Setup supported protocols
 	ID_T instId = 0;
 	resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->clear();
 	for (auto prot : dlSupportedProtocols) {
-		resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->set(INT_T(prot), instId);
+		resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->set<INT_T>(prot, instId);
 		instId++;
 	}
 	notifyServerResChanged({FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8,});
@@ -232,10 +232,10 @@ bool FirmwareUpdate::setFwInternalDownloader(FwInternalDl &downloader) {
 	
 	// Setup delivery type
 	#if RES_5_8
-	if (_externalDownloader) resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set(INT_T(BOTH));
-	else resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set(INT_T(PUSH));
+	if (_externalDownloader) resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(BOTH);
+	else resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(PUSH);
 	#else
-	resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set(INT_T(PUSH));
+	resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(PUSH);
 	#endif
 	notifyServerResChanged({FIRMWARE_UPDATE_DELIVERY_METHOD_9,});
 
@@ -258,11 +258,11 @@ bool FirmwareUpdate::pkgUpdaterHandler() {
 
 		if (res == R_FW_UPD_SUCCESS) {
 			#if RES_5_6
-			resource(PKGNAME_6)->set(_pkgUpdater->pkgName());
+			resource(PKGNAME_6)->set<STRING_T>(_pkgUpdater->pkgName());
 			notifyServerResChanged({PKGNAME_6,});
 			#endif
 			#if RES_5_7
-			resource(PKGVERSION_7)->set(_pkgUpdater->pkgVersion());
+			resource(PKGVERSION_7)->set<STRING_T>(_pkgUpdater->pkgVersion());
 			notifyServerResChanged({PKGVERSION_7,});
 			#endif
 			#if RES_3_3
@@ -338,12 +338,12 @@ void FirmwareUpdate::internalDownloaderHandler() {
 }
 
 void FirmwareUpdate::changeUpdRes(FwUpdRes res) {
-	resource(UPDATE_RESULT_5)->set(INT_T(res));
+	resource(UPDATE_RESULT_5)->set<INT_T>(res);
 	notifyServerResChanged({UPDATE_RESULT_5,});
 }
 
 void FirmwareUpdate::changeState(FwUpdState state) {
-	resource(STATE_3)->set(INT_T(state));
+	resource(STATE_3)->set<INT_T>(state);
 	notifyServerResChanged({STATE_3,});
 }
 
@@ -368,9 +368,9 @@ void FirmwareUpdate::resetStateMachine() {
 }
 
 void FirmwareUpdate::clearArtifacts() {
-	resource(PACKAGE_0)->set(OPAQUE_T());
+	resource(PACKAGE_0)->set<OPAQUE_T>({});
 	notifyServerResChanged({PACKAGE_0,});
-	resource(PACKAGE_URI_1)->set(STRING_T(""));
+	resource(PACKAGE_URI_1)->set<STRING_T>("");
 	notifyServerResChanged({PACKAGE_URI_1,});
 }
 

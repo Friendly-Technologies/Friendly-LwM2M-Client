@@ -7,14 +7,6 @@
 
 #include "Resource.h"
 
-#define RES_METHODS_IMPL_SET_FOR(_TYPE_)									\
-bool Resource::set(const _TYPE_ &value, ID_T resInstId) {					\
-	return _set(value, resInstId);											\
-}																			\
-bool Resource::setMove(_TYPE_ &value, ID_T resInstId) {						\
-	return _setMove(value, resInstId);										\
-}																			\
-
 namespace wpp {
 
 /* ---------- Public methods for common usage ----------*/
@@ -148,15 +140,6 @@ const std::vector<ID_T> Resource::getInstIds() const {
 }
 
 /* ---------- Methods for get and set resource value ----------*/
-RES_METHODS_IMPL_SET_FOR(BOOL_T);
-RES_METHODS_IMPL_SET_FOR(INT_T);
-RES_METHODS_IMPL_SET_FOR(UINT_T);
-RES_METHODS_IMPL_SET_FOR(FLOAT_T);
-RES_METHODS_IMPL_SET_FOR(OPAQUE_T);
-RES_METHODS_IMPL_SET_FOR(OBJ_LINK_T);
-RES_METHODS_IMPL_SET_FOR(STRING_T);
-RES_METHODS_IMPL_SET_FOR(EXECUTE_T);
-
 bool Resource::remove(ID_T resInstId) {
 	if (!isInstanceExist(resInstId) || isSingle() || instanceCnt() == 1) return false;
 	auto instForRemove = getResInstIter(resInstId);

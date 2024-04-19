@@ -80,18 +80,18 @@ void Lwm2mAccessControl::resourcesCreate() {
 void Lwm2mAccessControl::resourcesInit() {
 	/* --------------- Code_cpp block 10 start --------------- */
 	
-	resource(OBJECT_ID_0)->set(INT_T(AC_OBJ_ID_MIN));
+	resource(OBJECT_ID_0)->set<INT_T>(AC_OBJ_ID_MIN);
 	resource(OBJECT_ID_0)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return AC_OBJ_ID_MIN <= value && value <= AC_OBJ_ID_MAX; });
 
-	resource(OBJECT_INSTANCE_ID_1)->set(INT_T(AC_OBJ_INST_ID_MIN));
+	resource(OBJECT_INSTANCE_ID_1)->set<INT_T>(AC_OBJ_INST_ID_MIN);
 	resource(OBJECT_INSTANCE_ID_1)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return AC_OBJ_INST_ID_MIN <= value && value <= AC_OBJ_INST_ID_MAX; });
 
 	#if RES_2_2
-	resource(ACL_2)->set(INT_T(ACL_MIN));
+	resource(ACL_2)->set<INT_T>(ACL_MIN);
 	resource(ACL_2)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return ACL_MIN <= value && value < ACL_MAX; });
 	#endif
 
-	resource(ACCESS_CONTROL_OWNER_3)->set(INT_T(AC_OWNER_MIN));
+	resource(ACCESS_CONTROL_OWNER_3)->set<INT_T>(AC_OWNER_MIN);
 	resource(ACCESS_CONTROL_OWNER_3)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return AC_OWNER_MIN <= value && value <= AC_OWNER_MAX; });
 
 	/* --------------- Code_cpp block 10 end --------------- */

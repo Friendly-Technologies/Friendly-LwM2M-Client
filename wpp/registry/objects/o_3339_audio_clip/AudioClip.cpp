@@ -98,18 +98,18 @@ void AudioClip::resourcesCreate() {
 
 void AudioClip::resourcesInit() {
 	/* --------------- Code_cpp block 10 start --------------- */
-	resource(CLIP_5522)->set(OPAQUE_T());
+	resource(CLIP_5522)->set<OPAQUE_T>({});
 	#if RES_3339_5523
-	resource(TRIGGER_5523)->set((EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
+	resource(TRIGGER_5523)->set<EXECUTE_T>([](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
 	#endif
 	#if RES_3339_5548
-	resource(LEVEL_5548)->set((EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
+	resource(LEVEL_5548)->set<EXECUTE_T>([](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
 	#endif
 	#if RES_3339_5524
-	resource(DURATION_5524)->set((EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
+	resource(DURATION_5524)->set<EXECUTE_T>([](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
 	#endif
 	#if RES_3339_5750
-	resource(APPLICATION_TYPE_5750)->set(STRING_T());
+	resource(APPLICATION_TYPE_5750)->set<STRING_T>("");
 	#endif
 	/* --------------- Code_cpp block 10 end --------------- */
 }

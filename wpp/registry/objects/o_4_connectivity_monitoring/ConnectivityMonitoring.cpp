@@ -122,59 +122,59 @@ void ConnectivityMonitoring::resourcesCreate() {
 void ConnectivityMonitoring::resourcesInit() {
 	/* --------------- Code_cpp block 10 start --------------- */
 
-	resource(NETWORK_BEARER_0)->set(INT_T(NTWRK_BRR_MAX));
+	resource(NETWORK_BEARER_0)->set<INT_T>(NTWRK_BRR_MAX);
 	resource(NETWORK_BEARER_0)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return GSM <= value && value < NTWRK_BRR_MAX; });
 
-	resource(AVAILABLE_NETWORK_BEARER_1)->set(INT_T(AVLB_NTWRK_BRR_MIN));
+	resource(AVAILABLE_NETWORK_BEARER_1)->set<INT_T>(AVLB_NTWRK_BRR_MIN);
 	resource(AVAILABLE_NETWORK_BEARER_1)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return AVLB_NTWRK_BRR_MIN <= value && value <= AVLB_NTWRK_BRR_MAX; });
 
-	resource(RADIO_SIGNAL_STRENGTH_2)->set(INT_T(0));
+	resource(RADIO_SIGNAL_STRENGTH_2)->set<INT_T>(0);
 
 	#if RES_4_3
-	resource(LINK_QUALITY_3)->set(INT_T(0));
+	resource(LINK_QUALITY_3)->set<INT_T>(0);
 	resource(LINK_QUALITY_3)->setDataVerifier((VERIFY_INT_T)[this](const INT_T& value) { return this->checkLinkQuality(value); });
 	#endif
 
-	resource(IP_ADDRESSES_4)->set(STRING_T(""));
+	resource(IP_ADDRESSES_4)->set<STRING_T>("");
 
 	#if RES_4_5
-	resource(ROUTER_IP_ADDRESSES_5)->set(STRING_T(""));
+	resource(ROUTER_IP_ADDRESSES_5)->set<STRING_T>("");
 	#endif
 
 	#if RES_4_6
-	resource(LINK_UTILIZATION_6)->set(INT_T(LINK_UTLZTN_MIN));
+	resource(LINK_UTILIZATION_6)->set<INT_T>(LINK_UTLZTN_MIN);
 	resource(LINK_UTILIZATION_6)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return LINK_UTLZTN_MIN <= value && value <= LINK_UTLZTN_MAX; });
 	#endif
 
 	#if RES_4_7
-	resource(APN_7)->set(STRING_T(""));
+	resource(APN_7)->set<STRING_T>("");
 	#endif
 
 	#if RES_4_8
-	resource(CELL_ID_8)->set(INT_T(0));
+	resource(CELL_ID_8)->set<INT_T>(0);
 	resource(CELL_ID_8)->setDataVerifier((VERIFY_INT_T)[this](const INT_T& value) { return this->checkCellId(value); });
 	#endif
 
 	#if RES_4_9
-	resource(SMNC_9)->set(INT_T(SMNC_MIN));
+	resource(SMNC_9)->set<INT_T>(SMNC_MIN);
 	resource(SMNC_9)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return SMNC_MIN <= value && value <= SMNC_MAX; });
 	#endif
 
 	#if RES_4_10
-	resource(SMCC_10)->set(INT_T(SMCC_MIN));
+	resource(SMCC_10)->set<INT_T>(SMCC_MIN);
 	resource(SMCC_10)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return SMCC_MIN <= value && value <= SMCC_MAX; });
 	#endif
 
 	#if RES_4_11
-	resource(SIGNALSNR_11)->set(INT_T(0));
+	resource(SIGNALSNR_11)->set<INT_T>(0);
 	#endif
 
 	#if RES_4_12
-	resource(LAC_12)->set(INT_T(0));
+	resource(LAC_12)->set<INT_T>(0);
 	#endif
 
 	#if RES_4_13
-	resource(COVERAGE_ENHANCEMENT_LEVEL_13)->set(INT_T(CVRG_ENHNCMNT_LVL_MAX));
+	resource(COVERAGE_ENHANCEMENT_LEVEL_13)->set<INT_T>(CVRG_ENHNCMNT_LVL_MAX);
 	resource(COVERAGE_ENHANCEMENT_LEVEL_13)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return MISSING <= value && value < CVRG_ENHNCMNT_LVL_MAX; });
 	#endif
 

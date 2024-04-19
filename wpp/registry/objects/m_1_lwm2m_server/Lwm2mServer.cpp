@@ -153,17 +153,17 @@ void Lwm2mServer::resourcesInit() {
 	// at this level, it does not have the required information for doing
 	// sings described in the documentation.
 
-	resource(SHORT_SERVER_ID_0)->set(INT_T(0));
+	resource(SHORT_SERVER_ID_0)->set<INT_T>(0);
 	resource(SHORT_SERVER_ID_0)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return SINGLE_INSTANCE_ID < value && value < ID_T_MAX_VAL; });
 
-	resource(LIFETIME_1)->set(INT_T(0));
+	resource(LIFETIME_1)->set<INT_T>(0);
 
 	#if RES_1_2    
-	resource(DEFAULT_MINIMUM_PERIOD_2)->set(INT_T(0));                                                                                                                                                                                                             
+	resource(DEFAULT_MINIMUM_PERIOD_2)->set<INT_T>(0);                                                                                                                                                                                                          
 	#endif    
 
 	#if RES_1_3       
-	resource(DEFAULT_MAXIMUM_PERIOD_3)->set(INT_T(0));                                                                                                                                                                                                          
+	resource(DEFAULT_MAXIMUM_PERIOD_3)->set<INT_T>(0);                                                                                                                                                                                                         
 	#endif                       
 
 	// TODO: Disable (Res id 4) must be implemented by wakaama core or WppClient
@@ -171,7 +171,7 @@ void Lwm2mServer::resourcesInit() {
 	// Resource starts the separated task to deregistration from all currently registered servers. 
 	// The registration proccess performs after deregistration immediatelly. If the object delete
 	// before task execution, this task will be deleted at destructor.
-	resource(DISABLE_4)->set((EXECUTE_T)[this](Instance& inst, ID_T resId, const OPAQUE_T& data) {
+	resource(DISABLE_4)->set<EXECUTE_T>([this](Instance& inst, ID_T resId, const OPAQUE_T& data) {
 		if (!WppTaskQueue::isTaskExist(_requestDeregistrationTaskId)) {
 			WPP_LOGI(TAG, "Deregistration Request Trigger: Deregistration is started");
 			_requestDeregistrationTaskId = WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, [this](WppClient &client, void *ctx) -> bool {
@@ -186,17 +186,17 @@ void Lwm2mServer::resourcesInit() {
 	#endif
 
 	#if RES_1_5                                                                                                                                                                                                                        
-	resource(DISABLE_TIMEOUT_5)->set(INT_T(0));
+	resource(DISABLE_TIMEOUT_5)->set<INT_T>(0);
 	#endif 
 
 	// TODO: Notification Storing (Res id 6) must be implemented by wakaama core
-	resource(NOTIFICATION_STORING_WHEN_DISABLED_OR_OFFLINE_6)->set(false);
+	resource(NOTIFICATION_STORING_WHEN_DISABLED_OR_OFFLINE_6)->set<BOOL_T>(false);
 	
-	resource(BINDING_7)->set(STRING_T(""));
+	resource(BINDING_7)->set<STRING_T>("");
 	resource(BINDING_7)->setDataVerifier((VERIFY_STRING_T)[](const STRING_T& value) { return wppBindingValidate(value); });
 
 	// TODO: Registration Update (Res id 8) must be implemented by wakaama core
-	resource(REGISTRATION_UPDATE_TRIGGER_8)->set((EXECUTE_T)[this](Instance& inst, ID_T resId, const OPAQUE_T& data) {
+	resource(REGISTRATION_UPDATE_TRIGGER_8)->set<EXECUTE_T>([this](Instance& inst, ID_T resId, const OPAQUE_T& data) {
 		INT_T serverId = resource(SHORT_SERVER_ID_0)->get<INT_T>();
 		WPP_LOGI(TAG, "Registration Update Trigger: serverId -> %d", serverId);
 		lwm2m_update_registration(&getContext(), serverId, false, true);
@@ -205,7 +205,7 @@ void Lwm2mServer::resourcesInit() {
 
 	// TODO: Bootstrap Request (Res id 9) must be implemented by wakaama core or WppClient
 	#if RES_1_9
-	resource(BOOTSTRAP_REQUEST_TRIGGER_9)->set((EXECUTE_T)[this](Instance& inst, ID_T resId, const OPAQUE_T& data) {
+	resource(BOOTSTRAP_REQUEST_TRIGGER_9)->set<EXECUTE_T>([this](Instance& inst, ID_T resId, const OPAQUE_T& data) {
 		if (!WppTaskQueue::isTaskExist(_requestBootstrapTaskId)) {
 			WPP_LOGI(TAG, "Bootstrap Request Trigger: Bootstrap request is started");
 			_requestBootstrapTaskId = WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, [this](WppClient &client, void *ctx) -> bool {
@@ -220,60 +220,60 @@ void Lwm2mServer::resourcesInit() {
 	#endif
 
 	#if RES_1_10    
-	resource(APN_LINK_10)->set(OBJ_LINK_T());                                                                                                                                                                                                                          
+	resource(APN_LINK_10)->set<OBJ_LINK_T>({});                                                                                                                                                                                                                          
 	#endif 
 
 	#if RES_1_11
-	resource(TLS_DTLS_ALERT_CODE_11)->set(UINT_T(TLS_DTLS_ALERT_CODE_MIN));
+	resource(TLS_DTLS_ALERT_CODE_11)->set<UINT_T>(TLS_DTLS_ALERT_CODE_MIN);
 	resource(TLS_DTLS_ALERT_CODE_11)->setDataVerifier((VERIFY_UINT_T)[](const UINT_T& value) { return TLS_DTLS_ALERT_CODE_MIN <= value && value <= TLS_DTLS_ALERT_CODE_MAX; });
 	#endif
 	                                                                                                                                                                                                                                       
 	#if RES_1_12
-	resource(LAST_BOOTSTRAPPED_12)->set(TIME_T(0));                                                                                                                                                                                                                    
+	resource(LAST_BOOTSTRAPPED_12)->set<TIME_T>(0);                                                                                                                                                                                                                    
 	#endif                                                                                                                                                                                                                                             
 	
 	#if RES_1_13
-	resource(REGISTRATION_PRIORITY_ORDER_13)->set(UINT_T(0));                                                                                                                                                                                                           
+	resource(REGISTRATION_PRIORITY_ORDER_13)->set<UINT_T>(0);                                                                                                                                                                                                           
 	#endif                                                                                                                                                                                                                                             
 	
 	#if RES_1_14
-	resource(INITIAL_REGISTRATION_DELAY_TIMER_14)->set(UINT_T(0));                                                                                                                                                                                                      
+	resource(INITIAL_REGISTRATION_DELAY_TIMER_14)->set<UINT_T>(0);                                                                                                                                                                                                      
 	#endif                                                                                                                                                                                                                                             
 	
 	#if RES_1_15  
-	resource(REGISTRATION_FAILURE_BLOCK_15)->set(false);                                                                                                                                                                                                             
+	resource(REGISTRATION_FAILURE_BLOCK_15)->set<BOOL_T>(false);                                                                                                                                                                                                             
 	#endif                                                                                                                                                                                                                                             
 	
 	#if RES_1_16
-	resource(BOOTSTRAP_ON_REGISTRATION_FAILURE_16)->set(false);                                                                                                                                                                                                    
+	resource(BOOTSTRAP_ON_REGISTRATION_FAILURE_16)->set<BOOL_T>(false);                                                                                                                                                                                                      
 	#endif                                                                                                                                                                                                                                             
 	
 	#if RES_1_17                                                                                                                                                                                                             
-	resource(COMMUNICATION_RETRY_COUNT_17)->set(UINT_T(0));
+	resource(COMMUNICATION_RETRY_COUNT_17)->set<UINT_T>(0);
 	#endif                                                                                                                                                                                                                                             
 	
 	#if RES_1_18                                                                                                                                                                                                             
-	resource(COMMUNICATION_RETRY_TIMER_18)->set(UINT_T(0));
+	resource(COMMUNICATION_RETRY_TIMER_18)->set<UINT_T>(0);
 	#endif                                                                                                                                                                                                                                             
 	
 	#if RES_1_19                                                                                                                                                                                                    
-	resource(COMMUNICATION_SEQUENCE_DELAY_TIMER_19)->set(UINT_T(0));
+	resource(COMMUNICATION_SEQUENCE_DELAY_TIMER_19)->set<UINT_T>(0);
 	#endif                                                                                                                                                                                                                                             
 	
 	#if RES_1_20                                                                                                                                                                                                    
-	resource(COMMUNICATION_SEQUENCE_RETRY_COUNT_20)->set(UINT_T(0));
+	resource(COMMUNICATION_SEQUENCE_RETRY_COUNT_20)->set<UINT_T>(0);
 	#endif                                                                                                                                                                                                                                             
 	
 	#if RES_1_21
-	resource(TRIGGER_21)->set(false);                                                                                                                                                                                                                               
+	resource(TRIGGER_21)->set<BOOL_T>(false);                                                                                                                                                                                                                               
 	#endif 
 
 	#if RES_1_22
-	resource(PREFERRED_TRANSPORT_22)->set(STRING_T(""));
+	resource(PREFERRED_TRANSPORT_22)->set<STRING_T>("");
 	#endif
 
 	#if RES_1_23                                                                                                                                                                                                                             
-	resource(MUTE_SEND_23)->set(true);
+	resource(MUTE_SEND_23)->set<BOOL_T>(false);
 	#endif 
 	/* --------------- Code_cpp block 10 end --------------- */
 }

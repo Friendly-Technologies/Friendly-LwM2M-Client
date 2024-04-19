@@ -10,9 +10,6 @@
 #include "WppTypes.h"
 #include "WppLogs.h"
 
-#define RES_METHODS_PROT_SET_FOR(_TYPE_) bool set(const _TYPE_ &value, ID_T resInstId = SINGLE_INSTANCE_ID); \
-										 bool setMove(_TYPE_ &value, ID_T resInstId = SINGLE_INSTANCE_ID)
-
 namespace wpp {
 
 /**
@@ -105,30 +102,14 @@ public: /* ---------- Public methods for common usage ----------*/
 	const std::vector<ID_T> getInstIds() const;
 
 	/* ---------- Methods for manage resource data ----------*/
-	/**
- 	 * @brief Generating prototypes of get/set/ref for each supported type
-	 * The data that will be set through returned ref() must be manualy
-	 * validated with using isDataValueValid()
-	 */
-	RES_METHODS_PROT_SET_FOR(BOOL_T);
-	RES_METHODS_PROT_SET_FOR(INT_T);
-	RES_METHODS_PROT_SET_FOR(UINT_T);
-	RES_METHODS_PROT_SET_FOR(FLOAT_T);
-	RES_METHODS_PROT_SET_FOR(OPAQUE_T);
-	RES_METHODS_PROT_SET_FOR(OBJ_LINK_T);
-	RES_METHODS_PROT_SET_FOR(STRING_T);
-	RES_METHODS_PROT_SET_FOR(EXECUTE_T);
+    template<typename T>
+    bool set(const T &value, ID_T resInstId = SINGLE_INSTANCE_ID);
+
+	template<typename T>
+	bool setMove(T &value, ID_T resInstId = SINGLE_INSTANCE_ID);
 
 	template<typename T>
 	T &get(ID_T resInstId = SINGLE_INSTANCE_ID);
-
-    /**
- 	 * @brief Disabling implicit conversions
-     */
-    template<typename T>
-    bool set(const T &value, ID_T resInstId = SINGLE_INSTANCE_ID) = delete;
-	template<typename T>
-	bool setMove(T &value, ID_T resInstId = SINGLE_INSTANCE_ID) = delete;
 
 	/**
  	 * @brief Remove resource instance if resource is multiple and instance exists,
@@ -147,12 +128,6 @@ public: /* ---------- Public methods for common usage ----------*/
 
 private:
 	std::vector<ResInst>::iterator getResInstIter(ID_T resInstId) const;
-
-    template<typename T>
-	bool _set(const T &value, ID_T resInstId);
-
-	template<typename T>
-	bool _setMove(T &value, ID_T resInstId);
 
 private: /* ---------- Private properties ----------*/
     ID_T _id;
@@ -173,7 +148,7 @@ bool Resource::isDataTypeValid() const {
 }
 
 template<typename T>
-bool Resource::_set(const T &value, ID_T resInstId) {
+bool Resource::set(const T &value, ID_T resInstId) {
 	if (!isInstanceIdPossible(resInstId) || !isDataValueValid(value)) {
 		WPP_LOGE(TAG_WPP_RES, "Invalid data value or instance id is not possible");
 		return false;
@@ -190,7 +165,7 @@ bool Resource::_set(const T &value, ID_T resInstId) {
 }
 
 template<typename T>
-bool Resource::_setMove(T &value, ID_T resInstId) {
+bool Resource::setMove(T &value, ID_T resInstId) {
 	if (!isInstanceIdPossible(resInstId) || !isDataValueValid(value)) {
 		WPP_LOGE(TAG_WPP_RES, "Invalid data value or instance id is not possible");
 		return false;

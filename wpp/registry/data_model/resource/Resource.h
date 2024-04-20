@@ -109,7 +109,7 @@ public: /* ---------- Public methods for common usage ----------*/
 	bool setMove(T &value, ID_T resInstId = SINGLE_INSTANCE_ID);
 
 	template<typename T>
-	T &get(ID_T resInstId = SINGLE_INSTANCE_ID);
+	const T& get(ID_T resInstId = SINGLE_INSTANCE_ID);
 
 	/**
  	 * @brief Remove resource instance if resource is multiple and instance exists,
@@ -183,7 +183,7 @@ bool Resource::setMove(T &value, ID_T resInstId) {
 }
 
 template<typename T>
-T &Resource::get(ID_T resInstId) {
+const T& Resource::get(ID_T resInstId) {
 	if (!isDataTypeValid<T>() || !isInstanceExist(resInstId)) {
 		// Return empty value if the data type is not valid or the instance does not exist
 		static T empty;

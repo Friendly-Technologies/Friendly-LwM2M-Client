@@ -103,14 +103,14 @@ public:
 	 * This version of the method is used with SINGLE resources.
 	 */
 	template<typename T>
-	T &get(ID_T resId);
+	const T& get(ID_T resId);
 
 	/**
  	 * @brief Returns copy of resource value.
 	 * This version of the method is used with MULTIPLE resources.
 	 */
 	template<typename T>
-	T &get(ID_T resId, ID_T resInstId);
+	const T& get(ID_T resId, ID_T resInstId);
 
 	bool isExist(ID_T resId);
 	bool isExist(ID_T resId, ID_T resInstId);
@@ -282,7 +282,7 @@ bool Instance::setMove(ID_T resId, ID_T resInstId, T &value) {
  * @brief Returns reference to resource value
  */
 template<typename T>
-T &Instance::get(ID_T resId) {
+const T& Instance::get(ID_T resId) {
 	auto res = resource(resId);
 	if (res == _resources.end() || !res->isDataTypeValid<T>() || res->isMultiple()) {
 		// Return empty value if the data type is not valid or the instance does not exist
@@ -297,7 +297,7 @@ T &Instance::get(ID_T resId) {
 }
 
 template<typename T>
-T &Instance::get(ID_T resId, ID_T resInstId) {
+const T& Instance::get(ID_T resId, ID_T resInstId) {
 	auto res = resource(resId);
 	if (res == _resources.end() || !res->isInstanceExist(resInstId) || !res->isDataTypeValid<T>() || res->isSingle()) {
 		// Return empty value if the data type is not valid or the instance does not exist

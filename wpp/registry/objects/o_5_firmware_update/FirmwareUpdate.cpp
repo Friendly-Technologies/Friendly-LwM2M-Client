@@ -313,7 +313,7 @@ void FirmwareUpdate::internalDownloaderHandler() {
 	// interface for downloading firmware via uri using the wpp library.
 	// Currently, FwInternalDl only supports loading through the PACKAGE_0 resource.
 	resetStateMachine();
-	OPAQUE_T &pkg = resource(PACKAGE_0)->get<OPAQUE_T>();	
+	const OPAQUE_T &pkg = resource(PACKAGE_0)->get<OPAQUE_T>();	
 	if (pkg.empty()) {
 		clearArtifacts();
 		WPP_LOGD(TAG, "Server reset state machine through PACKAGE_0");
@@ -324,7 +324,7 @@ void FirmwareUpdate::internalDownloaderHandler() {
 	changeState(S_DOWNLOADING);
 
 	_internalDownloaderTaskId = WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, [this](WppClient &client, void *ctx) -> bool {
-		OPAQUE_T &pkg = resource(PACKAGE_0)->get<OPAQUE_T>();	
+		const OPAQUE_T &pkg = resource(PACKAGE_0)->get<OPAQUE_T>();	
 
 		_internalDownloader->saveDownloadedBlock(pkg);
 		_internalDownloader->downloadIsCompleted();

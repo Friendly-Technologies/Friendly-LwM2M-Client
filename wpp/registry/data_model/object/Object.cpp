@@ -105,7 +105,7 @@ Instance* Object::instance(ID_T instanceID) {
 	return inst != _instances.end()? *inst : NULL;
 }
 
-const std::vector<Instance*> & Object::getInstances() {
+const std::vector<Instance*> & Object::instances() {
 	return _instances;
 }
 

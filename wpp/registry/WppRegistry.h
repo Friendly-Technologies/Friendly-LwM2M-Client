@@ -98,7 +98,14 @@ public:
 	 * @param objId The ID of the Object to retrieve.
 	 * @return A pointer to the Object if found, nullptr otherwise.
 	 */
-	Object *object(OBJ_ID objId);
+	Object * object(OBJ_ID objId);
+
+	/**
+	 * @brief Gets all registered objects.
+	 *
+	 * @return A vector of pointers to the registered objects.
+	 */
+	std::vector<Object *> & objects();
 
 	/* ---------- Mandatory objects prototype block begin ---------- */
 	#ifdef OBJ_M_3_DEVICE

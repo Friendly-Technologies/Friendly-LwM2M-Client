@@ -141,7 +141,8 @@ const std::vector<ID_T> Resource::getInstIds() const {
 
 /* ---------- Methods for get and set resource value ----------*/
 bool Resource::remove(ID_T resInstId) {
-	if (!isInstanceExist(resInstId) || isSingle() || instanceCnt() == 1) return false;
+	if (isSingle() || instanceCnt() == 1) return false;
+	if (!isInstanceExist(resInstId)) return true;
 	auto instForRemove = getResInstIter(resInstId);
 	_instances.erase(instForRemove);
 

@@ -129,7 +129,7 @@ public:
 	 * 
 	 * @return A vector of pointers to the Instance objects.
 	 */
-	const std::vector<Instance*>& getInstances();
+	const std::vector<Instance*>& instances();
 
 	/**
 	 * @brief Gets the number of instances of the object.

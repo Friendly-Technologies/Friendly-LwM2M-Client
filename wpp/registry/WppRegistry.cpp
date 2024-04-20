@@ -67,6 +67,10 @@ Object * WppRegistry::object(OBJ_ID objId) {
 	return objIter != _objects.end()? *objIter : NULL;
 }
 
+std::vector<Object *> & WppRegistry::objects() {
+	return _objects;
+}
+
 /* ---------- Mandatory objects method block begin ---------- */
 #ifdef OBJ_M_3_DEVICE
 ObjectSpec<Device> & WppRegistry::device() {

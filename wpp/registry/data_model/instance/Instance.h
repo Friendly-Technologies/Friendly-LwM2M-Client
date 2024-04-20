@@ -71,6 +71,7 @@ public:
 	 */
 	WppRegistry& getRegistry();
 
+	/* ------------- Single resource methods ------------- */
 	/**
  	 * @brief Sets resource value.
 	 * This version of the method is used with SINGLE resources.
@@ -79,17 +80,30 @@ public:
 	bool set(ID_T resId, const T &value);
 
 	/**
- 	 * @brief Sets resource value, this version of the method is used with MULTIPLE resources.
-	 */
-	template<typename T>
-	bool set(ID_T resId, ID_T resInstId, const T &value);
-
-	/**
  	 * @brief Sets resource value by moving user data to resource to avoid extra copy.
 	 * This version of the method is used with SINGLE resources.
 	 */
 	template<typename T>
 	bool setMove(ID_T resId, T &value);
+
+	/**
+ 	 * @brief Returns copy of resource value.
+	 * This version of the method is used with SINGLE resources.
+	 */
+	template<typename T>
+	const T& get(ID_T resId);
+
+	/**
+	 * @brief Return true if resource exists. 
+	 */
+	bool isExist(ID_T resId);
+
+	/* ------------- Multiple resource methods ------------- */
+	/**
+ 	 * @brief Sets resource value, this version of the method is used with MULTIPLE resources.
+	 */
+	template<typename T>
+	bool set(ID_T resId, ID_T resInstId, const T &value);
 
 	/**
  	 * @brief Sets resource value by moving user data to resource to avoid extra copy.
@@ -100,20 +114,21 @@ public:
 
 	/**
  	 * @brief Returns copy of resource value.
-	 * This version of the method is used with SINGLE resources.
-	 */
-	template<typename T>
-	const T& get(ID_T resId);
-
-	/**
- 	 * @brief Returns copy of resource value.
 	 * This version of the method is used with MULTIPLE resources.
 	 */
 	template<typename T>
 	const T& get(ID_T resId, ID_T resInstId);
 
-	bool isExist(ID_T resId);
+	/**
+	 * @brief Return true if resource exists. 
+	 */
 	bool isExist(ID_T resId, ID_T resInstId);
+
+	/**
+	 * @brief Return array of resource instances.
+	 * If resource does not MULTIPLE then return empty array.
+	 */
+	std::vector<ID_T> getResInstIds(ID_T resId);
 
 	/**
  	 * @brief It is quite dangerous to leave a resource without instances,

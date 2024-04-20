@@ -101,7 +101,7 @@ void Lwm2mAccessControl::resourcesInit() {
 
 Lwm2mAccessControl * Lwm2mAccessControl::getAcInstForTarget(Object &acObj, ID_T objId, ID_T objInstId) {
 	// Find the ac object instance for the target object
-	for (auto &inst : acObj.getInstances()) {
+	for (auto &inst : acObj.instances()) {
 		INT_T tmpObjId = inst->get<INT_T>(OBJECT_ID_0);
 		INT_T tmpObjInstId = inst->get<INT_T>(OBJECT_INSTANCE_ID_1);
 		if (tmpObjId == objId && tmpObjInstId == objInstId) return static_cast<Lwm2mAccessControl*>(inst);

@@ -14,19 +14,25 @@
 
 namespace wpp {
 
+std::vector<ID_T> Instance::getResInstIds(ID_T resId) {
+	auto res = resource(resId);
+	if (res == _resources.end() || res->isSingle()) return {};
+	return resource(resId)->getInstIds();
+}
+
 bool Instance::isExist(ID_T resId) {
 	return resource(resId) != _resources.end();
 }
 
 bool Instance::isExist(ID_T resId, ID_T resInstId) {
 	auto res = resource(resId);
-	if (res == _resources.end()) return false;
+	if (res == _resources.end() || res->isSingle()) return false;
 	return res->isInstanceExist(resInstId);
 }	
 
 bool Instance::clear(ID_T resId) {
 	auto res = resource(resId);
-	if (res == _resources.end()) return false;
+	if (res == _resources.end() || res->isSingle()) return false;
 
 	bool result = res->clear();
 	if (result) {
@@ -39,7 +45,7 @@ bool Instance::clear(ID_T resId) {
 
 bool Instance::remove(ID_T resId, ID_T resInstId) {
 	auto res = resource(resId);
-	if (res == _resources.end()) return false;
+	if (res == _resources.end() || res->isSingle()) return false;
 
 	bool result = res->remove(resInstId);
 	if (result) {

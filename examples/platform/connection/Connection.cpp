@@ -22,7 +22,7 @@ Connection::SESSION_T Connection::connect(Lwm2mSecurity& security) {
     socklen_t sl;
     connection_t * connP = NULL;
 
-    STRING_T uri = security.get<STRING_T>(Lwm2mSecurity::LWM2M_SERVER_URI_0);
+    STRING_T uri = security.resource(Lwm2mSecurity::LWM2M_SERVER_URI_0)->get<STRING_T>();
     string host = uriToHost(uri);
     string port = uriToPort(uri);
     cout << "Connection: connect to host " << host << ", host len: " << strlen(host.c_str()) << ", port " << port << ", port len: " << strlen(port.c_str()) << endl;

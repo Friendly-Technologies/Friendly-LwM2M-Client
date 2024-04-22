@@ -71,81 +71,13 @@ public:
 	 */
 	WppRegistry& getRegistry();
 
-	/* ------------- Single resource methods ------------- */
 	/**
- 	 * @brief Sets resource value.
-	 * This version of the method is used with SINGLE resources.
+ 	 * @brief This method return resource ptr if it exists.
+	 * 		  If resources does not exist then return NULL.
+	 * @param resId - Resource ID.
+	 * @return Resource pointer or NULL.
 	 */
-	template<typename T>
-	bool set(ID_T resId, const T &value);
-
-	/**
- 	 * @brief Sets resource value by moving user data to resource to avoid extra copy.
-	 * This version of the method is used with SINGLE resources.
-	 */
-	template<typename T>
-	bool setMove(ID_T resId, T &value);
-
-	/**
- 	 * @brief Returns copy of resource value.
-	 * This version of the method is used with SINGLE resources.
-	 */
-	template<typename T>
-	const T& get(ID_T resId);
-
-	/**
-	 * @brief Return true if resource exists. 
-	 */
-	bool isExist(ID_T resId);
-
-	/* ------------- Multiple resource methods ------------- */
-	/**
- 	 * @brief Sets resource value, this version of the method is used with MULTIPLE resources.
-	 */
-	template<typename T>
-	bool set(ID_T resId, ID_T resInstId, const T &value);
-
-	/**
- 	 * @brief Sets resource value by moving user data to resource to avoid extra copy.
-	 * This version of the method is used with MULTIPLE resources.
-	 */
-	template<typename T>
-	bool setMove(ID_T resId, ID_T resInstId, T &value);
-
-	/**
- 	 * @brief Returns copy of resource value.
-	 * This version of the method is used with MULTIPLE resources.
-	 */
-	template<typename T>
-	const T& get(ID_T resId, ID_T resInstId);
-
-	/**
-	 * @brief Return true if resource exists. 
-	 */
-	bool isExist(ID_T resId, ID_T resInstId);
-
-	/**
-	 * @brief Return array of resource instances.
-	 * If resource does not MULTIPLE then return empty array.
-	 */
-	std::vector<ID_T> getResInstIds(ID_T resId);
-
-	/**
- 	 * @brief It is quite dangerous to leave a resource without instances,
-	 * because when the server tries to read its value, the server
-	 * will not receive anything if the resource is SINGLE, but if
-	 * the resource is MANDATORY, then it will generally lead to
-	 * reading error. After the cleanup operation, the user must
-	 * set the value of the resource.
-	 */
-	bool clear(ID_T resId);
-
-	/**
- 	 * @brief Remove resource instance if resource is multiple and instance exists,
-	 * if the resource is SINGLE or it has the last instance remove is not
-	 * possible. Because instantiated resources must have at least one instance.
-	 */
-	bool remove(ID_T resId, ID_T resInstId);
+	Resource * resource(ID_T resId);
 
 	/* ------------- Server operation methods ------------- */
 	/**
@@ -172,12 +104,6 @@ protected: /* Interface that can be used by derived class */
 	 */
 	std::vector<Resource *> getInstantiatedResList();
 	std::vector<Resource *> getInstantiatedResList(const ItemOp& filter);
-
-	/**
- 	 * @brief This method return iterator for resource if it exists.
-	 * If resources does not exist then return empty list.
-	 */
-	std::vector<Resource>::iterator resource(ID_T resId);
 
 protected: /* Interface that must be implemented by derived class */
 	/**
@@ -226,105 +152,6 @@ protected:
 	OBJ_LINK_T _id;
 	std::vector<Resource> _resources;
 };
-
-/* ---------- Implementation of template methods ----------*/
-/**
- * @brief Sets resource value
- */
-template<typename T>
-bool Instance::set(ID_T resId, const T &value) { 
-	auto res = resource(resId);
-	if (res == _resources.end() || res->isMultiple()) {
-		WPP_LOGE(TAG_WPP_INST, "Invalid resource id or resource is multiple");
-		return false;
-	}
-	if (!res->set<T>(value)) return false;
-
-	userOperationNotifier(ItemOp::WRITE, {resId, ID_T_MAX_VAL});
-	notifyServerResChanged(resId);
-
-	return true; 
-}
-
-template<typename T>
-bool Instance::set(ID_T resId, ID_T resInstId, const T &value)  {
-	auto res = resource(resId);
-	if (res == _resources.end() || res->isSingle()) {
-		WPP_LOGE(TAG_WPP_INST, "Invalid resource id or resource is sinagle");
-		return false;
-	}
-	if (!res->set<T>(value, resInstId)) return false;
-
-	userOperationNotifier(ItemOp::WRITE, {resId, resInstId});
-	notifyServerResChanged(resId, resInstId);
-
-	return true;
-}
-
-/**
- * @brief Sets resource value by moving user data to resource to avoid extra copy
- */
-template<typename T>
-bool Instance::setMove(ID_T resId, T &value) {
-	auto res = resource(resId);
-	if (res == _resources.end() || res->isMultiple())  {
-		WPP_LOGE(TAG_WPP_INST, "Invalid resource id or resource is multiple");
-		return false;
-	}
-	if (!res->setMove<T>(value)) return false;
-
-	userOperationNotifier(ItemOp::WRITE, {resId, ID_T_MAX_VAL});
-	notifyServerResChanged(resId);
-	return true;
-}
-
-template<typename T>
-bool Instance::setMove(ID_T resId, ID_T resInstId, T &value) {
-	auto res = resource(resId);
-	if (res == _resources.end() || res->isSingle()) {
-		WPP_LOGE(TAG_WPP_INST, "Invalid resource id or resource is sinagle");
-		return false;
-	}
-	if (!res->setMove<T>(value, resInstId)) return false;
-
-	userOperationNotifier(ItemOp::WRITE, {resId, resInstId});
-	notifyServerResChanged(resId, resInstId);
-
-	return true;
-}
-
-/**
- * @brief Returns reference to resource value
- */
-template<typename T>
-const T& Instance::get(ID_T resId) {
-	auto res = resource(resId);
-	if (res == _resources.end() || !res->isDataTypeValid<T>() || res->isMultiple()) {
-		// Return empty value if the data type is not valid or the instance does not exist
-		static T empty;
-		empty = T();
-		WPP_LOGE(TAG_WPP_INST, "Invalid resource id or data type");
-		return empty;
-	}
-
-	userOperationNotifier(ItemOp::READ, {resId, ID_T_MAX_VAL});
-	return res->get<T>();
-}
-
-template<typename T>
-const T& Instance::get(ID_T resId, ID_T resInstId) {
-	auto res = resource(resId);
-	if (res == _resources.end() || !res->isInstanceExist(resInstId) || !res->isDataTypeValid<T>() || res->isSingle()) {
-		// Return empty value if the data type is not valid or the instance does not exist
-		static T empty;
-		empty = T();
-		WPP_LOGE(TAG_WPP_RES, "Invalid resource id or data type");
-		return empty;
-	}
-
-	userOperationNotifier(ItemOp::READ, {resId, resInstId});
-	return res->get<T>(resInstId);
-}
 
 } /* namespace wpp */
 

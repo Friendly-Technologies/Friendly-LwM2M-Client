@@ -183,7 +183,7 @@ bool FirmwareUpdate::setFwUpdater(FwUpdater &updater) {
 #if RES_5_8
 std::vector<FwUpdProtocol> FirmwareUpdate::supportedProtocols() {
 	std::vector<FwUpdProtocol> supportedProtocols;
-	for (auto id : resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->getInstIds()) {
+	for (auto id : resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->instIds()) {
 		INT_T protocol = resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->get<INT_T>(id);
 		supportedProtocols.push_back(FwUpdProtocol(protocol));
 	}
@@ -413,7 +413,7 @@ bool FirmwareUpdate::isSchemeValid(STRING_T scheme) {
 #if RES_5_8
 bool FirmwareUpdate::isSchemeSupported(STRING_T scheme) {
 	FwUpdProtocol requiredProt = schemeToProtId(scheme);
-	for (auto id : resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->getInstIds()) {
+	for (auto id : resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->instIds()) {
 		INT_T suppProt = resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->get<INT_T>(id);
 		if (requiredProt == suppProt) return true;
 	}

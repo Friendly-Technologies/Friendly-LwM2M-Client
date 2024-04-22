@@ -144,8 +144,7 @@ Connection::SESSION_T Connection::connect(Lwm2mSecurity& security) {
     socklen_t sl;
     dtls_connection_t * conn = NULL;
 
-    STRING_T uri;
-    security.get(Lwm2mSecurity::LWM2M_SERVER_URI_0, uri);
+    STRING_T uri = security.resource(Lwm2mSecurity::LWM2M_SERVER_URI_0)->get<STRING_T>();
     string host = uriToHost(uri);
     string port = uriToPort(uri);
     cout << "Connection: connect to host " << host << ", host len: " << strlen(host.c_str()) << ", port " << port << ", port len: " << strlen(port.c_str()) << endl;
@@ -181,8 +180,7 @@ Connection::SESSION_T Connection::connect(Lwm2mSecurity& security) {
         
         setupSecurityKeys(security, conn);
 
-        INT_T mode;
-        security.get(Lwm2mSecurity::SECURITY_MODE_2, mode);
+        INT_T mode = security.resource(Lwm2mSecurity::SECURITY_MODE_2)->get<INT_T>();
         if (mode != LWM2M_SECURITY_MODE_NONE) {
             conn->dtlsContext = _dtlsContext;
         } else if (conn->dtlsSession) {
@@ -445,8 +443,8 @@ const OPAQUE_T &  Connection::getSecretKey(dtls_connection_t *conn) {
 
 bool Connection::setupSecurityKeys(Lwm2mSecurity& security, dtls_connection_t *conn) {
     #if DTLS_WITH_PSK
-    security.get(Lwm2mSecurity::PUBLIC_KEY_OR_IDENTITY_3, conn->pubKey);
-    security.get(Lwm2mSecurity::SECRET_KEY_5, conn->privKey);
+    conn->pubKey = security.resource(Lwm2mSecurity::PUBLIC_KEY_OR_IDENTITY_3)->get<OPAQUE_T>();
+    conn->privKey = security.resource(Lwm2mSecurity::SECRET_KEY_5)->get<OPAQUE_T>();
     #elif DTLS_WITH_RPK
     OPAQUE_T pubKey;
     OPAQUE_T privKey;

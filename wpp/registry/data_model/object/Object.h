@@ -144,7 +144,7 @@ public:
 	 * @param instanceID The instance ID.
 	 * @return True if the instance exists, false otherwise.
 	 */
-	bool isInstanceExist(ID_T instanceID);
+	bool isExist(ID_T instanceID);
 
 protected:
 	/**

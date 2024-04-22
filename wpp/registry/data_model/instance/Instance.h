@@ -79,6 +79,13 @@ public:
 	 */
 	Resource * resource(ID_T resId);
 
+	/**
+	 * @brief Check if resource exists.
+	 * @param resId - Resource ID.
+	 * @return True if resource exists, false otherwise.
+	 */
+	bool isExist(ID_T resId);
+
 	/* ------------- Server operation methods ------------- */
 	/**
  	 * @brief This methods is called by the core when the server wants to read,

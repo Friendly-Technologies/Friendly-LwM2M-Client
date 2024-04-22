@@ -90,7 +90,7 @@ public:
 	 * @param objId The ID of the Object to check.
 	 * @return True if the Object exists, false otherwise.
 	 */
-	bool isObjExist(OBJ_ID objId);
+	bool isExist(OBJ_ID objId);
 
 	/**
 	 * @brief Retrieves a pointer to the Object with the given objId.

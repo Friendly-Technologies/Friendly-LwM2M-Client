@@ -57,7 +57,7 @@ bool WppRegistry::isObjRegistered(Object &object) {
 	return lwm2m_object != NULL;
 }
 
-bool WppRegistry::isObjExist(OBJ_ID objId) {
+bool WppRegistry::isExist(OBJ_ID objId) {
 	return object(objId) != NULL;
 }
 

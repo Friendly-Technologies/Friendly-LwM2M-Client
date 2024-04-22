@@ -113,7 +113,7 @@ size_t Object::instanceCnt() {
 	return _instances.size();
 }
 
-bool Object::isInstanceExist(ID_T instanceID) {
+bool Object::isExist(ID_T instanceID) {
 	return getInstIter(instanceID) != _instances.end();
 }
 
@@ -128,12 +128,12 @@ ID_T Object::getFirstAvailableInstanceID() {
 	ID_T id = _instances.size();
 	if (id == ID_T_MAX_VAL) return id;
 	// But it won't always be like that
-	while (isInstanceExist(id) && id != ID_T_MAX_VAL) id++;
+	while (isExist(id) && id != ID_T_MAX_VAL) id++;
 	// It is also possible that all indexes after the current size are occupied
 	if (id == ID_T_MAX_VAL) {
 		id = 0;
 		// In this case, we need to check the indexes that are before the current size
-		while (isInstanceExist(id) && id < _instances.size()) id++;
+		while (isExist(id) && id < _instances.size()) id++;
 	}
 	return id;
 }
@@ -142,28 +142,28 @@ ID_T Object::getFirstAvailableInstanceID() {
 uint8_t Object::serverRead_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP) {
     Object *obj = static_cast<Object *>(objectP->userData);
 	WPP_LOGD(TAG_WPP_OBJ, "wakaama read %d:%d", obj->getObjectID(), instanceId);
-	if (!obj->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
+	if (!obj->isExist(instanceId)) return COAP_404_NOT_FOUND;
 	return obj->instance(instanceId)->readAsServer(server, numDataP, dataArrayP);
 }
 
 uint8_t Object::serverWrite_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP, lwm2m_write_type_t writeType) {
 	Object *obj = static_cast<Object *>(objectP->userData);
     WPP_LOGD(TAG_WPP_OBJ, "wakaama write %d:%d", obj->getObjectID(), instanceId);
-	if (!obj->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
+	if (!obj->isExist(instanceId)) return COAP_404_NOT_FOUND;
 	return obj->instance(instanceId)->writeAsServer(server, numData, dataArray, writeType);
 }
 
 uint8_t Object::serverExecute_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, ID_T instanceId, ID_T resId, uint8_t * buffer, int length, lwm2m_object_t * objectP) {
 	Object *obj = static_cast<Object *>(objectP->userData);
     WPP_LOGD(TAG_WPP_OBJ, "wakaama execute %d:%d", obj->getObjectID(), instanceId);
-	if (!obj->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
+	if (!obj->isExist(instanceId)) return COAP_404_NOT_FOUND;
 	return obj->instance(instanceId)->executeAsServer(server, resId, buffer, length);
 }
 
 uint8_t Object::serverDiscover_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP) {
 	Object *obj = static_cast<Object *>(objectP->userData);
     WPP_LOGD(TAG_WPP_OBJ, "wakaama discover %d:%d", obj->getObjectID(), instanceId);
-	if (!obj->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
+	if (!obj->isExist(instanceId)) return COAP_404_NOT_FOUND;
 	return obj->instance(instanceId)->discoverAsServer(server, numDataP, dataArrayP);
 }
 
@@ -186,7 +186,7 @@ uint8_t Object::serverCreate_clb(lwm2m_context_t * contextP, lwm2m_server_t *ser
 uint8_t Object::serverDelete_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, ID_T instanceId, lwm2m_object_t * objectP) {
 	Object *obj = static_cast<Object *>(objectP->userData);
     WPP_LOGD(TAG_WPP_OBJ, "wakaama delete %d:%d", obj->getObjectID(), instanceId);
-	if (!obj->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
+	if (!obj->isExist(instanceId)) return COAP_404_NOT_FOUND;
 	// Notify user about deleting instance
 	obj->operationNotify(*obj, instanceId, ItemOp::DELETE);
 

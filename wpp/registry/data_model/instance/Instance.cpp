@@ -43,6 +43,10 @@ Resource * Instance::resource(ID_T resId) {
 	return res != _resources.end()? &(*res) : NULL;
 }
 
+bool Instance::isExist(ID_T resId) {
+	return resource(resId) != NULL;
+}
+
 lwm2m_context_t& Instance::getContext() { 
 	return _context; 
 }

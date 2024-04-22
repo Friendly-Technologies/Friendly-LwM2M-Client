@@ -266,7 +266,7 @@ bool FirmwareUpdate::pkgUpdaterHandler() {
 			notifyServerResChanged(PKGVERSION_7);
 			#endif
 			#if RES_3_3
-			client.registry().device().instance()->set(Device::FIRMWARE_VERSION_3, _pkgUpdater->pkgVersion());
+			client.registry().device().instance()->resource(Device::FIRMWARE_VERSION_3)->set<STRING_T>(_pkgUpdater->pkgVersion());
 			#endif
 		}
 

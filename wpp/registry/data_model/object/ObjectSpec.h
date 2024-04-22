@@ -74,7 +74,7 @@ Instance* ObjectSpec<T>::createInstance(ID_T instanceId) {
 	// If instanceId == ID_T_MAX_VAL, it is mean that user do not want to set its own identifier, so we will choose ours
 	if (instanceId == ID_T_MAX_VAL) instanceId = getFirstAvailableInstanceID();
 	// If ID has been already occupied, then we can not create new instance with such ID and returns NULL
-	if (instanceId == ID_T_MAX_VAL || isInstanceExist(instanceId)) {
+	if (instanceId == ID_T_MAX_VAL || isExist(instanceId)) {
 		WPP_LOGW(TAG_WPP_OBJ, "Not possible to create instance %d:%d, ID has been already occupied", getObjectID(), instanceId);
 		return NULL;
 	}

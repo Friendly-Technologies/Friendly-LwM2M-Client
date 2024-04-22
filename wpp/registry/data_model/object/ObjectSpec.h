@@ -25,6 +25,10 @@ template<typename T>
 class ObjectSpec : public Object {
 public:
 	/**
+	 * Default constructor.
+	 */
+	ObjectSpec(lwm2m_context_t &context): Object(context) {}
+	/**
 	 * @brief Constructs an ObjectSpec object.
 	 * @param context The lwm2m_context_t object.
 	 * @param info The ObjectInfo object.

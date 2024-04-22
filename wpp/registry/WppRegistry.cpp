@@ -67,6 +67,21 @@ Object * WppRegistry::object(OBJ_ID objId) {
 	return objIter != _objects.end()? *objIter : NULL;
 }
 
+Object & WppRegistry::operator[](OBJ_ID objId) {
+	Object * obj = object(objId);
+	if (obj == NULL) {
+		WPP_LOGE(TAG_WPP_REG, "Object with id %d not found", objId);
+		// TODO: It is workaround for the case when object is not found
+		// This behavior is better than returning NULL, but it is not the best solution
+		// Return empty value if the id is not found
+		#ifdef OBJ_M_3_DEVICE
+		static ObjectSpec<Device> empty(_context);
+		return empty;
+		#endif
+	}
+	return *obj;
+}
+
 std::vector<Object *> & WppRegistry::objects() {
 	return _objects;
 }

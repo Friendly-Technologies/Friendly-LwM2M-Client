@@ -80,6 +80,14 @@ public:
 	Resource * resource(ID_T resId);
 
 	/**
+	 * @brief Retrieves a reference to the Resource with the given id.
+	 * @param resId The ID of the Resource to retrieve.
+	 * @note If the Resource is not found, a reference to an empty Resource is returned.
+	 * @return A reference to the Resource if found.
+	 */	
+	Resource & operator[](ID_T resId);
+
+	/**
 	 * @brief Check if resource exists.
 	 * @param resId - Resource ID.
 	 * @return True if resource exists, false otherwise.

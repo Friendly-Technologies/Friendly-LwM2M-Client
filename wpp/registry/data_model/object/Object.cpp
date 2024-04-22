@@ -3,6 +3,8 @@
 
 namespace wpp {
 
+Object::Object(lwm2m_context_t &context) : _context(context) {}
+
 Object::Object(lwm2m_context_t &context, const ObjectInfo &info):  _context(context), _objInfo(info) {
 	WPP_LOGD(TAG_WPP_OBJ, "Creating object with ID -> %d", (ID_T)info.objID);
 
@@ -79,7 +81,7 @@ void Object::restore() {
     this->observerDoAction(*this, ObjSubject::Action::RESTORE);
 }
 
-bool Object::removeInstance(ID_T instanceId) {
+bool Object::remove(ID_T instanceId) {
 	// If user want to delete instance with ID that does not exist, then we can not do it
 	auto inst = getInstIter(instanceId);
 	if (inst == _instances.end()) return false;
@@ -103,6 +105,21 @@ Instance* Object::instance(ID_T instanceID) {
 	// If user want to access instance with ID that does not exist, then we can not do it
 	auto inst = (instanceID != ID_T_MAX_VAL)? getInstIter(instanceID) : _instances.begin();
 	return inst != _instances.end()? *inst : NULL;
+}
+
+Instance & Object::operator[](ID_T instanceID) {
+	auto inst = instance(instanceID);
+	if (inst == NULL) {
+		WPP_LOGE(TAG_WPP_OBJ, "Instance %d:%d does not exist", getObjectID(), instanceID);
+		// TODO: It is workaround for the case when instance is not found
+		// This behavior is better than returning NULL, but it is not the best solution
+		// Return empty value if the id is not found
+		#ifdef OBJ_M_3_DEVICE
+		static Device empty(_context, {getObjectID(), instanceID});
+		return empty;
+		#endif
+	};
+	return *inst;
 }
 
 const std::vector<Instance*> & Object::instances() {
@@ -190,7 +207,7 @@ uint8_t Object::serverDelete_clb(lwm2m_context_t * contextP, lwm2m_server_t *ser
 	// Notify user about deleting instance
 	obj->operationNotify(*obj, instanceId, ItemOp::DELETE);
 
-	return obj->removeInstance(instanceId)? COAP_202_DELETED : COAP_404_NOT_FOUND;
+	return obj->remove(instanceId)? COAP_202_DELETED : COAP_404_NOT_FOUND;
 }
 
 } // namespace wpp

@@ -248,10 +248,11 @@ bool Resource::set(T &&value, ID_T resInstId) {
 template<typename T>
 const T& Resource::get(ID_T resInstId) {
 	if (!isDataTypeValid<T>() || !isExist(resInstId)) {
+		WPP_LOGE(TAG_WPP_RES, "Invalid data type or instance does not exist");
+		// TODO: It is workaround for the case when resource is not found
+		// This behavior is better than returning NULL, but it is not the best solution
 		// Return empty value if the data type is not valid or the instance does not exist
 		static T empty;
-		empty = T();
-		WPP_LOGE(TAG_WPP_RES, "Invalid data type or instance does not exist");
 		return empty;
 	}
 

@@ -132,7 +132,7 @@ void Lwm2mAccessControl::deleteInst(Object &targetObj) {
 	auto &acObj = registry.lwm2mAccessControl();
 	Lwm2mAccessControl *acInst = getAcInstForTarget(acObj, targetObj.getObjectID(), AC_OBJ_INST_NOT_SET);
 
-	if (acInst) acObj.removeInstance(acInst->getInstanceID());
+	if (acInst) acObj.remove(acInst->getInstanceID());
 }
 
 #if RES_2_2
@@ -181,7 +181,7 @@ void Lwm2mAccessControl::deleteInst(Instance &targetInst) {
 	auto &acObj = registry.lwm2mAccessControl();
 	Lwm2mAccessControl *acInst = getAcInstForTarget(acObj, targetInst.getObjectID(), targetInst.getInstanceID());
 
-	if (acInst) acObj.removeInstance(acInst->getInstanceID());
+	if (acInst) acObj.remove(acInst->getInstanceID());
 }
 
 #if RES_2_2

@@ -273,7 +273,7 @@ void Lwm2mServer::resourcesInit() {
 	#endif
 
 	#if RES_1_23                                                                                                                                                                                                                             
-	resource(MUTE_SEND_23)->set<BOOL_T>(false);
+	resource(MUTE_SEND_23)->set<BOOL_T>(true);
 	#endif 
 	/* --------------- Code_cpp block 10 end --------------- */
 }

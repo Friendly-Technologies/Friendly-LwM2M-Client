@@ -111,13 +111,6 @@ Instance & Object::operator[](ID_T instanceID) {
 	auto inst = instance(instanceID);
 	if (inst == NULL) {
 		WPP_LOGE(TAG_WPP_OBJ, "Instance %d:%d does not exist", getObjectID(), instanceID);
-		// TODO: It is workaround for the case when instance is not found
-		// This behavior is better than returning NULL, but it is not the best solution
-		// Return empty value if the id is not found
-		#ifdef OBJ_M_3_DEVICE
-		static Device empty(_context, {getObjectID(), instanceID});
-		return empty;
-		#endif
 	};
 	return *inst;
 }

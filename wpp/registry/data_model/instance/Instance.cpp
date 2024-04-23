@@ -47,13 +47,6 @@ Resource & Instance::operator[](ID_T resId) {
 	auto res = resource(resId);
 	if (res == NULL) {
 		WPP_LOGE(TAG_WPP_INST, "Resource does not exist: %d:%d:%d", _id.objId, _id.objInstId, resId);
-		// TODO: It is workaround for the case when resource is not found
-		// This behavior is better than returning NULL, but it is not the best solution
-		// Return empty value if the id is not found
-		#ifdef OBJ_M_3_DEVICE
-		static Resource empty;
-		return empty;
-		#endif
 	}
 	return *res;
 }

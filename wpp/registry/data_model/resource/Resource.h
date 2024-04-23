@@ -118,6 +118,13 @@ public: /* ---------- Public methods for common usage ----------*/
 	 */
 	const std::vector<ID_T> instIds() const;
 
+	/**
+	 * @brief Find first available instance ID that is not used
+	 * @note If the resource is SINGLE, the method will return ID_T_MAX_VAL
+	 * @return The first available instance ID else ID_T_MAX_VAL
+	 */
+	ID_T newInstId() const;
+
 	/* ---------- Methods for manage verifier ----------*/
 	/**
 	 * @brief Set data verifier for the resource
@@ -168,6 +175,30 @@ public: /* ---------- Public methods for common usage ----------*/
 	 */
 	template<typename T>
 	const T& get(ID_T resInstId = SINGLE_INSTANCE_ID);
+
+	/**
+	 * @brief Add new instance with data value by copy for the MULTIPLE resource
+	 * @param value The data value to add
+	 * @note If the resource is SINGLE, the method will return false.
+	 * 		 If the verifier is set, the value will be checked.
+	 * 		 If the data type is not valid, the method will return false.
+	 * 		 Instance ID will be generated automatically.
+	 * @return True if the instance is added, false otherwise
+	 */
+	template<typename T>
+	bool add(const T &value);
+
+	/**
+	 * @brief Add new instance with data value by move for the MULTIPLE resource
+	 * @param value The data value to add
+	 * @note If the resource is SINGLE, the method will return false.
+	 * 		 If the verifier is set, the value will be checked.
+	 * 		 If the data type is not valid, the method will return false.
+	 * 		 Instance ID will be generated automatically.
+	 * @return True if the instance is added, false otherwise
+	 */
+	template<typename T>
+	bool add(T &&value);
 
 	/**
  	 * @brief Remove resource instance if resource is MULTIPLE and instance exists,
@@ -258,6 +289,41 @@ const T& Resource::get(ID_T resInstId) {
 
 	auto instIter = getInstIter(resInstId);
 	return std::get<T>(instIter->data);
+}
+
+template<typename T>
+bool Resource::add(const T &value) {
+	if (!isDataValueValid(value)) {
+		WPP_LOGE(TAG_WPP_RES, "Invalid data value");
+		return false;
+	}
+
+	ID_T resInstId = newInstId();
+	if (resInstId == ID_T_MAX_VAL) {
+		WPP_LOGE(TAG_WPP_RES, "No available instance ID");
+		return false;
+	}
+	_instances.push_back({resInstId, value});
+	
+	return true;
+}
+
+template<typename T>
+bool Resource::add(T &&value) {
+	if (!isDataValueValid(value)) {
+		WPP_LOGE(TAG_WPP_RES, "Invalid data value");
+		return false;
+	}
+
+	ID_T resInstId = newInstId();
+	if (resInstId == ID_T_MAX_VAL) {
+		WPP_LOGE(TAG_WPP_RES, "No available instance ID");
+		return false;
+	}
+	ResInst newInst = {resInstId, std::move(value)};
+	_instances.push_back(std::move(newInst));
+	
+	return true;
 }
 
 template<typename T>

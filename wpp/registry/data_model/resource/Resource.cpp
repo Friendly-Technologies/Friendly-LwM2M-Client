@@ -131,6 +131,21 @@ const std::vector<ID_T> Resource::instIds() const {
 	return ids;
 }
 
+ID_T Resource::newInstId() const {
+	// Usually, each subsequent free index will be equal to the number of created objects
+	ID_T id = _instances.size();
+	if (id == ID_T_MAX_VAL) return id;
+	// But it won't always be like that
+	while (isExist(id) && id != ID_T_MAX_VAL) id++;
+	// It is also possible that all indexes after the current size are occupied
+	if (id == ID_T_MAX_VAL) {
+		id = 0;
+		// In this case, we need to check the indexes that are before the current size
+		while (isExist(id) && id < _instances.size()) id++;
+	}
+	return id == _instances.size()? ID_T_MAX_VAL : id;
+}
+
 /* ---------- Methods for get and set resource value ----------*/
 bool Resource::remove(ID_T resInstId) {
 	if (isSingle() || !isExist(resInstId) || size() == 1) return false;

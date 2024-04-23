@@ -72,11 +72,9 @@ class ObjectIntegrator:
             f"\t#endif\n"
 
         content_cfg_cmake = \
-            f"""option({obj_name_define} """ \
-            f""""Include {"mandatory" if obj_is_mandatory else "optional"} """ \
-            f"""{obj_name_class} object in the build" {"ON" if obj_is_mandatory else "OFF"})\n""" \
-            f"""if ({obj_name_define})\n\tset(WPP_DEFINITIONS ${{WPP_DEFINITIONS}} {obj_name_define})""" \
-            f"""\nendif()\n"""
+            f"""# Include {"mandatory" if obj_is_mandatory else "optional"} """ \
+            f"""{obj_name_class} object in the build"\n""" \
+            f"""set(WPP_DEFINITIONS ${{WPP_DEFINITIONS}} {obj_name_define})\n"""
 
         content_reg_h_include = \
             f"""#ifdef {obj_name_define}\n""" \

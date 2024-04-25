@@ -1,37 +1,37 @@
 #include "catch_amalgamated.hpp"
-#include "InstOp.h"
+#include "ItemOp.h"
 
 using namespace wpp;
 
-TEST_CASE("InstOp", "[InstOp]") {
+TEST_CASE("ItemOp", "[ItemOp]") {
     SECTION("Default Constructor") {
-        InstOp op;
+        ItemOp op;
 
         REQUIRE(op.getFlags() == 0 );
-        REQUIRE(op.isCompatible(InstOp::TYPE::CREATE));
+        REQUIRE(op.isCompatible(ItemOp::TYPE::CREATE));
 
         REQUIRE_FALSE(op.isCreate());
         REQUIRE_FALSE(op.isDelete());
-        REQUIRE_FALSE(op.isSupported(InstOp::TYPE::NONE));
-        REQUIRE_FALSE(op.isSupported(InstOp::TYPE::CREATE));
-        REQUIRE_FALSE(op.isSupported(InstOp::TYPE::DELETE));
+        REQUIRE_FALSE(op.isSupported(ItemOp::TYPE::NONE));
+        REQUIRE_FALSE(op.isSupported(ItemOp::TYPE::CREATE));
+        REQUIRE_FALSE(op.isSupported(ItemOp::TYPE::DELETE));
 #ifdef LWM2M_RAW_BLOCK1_REQUESTS
         REQUIRE_FALSE(op.isBlockCreate());
-        REQUIRE_FALSE(op.isSupported(InstOp::TYPE::BLOCK1_CREATE));
+        REQUIRE_FALSE(op.isSupported(ItemOp::TYPE::BLOCK1_CREATE));
 #endif
     }
 
     SECTION("NONE Function") {
-        InstOp op(InstOp::TYPE::NONE);
+        ItemOp op(ItemOp::TYPE::NONE);
 
         REQUIRE(op.getFlags() == 0);
-        REQUIRE_FALSE(op.isSupported(InstOp::TYPE::NONE));
+        REQUIRE_FALSE(op.isSupported(ItemOp::TYPE::NONE));
     }
 
     SECTION("isCreate Function") {
-        InstOp op(InstOp::TYPE::CREATE);
+        ItemOp op(ItemOp::TYPE::CREATE);
         
-        REQUIRE(op.isSupported(InstOp::TYPE::CREATE));
+        REQUIRE(op.isSupported(ItemOp::TYPE::CREATE));
         REQUIRE(op.isCreate());
         REQUIRE(op.getFlags() == 1);
 
@@ -42,9 +42,9 @@ TEST_CASE("InstOp", "[InstOp]") {
     }
 
     SECTION("isDelete Function") {
-        InstOp op(InstOp::TYPE::DELETE);
+        ItemOp op(ItemOp::TYPE::DELETE);
 
-        REQUIRE(op.isSupported(InstOp::TYPE::DELETE));
+        REQUIRE(op.isSupported(ItemOp::TYPE::DELETE));
         REQUIRE(op.isDelete());
         REQUIRE(op.getFlags() == 2);
 
@@ -55,9 +55,9 @@ TEST_CASE("InstOp", "[InstOp]") {
     }
 #ifdef LWM2M_RAW_BLOCK1_REQUESTS
     SECTION("isBlockCreate Function") {
-        InstOp op(InstOp::TYPE::BLOCK1_CREATE);
+        ItemOp op(ItemOp::TYPE::BLOCK1_CREATE);
 
-        REQUIRE(op.isSupported(InstOp::TYPE::BLOCK1_CREATE));
+        REQUIRE(op.isSupported(ItemOp::TYPE::BLOCK1_CREATE));
         REQUIRE(op.isBlockCreate());
         REQUIRE(op.getFlags() == 4);
 
@@ -66,46 +66,46 @@ TEST_CASE("InstOp", "[InstOp]") {
     }
 
     SECTION("getFlags Function") {
-        InstOp op(InstOp::TYPE::BLOCK1_CREATE | InstOp::TYPE::DELETE | InstOp::TYPE::CREATE);
+        ItemOp op(ItemOp::TYPE::BLOCK1_CREATE | ItemOp::TYPE::DELETE | ItemOp::TYPE::CREATE);
         REQUIRE(op.getFlags() == 7);
     }
 
     SECTION("getFlags with duplicates TYPE Function") {
-        InstOp op(InstOp::TYPE::BLOCK1_CREATE | InstOp::TYPE::BLOCK1_CREATE | InstOp::TYPE::BLOCK1_CREATE);
+        ItemOp op(ItemOp::TYPE::BLOCK1_CREATE | ItemOp::TYPE::BLOCK1_CREATE | ItemOp::TYPE::BLOCK1_CREATE);
         REQUIRE(op.getFlags() == 4);
     }
 #endif
     SECTION("isCompatible Function") {
-        InstOp op1(InstOp::TYPE::NONE   | InstOp::TYPE::CREATE);
-        InstOp op2(InstOp::TYPE::CREATE | InstOp::TYPE::DELETE);
+        ItemOp op1(ItemOp::TYPE::NONE   | ItemOp::TYPE::CREATE);
+        ItemOp op2(ItemOp::TYPE::CREATE | ItemOp::TYPE::DELETE);
 
         REQUIRE(op1.isCompatible(op2));
         REQUIRE_FALSE(op2.isCompatible(op1));
 
 #ifdef LWM2M_RAW_BLOCK1_REQUESTS
-        InstOp op3(InstOp::TYPE::DELETE | InstOp::TYPE::BLOCK1_CREATE);
+        ItemOp op3(ItemOp::TYPE::DELETE | ItemOp::TYPE::BLOCK1_CREATE);
         REQUIRE_FALSE(op1.isCompatible(op3));
 #endif
     }
 
     SECTION("asVector Function") {
-        InstOp op(
-            InstOp::TYPE::NONE          |
-            InstOp::TYPE::CREATE        |
+        ItemOp op(
+            ItemOp::TYPE::NONE          |
+            ItemOp::TYPE::CREATE        |
 #ifdef LWM2M_RAW_BLOCK1_REQUESTS
-            InstOp::TYPE::BLOCK1_CREATE |
+            ItemOp::TYPE::BLOCK1_CREATE |
 #endif
-            InstOp::TYPE::DELETE);
-        std::vector<InstOp::TYPE> result = op.asVector();
+            ItemOp::TYPE::DELETE);
+        std::vector<ItemOp::TYPE> result = op.asVector();
 #ifdef LWM2M_RAW_BLOCK1_REQUESTS
         REQUIRE(result.size() == 3);
 #else
         REQUIRE(result.size() == 2);
 #endif
-        REQUIRE(result[0] == InstOp::TYPE::CREATE);
-        REQUIRE(result[1] == InstOp::TYPE::DELETE);
+        REQUIRE(result[0] == ItemOp::TYPE::CREATE);
+        REQUIRE(result[1] == ItemOp::TYPE::DELETE);
 #ifdef LWM2M_RAW_BLOCK1_REQUESTS
-        REQUIRE(result[2] == InstOp::TYPE::BLOCK1_CREATE);
+        REQUIRE(result[2] == ItemOp::TYPE::BLOCK1_CREATE);
 #endif
     }
 }

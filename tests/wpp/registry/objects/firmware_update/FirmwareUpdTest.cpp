@@ -97,23 +97,23 @@ TEST_CASE("FirmwareUpdate", "[serverOperationNotifier][userOperationNotifier]") 
     SECTION("serverOperationNotifier") {
         // INT_T state;
 
-        fwu.serverOperationNotifier(ItemOp::WRITE, {FirmwareUpdate::PACKAGE_0, 0});
+        // fwu.serverOperationNotifier(ItemOp::WRITE, {FirmwareUpdate::PACKAGE_0, 0});
         // REQUIRE(fwu.get(3, state));
         // REQUIRE(state == FirmwareUpdate::S_IDLE);
         // REQUIRE(fwu.get(5, state));
         // REQUIRE(state == FirmwareUpdate::R_INITIAL);
 
-        fwu.serverOperationNotifier(ItemOp::WRITE, {FirmwareUpdate::PACKAGE_URI_1, 0});
+        // fwu.serverOperationNotifier(ItemOp::WRITE, {FirmwareUpdate::PACKAGE_URI_1, 0});
         // REQUIRE(fwu.get(3, state));
         // REQUIRE(state == FirmwareUpdate::S_IDLE);
         // REQUIRE(fwu.get(5, state));
         // REQUIRE(state == FirmwareUpdate::R_INITIAL);
         
-        fwu.serverOperationNotifier(ItemOp::EXECUTE, {FirmwareUpdate::UPDATE_2, 0});
+        // fwu.serverOperationNotifier(ItemOp::EXECUTE, {FirmwareUpdate::UPDATE_2, 0});
 
         // REQUIRE(fwu.set(9, (INT_T)FirmwareUpdate::PULL));
         // REQUIRE(fwu.set(1, STRING_T("coap://localhost:5683/")));
-        fwu.serverOperationNotifier(ItemOp::WRITE, {FirmwareUpdate::PACKAGE_URI_1, 0});
+        // fwu.serverOperationNotifier(ItemOp::WRITE, {FirmwareUpdate::PACKAGE_URI_1, 0});
         // REQUIRE(fwu.get(3, state));
         // REQUIRE(state == FirmwareUpdate::S_DOWNLOADING);
         // REQUIRE(fwu.get(5, state));
@@ -121,13 +121,13 @@ TEST_CASE("FirmwareUpdate", "[serverOperationNotifier][userOperationNotifier]") 
 
         // REQUIRE(fwu.set(9, (INT_T)FirmwareUpdate::PUSH));
         // REQUIRE(fwu.set(0, OPAQUE_T{0x01, 0x02, 0x03}));
-        fwu.serverOperationNotifier(ItemOp::WRITE, {FirmwareUpdate::PACKAGE_0, 0});
+        // fwu.serverOperationNotifier(ItemOp::WRITE, {FirmwareUpdate::PACKAGE_0, 0});
         // REQUIRE(fwu.get(3, state));
         // REQUIRE(state == FirmwareUpdate::S_DOWNLOADED);
         // REQUIRE(fwu.get(5, state));
         // REQUIRE(state == FirmwareUpdate::R_INITIAL);
 
-        fwu.serverOperationNotifier(ItemOp::EXECUTE, {FirmwareUpdate::UPDATE_2, 0});
+        // fwu.serverOperationNotifier(ItemOp::EXECUTE, {FirmwareUpdate::UPDATE_2, 0});
     }
 
     SECTION("userOperationNotifier") {

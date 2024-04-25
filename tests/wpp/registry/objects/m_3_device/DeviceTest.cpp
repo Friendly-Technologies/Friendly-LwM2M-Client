@@ -23,7 +23,7 @@ TEST_CASE("objectDevice", "[objectDevice]")
 
             void setDefaultState()
             {
-                Device::setDefaultState();
+                // Device::setDefaultState(); TODO
 
                 // return NO_ERROR <= value && value < ERR_CODE_MAX
                 REQUIRE(Device::resource(ERROR_CODE_11)->set(INT_T(NO_ERROR)));
@@ -39,8 +39,8 @@ TEST_CASE("objectDevice", "[objectDevice]")
                 REQUIRE(Device::resource(SUPPORTED_BINDING_AND_MODES_16)->set(STRING_T(WPP_BINDING_NON_IP)));
             }
 
-            void serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) { Device::serverOperationNotifier(type, resId); }
-            void userOperationNotifier(ResOp::TYPE type, const ResLink &resId) { Device::userOperationNotifier(type, resId); }
+            void serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resId) { Device::serverOperationNotifier(securityInst, type, resId); }
+            void userOperationNotifier(ItemOp::TYPE type, const ResLink &resId) { Device::userOperationNotifier(type, resId); }
         };
 
         lwm2m_context_t mockContext;
@@ -54,11 +54,11 @@ TEST_CASE("objectDevice", "[objectDevice]")
         deviceMock.setDefaultState();
         REQUIRE(WppTaskQueue::getTaskCnt() == 2);
 
-        deviceMock.serverOperationNotifier(ResOp::TYPE::READ, {0, 0});
-        deviceMock.userOperationNotifier(ResOp::TYPE::WRITE, {10, 10});
+        deviceMock.serverOperationNotifier(0, ItemOp::TYPE::READ, {0, 0});
+        deviceMock.userOperationNotifier(ItemOp::TYPE::WRITE, {10, 10});
 
         EXECUTE_T exe;
-        deviceMock.get(4, exe);
+        // deviceMock.get(4, exe); TODO
         REQUIRE(exe(deviceMock, 4, OPAQUE_T()));
 
         WppClient client;

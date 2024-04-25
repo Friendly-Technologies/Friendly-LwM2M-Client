@@ -12,14 +12,14 @@ TEST_CASE("WppRegistry constructor creates objects", "[WppRegistry]")
 
     SECTION("objID")
     {
-        REQUIRE_FALSE(WppRegistryInstance.isObjExist(OBJ_ID(-1)));
+        REQUIRE_FALSE(WppRegistryInstance.isExist(OBJ_ID(-1)));
         REQUIRE_FALSE(WppRegistryInstance.object(OBJ_ID(-1)) != NULL);
     }
 
 #ifdef OBJ_M_3_DEVICE
     SECTION("DEVICE")
     {
-        REQUIRE(WppRegistryInstance.isObjExist(OBJ_ID::DEVICE));
+        REQUIRE(WppRegistryInstance.isExist(OBJ_ID::DEVICE));
         REQUIRE(WppRegistryInstance.object(OBJ_ID::DEVICE) != NULL);
 
         ObjectSpec<Device> &obj = WppRegistryInstance.device();
@@ -36,7 +36,7 @@ TEST_CASE("WppRegistry constructor creates objects", "[WppRegistry]")
 #ifdef OBJ_M_1_LWM2M_SERVER
     SECTION("SERVER")
     {
-        REQUIRE(WppRegistryInstance.isObjExist(OBJ_ID::LWM2M_SERVER));
+        REQUIRE(WppRegistryInstance.isExist(OBJ_ID::LWM2M_SERVER));
         REQUIRE(WppRegistryInstance.object(OBJ_ID::LWM2M_SERVER) != NULL);
 
         ObjectSpec<Lwm2mServer> &obj = WppRegistryInstance.lwm2mServer();
@@ -53,7 +53,7 @@ TEST_CASE("WppRegistry constructor creates objects", "[WppRegistry]")
 #ifdef OBJ_M_0_LWM2M_SECURITY
     SECTION("SECURITY")
     {
-        REQUIRE(WppRegistryInstance.isObjExist(OBJ_ID::LWM2M_SECURITY));
+        REQUIRE(WppRegistryInstance.isExist(OBJ_ID::LWM2M_SECURITY));
         REQUIRE(WppRegistryInstance.object(OBJ_ID::LWM2M_SECURITY) != NULL);
 
         ObjectSpec<Lwm2mSecurity> &obj = WppRegistryInstance.lwm2mSecurity();
@@ -70,7 +70,7 @@ TEST_CASE("WppRegistry constructor creates objects", "[WppRegistry]")
 #ifdef OBJ_O_4_CONNECTIVITY_MONITORING
     SECTION("CONNECTIVITY")
     {
-        REQUIRE(WppRegistryInstance.isObjExist(OBJ_ID::CONNECTIVITY_MONITORING));
+        REQUIRE(WppRegistryInstance.isExist(OBJ_ID::CONNECTIVITY_MONITORING));
         REQUIRE(WppRegistryInstance.object(OBJ_ID::CONNECTIVITY_MONITORING) != NULL);
 
         ObjectSpec<ConnectivityMonitoring> &obj = WppRegistryInstance.connectivityMonitoring();
@@ -87,7 +87,7 @@ TEST_CASE("WppRegistry constructor creates objects", "[WppRegistry]")
 #ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL
     SECTION("ACCESS_CONTROL")
     {
-        REQUIRE(WppRegistryInstance.isObjExist(OBJ_ID::LWM2M_ACCESS_CONTROL));
+        REQUIRE(WppRegistryInstance.isExist(OBJ_ID::LWM2M_ACCESS_CONTROL));
         REQUIRE(WppRegistryInstance.object(OBJ_ID::LWM2M_ACCESS_CONTROL) != NULL);
 
         ObjectSpec<Lwm2mAccessControl> &obj = WppRegistryInstance.lwm2mAccessControl();
@@ -104,7 +104,7 @@ TEST_CASE("WppRegistry constructor creates objects", "[WppRegistry]")
 #ifdef OBJ_O_5_FIRMWARE_UPDATE
     SECTION("FIRMWARE_UPDATE")
     {
-        REQUIRE(WppRegistryInstance.isObjExist(OBJ_ID::FIRMWARE_UPDATE));
+        REQUIRE(WppRegistryInstance.isExist(OBJ_ID::FIRMWARE_UPDATE));
         REQUIRE(WppRegistryInstance.object(OBJ_ID::FIRMWARE_UPDATE) != NULL);
 
         ObjectSpec<FirmwareUpdate> &obj = WppRegistryInstance.firmwareUpdate();

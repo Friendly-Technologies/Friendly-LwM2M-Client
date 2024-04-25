@@ -14,10 +14,9 @@ void ConnectivityMonitoringImpl::init(Object &obj) {
 
     STRING_T ip;
     getIpAddress(&ip);
-	inst0->set(ConnectivityMonitoring::NETWORK_BEARER_0,
-               INT_T(ConnectivityMonitoring::NtwrkBrr::ETHERNET));
-	inst0->set(ConnectivityMonitoring::RADIO_SIGNAL_STRENGTH_2, INT_T(-20));
-    inst0->set(ConnectivityMonitoring::IP_ADDRESSES_4, ip);
+	inst0->resource(ConnectivityMonitoring::NETWORK_BEARER_0)->set<INT_T>(ConnectivityMonitoring::NtwrkBrr::ETHERNET);
+	inst0->resource(ConnectivityMonitoring::RADIO_SIGNAL_STRENGTH_2)->set<INT_T>(-20);
+    inst0->resource(ConnectivityMonitoring::IP_ADDRESSES_4)->set<STRING_T>(ip, 0);
 
     #if OBJ_O_2_LWM2M_ACCESS_CONTROL
 	Lwm2mAccessControl::createInst(obj, Lwm2mAccessControl::ALL_OBJ_RIGHTS);

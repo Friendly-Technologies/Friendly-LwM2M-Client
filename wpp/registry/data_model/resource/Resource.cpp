@@ -7,20 +7,6 @@
 
 #include "Resource.h"
 
-#define RES_METHODS_IMPL_SET_FOR(_TYPE_)									\
-bool Resource::set(const _TYPE_ &value, ID_T resInstId) {					\
-	return _set(value, resInstId);											\
-}																			\
-bool Resource::setMove(_TYPE_ &value, ID_T resInstId) {				\
-	return _setMove(value, resInstId);										\
-}																			\
-bool Resource::get(_TYPE_ &value, ID_T resInstId) const {					\
-	return _get(value, resInstId);											\
-}																			\
-bool Resource::ptr(_TYPE_ **value, ID_T resInstId) {						\
-	return _ptr(value, resInstId);											\
-}																			\
-
 namespace wpp {
 
 /* ---------- Public methods for common usage ----------*/
@@ -50,6 +36,7 @@ Resource::Resource(Resource&& resource) {
 	_isMandatory = resource._isMandatory;
 	_typeID = resource._typeID;
 	_instances = std::move(resource._instances);
+	resource._instances.clear();
 	_dataVerifier = resource._dataVerifier;
 }
 
@@ -75,10 +62,9 @@ Resource& Resource::operator=(Resource&& resource) {
     _isSingle = resource._isSingle;
     _isMandatory = resource._isMandatory;
     _typeID = resource._typeID;
-    _instances.clear();
 	_instances = std::move(resource._instances);
+	resource._instances.clear();
     _dataVerifier = resource._dataVerifier;
-	resource.clear();
 
     return *this;
 }
@@ -111,16 +97,12 @@ bool Resource::isMultiple() const {
 	return _isSingle == IS_SINGLE::MULTIPLE;
 }
 
-bool Resource::isOperationValid(ItemOp::TYPE type) const {
-	return _operation.isSupported(type);
-}
-
 bool Resource::isInstanceIdPossible(ID_T resInstId) const {
 	return isMultiple() || resInstId == SINGLE_INSTANCE_ID;
 }
 
-bool Resource::isInstanceExist(ID_T resInstId) const {
-	return getResInstIter(resInstId) != _instances.end();
+bool Resource::isExist(ID_T resInstId) const {
+	return getInstIter(resInstId) != _instances.end();
 }
 
 bool Resource::isTypeIdCompatible(TYPE_ID type) const {
@@ -138,40 +120,43 @@ bool Resource::isTypeIdCompatible(TYPE_ID type) const {
 	return _typeID == type;
 }
 
-bool Resource::isEmpty() const {
-	return _instances.size() == 0;
-}
-
-size_t Resource::instanceCnt() const {
+size_t Resource::size() const {
 	return _instances.size();
 }
 
-const std::vector<ID_T> Resource::getInstIds() const {
+const std::vector<ID_T> Resource::instIds() const {
 	std::vector<ID_T> ids;
 	ids.reserve(_instances.size());
 	std::transform(_instances.begin(), _instances.end(), std::back_inserter(ids), [](const auto& inst) { return inst.id; });
 	return ids;
 }
 
-/* ---------- Methods for get and set resource value ----------*/
-RES_METHODS_IMPL_SET_FOR(BOOL_T);
-RES_METHODS_IMPL_SET_FOR(INT_T);
-RES_METHODS_IMPL_SET_FOR(UINT_T);
-RES_METHODS_IMPL_SET_FOR(FLOAT_T);
-RES_METHODS_IMPL_SET_FOR(OPAQUE_T);
-RES_METHODS_IMPL_SET_FOR(OBJ_LINK_T);
-RES_METHODS_IMPL_SET_FOR(STRING_T);
-RES_METHODS_IMPL_SET_FOR(EXECUTE_T);
+ID_T Resource::newInstId() const {
+	// Usually, each subsequent free index will be equal to the number of created objects
+	ID_T id = _instances.size();
+	if (id == ID_T_MAX_VAL) return id;
+	// But it won't always be like that
+	while (isExist(id) && id != ID_T_MAX_VAL) id++;
+	// It is also possible that all indexes after the current size are occupied
+	if (id == ID_T_MAX_VAL) {
+		id = 0;
+		// In this case, we need to check the indexes that are before the current size
+		while (isExist(id) && id < _instances.size()) id++;
+	}
+	return id == _instances.size()? ID_T_MAX_VAL : id;
+}
 
+/* ---------- Methods for get and set resource value ----------*/
 bool Resource::remove(ID_T resInstId) {
-	if (!isInstanceExist(resInstId) || isSingle() || instanceCnt() == 1) return false;
-	auto instForRemove = getResInstIter(resInstId);
+	if (isSingle() || !isExist(resInstId) || size() == 1) return false;
+	auto instForRemove = getInstIter(resInstId);
 	_instances.erase(instForRemove);
 
 	return true;
 }
 
 bool Resource::clear() {
+	if (isSingle()) return false;
 	_instances.clear();
 	return true;
 }
@@ -195,7 +180,7 @@ bool Resource::isDataVerifierValid(const DATA_VERIFIER_T &verifier) const {
 	else return false;
 }
 
-std::vector<Resource::ResInst>::iterator Resource::getResInstIter(ID_T resInstId) const {
+std::vector<Resource::ResInst>::iterator Resource::getInstIter(ID_T resInstId) const {
 	auto finder = [&resInstId](const ResInst &inst) -> bool { return inst.id == resInstId; };
 	return std::find_if(_instances.begin(), _instances.end(), finder);
 }

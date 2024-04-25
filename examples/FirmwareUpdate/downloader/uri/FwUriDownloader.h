@@ -33,9 +33,8 @@ public:
         } else if (isCoapScheme(uri)) {
             _coapDownloader.startDownloading(uri, downloadedClb);
         } else if (isCoapsScheme(uri)) {
-            OPAQUE_T psk_id, psk_key;
-            security.get(Lwm2mSecurity::PUBLIC_KEY_OR_IDENTITY_3, psk_id);
-            security.get(Lwm2mSecurity::SECRET_KEY_5, psk_key);
+            OPAQUE_T psk_id = security.resource(Lwm2mSecurity::PUBLIC_KEY_OR_IDENTITY_3)->get<OPAQUE_T>();
+            OPAQUE_T psk_key = security.resource(Lwm2mSecurity::SECRET_KEY_5)->get<OPAQUE_T>();
             _coapDownloader.startDownloading(uri, string(psk_id.begin(), psk_id.end()), psk_key, downloadedClb);
         }
     }

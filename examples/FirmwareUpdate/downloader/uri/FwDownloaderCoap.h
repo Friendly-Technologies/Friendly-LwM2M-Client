@@ -30,6 +30,9 @@ public:
                 while (!this->_job.downloading && !_terminateThread) this_thread::sleep_for(chrono::milliseconds(100));
                 if (_terminateThread) continue;
 
+                // Remove the file if it exists
+                std::remove("test_fw.fw");
+
                 this->_jobGuard.lock();
                 string url = this->_job.url;
                 std::string pskId = this->_job.psk_id;
@@ -137,7 +140,7 @@ public:
                 // Add the Block2 option to the request
                 coap_add_option(pdu, COAP_OPTION_BLOCK2, coap_encode_var_safe(buf, sizeof(buf), (block.num << 4) | (block.m << 3) | block.szx), buf);
 
-                wait_ms = 90000;
+                wait_ms = 180000;
                 cout << "sending CoAP request" << endl;
                 if (coap_send(session, pdu) == COAP_INVALID_MID) {
                     cout << "cannot send CoAP pdu" << endl;

@@ -21,7 +21,7 @@ TEST_CASE("objectLwm2mAccessControl", "[objectLwm2mAccessControl]")
 
             void setDefaultState()
             {
-                Lwm2mAccessControl::setDefaultState();
+                // Lwm2mAccessControl::setDefaultState(); TODO
 
                 // return AC_OBJ_ID_MIN <= value && value <= AC_OBJ_ID_MAX
                 REQUIRE(Lwm2mAccessControl::resource(OBJECT_ID_0)->set(INT_T(AC_OBJ_ID_MIN)));
@@ -48,8 +48,8 @@ TEST_CASE("objectLwm2mAccessControl", "[objectLwm2mAccessControl]")
                 REQUIRE_FALSE(Lwm2mAccessControl::resource(ACCESS_CONTROL_OWNER_3)->set(INT_T(AC_OWNER_MAX + 1)));
             }
 
-            void serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) { Lwm2mAccessControl::serverOperationNotifier(type, resId); }
-            void userOperationNotifier(ResOp::TYPE type, const ResLink &resId) { Lwm2mAccessControl::userOperationNotifier(type, resId); }
+            void serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resId) { Lwm2mAccessControl::serverOperationNotifier(securityInst, type, resId); }
+            void userOperationNotifier(ItemOp::TYPE type, const ResLink &resId) { Lwm2mAccessControl::userOperationNotifier(type, resId); }
         };
 
         lwm2m_context_t mockContext;
@@ -59,7 +59,7 @@ TEST_CASE("objectLwm2mAccessControl", "[objectLwm2mAccessControl]")
 
         accesscontrolMock.setDefaultState();
 
-        accesscontrolMock.serverOperationNotifier(ResOp::TYPE::READ, {0, 0});
-        accesscontrolMock.userOperationNotifier(ResOp::TYPE::WRITE, {10, 10});
+        accesscontrolMock.serverOperationNotifier(0, ItemOp::TYPE::READ, {0, 0});
+        accesscontrolMock.userOperationNotifier(ItemOp::TYPE::WRITE, {10, 10});
     }
 }

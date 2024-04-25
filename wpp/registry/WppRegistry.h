@@ -90,7 +90,7 @@ public:
 	 * @param objId The ID of the Object to check.
 	 * @return True if the Object exists, false otherwise.
 	 */
-	bool isObjExist(OBJ_ID objId);
+	bool isExist(OBJ_ID objId);
 
 	/**
 	 * @brief Retrieves a pointer to the Object with the given objId.
@@ -98,7 +98,22 @@ public:
 	 * @param objId The ID of the Object to retrieve.
 	 * @return A pointer to the Object if found, nullptr otherwise.
 	 */
-	Object *object(OBJ_ID objId);
+	Object * object(OBJ_ID objId);
+
+	/**
+	 * @brief Retrieves a reference to the Object with the given objId.
+	 * @param objId The ID of the Object to retrieve.
+	 * @note If the Object is not found, a reference to an empty Object is returned.
+	 * @return A reference to the Object if found.
+	 */
+	Object & operator[](OBJ_ID objId);
+
+	/**
+	 * @brief Gets all registered objects.
+	 *
+	 * @return A vector of pointers to the registered objects.
+	 */
+	std::vector<Object *> & objects();
 
 	/* ---------- Mandatory objects prototype block begin ---------- */
 	#ifdef OBJ_M_3_DEVICE

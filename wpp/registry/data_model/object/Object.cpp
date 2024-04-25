@@ -3,6 +3,8 @@
 
 namespace wpp {
 
+Object::Object(lwm2m_context_t &context) : _context(context) {}
+
 Object::Object(lwm2m_context_t &context, const ObjectInfo &info):  _context(context), _objInfo(info) {
 	WPP_LOGD(TAG_WPP_OBJ, "Creating object with ID -> %d", (ID_T)info.objID);
 
@@ -79,7 +81,7 @@ void Object::restore() {
     this->observerDoAction(*this, ObjSubject::Action::RESTORE);
 }
 
-bool Object::removeInstance(ID_T instanceId) {
+bool Object::remove(ID_T instanceId) {
 	// If user want to delete instance with ID that does not exist, then we can not do it
 	auto inst = getInstIter(instanceId);
 	if (inst == _instances.end()) return false;
@@ -94,7 +96,7 @@ bool Object::removeInstance(ID_T instanceId) {
 	_instances.erase(inst);
 
 	// Update server registration
-	lwm2m_update_registration(&getContext(), 0, false, true);
+	if (getContext().state > STATE_BOOTSTRAPPING) lwm2m_update_registration(&getContext(), 0, false, true);
 	
 	return true;
 }
@@ -105,7 +107,15 @@ Instance* Object::instance(ID_T instanceID) {
 	return inst != _instances.end()? *inst : NULL;
 }
 
-const std::vector<Instance*> & Object::getInstances() {
+Instance & Object::operator[](ID_T instanceID) {
+	auto inst = instance(instanceID);
+	if (inst == NULL) {
+		WPP_LOGE(TAG_WPP_OBJ, "Instance %d:%d does not exist", getObjectID(), instanceID);
+	};
+	return *inst;
+}
+
+const std::vector<Instance*> & Object::instances() {
 	return _instances;
 }
 
@@ -113,7 +123,7 @@ size_t Object::instanceCnt() {
 	return _instances.size();
 }
 
-bool Object::isInstanceExist(ID_T instanceID) {
+bool Object::isExist(ID_T instanceID) {
 	return getInstIter(instanceID) != _instances.end();
 }
 
@@ -122,18 +132,17 @@ std::vector<Instance*>::iterator Object::getInstIter(ID_T instanceID) {
 	return std::find_if(_instances.begin(), _instances.end(), finder);
 }
 
-// TODO: Redundant implementation, it is better to use the lwm2m_list_newId() instead
 ID_T Object::getFirstAvailableInstanceID() {
 	// Usually, each subsequent free index will be equal to the number of created objects
 	ID_T id = _instances.size();
 	if (id == ID_T_MAX_VAL) return id;
 	// But it won't always be like that
-	while (isInstanceExist(id) && id != ID_T_MAX_VAL) id++;
+	while (isExist(id) && id != ID_T_MAX_VAL) id++;
 	// It is also possible that all indexes after the current size are occupied
 	if (id == ID_T_MAX_VAL) {
 		id = 0;
 		// In this case, we need to check the indexes that are before the current size
-		while (isInstanceExist(id) && id < _instances.size()) id++;
+		while (isExist(id) && id < _instances.size()) id++;
 	}
 	return id;
 }
@@ -142,28 +151,28 @@ ID_T Object::getFirstAvailableInstanceID() {
 uint8_t Object::serverRead_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP) {
     Object *obj = static_cast<Object *>(objectP->userData);
 	WPP_LOGD(TAG_WPP_OBJ, "wakaama read %d:%d", obj->getObjectID(), instanceId);
-	if (!obj->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
+	if (!obj->isExist(instanceId)) return COAP_404_NOT_FOUND;
 	return obj->instance(instanceId)->readAsServer(server, numDataP, dataArrayP);
 }
 
 uint8_t Object::serverWrite_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP, lwm2m_write_type_t writeType) {
 	Object *obj = static_cast<Object *>(objectP->userData);
     WPP_LOGD(TAG_WPP_OBJ, "wakaama write %d:%d", obj->getObjectID(), instanceId);
-	if (!obj->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
+	if (!obj->isExist(instanceId)) return COAP_404_NOT_FOUND;
 	return obj->instance(instanceId)->writeAsServer(server, numData, dataArray, writeType);
 }
 
 uint8_t Object::serverExecute_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, ID_T instanceId, ID_T resId, uint8_t * buffer, int length, lwm2m_object_t * objectP) {
 	Object *obj = static_cast<Object *>(objectP->userData);
     WPP_LOGD(TAG_WPP_OBJ, "wakaama execute %d:%d", obj->getObjectID(), instanceId);
-	if (!obj->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
+	if (!obj->isExist(instanceId)) return COAP_404_NOT_FOUND;
 	return obj->instance(instanceId)->executeAsServer(server, resId, buffer, length);
 }
 
 uint8_t Object::serverDiscover_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP) {
 	Object *obj = static_cast<Object *>(objectP->userData);
     WPP_LOGD(TAG_WPP_OBJ, "wakaama discover %d:%d", obj->getObjectID(), instanceId);
-	if (!obj->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
+	if (!obj->isExist(instanceId)) return COAP_404_NOT_FOUND;
 	return obj->instance(instanceId)->discoverAsServer(server, numDataP, dataArrayP);
 }
 
@@ -186,11 +195,11 @@ uint8_t Object::serverCreate_clb(lwm2m_context_t * contextP, lwm2m_server_t *ser
 uint8_t Object::serverDelete_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, ID_T instanceId, lwm2m_object_t * objectP) {
 	Object *obj = static_cast<Object *>(objectP->userData);
     WPP_LOGD(TAG_WPP_OBJ, "wakaama delete %d:%d", obj->getObjectID(), instanceId);
-	if (!obj->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
+	if (!obj->isExist(instanceId)) return COAP_404_NOT_FOUND;
 	// Notify user about deleting instance
 	obj->operationNotify(*obj, instanceId, ItemOp::DELETE);
 
-	return obj->removeInstance(instanceId)? COAP_202_DELETED : COAP_404_NOT_FOUND;
+	return obj->remove(instanceId)? COAP_202_DELETED : COAP_404_NOT_FOUND;
 }
 
 } // namespace wpp

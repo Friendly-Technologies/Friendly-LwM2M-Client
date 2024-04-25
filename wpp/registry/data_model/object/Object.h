@@ -38,6 +38,11 @@ private:
 
 public:
 	/**
+	 * Default constructor.
+	 */
+	Object(lwm2m_context_t &context);
+
+	/**
 	 * @brief Constructs an Object instance.
 	 * 
 	 * @param context The lwm2m_context_t object.
@@ -89,11 +94,6 @@ public:
 	WppRegistry& getRegistry();
 
 	/**
-	 * @brief Clears the object.
-	 */
-	void clear();
-
-	/**
 	 * @brief Restores the object.
 	 */
 	void restore();
@@ -114,7 +114,12 @@ public:
 	 * @param instanceID The instance ID.
 	 * @return True if the instance was successfully removed, false otherwise.
 	 */
-	bool removeInstance(ID_T instanceID);
+	bool remove(ID_T instanceID);
+
+	/**
+	 * @brief Clears the object.
+	 */
+	void clear();
 
 	/**
 	 * @brief Gets an instance of the object.
@@ -125,11 +130,19 @@ public:
 	Instance* instance(ID_T instanceID = ID_T_MAX_VAL);
 
 	/**
+	 * @brief Retrieves a reference to the Instance with the given id.
+	 * @param instanceID The ID of the Instance to retrieve.
+	 * @note If the Instance is not found, a reference to an empty Instance is returned.
+	 * @return A reference to the Instance if found.
+	 */
+	Instance & operator[](ID_T instanceID);
+
+	/**
 	 * @brief Gets all instances of the object.
 	 * 
 	 * @return A vector of pointers to the Instance objects.
 	 */
-	const std::vector<Instance*>& getInstances();
+	const std::vector<Instance*>& instances();
 
 	/**
 	 * @brief Gets the number of instances of the object.
@@ -144,7 +157,7 @@ public:
 	 * @param instanceID The instance ID.
 	 * @return True if the instance exists, false otherwise.
 	 */
-	bool isInstanceExist(ID_T instanceID);
+	bool isExist(ID_T instanceID);
 
 protected:
 	/**

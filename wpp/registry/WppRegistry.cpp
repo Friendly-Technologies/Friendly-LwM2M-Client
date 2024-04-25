@@ -57,7 +57,7 @@ bool WppRegistry::isObjRegistered(Object &object) {
 	return lwm2m_object != NULL;
 }
 
-bool WppRegistry::isObjExist(OBJ_ID objId) {
+bool WppRegistry::isExist(OBJ_ID objId) {
 	return object(objId) != NULL;
 }
 
@@ -65,6 +65,18 @@ Object * WppRegistry::object(OBJ_ID objId) {
 	auto finder = [objId](const Object *obj) -> bool { return obj->getObjectID() == objId; };
 	auto objIter = std::find_if(_objects.begin(), _objects.end(), finder);
 	return objIter != _objects.end()? *objIter : NULL;
+}
+
+Object & WppRegistry::operator[](OBJ_ID objId) {
+	Object * obj = object(objId);
+	if (obj == NULL) {
+		WPP_LOGE(TAG_WPP_REG, "Object with id %d not found", objId);
+	}
+	return *obj;
+}
+
+std::vector<Object *> & WppRegistry::objects() {
+	return _objects;
 }
 
 /* ---------- Mandatory objects method block begin ---------- */

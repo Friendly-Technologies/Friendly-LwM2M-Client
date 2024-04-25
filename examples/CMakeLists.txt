@@ -6,6 +6,10 @@ set(CMAKE_CXX_STANDARD 17)
 
 # Include file with compiler config
 include(../wpp/configs/compiler_config.cmake)
+# Include file with wpp config
+include(../wpp/configs/wpp_config.cmake)
+# Add file with wpp lib configs
+include(../wpp/wpp.cmake)
 
 # Compiler options
 add_compile_options(
@@ -42,31 +46,34 @@ endif()
 # Variables that will be filled in subdirectories
 set(SOURCES main.cpp)
 set(INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/)
-set(COMPILE_DEFINITIONS "")
 
 # General options
-option(WITH_UDP_DTLS "Enable UDP DTLS" ON)
+option(WITH_UDP_DTLS "Enable UDP DTLS" OFF)
 if (WITH_UDP_DTLS)
-    set(COMPILE_DEFINITIONS ${COMPILE_DEFINITIONS} WITH_UDP_DTLS)
-    set(COMPILE_DEFINITIONS ${COMPILE_DEFINITIONS} DTLS_WITH_PSK)
-    # set(COMPILE_DEFINITIONS ${COMPILE_DEFINITIONS} DTLS_WITH_RPK)
+    set(WPP_DEFINITIONS ${WPP_DEFINITIONS} WITH_UDP_DTLS)
+    set(WPP_DEFINITIONS ${WPP_DEFINITIONS} DTLS_WITH_PSK)
+    # set(WPP_DEFINITIONS ${WPP_DEFINITIONS} DTLS_WITH_RPK)
 endif()
 
 add_executable(WakaamaPlusExample)
+# List of preprocessor defines that will be set for compiler with key -D
+target_compile_definitions(WakaamaPlusExample PUBLIC ${WPP_DEFINITIONS})
+# Link wpp sources to tests
+target_link_wpp(WakaamaPlusExample wpp)
 # Link with Wpp library
 target_link_libraries(WakaamaPlusExample Wpp pthread ${libcoap_path}/libcoap-3.so ${CURL_LIBRARIES})
-# List of preprocessor defines that will be set for compiler with key -D
-target_compile_definitions(WakaamaPlusExample PUBLIC ${COMPILE_DEFINITIONS})
 
 # Add subdiretories with sources
 add_subdirectory(platform)
 add_subdirectory(Lwm2mServer)
 add_subdirectory(Lwm2mSecurity)
 add_subdirectory(Device)
-if(OBJ_O_4_CONNECTIVITY_MONITORING)
+check_target_definition(WakaamaPlusExample "OBJ_O_4_CONNECTIVITY_MONITORING" is_defined)
+if(is_defined)
     add_subdirectory(ConnectivityMonitoring)
 endif()
-if(OBJ_O_5_FIRMWARE_UPDATE)
+check_target_definition(WakaamaPlusExample "OBJ_O_5_FIRMWARE_UPDATE" is_defined)
+if(is_defined)
     add_subdirectory(FirmwareUpdate)
 endif()
 

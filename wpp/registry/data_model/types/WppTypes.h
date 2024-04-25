@@ -85,7 +85,6 @@ TYPE_ID dataTypeToID() {
 	else if constexpr (std::is_same<T, OBJ_LINK_T>::value) typeID = TYPE_ID::OBJ_LINK;
 	else if constexpr (std::is_same<T, STRING_T>::value) typeID = TYPE_ID::STRING;
 	else if constexpr (std::is_same<T, EXECUTE_T>::value) typeID = TYPE_ID::EXECUTE;
-
 	return typeID;
 }
 

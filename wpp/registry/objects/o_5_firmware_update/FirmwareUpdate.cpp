@@ -123,35 +123,35 @@ void FirmwareUpdate::resourcesCreate() {
 
 void FirmwareUpdate::resourcesInit() {
 	/* --------------- Code_cpp block 10 start --------------- */
-	resource(PACKAGE_0)->set(OPAQUE_T());
+	resource(PACKAGE_0)->set<OPAQUE_T>({});
 	resource(PACKAGE_0)->setDataVerifier((VERIFY_OPAQUE_T)[this](const OPAQUE_T& value) { 
 		if (value.empty() || isDeliveryTypeSupported(PUSH)) return true;
 		return false;
 	});
-	resource(PACKAGE_URI_1)->set(STRING_T(""));
+	resource(PACKAGE_URI_1)->set<STRING_T>("");
 	resource(PACKAGE_URI_1)->setDataVerifier((VERIFY_STRING_T)[this](const STRING_T& value) { return isUriValid(value); });
-	resource(UPDATE_2)->set((EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
-	resource(STATE_3)->set(INT_T(S_IDLE));
+	resource(UPDATE_2)->set<EXECUTE_T>([](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
+	resource(STATE_3)->set<INT_T>(S_IDLE);
 	resource(STATE_3)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { 
 		if (S_IDLE > value || value >= STATE_MAX) return false;
 		return true;
 	});
-	resource(UPDATE_RESULT_5)->set(INT_T(R_INITIAL));
+	resource(UPDATE_RESULT_5)->set<INT_T>(R_INITIAL);
 	resource(UPDATE_RESULT_5)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { 
 		if (R_INITIAL > value || value >= UPD_RES_MAX) return false;
 		return true; 
 	});
 	#if RES_5_6
-	resource(PKGNAME_6)->set(STRING_T(""));
+	resource(PKGNAME_6)->set<STRING_T>("");
 	#endif
 	#if RES_5_7
-	resource(PKGVERSION_7)->set(STRING_T(""));
+	resource(PKGVERSION_7)->set<STRING_T>("");
 	#endif
 	#if RES_5_8
-	resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->set(INT_T(COAP));
+	resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->set<INT_T>(COAP);
 	resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return COAP <= value && value < FW_UPD_PROTOCOL_MAX; });
 	#endif
-	resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set(INT_T(PUSH));
+	resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(PUSH);
 	resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return PULL <= value && value < FW_UPD_DELIVERY_MAX; });
 	/* --------------- Code_cpp block 10 end --------------- */
 }
@@ -163,18 +163,18 @@ bool FirmwareUpdate::setFwUpdater(FwUpdater &updater) {
 
 	_pkgUpdater = &updater;
 	// Set the update method
-	resource(UPDATE_2)->set((EXECUTE_T)[this](Instance& inst, ID_T resId, const OPAQUE_T& data) { return pkgUpdaterHandler(); });
+	resource(UPDATE_2)->set<EXECUTE_T>([this](Instance& inst, ID_T resId, const OPAQUE_T& data) { return pkgUpdaterHandler(); });
 	// Set last update result
-	resource(UPDATE_RESULT_5)->set(INT_T(updater.lastUpdateResult()));
-	notifyServerResChanged({UPDATE_RESULT_5,});
+	resource(UPDATE_RESULT_5)->set<INT_T>(updater.lastUpdateResult());
+	notifyServerResChanged(UPDATE_RESULT_5);
 	// Set the package name and version
 	#if RES_5_6
-	resource(PKGNAME_6)->set(updater.pkgName());
-	notifyServerResChanged({PKGNAME_6,});
+	resource(PKGNAME_6)->set<STRING_T>(updater.pkgName());
+	notifyServerResChanged(PKGNAME_6);
 	#endif
 	#if RES_5_7
-	resource(PKGVERSION_7)->set(updater.pkgVersion());
-	notifyServerResChanged({PKGVERSION_7,});
+	resource(PKGVERSION_7)->set<STRING_T>(updater.pkgVersion());
+	notifyServerResChanged(PKGVERSION_7);
 	#endif
 
 	return true;
@@ -183,9 +183,8 @@ bool FirmwareUpdate::setFwUpdater(FwUpdater &updater) {
 #if RES_5_8
 std::vector<FwUpdProtocol> FirmwareUpdate::supportedProtocols() {
 	std::vector<FwUpdProtocol> supportedProtocols;
-	for (auto id : resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->getInstIds()) {
-		INT_T protocol;
-		resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->get(protocol, id);
+	for (auto id : resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->instIds()) {
+		INT_T protocol = resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->get<INT_T>(id);
 		supportedProtocols.push_back(FwUpdProtocol(protocol));
 	}
 
@@ -205,18 +204,18 @@ bool FirmwareUpdate::setFwExternalDownloader(FwExternalDl &downloader) {
 	}
 
 	// Setup delivery type
-	if (_internalDownloader) resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set(INT_T(BOTH));
-	else resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set(INT_T(PULL));
-	notifyServerResChanged({FIRMWARE_UPDATE_DELIVERY_METHOD_9,});
+	if (_internalDownloader) resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(BOTH);
+	else resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(PULL);
+	notifyServerResChanged(FIRMWARE_UPDATE_DELIVERY_METHOD_9);
 
 	// Setup supported protocols
 	ID_T instId = 0;
 	resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->clear();
 	for (auto prot : dlSupportedProtocols) {
-		resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->set(INT_T(prot), instId);
+		resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->set<INT_T>(prot, instId);
 		instId++;
 	}
-	notifyServerResChanged({FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8,});
+	notifyServerResChanged(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8);
 
 	return true;
 }
@@ -233,19 +232,18 @@ bool FirmwareUpdate::setFwInternalDownloader(FwInternalDl &downloader) {
 	
 	// Setup delivery type
 	#if RES_5_8
-	if (_externalDownloader) resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set(INT_T(BOTH));
-	else resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set(INT_T(PUSH));
+	if (_externalDownloader) resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(BOTH);
+	else resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(PUSH);
 	#else
-	resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set(INT_T(PUSH));
+	resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(PUSH);
 	#endif
-	notifyServerResChanged({FIRMWARE_UPDATE_DELIVERY_METHOD_9,});
+	notifyServerResChanged(FIRMWARE_UPDATE_DELIVERY_METHOD_9);
 
 	return true;
 }
 
 bool FirmwareUpdate::pkgUpdaterHandler() {
-	INT_T state;
-	resource(STATE_3)->get(state);
+	INT_T state = resource(STATE_3)->get<INT_T>();
 	if (state != S_DOWNLOADED) return false;
 
 	_pkgUpdater->startUpdating();
@@ -260,15 +258,15 @@ bool FirmwareUpdate::pkgUpdaterHandler() {
 
 		if (res == R_FW_UPD_SUCCESS) {
 			#if RES_5_6
-			resource(PKGNAME_6)->set(_pkgUpdater->pkgName());
-			notifyServerResChanged({PKGNAME_6,});
+			resource(PKGNAME_6)->set<STRING_T>(_pkgUpdater->pkgName());
+			notifyServerResChanged(PKGNAME_6);
 			#endif
 			#if RES_5_7
-			resource(PKGVERSION_7)->set(_pkgUpdater->pkgVersion());
-			notifyServerResChanged({PKGVERSION_7,});
+			resource(PKGVERSION_7)->set<STRING_T>(_pkgUpdater->pkgVersion());
+			notifyServerResChanged(PKGVERSION_7);
 			#endif
 			#if RES_3_3
-			client.registry().device().instance()->set(Device::FIRMWARE_VERSION_3, _pkgUpdater->pkgVersion());
+			client.registry().device().instance()->resource(Device::FIRMWARE_VERSION_3)->set<STRING_T>(_pkgUpdater->pkgVersion());
 			#endif
 		}
 
@@ -285,9 +283,8 @@ void FirmwareUpdate::externalDownloaderHandler(Instance *securityInst) {
 		return;
 	}
 
-	STRING_T pkgUri;
 	resetStateMachine();
-	resource(PACKAGE_URI_1)->get(pkgUri);
+	STRING_T pkgUri = resource(PACKAGE_URI_1)->get<STRING_T>();
 	if (pkgUri.empty()) {
 		clearArtifacts();
 		WPP_LOGD(TAG, "Server reset state machine through PACKAGE_URI_1");
@@ -315,10 +312,9 @@ void FirmwareUpdate::internalDownloaderHandler() {
 	// TODO: Update the implementation of this method after creating an
 	// interface for downloading firmware via uri using the wpp library.
 	// Currently, FwInternalDl only supports loading through the PACKAGE_0 resource.
-	OPAQUE_T *pkg;
 	resetStateMachine();
-	resource(PACKAGE_0)->ptr(&pkg);	
-	if (pkg->empty()) {
+	const OPAQUE_T &pkg = resource(PACKAGE_0)->get<OPAQUE_T>();	
+	if (pkg.empty()) {
 		clearArtifacts();
 		WPP_LOGD(TAG, "Server reset state machine through PACKAGE_0");
 		return;
@@ -328,10 +324,9 @@ void FirmwareUpdate::internalDownloaderHandler() {
 	changeState(S_DOWNLOADING);
 
 	_internalDownloaderTaskId = WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, [this](WppClient &client, void *ctx) -> bool {
-		OPAQUE_T *pkg;
-		resource(PACKAGE_0)->ptr(&pkg);	
+		const OPAQUE_T &pkg = resource(PACKAGE_0)->get<OPAQUE_T>();	
 
-		_internalDownloader->saveDownloadedBlock(*pkg);
+		_internalDownloader->saveDownloadedBlock(pkg);
 		_internalDownloader->downloadIsCompleted();
 		if (_internalDownloader->downloadResult() != R_INITIAL) changeState(S_IDLE);
 		else changeState(S_DOWNLOADED);
@@ -343,13 +338,13 @@ void FirmwareUpdate::internalDownloaderHandler() {
 }
 
 void FirmwareUpdate::changeUpdRes(FwUpdRes res) {
-	resource(UPDATE_RESULT_5)->set(INT_T(res));
-	notifyServerResChanged({UPDATE_RESULT_5,});
+	resource(UPDATE_RESULT_5)->set<INT_T>(res);
+	notifyServerResChanged(UPDATE_RESULT_5);
 }
 
 void FirmwareUpdate::changeState(FwUpdState state) {
-	resource(STATE_3)->set(INT_T(state));
-	notifyServerResChanged({STATE_3,});
+	resource(STATE_3)->set<INT_T>(state);
+	notifyServerResChanged(STATE_3);
 }
 
 void FirmwareUpdate::resetStateMachine() {
@@ -373,10 +368,10 @@ void FirmwareUpdate::resetStateMachine() {
 }
 
 void FirmwareUpdate::clearArtifacts() {
-	resource(PACKAGE_0)->set(OPAQUE_T());
-	notifyServerResChanged({PACKAGE_0,});
-	resource(PACKAGE_URI_1)->set(STRING_T(""));
-	notifyServerResChanged({PACKAGE_URI_1,});
+	resource(PACKAGE_0)->set<OPAQUE_T>({});
+	notifyServerResChanged(PACKAGE_0);
+	resource(PACKAGE_URI_1)->set<STRING_T>("");
+	notifyServerResChanged(PACKAGE_URI_1);
 }
 
 bool FirmwareUpdate::isUriValid(STRING_T uri) {
@@ -418,9 +413,8 @@ bool FirmwareUpdate::isSchemeValid(STRING_T scheme) {
 #if RES_5_8
 bool FirmwareUpdate::isSchemeSupported(STRING_T scheme) {
 	FwUpdProtocol requiredProt = schemeToProtId(scheme);
-	for (auto id : resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->getInstIds()) {
-		INT_T suppProt;
-		resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->get(suppProt, id);
+	for (auto id : resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->instIds()) {
+		INT_T suppProt = resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->get<INT_T>(id);
 		if (requiredProt == suppProt) return true;
 	}
 	return false;
@@ -438,8 +432,7 @@ FwUpdProtocol FirmwareUpdate::schemeToProtId(STRING_T scheme) {
 #endif
 
 bool FirmwareUpdate::isDeliveryTypeSupported(FwUpdDelivery type) {
-	INT_T deliveryType = FW_UPD_DELIVERY_MAX;
-	resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->get(deliveryType);
+	INT_T deliveryType = resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->get<INT_T>();
 	if (deliveryType == type || deliveryType == BOTH) return true;
 	return false;
 }

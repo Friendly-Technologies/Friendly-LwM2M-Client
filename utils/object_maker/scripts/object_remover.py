@@ -15,7 +15,7 @@ class ObjectRemover:
 
     def update_file(self, path_to_file):
         old_content = func.get_content_from_file(path_to_file)[1]
-        new_content = ''
+        new_content = []
 
         if old_content.find(self.object_define) == -1:
             func.LOG(self.log_tag, self.update_file.__name__,
@@ -26,16 +26,26 @@ class ObjectRemover:
         for line in old_content.split("\n"):
             line_to_check = line.strip().replace(" ", "")
 
-            if line_to_check in [f"#if{self.object_define}", f"#ifdef{self.object_define}"] or line_to_check.find(f"option({self.object_define}") != -1:
+            if line_to_check in [f"#if{self.object_define}", f"#ifdef{self.object_define}"]:
                 add_line = False
 
+            # Different actions for cmake files
+            if path_to_file == const.FILE_CONFIG_CMAKE and line.find(f"set(WPP_DEFINITIONS ${{WPP_DEFINITIONS}} {self.object_define})") != -1:
+                if new_content[-1].find("# Include") != -1:
+                    new_content.pop()
+                add_line = False
+            
             if add_line:
-                new_content += line + "\n"
+                new_content.append(line + "\n")
             else:   # check if all that must be deleted is already deleted:
-                if line_to_check[:6] in ["#endif", "endif("]:
+                if line_to_check[:6] in ["#endif", "endif("] or path_to_file == const.FILE_CONFIG_CMAKE:
                     add_line = True
 
-        func.write_to_file(path_to_file, new_content[:-1])
+        # remove the last '\n' if it is present
+        if new_content and new_content[-1] and new_content[-1][-1] == "\n":
+            new_content[-1] = new_content[-1][:-1]
+
+        func.write_to_file(path_to_file, ''.join(new_content))
 
     def update_files(self):
         if not self.extract_define():

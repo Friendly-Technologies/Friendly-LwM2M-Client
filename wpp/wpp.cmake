@@ -47,9 +47,16 @@ function(wpp_check_definition DEFINITION_TO_CHECK RESULT_VAR)
     endforeach()
 endfunction()
 
-function(target_link_wpp target)
+# Function to add wpp sources to target
+# Arguments:
+#   - TARGET: The target to add the sources to
+#   - BASE_FOLDER: The base folder for building the sources
+#                  This parameter used to avoid conflicts with
+#                  user source folders that have the same name
+#                  as wpp source folders
+function(target_link_wpp TARGET BASE_FOLDER)
     # Save wpp target name to local variable for later use in subdirectories
-    set(WPP_TARGET ${target})
+    set(WPP_TARGET ${TARGET})
     # Variables that will be filled in subdirectories
     set(WPP_SOURCES "")
     set(WPP_INCLUDES "")
@@ -58,18 +65,18 @@ function(target_link_wpp target)
     include(${WPP_DIRECTORY}/wakaama.cmake)
 
     # Link wakaama that implements core functionality to Wpp
-    target_link_wakaama(${target})
+    target_link_wakaama(${TARGET})
 
     # Add subdiretories with sources
-    add_subdirectory(${WPP_DIRECTORY}/client client)
-    add_subdirectory(${WPP_DIRECTORY}/registry registry)
-    add_subdirectory(${WPP_DIRECTORY}/platform platform)
-    add_subdirectory(${WPP_DIRECTORY}/utils utils)
+    add_subdirectory(${WPP_DIRECTORY}/client ${BASE_FOLDER}/client)
+    add_subdirectory(${WPP_DIRECTORY}/registry ${BASE_FOLDER}/registry)
+    add_subdirectory(${WPP_DIRECTORY}/platform ${BASE_FOLDER}/platform)
+    add_subdirectory(${WPP_DIRECTORY}/utils ${BASE_FOLDER}/utils)
 
     # Include wpp sources
-    target_sources(${target} PUBLIC ${WPP_SOURCES})
+    target_sources(${TARGET} PUBLIC ${WPP_SOURCES})
     # Include wpp headers
-    target_include_directories(${target} PUBLIC ${WPP_INCLUDES})
+    target_include_directories(${TARGET} PUBLIC ${WPP_INCLUDES})
 
     # message(STATUS "Wpp:WPP_INCLUDES: ${WPP_INCLUDES}")
     # message(STATUS "Wpp:WPP_SOURCES: ${WPP_SOURCES}")

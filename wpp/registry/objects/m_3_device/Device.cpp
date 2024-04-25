@@ -220,11 +220,7 @@ void Device::resourcesInit() {
 
 	#if RES_3_21                                                                                                                                                                                          
 	resource(MEMORY_TOTAL_21)->set<INT_T>(NO_ERROR);
-	#endif                                                                                                                                                                                                              
-	
-	#if RES_3_22                                                                                                                                                                                       
-	resource(EXTDEVINFO_22)->set<INT_T>({});
-	#endif     
+	#endif                                                                                                                                                                                                                  
 	/* --------------- Code_cpp block 10 end --------------- */
 }
 

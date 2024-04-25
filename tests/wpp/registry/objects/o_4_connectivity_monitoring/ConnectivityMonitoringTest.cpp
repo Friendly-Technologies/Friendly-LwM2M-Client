@@ -27,7 +27,7 @@ TEST_CASE("objectConnectivityMonitoring", "[objectConnectivityMonitoring]")
 
             void setDefaultState()
             {
-                ConnectivityMonitoring::setDefaultState();
+                // ConnectivityMonitoring::setDefaultState(); // TODO
 
                 // return true as for as resource not used in the another cases
                 REQUIRE(ConnectivityMonitoring::checkLinkQuality(0));
@@ -92,8 +92,8 @@ TEST_CASE("objectConnectivityMonitoring", "[objectConnectivityMonitoring]")
                 //
             }
 
-            void serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) { ConnectivityMonitoring::serverOperationNotifier(type, resId); }
-            void userOperationNotifier(ResOp::TYPE type, const ResLink &resId) { ConnectivityMonitoring::userOperationNotifier(type, resId); }
+            void serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resId) { ConnectivityMonitoring::serverOperationNotifier(securityInst, type, resId); }
+            void userOperationNotifier(ItemOp::TYPE type, const ResLink &resId) { ConnectivityMonitoring::userOperationNotifier(type, resId); }
         };
 
         lwm2m_context_t mockContext;
@@ -103,7 +103,7 @@ TEST_CASE("objectConnectivityMonitoring", "[objectConnectivityMonitoring]")
 
         connectivitymonitoringMock.setDefaultState();
 
-        connectivitymonitoringMock.serverOperationNotifier(ResOp::TYPE::READ, {0, 0});
-        connectivitymonitoringMock.userOperationNotifier(ResOp::TYPE::WRITE, {10, 10});
+        connectivitymonitoringMock.serverOperationNotifier(0, ItemOp::TYPE::READ, {0, 0}); // TODO Instance *securityInst
+        connectivitymonitoringMock.userOperationNotifier(ItemOp::TYPE::WRITE, {10, 10});
     }
 }

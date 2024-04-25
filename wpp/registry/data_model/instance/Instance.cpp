@@ -10,7 +10,7 @@
 #include "WppClient.h"
 
 #define IS_PTR_VALID_AND_RES_EXISTS(resPtr) (resPtr && resPtr->size())
-#define IS_ITER_VALID_AND_RES_EXISTS(iter) (iter != _resources.end() && iter->size())
+#define IS_RES_PTR_VALID(resPtr) (resPtr != NULL)
 
 namespace wpp {
 
@@ -34,6 +34,12 @@ std::vector<Resource *> Instance::getInstantiatedResList(const ItemOp& filter) {
 	for (auto &res : _resources) {
 		if (res.size() && filter.isCompatible(res.getOperation())) list.push_back(&res);
 	}
+	return list;
+}
+
+std::vector<Resource *> Instance::getResList() {
+	std::vector<Resource *> list;
+	for (auto &res : _resources) list.push_back(&res);
 	return list;
 }
 
@@ -73,7 +79,10 @@ Instance* Instance::getSecurityInst(lwm2m_server_t *server) {
 }
 
 bool Instance::resourceToLwm2mData(Resource &res, ID_T instanceId, lwm2m_data_t &data) {
-	if (!res.isExist(instanceId)) return false;
+	if (!res.isExist(instanceId)) {
+		WPP_LOGE(TAG_WPP_INST, "Resource instance does not exist: %d:%d:%d:%d", _id.objId, _id.objInstId, res.getId(), instanceId);	
+		return false;
+	}
 
 	switch(res.getTypeId()) {
 	case TYPE_ID::BOOL: {
@@ -188,7 +197,7 @@ bool Instance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &res, ID_T
 
 Resource* Instance::getValidatedResForWrite(const lwm2m_data_t &data, lwm2m_write_type_t writeType, uint8_t &errCode) {
 	auto res = resource(data.id);
-	if (!IS_PTR_VALID_AND_RES_EXISTS(res)) {
+	if (!IS_RES_PTR_VALID(res)) {
 		WPP_LOGW(TAG_WPP_INST, "Resource does not exist: %d:%d:%d", _id.objId, _id.objInstId, data.id);
 		errCode = COAP_404_NOT_FOUND;
 		return NULL;
@@ -312,7 +321,7 @@ uint8_t Instance::resourceRead(lwm2m_server_t *server, lwm2m_data_t &data, Resou
 
 Resource* Instance::getValidatedResForExecute(ID_T resId, uint8_t &errCode) {
 	auto res = resource(resId);
-	if (!IS_PTR_VALID_AND_RES_EXISTS(res)) {
+	if (!IS_RES_PTR_VALID(res)) {
 		WPP_LOGW(TAG_WPP_INST, "Resource does not exist: %d:%d:%d", _id.objId, _id.objInstId, resId);
 		errCode = COAP_404_NOT_FOUND;
 		return NULL;
@@ -438,6 +447,7 @@ uint8_t Instance::readAsServer(lwm2m_server_t *server, int *numData, lwm2m_data_
 		}
 	}
 	
+	uint8_t result = COAP_404_NOT_FOUND;
 	for (int i = 0; i < *numData; i++) {
 		uint8_t errCode = COAP_NO_ERROR;
 		lwm2m_data_t *data = (*dataArray) + i;
@@ -459,9 +469,11 @@ uint8_t Instance::readAsServer(lwm2m_server_t *server, int *numData, lwm2m_data_
 			WPP_LOGE(TAG_WPP_INST, "Resource %d:%d:%d read error: %d", _id.objId, _id.objInstId, data->id, errCode);
 			return errCode;
 		}
+		// For successful read operation we should read at least one resource
+		result = COAP_205_CONTENT;
 	}
 
-	return COAP_205_CONTENT;
+	return result;
 }
 
 uint8_t Instance::writeAsServer(lwm2m_server_t *server, int numData, lwm2m_data_t *dataArray, lwm2m_write_type_t writeType) {
@@ -474,7 +486,7 @@ uint8_t Instance::writeAsServer(lwm2m_server_t *server, int numData, lwm2m_data_
 	// Bootstrap server can write even if resource is not writable.
 	for (int i = 0; i < numData; i++) {
 		auto res = resource(dataArray[i].id);
-		if (!IS_PTR_VALID_AND_RES_EXISTS(res)) continue;
+		if (!IS_RES_PTR_VALID(res)) continue;
 		if (!res->getOperation().isWrite() && (_context.state != STATE_BOOTSTRAPPING) && server != NULL) {
 			WPP_LOGE(TAG_WPP_INST, "Trying to write read-only resource %d:%d:%d", _id.objId, _id.objInstId, dataArray[i].id);
 			return COAP_400_BAD_REQUEST;
@@ -516,7 +528,7 @@ uint8_t Instance::discoverAsServer(lwm2m_server_t *server, int * numData, lwm2m_
 	bool discoverAllAvailableRes = *numData == 0;
 	WPP_LOGD(TAG_WPP_INST, "Discover %d:%d, discoverAllAvailableRes: %d, numData: %d", _id.objId, _id.objInstId, discoverAllAvailableRes, *numData);
 	if (discoverAllAvailableRes) {
-		std::vector<Resource *> resources = getInstantiatedResList();
+		std::vector<Resource *> resources = getResList();
 		uint8_t errCode = createEmptyLwm2mDataArray(resources, dataArray, numData);
 		if (errCode != COAP_NO_ERROR) {
 			WPP_LOGE(TAG_WPP_INST, "Error during creating lwm2m_data_t for discover instance %d:%d", _id.objId, _id.objInstId);
@@ -527,14 +539,14 @@ uint8_t Instance::discoverAsServer(lwm2m_server_t *server, int * numData, lwm2m_
 	for (int i = 0; i < *numData; i++) {
 		lwm2m_data_t *data = (*dataArray) + i;
 		auto res = resource(data->id);
-		if (!IS_PTR_VALID_AND_RES_EXISTS(res)) {
+		if (!IS_RES_PTR_VALID(res)) {
 			WPP_LOGE(TAG_WPP_INST, "Resource does not exist: %d:%d:%d", _id.objId, _id.objInstId, data->id);
 			return COAP_404_NOT_FOUND;
 		}
 
 		// if has been received data for multiple resource with not allocated memory
 		// then we ourselves allocate memory for instances
-		if (res->isMultiple() && data->type != LWM2M_TYPE_MULTIPLE_RESOURCE) {
+		if (res->isMultiple() && res->size() && data->type != LWM2M_TYPE_MULTIPLE_RESOURCE) {
 			lwm2m_data_t *subData = lwm2m_data_new(res->size());
 			lwm2m_data_t *dataCnt = subData;
 			for (auto id : res->instIds()) {

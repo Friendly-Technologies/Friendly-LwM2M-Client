@@ -148,7 +148,7 @@ ID_T Resource::newInstId() const {
 
 /* ---------- Methods for get and set resource value ----------*/
 bool Resource::remove(ID_T resInstId) {
-	if (isSingle() || !isExist(resInstId) || size() == 1) return false;
+	if (isSingle() || !isExist(resInstId)) return false;
 	auto instForRemove = getInstIter(resInstId);
 	_instances.erase(instForRemove);
 

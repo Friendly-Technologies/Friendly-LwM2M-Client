@@ -87,7 +87,6 @@ void Lwm2mAccessControl::resourcesInit() {
 	resource(OBJECT_INSTANCE_ID_1)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return AC_OBJ_INST_ID_MIN <= value && value <= AC_OBJ_INST_ID_MAX; });
 
 	#if RES_2_2
-	resource(ACL_2)->set<INT_T>(ACL_MIN);
 	resource(ACL_2)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return ACL_MIN <= value && value < ACL_MAX; });
 	#endif
 

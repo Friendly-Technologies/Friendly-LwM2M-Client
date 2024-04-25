@@ -35,11 +35,6 @@ class WppClient;
  * of any of the resources changes bypassing the Instance::get()/set() methods, then the developer
  * must immediately call the method WppClient::notifyServerResChanged() or the one that encapsulates
  * this call. It is necessary to notify about the change for all resources except those marked as EXECUTE.
- * 
- * @note From server side, empty resource == undefined resource.
- * TODO: Avoid of using clear and remove methods, because it is not clear what to do with resources.
- * Instead, replace the approach to act with MULTIPLE resources. Add the ability to set/get the whole
- * resource at one time.
  */
 class Instance: public InstSubject {
 public:
@@ -119,6 +114,13 @@ protected: /* Interface that can be used by derived class */
 	 */
 	std::vector<Resource *> getInstantiatedResList();
 	std::vector<Resource *> getInstantiatedResList(const ItemOp& filter);
+
+	/**
+ 	 * @brief This method return list with all resources that has been defined.
+	 * If resources does not exist then return empty list.
+	 */
+	std::vector<Resource *> getResList();
+
 
 protected: /* Interface that must be implemented by derived class */
 	/**

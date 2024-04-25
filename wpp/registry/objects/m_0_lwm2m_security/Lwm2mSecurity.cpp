@@ -168,7 +168,6 @@ void Lwm2mSecurity::resourcesInit() {
 	#endif
 
 	#if RES_0_16                                                                                                                                                                                                                            
-	resource(DTLS_TLS_CIPHERSUITE_16)->set<UINT_T>(0);
 	#endif   
 
 	#if RES_0_17

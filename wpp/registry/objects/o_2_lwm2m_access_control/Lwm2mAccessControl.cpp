@@ -58,6 +58,8 @@ void Lwm2mAccessControl::serverOperationNotifier(Instance *securityInst, ItemOp:
 }
 
 void Lwm2mAccessControl::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) {
+	if (type == ItemOp::WRITE) notifyResChanged(resLink.resId, resLink.resInstId);
+
 	/* --------------- Code_cpp block 8 start --------------- */
 	/* --------------- Code_cpp block 8 end --------------- */
 }
@@ -74,7 +76,7 @@ void Lwm2mAccessControl::resourcesCreate() {
 		#endif                                                                                                                                                     
 		{ACCESS_CONTROL_OWNER_3, ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::INT }, 
 	};
-	_resources = std::move(resources);
+	setupResources(std::move(resources));
 }
 
 void Lwm2mAccessControl::resourcesInit() {

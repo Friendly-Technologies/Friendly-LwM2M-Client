@@ -80,6 +80,8 @@ void FirmwareUpdate::serverOperationNotifier(Instance *securityInst, ItemOp::TYP
 }
 
 void FirmwareUpdate::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) {
+	if (type == ItemOp::WRITE) notifyResChanged(resLink.resId, resLink.resInstId);
+
 	/* --------------- Code_cpp block 8 start --------------- */
 	WPP_LOGD(TAG, "User operation -> type: %d, resId: %d, resInstId: %d", type, resLink.resId, resLink.resInstId);
 	/* --------------- Code_cpp block 8 end --------------- */
@@ -118,7 +120,7 @@ void FirmwareUpdate::resourcesCreate() {
 		{MAXIMUM_DEFER_PERIOD_13,            ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::UINT },    
 		#endif                                                                                                                                                                     
 	};
-	_resources = std::move(resources);
+	setupResources(std::move(resources));
 }
 
 void FirmwareUpdate::resourcesInit() {
@@ -165,15 +167,15 @@ bool FirmwareUpdate::setFwUpdater(FwUpdater &updater) {
 	resource(UPDATE_2)->set<EXECUTE_T>([this](Instance& inst, ID_T resId, const OPAQUE_T& data) { return pkgUpdaterHandler(); });
 	// Set last update result
 	resource(UPDATE_RESULT_5)->set<INT_T>(updater.lastUpdateResult());
-	notifyServerResChanged(UPDATE_RESULT_5);
+	notifyResChanged(UPDATE_RESULT_5);
 	// Set the package name and version
 	#if RES_5_6
 	resource(PKGNAME_6)->set<STRING_T>(updater.pkgName());
-	notifyServerResChanged(PKGNAME_6);
+	notifyResChanged(PKGNAME_6);
 	#endif
 	#if RES_5_7
 	resource(PKGVERSION_7)->set<STRING_T>(updater.pkgVersion());
-	notifyServerResChanged(PKGVERSION_7);
+	notifyResChanged(PKGVERSION_7);
 	#endif
 
 	return true;
@@ -205,7 +207,7 @@ bool FirmwareUpdate::setFwExternalDownloader(FwExternalDl &downloader) {
 	// Setup delivery type
 	if (_internalDownloader) resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(BOTH);
 	else resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(PULL);
-	notifyServerResChanged(FIRMWARE_UPDATE_DELIVERY_METHOD_9);
+	notifyResChanged(FIRMWARE_UPDATE_DELIVERY_METHOD_9);
 
 	// Setup supported protocols
 	ID_T instId = 0;
@@ -214,7 +216,7 @@ bool FirmwareUpdate::setFwExternalDownloader(FwExternalDl &downloader) {
 		resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->set<INT_T>(prot, instId);
 		instId++;
 	}
-	notifyServerResChanged(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8);
+	notifyResChanged(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8);
 
 	return true;
 }
@@ -236,7 +238,7 @@ bool FirmwareUpdate::setFwInternalDownloader(FwInternalDl &downloader) {
 	#else
 	resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(PUSH);
 	#endif
-	notifyServerResChanged(FIRMWARE_UPDATE_DELIVERY_METHOD_9);
+	notifyResChanged(FIRMWARE_UPDATE_DELIVERY_METHOD_9);
 
 	return true;
 }
@@ -258,11 +260,11 @@ bool FirmwareUpdate::pkgUpdaterHandler() {
 		if (res == R_FW_UPD_SUCCESS) {
 			#if RES_5_6
 			resource(PKGNAME_6)->set<STRING_T>(_pkgUpdater->pkgName());
-			notifyServerResChanged(PKGNAME_6);
+			notifyResChanged(PKGNAME_6);
 			#endif
 			#if RES_5_7
 			resource(PKGVERSION_7)->set<STRING_T>(_pkgUpdater->pkgVersion());
-			notifyServerResChanged(PKGVERSION_7);
+			notifyResChanged(PKGVERSION_7);
 			#endif
 			#if RES_3_3
 			client.registry().device().instance()->resource(Device::FIRMWARE_VERSION_3)->set<STRING_T>(_pkgUpdater->pkgVersion());
@@ -338,12 +340,12 @@ void FirmwareUpdate::internalDownloaderHandler() {
 
 void FirmwareUpdate::changeUpdRes(FwUpdRes res) {
 	resource(UPDATE_RESULT_5)->set<INT_T>(res);
-	notifyServerResChanged(UPDATE_RESULT_5);
+	notifyResChanged(UPDATE_RESULT_5);
 }
 
 void FirmwareUpdate::changeState(FwUpdState state) {
 	resource(STATE_3)->set<INT_T>(state);
-	notifyServerResChanged(STATE_3);
+	notifyResChanged(STATE_3);
 }
 
 void FirmwareUpdate::resetStateMachine() {
@@ -368,9 +370,9 @@ void FirmwareUpdate::resetStateMachine() {
 
 void FirmwareUpdate::clearArtifacts() {
 	resource(PACKAGE_0)->set<OPAQUE_T>({});
-	notifyServerResChanged(PACKAGE_0);
+	notifyResChanged(PACKAGE_0);
 	resource(PACKAGE_URI_1)->set<STRING_T>("");
-	notifyServerResChanged(PACKAGE_URI_1);
+	notifyResChanged(PACKAGE_URI_1);
 }
 
 bool FirmwareUpdate::isUriValid(STRING_T uri) {

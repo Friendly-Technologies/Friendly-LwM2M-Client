@@ -243,8 +243,9 @@ bool Resource::isDataTypeValid() const {
 
 template<typename T>
 bool Resource::set(const T &value, ID_T resInstId) {
+	if(isSingle()) resInstId = SINGLE_INSTANCE_ID;
 	if (!isInstanceIdPossible(resInstId) || !isDataValueValid(value)) {
-		WPP_LOGE(TAG_WPP_RES, "Invalid data value or instance id is not possible");
+		WPP_LOGW(TAG_WPP_RES, "Resource[%d], invalid data value or instance id is not possible", _id);
 		return false;
 	}
 
@@ -260,8 +261,9 @@ bool Resource::set(const T &value, ID_T resInstId) {
 
 template<typename T>
 bool Resource::set(T &&value, ID_T resInstId) {
+	if(isSingle()) resInstId = SINGLE_INSTANCE_ID;
 	if (!isInstanceIdPossible(resInstId) || !isDataValueValid(value)) {
-		WPP_LOGE(TAG_WPP_RES, "Invalid data value or instance id is not possible");
+		WPP_LOGW(TAG_WPP_RES, "Resource[%d], invalid data value or instance id is not possible", _id);
 		return false;
 	}
 
@@ -278,8 +280,9 @@ bool Resource::set(T &&value, ID_T resInstId) {
 
 template<typename T>
 const T& Resource::get(ID_T resInstId) {
+	if(isSingle()) resInstId = SINGLE_INSTANCE_ID;
 	if (!isDataTypeValid<T>() || !isExist(resInstId)) {
-		WPP_LOGE(TAG_WPP_RES, "Invalid data type or instance does not exist");
+		WPP_LOGE(TAG_WPP_RES, "Resource[%d], invalid data type or instance does not exist", _id);
 		// TODO: It is workaround for the case when resource is not found
 		// This behavior is better than returning NULL, but it is not the best solution
 		// Return empty value if the data type is not valid or the instance does not exist
@@ -293,14 +296,18 @@ const T& Resource::get(ID_T resInstId) {
 
 template<typename T>
 bool Resource::add(const T &value) {
+	if (isSingle()) {
+		WPP_LOGW(TAG_WPP_RES, "Resource[%d] is SINGLE", _id);
+		return false;
+	}
 	if (!isDataValueValid(value)) {
-		WPP_LOGE(TAG_WPP_RES, "Invalid data value");
+		WPP_LOGW(TAG_WPP_RES, "Resource[%d] invalid data value", _id);
 		return false;
 	}
 
 	ID_T resInstId = newInstId();
 	if (resInstId == ID_T_MAX_VAL) {
-		WPP_LOGE(TAG_WPP_RES, "No available instance ID");
+		WPP_LOGE(TAG_WPP_RES, "Resource[%d], no available instance ID", _id);
 		return false;
 	}
 	_instances.push_back({resInstId, value});
@@ -310,14 +317,18 @@ bool Resource::add(const T &value) {
 
 template<typename T>
 bool Resource::add(T &&value) {
+	if (isSingle()) {
+		WPP_LOGW(TAG_WPP_RES, "Resource[%d] is SINGLE", _id);
+		return false;
+	}
 	if (!isDataValueValid(value)) {
-		WPP_LOGE(TAG_WPP_RES, "Invalid data value");
+		WPP_LOGW(TAG_WPP_RES, "Resource[%d] invalid data value", _id);
 		return false;
 	}
 
 	ID_T resInstId = newInstId();
 	if (resInstId == ID_T_MAX_VAL) {
-		WPP_LOGE(TAG_WPP_RES, "No available instance ID");
+		WPP_LOGE(TAG_WPP_RES, "Resource[%d], no available instance ID", _id);
 		return false;
 	}
 	ResInst newInst = {resInstId, std::move(value)};

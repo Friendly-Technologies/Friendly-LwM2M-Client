@@ -148,7 +148,10 @@ ID_T Resource::newInstId() const {
 
 /* ---------- Methods for get and set resource value ----------*/
 bool Resource::remove(ID_T resInstId) {
-	if (isSingle() || !isExist(resInstId)) return false;
+	if (isSingle() || !isExist(resInstId)) {
+		WPP_LOGW(TAG_WPP_RES, "Resource[%d], instance with ID %d not found or resource is SINGLE", _id, resInstId);
+		return false;
+	}
 	auto instForRemove = getInstIter(resInstId);
 	_instances.erase(instForRemove);
 
@@ -156,13 +159,19 @@ bool Resource::remove(ID_T resInstId) {
 }
 
 bool Resource::clear() {
-	if (isSingle()) return false;
+	if (isSingle()) {
+		WPP_LOGW(TAG_WPP_RES, "Resource[%d] is SINGLE", _id);
+		return false;
+	}
 	_instances.clear();
 	return true;
 }
 
 bool Resource::setDataVerifier(const DATA_VERIFIER_T &verifier) {
-	if (!isDataVerifierValid(verifier)) return false;
+	if (!isDataVerifierValid(verifier)) {
+		WPP_LOGW(TAG_WPP_RES, "Resource[%d] verifier is not valid", _id);
+		return false;
+	}
 	_dataVerifier = verifier;
 	return true;
 }

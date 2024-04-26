@@ -9,12 +9,12 @@
 #include "WppLogs.h"
 #include "WppClient.h"
 
-#define IS_PTR_VALID_AND_RES_EXISTS(resPtr) (resPtr && resPtr->size())
+#define IS_PTR_VALID_AND_RES_EXISTS(resPtr) (resPtr && resPtr->instCount())
 #define IS_RES_PTR_VALID(resPtr) (resPtr != NULL)
 
 namespace wpp {
 
-void Instance::notifyServerResChanged(ID_T resId, ID_T resInstId) {
+void Instance::notifyResChanged(ID_T resId, ID_T resInstId) {
 	if (_context.state <= STATE_BOOTSTRAPPING) return;
 	WPP_LOGD(TAG_WPP_INST, "Notify value changed: objID=%d, instID=%d, resID=%d, resInstID=%d", getObjectID(), getInstanceID(), resId, resInstId);	
 	lwm2m_uri_t uri = {getObjectID(), getInstanceID(), resId, resInstId};
@@ -23,7 +23,7 @@ void Instance::notifyServerResChanged(ID_T resId, ID_T resInstId) {
 
 std::vector<Resource *> Instance::getInstantiatedResList() {
 	std::vector<Resource *> list;
-	for (auto &res : _resources) {
+	for (auto &res : resources()) {
 		if (res.size()) list.push_back(&res);
 	}
 	return list;
@@ -31,7 +31,7 @@ std::vector<Resource *> Instance::getInstantiatedResList() {
 
 std::vector<Resource *> Instance::getInstantiatedResList(const ItemOp& filter) {
 	std::vector<Resource *> list;
-	for (auto &res : _resources) {
+	for (auto &res : resources()) {
 		if (res.size() && filter.isCompatible(res.getOperation())) list.push_back(&res);
 	}
 	return list;
@@ -39,17 +39,12 @@ std::vector<Resource *> Instance::getInstantiatedResList(const ItemOp& filter) {
 
 std::vector<Resource *> Instance::getResList() {
 	std::vector<Resource *> list;
-	for (auto &res : _resources) list.push_back(&res);
+	for (auto &res : resources()) list.push_back(&res);
 	return list;
 }
 
 void Instance::resourceOperationNotifier(ItemOp::TYPE type, ID_T resId, ID_T resInstId) {
-	notifyServerResChanged(resId, resInstId);
-	userOperationNotifier(type, resId, resInstId);
-}
-
-bool Instance::isExist(ID_T resId) {
-	return resource(resId) != NULL;
+	userOperationNotifier(type, {resId, resInstId});
 }
 
 lwm2m_context_t& Instance::getContext() { 
@@ -303,8 +298,6 @@ uint8_t Instance::resourceRead(lwm2m_server_t *server, lwm2m_data_t &data, Resou
 			WPP_LOGE(TAG_WPP_INST, "Problem with converting resource to lwm2mData: %d:%d:%d:%d", _id.objId, _id.objInstId, data.id, resInstId);
 			return COAP_400_BAD_REQUEST;
 		}
-		// Notify implementation about read resource operation
-		serverOperationNotifier(getSecurityInst(server), ItemOp::READ, {res.getId(), (res.isSingle()? ID_T_MAX_VAL : resInstId)});
 	}
 
 	return COAP_NO_ERROR;
@@ -342,7 +335,7 @@ bool Instance::isAllMandatoryResourcesPresent(int numData, lwm2m_data_t *data){
 	// During the replace instance operation, request should contains all
 	// mandatory resources for write
 	std::vector<Resource *> mandatoryResources;
-	for (auto &res : _resources) {
+	for (auto &res : resources()) {
 		if (!res.isMandatory() || !res.getOperation().isWrite()) continue;
 		bool found = false;
 		for (int i = 0; i < numData; i++) {
@@ -537,14 +530,14 @@ uint8_t Instance::discoverAsServer(lwm2m_server_t *server, int * numData, lwm2m_
 
 		// if has been received data for multiple resource with not allocated memory
 		// then we ourselves allocate memory for instances
-		if (res->isMultiple() && res->size() && data->type != LWM2M_TYPE_MULTIPLE_RESOURCE) {
-			lwm2m_data_t *subData = lwm2m_data_new(res->size());
+		if (res->isMultiple() && res->instCount() && data->type != LWM2M_TYPE_MULTIPLE_RESOURCE) {
+			lwm2m_data_t *subData = lwm2m_data_new(res->instCount());
 			lwm2m_data_t *dataCnt = subData;
 			for (auto id : res->instIds()) {
 				(dataCnt++)->id = id;
 				WPP_LOGD(TAG_WPP_INST, "Resource instance discover: %d:%d:%d:%d", _id.objId, _id.objInstId, data->id, id);
 			}
-			lwm2m_data_encode_instances(subData, res->size(), data);
+			lwm2m_data_encode_instances(subData, res->instCount(), data);
 		} else {
 			WPP_LOGD(TAG_WPP_INST, "Resource discover: %d:%d:%d", _id.objId, _id.objInstId, data->id);
 		}

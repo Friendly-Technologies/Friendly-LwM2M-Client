@@ -78,9 +78,6 @@ protected:
     void operationNotify(Instance &inst, const ResLink &resLink, ItemOp::TYPE type) {
         for(InstOpObserver *observer : _opObservers) {
             switch (type) {
-            case ItemOp::READ: 
-                observer->resourceRead(inst, resLink);
-                break;
             case ItemOp::WRITE:
                 observer->resourceWrite(inst, resLink);
                 break;

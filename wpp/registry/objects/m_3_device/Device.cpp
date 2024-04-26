@@ -56,6 +56,8 @@ void Device::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, 
 }
 
 void Device::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) {
+	if (type == ItemOp::WRITE) notifyResChanged(resLink.resId, resLink.resInstId);
+
 	/* --------------- Code_cpp block 8 start --------------- */
 	/* --------------- Code_cpp block 8 end --------------- */
 }
@@ -129,7 +131,7 @@ void Device::resourcesCreate() {
 		{EXTDEVINFO_22,                  ItemOp(ItemOp::READ),              IS_SINGLE::MULTIPLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::OBJ_LINK }, 
 		#endif                                                                                                                                                                  
 	};
-	_resources = std::move(resources);
+	setupResources(std::move(resources));
 }
 
 void Device::resourcesInit() {
@@ -175,7 +177,7 @@ void Device::resourcesInit() {
 	resource(RESET_ERROR_CODE_12)->set<EXECUTE_T>([this](Instance& inst, ID_T resId, const OPAQUE_T& buff) { 
 		resource(ERROR_CODE_11)->clear();
 		resource(ERROR_CODE_11)->set<INT_T>(NO_ERROR);
-		notifyServerResChanged(ERROR_CODE_11);
+		notifyResChanged(ERROR_CODE_11);
 		return true;
 	});
 	#endif
@@ -185,7 +187,7 @@ void Device::resourcesInit() {
 	_currentTimeTaskId = WppTaskQueue::addTask(1, [this](WppClient &client, void *ctx) -> bool {
 		TIME_T currentTime = WppPlatform::getTime();
 		resource(CURRENT_TIME_13)->set<TIME_T>(currentTime);
-		notifyServerResChanged(CURRENT_TIME_13);
+		notifyResChanged(CURRENT_TIME_13);
 		return false;
 	});
 	#endif                                                                                                                                                                                                              

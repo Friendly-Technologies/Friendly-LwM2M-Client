@@ -43,9 +43,6 @@ void AudioClip::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE typ
 
 	/* --------------- Code_cpp block 7 start --------------- */
 	switch (type) {
-	case ItemOp::READ:
-		WPP_LOGD(TAG, "Server READ -> resId: %d, resInstId: %d", resLink.resId, resLink.resInstId);
-		break;
 	case ItemOp::WRITE:
 		WPP_LOGD(TAG, "Server WRITE -> resId: %d, resInstId: %d", resLink.resId, resLink.resInstId);
 		break;
@@ -58,11 +55,10 @@ void AudioClip::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE typ
 }
 
 void AudioClip::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) {
+	if (type == ItemOp::WRITE) notifyResChanged(resLink.resId, resLink.resInstId);
+
 	/* --------------- Code_cpp block 8 start --------------- */
 	switch (type) {
-	case ItemOp::READ:
-		WPP_LOGD(TAG, "User READ -> resId: %d, resInstId: %d", resLink.resId, resLink.resInstId);
-		break;
 	case ItemOp::WRITE:
 		WPP_LOGD(TAG, "User WRITE -> resId: %d, resInstId: %d", resLink.resId, resLink.resInstId);
 		break;
@@ -93,7 +89,7 @@ void AudioClip::resourcesCreate() {
 		{APPLICATION_TYPE_5750, ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::STRING },  
 		#endif                                                                                                                                                      
 	};
-	_resources = std::move(resources);
+	setupResources(std::move(resources));
 }
 
 void AudioClip::resourcesInit() {

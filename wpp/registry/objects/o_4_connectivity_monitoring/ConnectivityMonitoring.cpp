@@ -72,6 +72,8 @@ void ConnectivityMonitoring::serverOperationNotifier(Instance *securityInst, Ite
 }
 
 void ConnectivityMonitoring::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) {
+	if (type == ItemOp::WRITE) notifyResChanged(resLink.resId, resLink.resInstId);
+
 	/* --------------- Code_cpp block 8 start --------------- */
 	/* --------------- Code_cpp block 8 end --------------- */
 }
@@ -116,7 +118,7 @@ void ConnectivityMonitoring::resourcesCreate() {
 		{COVERAGE_ENHANCEMENT_LEVEL_13, ItemOp(ItemOp::READ), IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },    
 		#endif                                                                                                                                                  
 	};
-	_resources = std::move(resources);
+	setupResources(std::move(resources));
 }
 
 void ConnectivityMonitoring::resourcesInit() {

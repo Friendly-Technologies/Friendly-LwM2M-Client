@@ -12,9 +12,8 @@ namespace wpp {
 
 class ResourceContainer {
 public:
-    ResourceContainer(std::vector<Resource> resources);
-    ResourceContainer(std::vector<Resource> &&resources);
-    virtual ~ResourceContainer() {}
+	ResourceContainer() = default;
+    virtual ~ResourceContainer() = default;
 
 	/**
 	 * @brief Check if the resource is SINGLE
@@ -152,6 +151,12 @@ public:
 
 protected:
 	/**
+	 * @brief This methods setup resources list.
+	 */
+	void setupResources(const std::vector<Resource> &resources);
+	void setupResources(std::vector<Resource> &&resources);
+
+	/**
  	 * @brief This method return resource ptr if it exists.
 	 * 		  If resources does not exist then return NULL.
 	 * @param resId - Resource ID.
@@ -180,11 +185,14 @@ template<typename T>
 bool ResourceContainer::set(const T &value, ID_T resId, ID_T resInstId) {
 	auto res = resource(resId);
 	if (res == NULL) {
-		WPP_LOGE(TAG_WPP_RES_CON, "Resource with ID %d not found", resId);
+		WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] not found", resId);
 		return false;
 	}
-	if (!res->set(value, resInstId)) return false;
-	operationNotifier(ItemOp::WRITE, resId, resInstId);
+	if (!res->set(value, resInstId)) {
+		WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] operation failed", resId)
+		return false;
+	}
+	operationNotifier(ItemOp::WRITE, resId, res->isSingle()? ID_T_MAX_VAL : resInstId);
 	return true;
 }
 
@@ -192,11 +200,14 @@ template<typename T>
 bool ResourceContainer::set(T &&value, ID_T resId, ID_T resInstId) {
 	auto res = resource(resId);
 	if (res == NULL) {
-		WPP_LOGE(TAG_WPP_RES_CON, "Resource with ID %d not found", resId);
+		WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] not found", resId);
 		return false;
 	}
-	if (!res->set(std::move(value), resInstId)) return false;
-	operationNotifier(ItemOp::WRITE, resId, resInstId);
+	if (!res->set(std::move(value), resInstId)) {
+		WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] operation failed", resId)
+		return false;
+	}
+	operationNotifier(ItemOp::WRITE, resId, res->isSingle()? ID_T_MAX_VAL : resInstId);
 	return true;
 }
 
@@ -204,7 +215,7 @@ template<typename T>
 const T& ResourceContainer::get(ID_T resId, ID_T resInstId) {
 	auto res = resource(resId);
 	if (res == NULL) {
-		WPP_LOGE(TAG_WPP_RES, "Resource does not exist");
+		WPP_LOGE(TAG_WPP_RES, "Resource[%d] does not exist", resId);
 		// TODO: It is workaround for the case when resource is not found
 		// This behavior is better than returning NULL, but it is not the best solution
 		// Return empty value if the data type is not valid or the instance does not exist
@@ -218,11 +229,18 @@ template<typename T>
 bool ResourceContainer::add(const T &value, ID_T resId) {
 	auto res = resource(resId);
 	if (res == NULL) {
-		WPP_LOGE(TAG_WPP_RES_CON, "Resource with ID %d not found", resId);
+		WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] not found", resId);
+		return false;
+	}
+	if (res->isSingle()) {
+		WPP_LOGE(TAG_WPP_RES_CON, "Resource[%d] is SINGLE", resId);
 		return false;
 	}
 	ID_T newId = res->newInstId();
-	if (!res->set(value, newId)) return false;
+	if (!res->set(value, newId)) {
+		WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] operation failed", resId)
+		return false;
+	}
 	operationNotifier(ItemOp::WRITE, resId, newId);
 	return true;
 }
@@ -231,11 +249,18 @@ template<typename T>
 bool ResourceContainer::add(T &&value, ID_T resId) {
 	auto res = resource(resId);
 	if (res == NULL) {
-		WPP_LOGE(TAG_WPP_RES_CON, "Resource with ID %d not found", resId);
+		WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] not found", resId);
+		return false;
+	}
+	if (res->isSingle()) {
+		WPP_LOGE(TAG_WPP_RES_CON, "Resource[%d] is SINGLE", resId);
 		return false;
 	}
 	ID_T newId = res->newInstId();
-	if (!res->set(std::move(value), newId)) return false;
+	if (!res->set(std::move(value), newId)) {
+		WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] operation failed", resId)
+		return false;
+	}
 	operationNotifier(ItemOp::WRITE, resId, newId);
 	return true;
 }

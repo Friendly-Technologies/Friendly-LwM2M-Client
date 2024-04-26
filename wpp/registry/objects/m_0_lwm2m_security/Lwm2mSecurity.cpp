@@ -50,6 +50,8 @@ void Lwm2mSecurity::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE
 }
 
 void Lwm2mSecurity::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) {
+	if (type == ItemOp::WRITE) notifyResChanged(resLink.resId, resLink.resInstId);
+
 	/* --------------- Code_cpp block 8 start --------------- */
 	/* --------------- Code_cpp block 8 end --------------- */
 }
@@ -102,7 +104,7 @@ void Lwm2mSecurity::resourcesCreate() {
 		{OSCORE_SECURITY_MODE_17,             ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::OBJ_LINK }, 
 		#endif                                                                                                                                                                       
 	};
-	_resources = std::move(resources);
+	setupResources(std::move(resources));
 }
 
 void Lwm2mSecurity::resourcesInit() {

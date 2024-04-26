@@ -33,9 +33,9 @@ class WppClient;
  * interface at the Instance implementation level, whether it will be setters and getters or
  * more abstract methods with algorithm encapsulation, it is not important. It is important
  * that the developer is responsible for notifying the core about resource changes, if the value
- * of any of the resources changes bypassing the Instance::get()/set() methods, then the developer
- * must immediately call the method WppClient::notifyServerResChanged() or the one that encapsulates
- * this call. It is necessary to notify about the change for all resources except those marked as EXECUTE.
+ * of any of the resources changes, then the developer MUST immediately call the method 
+ * Instance::notifyResChanged(). It is necessary to notify about the change for all resources
+ * except those marked as EXECUTE.
  */
 class Instance: public InstSubject, public ResourceContainer {
 public:
@@ -84,7 +84,7 @@ protected: /* Interface that can be used by derived class */
 	/**
  	 * @brief Notify server about resource value change.
 	 */
-	void notifyServerResChanged(ID_T resId, ID_T resInstId = ID_T_MAX_VAL);
+	void notifyResChanged(ID_T resId, ID_T resInstId = ID_T_MAX_VAL);
 
 	/**
  	 * @brief This method return list with resources that has been instantiated.
@@ -109,9 +109,9 @@ protected: /* Interface that can be used by derived class */
 protected: /* Interface that must be implemented by derived class */
 	/**
  	 * @brief This method must be implemented by the derived class, and handle
-	 * information about resource operation (READ, WRITE, EXECUTE). 
+	 * information about resource operation (WRITE, EXECUTE). 
 	 * Called by Instance after resource operation performed by SERVER if the operation is  
-	 * READ/WRITE, if the operation is EXECUTE then called before this operation.
+	 * WRITE, if the operation is EXECUTE then called before this operation.
 	 * When the EXECUTE operation, the handler that was set before the serverOperationNotifier()
 	 * call is used.
 	 * @param securityInst - Contains security instance when the request received
@@ -121,7 +121,7 @@ protected: /* Interface that must be implemented by derived class */
 
 	/**
  	 * @brief This method must be implemented by the derived class, and handle
-     * information about resource operation (READ, WRITE, DELETE).
+     * information about resource operation (WRITE, DELETE).
 	 * Called by Instance after resource operation performed by the USER.
 	 */
 	virtual void userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) = 0;
@@ -148,10 +148,9 @@ private: /* Interface used by Object or Instance class */
 	uint8_t replaceInstance(lwm2m_server_t *server, int numData, lwm2m_data_t *dataArray);
 	uint8_t replaceResource(lwm2m_server_t *server, int numData, lwm2m_data_t *dataArray, lwm2m_write_type_t writeType);
 
-protected:
+private:
 	lwm2m_context_t &_context;
 	OBJ_LINK_T _id;
-	std::vector<Resource> _resources;
 };
 
 } /* namespace wpp */

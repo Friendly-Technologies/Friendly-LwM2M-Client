@@ -157,18 +157,9 @@ void Device::resourcesInit() {
 	#endif
 
 	#if RES_3_6
-	resource(AVAILABLE_POWER_SOURCES_6)->set<INT_T>(PWR_SRC_MAX);
 	resource(AVAILABLE_POWER_SOURCES_6)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return DC <= value && value < PWR_SRC_MAX; });
 	#endif
 
-	#if RES_3_7
-	resource(POWER_SOURCE_VOLTAGE_7)->set<INT_T>(0);                                                                                                                                                                                 
-	#endif                                                                                                                                                                                                              
-	
-	#if RES_3_8
-	resource(POWER_SOURCE_CURRENT_8)->set<INT_T>(0);                                                                                                                                                                                  
-	#endif 
-	
 	#if RES_3_9
 	resource(BATTERY_LEVEL_9)->set<INT_T>(BAT_LVL_MIN);
 	resource(BATTERY_LEVEL_9)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return BAT_LVL_MIN <= value && value <= BAT_LVL_MAX; });
@@ -178,7 +169,6 @@ void Device::resourcesInit() {
 	resource(MEMORY_FREE_10)->set<INT_T>(0);                                                                                                                                                                                         
 	#endif
 
-	resource(ERROR_CODE_11)->set<INT_T>(NO_ERROR);
 	resource(ERROR_CODE_11)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return NO_ERROR <= value && value < ERR_CODE_MAX; });
 	
 	#if RES_3_12
@@ -230,11 +220,7 @@ void Device::resourcesInit() {
 
 	#if RES_3_21                                                                                                                                                                                          
 	resource(MEMORY_TOTAL_21)->set<INT_T>(NO_ERROR);
-	#endif                                                                                                                                                                                                              
-	
-	#if RES_3_22                                                                                                                                                                                       
-	resource(EXTDEVINFO_22)->set<INT_T>({});
-	#endif     
+	#endif                                                                                                                                                                                                                  
 	/* --------------- Code_cpp block 10 end --------------- */
 }
 

@@ -148,7 +148,6 @@ void FirmwareUpdate::resourcesInit() {
 	resource(PKGVERSION_7)->set<STRING_T>("");
 	#endif
 	#if RES_5_8
-	resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->set<INT_T>(COAP);
 	resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return COAP <= value && value < FW_UPD_PROTOCOL_MAX; });
 	#endif
 	resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(PUSH);

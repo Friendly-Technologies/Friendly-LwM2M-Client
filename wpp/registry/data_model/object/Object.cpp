@@ -68,6 +68,9 @@ void Object::clear() {
 		_lwm2m_object.instanceList = _lwm2m_object.instanceList->next;
 		delete instance;
 
+		// Update server registration
+		if (getContext().state > STATE_BOOTSTRAPPING) lwm2m_update_registration(&getContext(), 0, false, true);
+
 		auto inst = getInstIter(id);
 		if (inst == _instances.end()) continue;
 

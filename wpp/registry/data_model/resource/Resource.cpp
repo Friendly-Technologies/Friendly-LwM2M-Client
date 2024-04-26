@@ -120,11 +120,11 @@ bool Resource::isTypeIdCompatible(TYPE_ID type) const {
 	return _typeID == type;
 }
 
-size_t Resource::size() const {
+size_t Resource::instCount() const {
 	return _instances.size();
 }
 
-const std::vector<ID_T> Resource::instIds() const {
+std::vector<ID_T> Resource::instIds() const {
 	std::vector<ID_T> ids;
 	ids.reserve(_instances.size());
 	std::transform(_instances.begin(), _instances.end(), std::back_inserter(ids), [](const auto& inst) { return inst.id; });

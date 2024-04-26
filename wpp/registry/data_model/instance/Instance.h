@@ -15,6 +15,7 @@
 #include "ItemOp.h"
 #include "WppTypes.h"
 #include "InstSubject.h"
+#include "ResourceContainer.h"
 
 namespace wpp {
 
@@ -36,7 +37,7 @@ class WppClient;
  * must immediately call the method WppClient::notifyServerResChanged() or the one that encapsulates
  * this call. It is necessary to notify about the change for all resources except those marked as EXECUTE.
  */
-class Instance: public InstSubject {
+class Instance: public InstSubject, public ResourceContainer {
 public:
 	Instance(lwm2m_context_t &context, const OBJ_LINK_T &id): _context(context), _id(id) {}
 	virtual ~Instance() {}
@@ -46,7 +47,7 @@ public:
 	Instance& operator=(const Instance&) = delete;
 	Instance& operator=(Instance&&) = delete;
 
-	/* ------------- User operation methods ------------- */
+	/* ------------- User helpful methods ------------- */
 	OBJ_LINK_T getLink() const { return _id; }
 	OBJ_ID getObjectID() const { return (OBJ_ID)_id.objId; }
 	ID_T getInstanceID() const { return _id.objInstId; }
@@ -65,29 +66,6 @@ public:
 	 * @brief Helpfull methods to get registry instances. 
 	 */
 	WppRegistry& getRegistry();
-
-	/**
- 	 * @brief This method return resource ptr if it exists.
-	 * 		  If resources does not exist then return NULL.
-	 * @param resId - Resource ID.
-	 * @return Resource pointer or NULL.
-	 */
-	Resource * resource(ID_T resId);
-
-	/**
-	 * @brief Retrieves a reference to the Resource with the given id.
-	 * @param resId The ID of the Resource to retrieve.
-	 * @note If the Resource is not found, a reference to an empty Resource is returned.
-	 * @return A reference to the Resource if found.
-	 */	
-	Resource & operator[](ID_T resId);
-
-	/**
-	 * @brief Check if resource exists.
-	 * @param resId - Resource ID.
-	 * @return True if resource exists, false otherwise.
-	 */
-	bool isExist(ID_T resId);
 
 	/* ------------- Server operation methods ------------- */
 	/**
@@ -120,6 +98,12 @@ protected: /* Interface that can be used by derived class */
 	 * If resources does not exist then return empty list.
 	 */
 	std::vector<Resource *> getResList();
+
+	/**
+ 	 * @brief Handle information about resource operation (WRITE, DELETE).
+	 * Called by ResourceContainer after resource operation performed.
+	 */
+	void resourceOperationNotifier(ItemOp::TYPE type, ID_T resId, ID_T resInstId) override;
 
 
 protected: /* Interface that must be implemented by derived class */

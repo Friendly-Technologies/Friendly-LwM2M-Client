@@ -43,18 +43,9 @@ std::vector<Resource *> Instance::getResList() {
 	return list;
 }
 
-Resource * Instance::resource(ID_T resId) {
-	auto finder = [&resId](const Resource &res) -> bool { return res.getId() == resId; };
-	auto res = std::find_if(_resources.begin(), _resources.end(), finder);
-	return res != _resources.end()? &(*res) : NULL;
-}
-
-Resource & Instance::operator[](ID_T resId) {
-	auto res = resource(resId);
-	if (res == NULL) {
-		WPP_LOGE(TAG_WPP_INST, "Resource does not exist: %d:%d:%d", _id.objId, _id.objInstId, resId);
-	}
-	return *res;
+void Instance::resourceOperationNotifier(ItemOp::TYPE type, ID_T resId, ID_T resInstId) {
+	notifyServerResChanged(resId, resInstId);
+	userOperationNotifier(type, resId, resInstId);
 }
 
 bool Instance::isExist(ID_T resId) {

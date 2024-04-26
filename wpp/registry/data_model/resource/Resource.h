@@ -109,14 +109,14 @@ public: /* ---------- Public methods for common usage ----------*/
 	 * @note If the resource is SINGLE, the number of instances is always 1
 	 * @return The number of resource instances
 	 */
-	size_t size() const;
+	size_t instCount() const;
 
 	/**
  	 * @brief Returns vector with available ids of resource instances
 	 * @note If the resource is SINGLE, the vector will be contain only one
 	 * 		 element with value SINGLE_INSTANCE_ID
 	 */
-	const std::vector<ID_T> instIds() const;
+	std::vector<ID_T> instIds() const;
 
 	/**
 	 * @brief Find first available instance ID that is not used

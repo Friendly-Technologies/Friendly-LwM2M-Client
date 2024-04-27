@@ -96,7 +96,7 @@ Resource * ResourceContainer::resource(ID_T resId) {
 	return res != _resources.end()? &(*res) : NULL;
 }
 
-std::vector<Resource> & ResourceContainer::resources() { 
+const std::vector<Resource> & ResourceContainer::resources() { 
     return _resources; 
 }
 

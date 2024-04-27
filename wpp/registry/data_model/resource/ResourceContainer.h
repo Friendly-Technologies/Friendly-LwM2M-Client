@@ -77,7 +77,9 @@ public:
 	 * @return True if the value is set, false otherwise
 	 */
 	template<typename T>
-    bool set(const T &value, ID_T resId, ID_T resInstId = SINGLE_INSTANCE_ID);
+	bool set(ID_T resId, const T &value);
+	template<typename T>
+    bool set(ID_T resId, ID_T resInstId, const T &value);
 
 	/**
 	 * @brief Set data value by move for the resource (instance)
@@ -89,7 +91,9 @@ public:
 	 * @return True if the value is set, false otherwise
 	 */
 	template<typename T>
-	bool set(T &&value, ID_T resId, ID_T resInstId = SINGLE_INSTANCE_ID);
+	bool set(ID_T resId, T &&value);
+	template<typename T>
+	bool set(ID_T resId, ID_T resInstId, T &&value);
 
 	/**
 	 * @brief Get data value by reference for the resource (instance)
@@ -119,7 +123,7 @@ public:
 	 * @return True if the instance is added, false otherwise
 	 */
 	template<typename T>
-	bool add(const T &value, ID_T resId);
+	bool add(ID_T resId, const T &value);
 
 	/**
 	 * @brief Add new instance with data value by move for the MULTIPLE resource
@@ -131,7 +135,7 @@ public:
 	 * @return True if the instance is added, false otherwise
 	 */
 	template<typename T>
-	bool add(T &&value, ID_T resId);
+	bool add(ID_T resId, T &&value);
 
 	/**
  	 * @brief Remove resource instance if resource is MULTIPLE and instance exists,
@@ -167,7 +171,7 @@ protected:
 	/**
 	 * @brief This method return list with all resources that has been defined.
 	 */
-    std::vector<Resource> & resources();
+    const std::vector<Resource> & resources();
 
 	/**
  	 * @brief This method must be implemented by the derived class, and handle
@@ -182,7 +186,12 @@ private:
 
 /* ---------- Implementation of template methods ----------*/
 template<typename T>
-bool ResourceContainer::set(const T &value, ID_T resId, ID_T resInstId) {
+bool ResourceContainer::set(ID_T resId, const T &value) {
+	return set(resId, SINGLE_INSTANCE_ID, value);
+}
+
+template<typename T>
+bool ResourceContainer::set(ID_T resId, ID_T resInstId, const T &value) {
 	auto res = resource(resId);
 	if (res == NULL) {
 		WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] not found", resId);
@@ -197,7 +206,12 @@ bool ResourceContainer::set(const T &value, ID_T resId, ID_T resInstId) {
 }
 
 template<typename T>
-bool ResourceContainer::set(T &&value, ID_T resId, ID_T resInstId) {
+bool set(ID_T resId, T &&value) {
+	return set(resId, SINGLE_INSTANCE_ID, std::move(value));
+}
+
+template<typename T>
+bool ResourceContainer::set( ID_T resId, ID_T resInstId, T &&value) {
 	auto res = resource(resId);
 	if (res == NULL) {
 		WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] not found", resId);
@@ -226,7 +240,7 @@ const T& ResourceContainer::get(ID_T resId, ID_T resInstId) {
 }
 
 template<typename T>
-bool ResourceContainer::add(const T &value, ID_T resId) {
+bool ResourceContainer::add(ID_T resId, const T &value) {
 	auto res = resource(resId);
 	if (res == NULL) {
 		WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] not found", resId);
@@ -246,7 +260,7 @@ bool ResourceContainer::add(const T &value, ID_T resId) {
 }
 
 template<typename T>
-bool ResourceContainer::add(T &&value, ID_T resId) {
+bool ResourceContainer::add(ID_T resId, T &&value) {
 	auto res = resource(resId);
 	if (res == NULL) {
 		WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] not found", resId);

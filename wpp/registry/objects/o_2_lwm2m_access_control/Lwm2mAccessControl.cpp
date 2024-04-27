@@ -117,7 +117,7 @@ bool Lwm2mAccessControl::createInst(Object &targetObj, uint8_t defaultAcl) {
 	// Check if the object instance already exists
 	if (getAcInstForTarget(acObj, targetObj.getObjectID(), AC_OBJ_INST_NOT_SET)) return false;
 
-	Lwm2mAccessControl *acInst = acObj.createInstanceSpec();
+	Lwm2mAccessControl *acInst = static_cast<Lwm2mAccessControl *>(acObj.createInstance());
 	acInst->set<INT_T>(OBJECT_ID_0, targetObj.getObjectID());
 	acInst->set<INT_T>(OBJECT_INSTANCE_ID_1, AC_OBJ_INST_NOT_SET);
 	#if RES_2_2
@@ -166,7 +166,7 @@ bool Lwm2mAccessControl::createInst(Instance &targetInst, ID_T owner, uint8_t de
 	// Check if the object instance already exists
 	if (getAcInstForTarget(acObj, targetInst.getObjectID(), targetInst.getInstanceID())) return false;
 
-	Lwm2mAccessControl *acInst = acObj.createInstanceSpec();
+	Lwm2mAccessControl *acInst = static_cast<Lwm2mAccessControl *>(acObj.createInstance());
 	acInst->set<INT_T>(OBJECT_ID_0, targetInst.getObjectID());
 	acInst->set<INT_T>(OBJECT_INSTANCE_ID_1, targetInst.getInstanceID());
 	#if RES_2_2

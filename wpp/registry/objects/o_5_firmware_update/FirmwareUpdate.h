@@ -20,6 +20,10 @@
 #include "o_5_firmware_update/interfaces/FwExternalDl.h"
 #endif
 #include "o_5_firmware_update/interfaces/FwInternalDl.h"
+
+namespace wpp {
+	class WppClient;
+}
 /* --------------- Сode_h block 0 end --------------- */
 
 namespace wpp {
@@ -66,34 +70,38 @@ public:
 	/* --------------- Code_h block 2 start --------------- */
 	/**
 	 * @brief Set the FwUpdater object for updating the firmware package.
+	 * @param ctx - WppClient context.
 	 * @param updater - FwUpdater object.
 	 * @note Call of this method is reset the current state of the FirmwareUpdate object.
 	 * @return true if the FwUpdater object is set successfully, otherwise false.
 	 */
-	bool setFwUpdater(FwUpdater &updater);
+	static bool setFwUpdater(WppClient ctx, FwUpdater &updater);
 
 	#if RES_5_8
 	/**
 	 * @brief Return the list of supported protocols for downloading the firmware through uri.
+	 * @param ctx - WppClient context.
 	 */
-	std::vector<FwUpdProtocol> supportedProtocols();
+	static std::vector<FwUpdProtocol> supportedProtocols(WppClient ctx);
 	
 	/**
 	 * @brief Set the FwExternalDl object for downloading the firmware package from the specified URI.
+	 * @param ctx - WppClient context.
 	 * @param downloader - FwExternalDl object.
 	 * @note Call of this method is reset the current state of the FirmwareUpdate object.
 	 * @return true if the FwExternalDl object is set successfully, otherwise false.
 	 */
-	bool setFwExternalDownloader(FwExternalDl &downloader);
+	static bool setFwExternalDownloader(WppClient ctx, FwExternalDl &downloader);
 	#endif
 
 	/**
 	 * @brief Set the FwInternalDl object for auto downloading firmware.
+	 * @param ctx - WppClient context.
 	 * @param downloader - FwInternalDl object.
 	 * @note Call of this method is reset the current state of the FirmwareUpdate object.
 	 * @return true if the FwInternalDl object is set successfully, otherwise false.
 	 */
-	bool setFwInternalDownloader(FwInternalDl &downloader);
+	static bool setFwInternalDownloader(WppClient ctx, FwInternalDl &downloader);
 	/* --------------- Code_h block 2 end --------------- */
 
 protected:

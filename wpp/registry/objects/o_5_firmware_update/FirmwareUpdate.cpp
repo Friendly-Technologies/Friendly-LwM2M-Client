@@ -14,6 +14,7 @@
 /* --------------- Code_cpp block 0 start --------------- */
 #include <cstring>
 #include "WppPlatform.h"
+#include "WppClient.h"
 
 #define SCHEME_DIVIDER 	"://"
 #define COAP_SCHEME 	"coap"
@@ -158,7 +159,7 @@ void FirmwareUpdate::resourcesInit() {
 }
 
 /* --------------- Code_cpp block 11 start --------------- */
-bool FirmwareUpdate::setFwUpdater(FwUpdater &updater) {
+bool FirmwareUpdate::setFwUpdater(WppClient ctx, FwUpdater &updater) {
 	resetStateMachine();
 	clearArtifacts();
 
@@ -182,17 +183,16 @@ bool FirmwareUpdate::setFwUpdater(FwUpdater &updater) {
 }
 
 #if RES_5_8
-std::vector<FwUpdProtocol> FirmwareUpdate::supportedProtocols() {
+std::vector<FwUpdProtocol> FirmwareUpdate::supportedProtocols(WppClient ctx) {
 	std::vector<FwUpdProtocol> supportedProtocols;
 	for (auto id : resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->instIds()) {
 		INT_T protocol = resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->get<INT_T>(id);
 		supportedProtocols.push_back(FwUpdProtocol(protocol));
 	}
-
 	return supportedProtocols;
 }
 
-bool FirmwareUpdate::setFwExternalDownloader(FwExternalDl &downloader) {
+bool FirmwareUpdate::setFwExternalDownloader(WppClient ctx, FwExternalDl &downloader) {
 	resetStateMachine();
 	clearArtifacts();
 
@@ -222,7 +222,7 @@ bool FirmwareUpdate::setFwExternalDownloader(FwExternalDl &downloader) {
 }
 #endif
 
-bool FirmwareUpdate::setFwInternalDownloader(FwInternalDl &downloader) {
+bool FirmwareUpdate::setFwInternalDownloader(WppClient ctx, FwInternalDl &downloader) {
 	// TODO: Update the implementation of this method after creating an
 	// interface for downloading firmware via uri using the wpp library.
 	// Currently, FwInternalDl only supports loading through the PACKAGE_0 resource.

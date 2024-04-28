@@ -46,6 +46,16 @@ Device::~Device() {
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
+Object & Device::object(WppClient &ctx) {
+	return ctx.registry().device();
+}
+
+Device * Device::instance(WppClient &ctx, ID_T instId) {
+	Instance *inst = ctx.registry().device().instance(instId);
+	if (!inst) return NULL;
+	return static_cast<Device*>(inst);
+}
+
 Device * Device::create(WppClient &ctx, ID_T instId) {
 	Instance *inst = ctx.registry().device().createInstance(instId);
 	if (!inst) return NULL;
@@ -54,12 +64,6 @@ Device * Device::create(WppClient &ctx, ID_T instId) {
 
 bool Device::remove(WppClient &ctx, ID_T instId) {
 	return ctx.registry().device().remove(instId);
-}
-
-Device * Device::instance(WppClient &ctx, ID_T instId) {
-	Instance *inst = ctx.registry().device().instance(instId);
-	if (!inst) return NULL;
-	return static_cast<Device*>(inst);
 }
 
 void Device::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resLink) {

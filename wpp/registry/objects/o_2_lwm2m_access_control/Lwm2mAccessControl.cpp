@@ -46,6 +46,16 @@ Lwm2mAccessControl::~Lwm2mAccessControl() {
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
+Object & Lwm2mAccessControl::object(WppClient &ctx) {
+	return ctx.registry().lwm2mAccessControl();
+}
+
+Lwm2mAccessControl * Lwm2mAccessControl::instance(WppClient &ctx, ID_T instId) {
+	Instance *inst = ctx.registry().lwm2mAccessControl().instance(instId);
+	if (!inst) return NULL;
+	return static_cast<Lwm2mAccessControl*>(inst);
+}
+
 Lwm2mAccessControl * Lwm2mAccessControl::create(WppClient &ctx, ID_T instId) {
 	Instance *inst = ctx.registry().lwm2mAccessControl().createInstance(instId);
 	if (!inst) return NULL;
@@ -54,12 +64,6 @@ Lwm2mAccessControl * Lwm2mAccessControl::create(WppClient &ctx, ID_T instId) {
 
 bool Lwm2mAccessControl::remove(WppClient &ctx, ID_T instId) {
 	return ctx.registry().lwm2mAccessControl().remove(instId);
-}
-
-Lwm2mAccessControl * Lwm2mAccessControl::instance(WppClient &ctx, ID_T instId) {
-	Instance *inst = ctx.registry().lwm2mAccessControl().instance(instId);
-	if (!inst) return NULL;
-	return static_cast<Lwm2mAccessControl*>(inst);
 }
 
 void Lwm2mAccessControl::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resLink) {

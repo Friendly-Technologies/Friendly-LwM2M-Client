@@ -60,6 +60,16 @@ ConnectivityMonitoring::~ConnectivityMonitoring() {
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
+Object & ConnectivityMonitoring::object(WppClient &ctx) {
+	return ctx.registry().connectivityMonitoring();
+}
+
+ConnectivityMonitoring * ConnectivityMonitoring::instance(WppClient &ctx, ID_T instId) {
+	Instance *inst = ctx.registry().connectivityMonitoring().instance(instId);
+	if (!inst) return NULL;
+	return static_cast<ConnectivityMonitoring*>(inst);
+}
+
 ConnectivityMonitoring * ConnectivityMonitoring::create(WppClient &ctx, ID_T instId) {
 	Instance *inst = ctx.registry().connectivityMonitoring().createInstance(instId);
 	if (!inst) return NULL;
@@ -68,12 +78,6 @@ ConnectivityMonitoring * ConnectivityMonitoring::create(WppClient &ctx, ID_T ins
 
 bool ConnectivityMonitoring::remove(WppClient &ctx, ID_T instId) {
 	return ctx.registry().connectivityMonitoring().remove(instId);
-}
-
-ConnectivityMonitoring * ConnectivityMonitoring::instance(WppClient &ctx, ID_T instId) {
-	Instance *inst = ctx.registry().connectivityMonitoring().instance(instId);
-	if (!inst) return NULL;
-	return static_cast<ConnectivityMonitoring*>(inst);
 }
 
 void ConnectivityMonitoring::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resLink) {

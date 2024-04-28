@@ -40,6 +40,16 @@ Lwm2mSecurity::~Lwm2mSecurity() {
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
+Object & Lwm2mSecurity::object(WppClient &ctx) {
+	return ctx.registry().lwm2mSecurity();
+}
+
+Lwm2mSecurity * Lwm2mSecurity::instance(WppClient &ctx, ID_T instId) {
+	Instance *inst = ctx.registry().lwm2mSecurity().instance(instId);
+	if (!inst) return NULL;
+	return static_cast<Lwm2mSecurity*>(inst);
+}
+
 Lwm2mSecurity * Lwm2mSecurity::create(WppClient &ctx, ID_T instId) {
 	Instance *inst = ctx.registry().lwm2mSecurity().createInstance(instId);
 	if (!inst) return NULL;
@@ -48,12 +58,6 @@ Lwm2mSecurity * Lwm2mSecurity::create(WppClient &ctx, ID_T instId) {
 
 bool Lwm2mSecurity::remove(WppClient &ctx, ID_T instId) {
 	return ctx.registry().lwm2mSecurity().remove(instId);
-}
-
-Lwm2mSecurity * Lwm2mSecurity::instance(WppClient &ctx, ID_T instId) {
-	Instance *inst = ctx.registry().lwm2mSecurity().instance(instId);
-	if (!inst) return NULL;
-	return static_cast<Lwm2mSecurity*>(inst);
 }
 
 void Lwm2mSecurity::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resLink) {

@@ -32,14 +32,13 @@ void socketPolling(Connection *connection, DeviceImpl *device) {
 	}
 }
 
-void initAudioClipObj(WppRegistry &registry) {
+void initAudioClipObj(WppClient &client) {
 	#ifdef OBJ_O_3339_AUDIO_CLIP
-	Object &audioObj = registry.audioClip();
-	audioObj.createInstance();
-	registry.registerObj(audioObj);
+	AudioClip::create(client);
+	client.registry().registerObj(AudioClip::object(client));
 	#if OBJ_O_2_LWM2M_ACCESS_CONTROL
-	Lwm2mAccessControl::create(audioObj, Lwm2mAccessControl::ALL_OBJ_RIGHTS);
-	Lwm2mAccessControl::create(*audioObj.instance(), TEST_SERVER_SHORT_ID);
+	Lwm2mAccessControl::create(AudioClip::object(client), Lwm2mAccessControl::ALL_OBJ_RIGHTS);
+	Lwm2mAccessControl::create(*AudioClip::instance(client), TEST_SERVER_SHORT_ID);
 	#endif
 	#endif
 }
@@ -96,7 +95,7 @@ int main() {
 	#endif
 	#ifdef OBJ_O_3339_AUDIO_CLIP
 	cout << endl << "---- Initialization wpp AudioClip ----" << endl;
-	initAudioClipObj(registry);
+	initAudioClipObj(client);
 	#endif
 	
 	// Giving ownership to registry

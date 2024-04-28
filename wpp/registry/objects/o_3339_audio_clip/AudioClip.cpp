@@ -36,6 +36,16 @@ AudioClip::~AudioClip() {
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
+Object & AudioClip::object(WppClient &ctx) {
+	return ctx.registry().audioClip();
+}
+
+AudioClip * AudioClip::instance(WppClient &ctx, ID_T instId) {
+	Instance *inst = ctx.registry().audioClip().instance(instId);
+	if (!inst) return NULL;
+	return static_cast<AudioClip*>(inst);
+}
+
 AudioClip * AudioClip::create(WppClient &ctx, ID_T instId) {
 	Instance *inst = ctx.registry().audioClip().createInstance(instId);
 	if (!inst) return NULL;
@@ -44,12 +54,6 @@ AudioClip * AudioClip::create(WppClient &ctx, ID_T instId) {
 
 bool AudioClip::remove(WppClient &ctx, ID_T instId) {
 	return ctx.registry().audioClip().remove(instId);
-}
-
-AudioClip * AudioClip::instance(WppClient &ctx, ID_T instId) {
-	Instance *inst = ctx.registry().audioClip().instance(instId);
-	if (!inst) return NULL;
-	return static_cast<AudioClip*>(inst);
 }
 
 void AudioClip::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resLink) {

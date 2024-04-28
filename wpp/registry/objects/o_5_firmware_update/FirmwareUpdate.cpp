@@ -59,6 +59,16 @@ FirmwareUpdate::~FirmwareUpdate() {
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
+Object & FirmwareUpdate::object(WppClient &ctx) {
+	return ctx.registry().firmwareUpdate();
+}
+
+FirmwareUpdate * FirmwareUpdate::instance(WppClient &ctx, ID_T instId) {
+	Instance *inst = ctx.registry().firmwareUpdate().instance(instId);
+	if (!inst) return NULL;
+	return static_cast<FirmwareUpdate*>(inst);
+}
+
 FirmwareUpdate * FirmwareUpdate::create(WppClient &ctx, ID_T instId) {
 	Instance *inst = ctx.registry().firmwareUpdate().createInstance(instId);
 	if (!inst) return NULL;
@@ -67,12 +77,6 @@ FirmwareUpdate * FirmwareUpdate::create(WppClient &ctx, ID_T instId) {
 
 bool FirmwareUpdate::remove(WppClient &ctx, ID_T instId) {
 	return ctx.registry().firmwareUpdate().remove(instId);
-}
-
-FirmwareUpdate * FirmwareUpdate::instance(WppClient &ctx, ID_T instId) {
-	Instance *inst = ctx.registry().firmwareUpdate().instance(instId);
-	if (!inst) return NULL;
-	return static_cast<FirmwareUpdate*>(inst);
 }
 
 void FirmwareUpdate::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resLink) {

@@ -25,6 +25,7 @@
 namespace wpp {
 
 class WppClient;
+class Object;
 
 /* --------------- Сode_h block 1 end --------------- */
 /* --------------- Сode_h block 1 end --------------- */
@@ -70,6 +71,21 @@ public:
 
 	/* --------------- Helpful methods --------------- */
 	/**
+	 * @brief Gets the Object reference.
+	 * @param ctx - WppClient context.
+	 * @return A reference to the Object.
+	 */
+	static Object & object(WppClient &ctx);
+
+	/**
+	 * @brief Gets an instance of the object.
+	 * @param ctx - WppClient context.
+	 * @param instId The instance ID. If not provided, the first available instance is returned.
+	 * @return A pointer to the Instance object or NULL.
+	 */
+	static FirmwareUpdate * instance(WppClient &ctx, ID_T instId = ID_T_MAX_VAL);
+
+	/**
 	 * @brief Creates an instance of the object.
 	 * @param ctx - WppClient context
 	 * @param instanceID The instance ID.
@@ -84,14 +100,6 @@ public:
 	 * @return True if the instance was successfully removed, false otherwise.
 	 */
 	static bool remove(WppClient &ctx, ID_T instId);
-
-	/**
-	 * @brief Gets an instance of the object.
-	 * @param ctx - WppClient context.
-	 * @param instId The instance ID. If not provided, the first available instance is returned.
-	 * @return A pointer to the Instance object or NULL.
-	 */
-	static FirmwareUpdate * instance(WppClient &ctx, ID_T instId = ID_T_MAX_VAL);
 
 	/* --------------- Code_h block 3 start --------------- */
 	/**

@@ -36,6 +36,16 @@ __CLASS_NAME__::~__CLASS_NAME__() {
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
+Object & __CLASS_NAME__::object(WppClient &ctx) {
+	return ctx.registry().__CLASS_NAME_CAMELCASE__();
+}
+
+__CLASS_NAME__ * __CLASS_NAME__::instance(WppClient &ctx, ID_T instId) {
+	Instance *inst = ctx.registry().__CLASS_NAME_CAMELCASE__().instance(instId);
+	if (!inst) return NULL;
+	return static_cast<__CLASS_NAME__*>(inst);
+}
+
 __CLASS_NAME__ * __CLASS_NAME__::create(WppClient &ctx, ID_T instId) {
 	Instance *inst = ctx.registry().__CLASS_NAME_CAMELCASE__().createInstance(instId);
 	if (!inst) return NULL;
@@ -44,12 +54,6 @@ __CLASS_NAME__ * __CLASS_NAME__::create(WppClient &ctx, ID_T instId) {
 
 bool __CLASS_NAME__::remove(WppClient &ctx, ID_T instId) {
 	return ctx.registry().__CLASS_NAME_CAMELCASE__().remove(instId);
-}
-
-__CLASS_NAME__ * __CLASS_NAME__::instance(WppClient &ctx, ID_T instId) {
-	Instance *inst = ctx.registry().__CLASS_NAME_CAMELCASE__().instance(instId);
-	if (!inst) return NULL;
-	return static_cast<__CLASS_NAME__*>(inst);
 }
 
 __F_SERVER_OPERATION_NOTIFIER__

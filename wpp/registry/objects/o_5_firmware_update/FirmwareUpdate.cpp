@@ -160,23 +160,26 @@ void FirmwareUpdate::resourcesInit() {
 
 /* --------------- Code_cpp block 11 start --------------- */
 bool FirmwareUpdate::setFwUpdater(WppClient ctx, FwUpdater &updater) {
-	resetStateMachine();
-	clearArtifacts();
+	FirmwareUpdate *fw = static_cast<FirmwareUpdate*>(ctx.registry().firmwareUpdate().instance());
+	if (!fw) return false;
+	
+	fw->resetStateMachine();
+	fw->clearArtifacts();
 
-	_pkgUpdater = &updater;
+	fw->_pkgUpdater = &updater;
 	// Set the update method
-	resource(UPDATE_2)->set<EXECUTE_T>([this](Instance& inst, ID_T resId, const OPAQUE_T& data) { return pkgUpdaterHandler(); });
+	fw->resource(UPDATE_2)->set<EXECUTE_T>([fw](Instance& inst, ID_T resId, const OPAQUE_T& data) { return pkgUpdaterHandler(); });
 	// Set last update result
-	resource(UPDATE_RESULT_5)->set<INT_T>(updater.lastUpdateResult());
-	notifyResChanged(UPDATE_RESULT_5);
+	fw->resource(UPDATE_RESULT_5)->set<INT_T>(updater.lastUpdateResult());
+	fw->notifyResChanged(UPDATE_RESULT_5);
 	// Set the package name and version
 	#if RES_5_6
-	resource(PKGNAME_6)->set<STRING_T>(updater.pkgName());
-	notifyResChanged(PKGNAME_6);
+	fw->resource(PKGNAME_6)->set<STRING_T>(updater.pkgName());
+	fw->notifyResChanged(PKGNAME_6);
 	#endif
 	#if RES_5_7
-	resource(PKGVERSION_7)->set<STRING_T>(updater.pkgVersion());
-	notifyResChanged(PKGVERSION_7);
+	fw->resource(PKGVERSION_7)->set<STRING_T>(updater.pkgVersion());
+	fw->notifyResChanged(PKGVERSION_7);
 	#endif
 
 	return true;
@@ -184,61 +187,70 @@ bool FirmwareUpdate::setFwUpdater(WppClient ctx, FwUpdater &updater) {
 
 #if RES_5_8
 std::vector<FwUpdProtocol> FirmwareUpdate::supportedProtocols(WppClient ctx) {
+	FirmwareUpdate *fw = static_cast<FirmwareUpdate*>(ctx.registry().firmwareUpdate().instance());
+	if (!fw) return false;
+
 	std::vector<FwUpdProtocol> supportedProtocols;
-	for (auto id : resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->instIds()) {
-		INT_T protocol = resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->get<INT_T>(id);
+	for (auto id : fw->resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->instIds()) {
+		INT_T protocol = fw->resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->get<INT_T>(id);
 		supportedProtocols.push_back(FwUpdProtocol(protocol));
 	}
 	return supportedProtocols;
 }
 
 bool FirmwareUpdate::setFwExternalDownloader(WppClient ctx, FwExternalDl &downloader) {
-	resetStateMachine();
-	clearArtifacts();
+	FirmwareUpdate *fw = static_cast<FirmwareUpdate*>(ctx.registry().firmwareUpdate().instance());
+	if (!fw) return false;
 
-	_externalDownloader = &downloader;
+	fw->resetStateMachine();
+	fw->clearArtifacts();
 
-	std::vector<FwUpdProtocol> dlSupportedProtocols = _externalDownloader->supportedProtocols();
+	fw->_externalDownloader = &downloader;
+
+	std::vector<FwUpdProtocol> dlSupportedProtocols = fw->_externalDownloader->supportedProtocols();
 	if (dlSupportedProtocols.empty()) {
-		_externalDownloader = NULL;
+		fw->_externalDownloader = NULL;
 		return false;
 	}
 
 	// Setup delivery type
-	if (_internalDownloader) resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(BOTH);
-	else resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(PULL);
-	notifyResChanged(FIRMWARE_UPDATE_DELIVERY_METHOD_9);
+	if (fw->_internalDownloader) fw->resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(BOTH);
+	else fw->resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(PULL);
+	fw->notifyResChanged(FIRMWARE_UPDATE_DELIVERY_METHOD_9);
 
 	// Setup supported protocols
 	ID_T instId = 0;
-	resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->clear();
+	fw->resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->clear();
 	for (auto prot : dlSupportedProtocols) {
-		resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->set<INT_T>(prot, instId);
+		fw->resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->set<INT_T>(prot, instId);
 		instId++;
 	}
-	notifyResChanged(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8);
+	fw->notifyResChanged(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8);
 
 	return true;
 }
 #endif
 
 bool FirmwareUpdate::setFwInternalDownloader(WppClient ctx, FwInternalDl &downloader) {
+	FirmwareUpdate *fw = static_cast<FirmwareUpdate*>(ctx.registry().firmwareUpdate().instance());
+	if (!fw) return false;
+
 	// TODO: Update the implementation of this method after creating an
 	// interface for downloading firmware via uri using the wpp library.
 	// Currently, FwInternalDl only supports loading through the PACKAGE_0 resource.
-	resetStateMachine();
-	clearArtifacts();
+	fw->resetStateMachine();
+	fw->clearArtifacts();
 
-	_internalDownloader = &downloader;
+	fw->_internalDownloader = &downloader;
 	
 	// Setup delivery type
 	#if RES_5_8
-	if (_externalDownloader) resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(BOTH);
-	else resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(PUSH);
+	if (fw->_externalDownloader) fw->resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(BOTH);
+	else fw->resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(PUSH);
 	#else
-	resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(PUSH);
+	fw->resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(PUSH);
 	#endif
-	notifyResChanged(FIRMWARE_UPDATE_DELIVERY_METHOD_9);
+	fw->notifyResChanged(FIRMWARE_UPDATE_DELIVERY_METHOD_9);
 
 	return true;
 }

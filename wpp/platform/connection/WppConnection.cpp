@@ -84,13 +84,13 @@ extern "C" {
 
 		wpp::WppClient *client = (wpp::WppClient *)userData;
 		WPP_LOGD(TAG_WPP_CONN, "Connecting to server: security obj ID -> %d", secObjInstID);
-		wpp::Instance *security = client->registry().lwm2mSecurity().instance(secObjInstID);
+		wpp::Lwm2mSecurity *security = Lwm2mSecurity::instance(secObjInstID);
 		if (!security) {
 			WPP_LOGE(TAG_WPP_CONN, "Lwm2mSecurity obj with ID -> %d not found", secObjInstID);
 			return NULL;
 		}
 
-		wpp::WppConnection::SESSION_T session = client->connection().connect(static_cast<wpp::Lwm2mSecurity *>(security));
+		wpp::WppConnection::SESSION_T session = client->connection().connect(security);
 		if (!session) {
 			WPP_LOGE(TAG_WPP_CONN, "Not posible connect to server: security obj ID-> %d, session -> 0x%x", secObjInstID, session);
 		} else {

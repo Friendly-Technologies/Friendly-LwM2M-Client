@@ -10,10 +10,9 @@
 #include "ItemOp.h"
 #include "WppTypes.h"
 #include "WppLogs.h"
-
-/* --------------- Code_cpp block 0 start --------------- */
 #include "WppClient.h"
 
+/* --------------- Code_cpp block 0 start --------------- */
 #define AC_OBJ_ID_MIN 0
 #define AC_OBJ_ID_MAX (ID_T_MAX_VAL-1)
 #define AC_OBJ_INST_ID_MIN 0
@@ -47,25 +46,38 @@ Lwm2mAccessControl::~Lwm2mAccessControl() {
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
+Lwm2mAccessControl * Lwm2mAccessControl::create(WppClient &ctx, ID_T instId) {
+	Instance *inst = ctx.registry().lwm2mAccessControl().createInstance(instId);
+	if (!inst) return NULL;
+	return static_cast<Lwm2mAccessControl*>(inst);
+}
+
+bool Lwm2mAccessControl::remove(WppClient &ctx, ID_T instId) {
+	return ctx.registry().lwm2mAccessControl().remove(instId);
+}
+
+Lwm2mAccessControl * Lwm2mAccessControl::instance(WppClient &ctx, ID_T instId) {
+	Instance *inst = ctx.registry().lwm2mAccessControl().instance(instId);
+	if (!inst) return NULL;
+	return static_cast<Lwm2mAccessControl*>(inst);
+}
+
 void Lwm2mAccessControl::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resLink) {
-	/* --------------- Code_cpp block 6 start --------------- */
-	/* --------------- Code_cpp block 6 end --------------- */
+	/* --------------- Code_cpp block 4 start --------------- */
+	/* --------------- Code_cpp block 4 end --------------- */
 
 	operationNotify(*this, resLink, type);
 
-	/* --------------- Code_cpp block 7 start --------------- */
-	/* --------------- Code_cpp block 7 end --------------- */
+	/* --------------- Code_cpp block 5 start --------------- */
+	/* --------------- Code_cpp block 5 end --------------- */
 }
 
 void Lwm2mAccessControl::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) {
 	if (type == ItemOp::WRITE) notifyResChanged(resLink.resId, resLink.resInstId);
 
-	/* --------------- Code_cpp block 8 start --------------- */
-	/* --------------- Code_cpp block 8 end --------------- */
+	/* --------------- Code_cpp block 6 start --------------- */
+	/* --------------- Code_cpp block 6 end --------------- */
 }
-
-/* --------------- Code_cpp block 9 start --------------- */
-/* --------------- Code_cpp block 9 end --------------- */
 
 void Lwm2mAccessControl::resourcesCreate() {
 	std::vector<Resource> resources = {
@@ -80,7 +92,7 @@ void Lwm2mAccessControl::resourcesCreate() {
 }
 
 void Lwm2mAccessControl::resourcesInit() {
-	/* --------------- Code_cpp block 10 start --------------- */
+	/* --------------- Code_cpp block 7 start --------------- */
 	
 	resource(OBJECT_ID_0)->set<INT_T>(AC_OBJ_ID_MIN);
 	resource(OBJECT_ID_0)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return AC_OBJ_ID_MIN <= value && value <= AC_OBJ_ID_MAX; });
@@ -95,11 +107,10 @@ void Lwm2mAccessControl::resourcesInit() {
 	resource(ACCESS_CONTROL_OWNER_3)->set<INT_T>(AC_OWNER_MIN);
 	resource(ACCESS_CONTROL_OWNER_3)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return AC_OWNER_MIN <= value && value <= AC_OWNER_MAX; });
 
-	/* --------------- Code_cpp block 10 end --------------- */
+	/* --------------- Code_cpp block 7 end --------------- */
 }
 
-/* --------------- Code_cpp block 11 start --------------- */
-
+/* --------------- Code_cpp block 8 start --------------- */
 Lwm2mAccessControl * Lwm2mAccessControl::getAcInstForTarget(Object &acObj, ID_T objId, ID_T objInstId) {
 	// Find the ac object instance for the target object
 	for (auto &inst : acObj.instances()) {
@@ -110,7 +121,7 @@ Lwm2mAccessControl * Lwm2mAccessControl::getAcInstForTarget(Object &acObj, ID_T 
 	return NULL;
 }
 
-bool Lwm2mAccessControl::createInst(Object &targetObj, uint8_t defaultAcl) {
+bool Lwm2mAccessControl::create(Object &targetObj, uint8_t defaultAcl) {
 	WppRegistry &registry = targetObj.getRegistry();
 	auto &acObj = registry.lwm2mAccessControl();
 
@@ -128,7 +139,7 @@ bool Lwm2mAccessControl::createInst(Object &targetObj, uint8_t defaultAcl) {
 	return true;
 }
 
-void Lwm2mAccessControl::deleteInst(Object &targetObj) {
+void Lwm2mAccessControl::remove(Object &targetObj) {
 	WppRegistry &registry = targetObj.getRegistry();
 	auto &acObj = registry.lwm2mAccessControl();
 	Lwm2mAccessControl *acInst = getAcInstForTarget(acObj, targetObj.getObjectID(), AC_OBJ_INST_NOT_SET);
@@ -159,7 +170,7 @@ void Lwm2mAccessControl::removeAcl(Object &targetObj, ID_T serverShortId) {
 }
 #endif
 
-bool Lwm2mAccessControl::createInst(Instance &targetInst, ID_T owner, uint8_t defaultAcl) {
+bool Lwm2mAccessControl::create(Instance &targetInst, ID_T owner, uint8_t defaultAcl) {
 	WppRegistry &registry = targetInst.getRegistry();
 	auto &acObj = registry.lwm2mAccessControl();
 
@@ -177,7 +188,7 @@ bool Lwm2mAccessControl::createInst(Instance &targetInst, ID_T owner, uint8_t de
 	return true;
 }
 
-void Lwm2mAccessControl::deleteInst(Instance &targetInst) {
+void Lwm2mAccessControl::remove(Instance &targetInst) {
 	WppRegistry &registry = targetInst.getRegistry();
 	auto &acObj = registry.lwm2mAccessControl();
 	Lwm2mAccessControl *acInst = getAcInstForTarget(acObj, targetInst.getObjectID(), targetInst.getInstanceID());
@@ -206,6 +217,6 @@ void Lwm2mAccessControl::removeAcl(Instance &targetInst, ID_T serverShortId) {
 	acInst->remove(ACL_2, serverShortId);
 }
 #endif
-/* --------------- Code_cpp block 11 end --------------- */
+/* --------------- Code_cpp block 8 end --------------- */
 
 } /* namespace wpp */

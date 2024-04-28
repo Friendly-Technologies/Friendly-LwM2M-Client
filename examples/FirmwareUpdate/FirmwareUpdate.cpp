@@ -19,8 +19,8 @@ void FirmwareUpdateImpl::init(Object &obj) {
     #endif
 
     #if OBJ_O_2_LWM2M_ACCESS_CONTROL
-	Lwm2mAccessControl::createInst(obj, Lwm2mAccessControl::ALL_OBJ_RIGHTS);
-	Lwm2mAccessControl::createInst(*fwInst, TEST_SERVER_SHORT_ID);
+	Lwm2mAccessControl::create(obj, Lwm2mAccessControl::ALL_OBJ_RIGHTS);
+	Lwm2mAccessControl::create(*fwInst, TEST_SERVER_SHORT_ID);
 	#endif
 }
 

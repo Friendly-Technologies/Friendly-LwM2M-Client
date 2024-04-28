@@ -10,9 +10,9 @@
 #include "ItemOp.h"
 #include "WppTypes.h"
 #include "WppLogs.h"
+#include "WppClient.h"
 
 /* --------------- Code_cpp block 0 start --------------- */
-
 #define NTWRK_BRR_MIN 0
 #define NTWRK_BRR_MAX 50
 #define AVLB_NTWRK_BRR_MIN 0
@@ -37,7 +37,6 @@
 #define SMCC_MIN 0
 #define SMCC_MAX 999
 #endif
-
 /* --------------- Code_cpp block 0 end --------------- */
 
 #define TAG "ConnectivityMonitoring"
@@ -61,25 +60,38 @@ ConnectivityMonitoring::~ConnectivityMonitoring() {
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
+ConnectivityMonitoring * ConnectivityMonitoring::create(WppClient &ctx, ID_T instId) {
+	Instance *inst = ctx.registry().connectivityMonitoring().createInstance(instId);
+	if (!inst) return NULL;
+	return static_cast<ConnectivityMonitoring*>(inst);
+}
+
+bool ConnectivityMonitoring::remove(WppClient &ctx, ID_T instId) {
+	return ctx.registry().connectivityMonitoring().remove(instId);
+}
+
+ConnectivityMonitoring * ConnectivityMonitoring::instance(WppClient &ctx, ID_T instId) {
+	Instance *inst = ctx.registry().connectivityMonitoring().instance(instId);
+	if (!inst) return NULL;
+	return static_cast<ConnectivityMonitoring*>(inst);
+}
+
 void ConnectivityMonitoring::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resLink) {
-	/* --------------- Code_cpp block 6 start --------------- */
-	/* --------------- Code_cpp block 6 end --------------- */
+	/* --------------- Code_cpp block 4 start --------------- */
+	/* --------------- Code_cpp block 4 end --------------- */
 
 	operationNotify(*this, resLink, type);
 
-	/* --------------- Code_cpp block 7 start --------------- */
-	/* --------------- Code_cpp block 7 end --------------- */
+	/* --------------- Code_cpp block 5 start --------------- */
+	/* --------------- Code_cpp block 5 end --------------- */
 }
 
 void ConnectivityMonitoring::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) {
 	if (type == ItemOp::WRITE) notifyResChanged(resLink.resId, resLink.resInstId);
 
-	/* --------------- Code_cpp block 8 start --------------- */
-	/* --------------- Code_cpp block 8 end --------------- */
+	/* --------------- Code_cpp block 6 start --------------- */
+	/* --------------- Code_cpp block 6 end --------------- */
 }
-
-/* --------------- Code_cpp block 9 start --------------- */
-/* --------------- Code_cpp block 9 end --------------- */
 
 void ConnectivityMonitoring::resourcesCreate() {
 	std::vector<Resource> resources = {
@@ -122,7 +134,7 @@ void ConnectivityMonitoring::resourcesCreate() {
 }
 
 void ConnectivityMonitoring::resourcesInit() {
-	/* --------------- Code_cpp block 10 start --------------- */
+	/* --------------- Code_cpp block 7 start --------------- */
 
 	resource(NETWORK_BEARER_0)->set<INT_T>(NTWRK_BRR_MAX);
 	resource(NETWORK_BEARER_0)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return GSM <= value && value < NTWRK_BRR_MAX; });
@@ -169,11 +181,10 @@ void ConnectivityMonitoring::resourcesInit() {
 	resource(COVERAGE_ENHANCEMENT_LEVEL_13)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return MISSING <= value && value < CVRG_ENHNCMNT_LVL_MAX; });
 	#endif
 
-	/* --------------- Code_cpp block 10 end --------------- */
+	/* --------------- Code_cpp block 7 end --------------- */
 }
 
-/* --------------- Code_cpp block 11 start --------------- */
-
+/* --------------- Code_cpp block 8 start --------------- */
 bool ConnectivityMonitoring::checkLinkQuality(uint8_t linkQuality) {
 	INT_T networkBearer = resource(NETWORK_BEARER_0)->get<INT_T>();
     switch (networkBearer) {
@@ -206,7 +217,6 @@ bool ConnectivityMonitoring::checkCellId(uint32_t cellId) {
 			return true;
 	}
 }
-
-/* --------------- Code_cpp block 11 end --------------- */
+/* --------------- Code_cpp block 8 end --------------- */
 
 } /* namespace wpp */

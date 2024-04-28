@@ -21,8 +21,8 @@ void DeviceImpl::init(Object &obj) {
     inst0->set<STRING_T>(Device::SERIAL_NUMBER_2, "0123456789");
 
     #if OBJ_O_2_LWM2M_ACCESS_CONTROL
-	Lwm2mAccessControl::createInst(obj, Lwm2mAccessControl::ALL_OBJ_RIGHTS);
-	Lwm2mAccessControl::createInst(*inst0, TEST_SERVER_SHORT_ID);
+	Lwm2mAccessControl::create(obj, Lwm2mAccessControl::ALL_OBJ_RIGHTS);
+	Lwm2mAccessControl::create(*inst0, TEST_SERVER_SHORT_ID);
 	#endif
 }
 

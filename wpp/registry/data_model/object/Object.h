@@ -125,7 +125,7 @@ public:
 	 * @brief Gets an instance of the object.
 	 * 
 	 * @param instanceID The instance ID. If not provided, the first available instance is returned.
-	 * @return A pointer to the Instance object.
+	 * @return A pointer to the Instance object or NULL.
 	 */
 	Instance* instance(ID_T instanceID = ID_T_MAX_VAL);
 

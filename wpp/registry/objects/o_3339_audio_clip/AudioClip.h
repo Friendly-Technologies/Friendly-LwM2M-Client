@@ -17,6 +17,11 @@
 
 namespace wpp {
 
+class WppClient;
+
+/* --------------- Сode_h block 1 end --------------- */
+/* --------------- Сode_h block 1 end --------------- */
+
 class AudioClip : public Instance {
 public:
 	enum ID: ID_T {
@@ -35,15 +40,40 @@ public:
 		#endif
 	};
 
-	/* --------------- Code_h block 1 start --------------- */
-	/* --------------- Code_h block 1 end --------------- */
+	/* --------------- Code_h block 2 start --------------- */
+	/* --------------- Code_h block 2 end --------------- */
 
 public:
 	AudioClip(lwm2m_context_t &context, const OBJ_LINK_T &id);
 	~AudioClip();
+	
+	/* --------------- Helpful methods --------------- */
+	/**
+	 * @brief Creates an instance of the object.
+	 * @param ctx - WppClient context
+	 * @param instanceID The instance ID.
+	 * @return A pointer to the created Instance object or NULL.
+	 */
+	static AudioClip * create(WppClient &ctx, ID_T instId = ID_T_MAX_VAL);
 
-	/* --------------- Code_h block 2 start --------------- */
-	/* --------------- Code_h block 2 end --------------- */
+	/**
+	 * @brief Removes an instance of the object.
+	 * @param ctx - WppClient context.
+	 * @param instId The instance ID.
+	 * @return True if the instance was successfully removed, false otherwise.
+	 */
+	static bool remove(WppClient &ctx, ID_T instId);
+
+	/**
+	 * @brief Gets an instance of the object.
+	 * @param ctx - WppClient context.
+	 * @param instId The instance ID. If not provided, the first available instance is returned.
+	 * @return A pointer to the Instance object or NULL.
+	 */
+	static AudioClip * instance(WppClient &ctx, ID_T instId = ID_T_MAX_VAL);
+
+	/* --------------- Code_h block 3 start --------------- */
+	/* --------------- Code_h block 3 end --------------- */
 
 protected:
 	/* --------------- Instance implementation part --------------- */
@@ -56,8 +86,8 @@ protected:
 	 */
 	void userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) override;
 
-	/* --------------- Code_h block 3 start --------------- */
-	/* --------------- Code_h block 3 end --------------- */
+	/* --------------- Code_h block 4 start --------------- */
+	/* --------------- Code_h block 4 end --------------- */
 
 private:
 	/* --------------- Class private methods --------------- */
@@ -71,13 +101,13 @@ private:
 	 */	
 	void resourcesInit();
 	
-	/* --------------- Code_h block 4 start --------------- */
-	/* --------------- Code_h block 4 end --------------- */
+	/* --------------- Code_h block 5 start --------------- */
+	/* --------------- Code_h block 5 end --------------- */
 
 private:
 	/* --------------- Class private properties --------------- */
-	/* --------------- Code_h block 5 start --------------- */
-	/* --------------- Code_h block 5 end --------------- */
+	/* --------------- Code_h block 6 start --------------- */
+	/* --------------- Code_h block 6 end --------------- */
 };
 
 } /* namespace wpp */

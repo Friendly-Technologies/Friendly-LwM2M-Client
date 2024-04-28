@@ -10,11 +10,11 @@
 #include "ItemOp.h"
 #include "WppTypes.h"
 #include "WppLogs.h"
+#include "WppClient.h"
 
 /* --------------- Code_cpp block 0 start --------------- */
 #include <cstring>
 #include "WppPlatform.h"
-#include "WppClient.h"
 
 #define SCHEME_DIVIDER 	"://"
 #define COAP_SCHEME 	"coap"
@@ -59,8 +59,24 @@ FirmwareUpdate::~FirmwareUpdate() {
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
+FirmwareUpdate * FirmwareUpdate::create(WppClient &ctx, ID_T instId) {
+	Instance *inst = ctx.registry().firmwareUpdate().createInstance(instId);
+	if (!inst) return NULL;
+	return static_cast<FirmwareUpdate*>(inst);
+}
+
+bool FirmwareUpdate::remove(WppClient &ctx, ID_T instId) {
+	return ctx.registry().firmwareUpdate().remove(instId);
+}
+
+FirmwareUpdate * FirmwareUpdate::instance(WppClient &ctx, ID_T instId) {
+	Instance *inst = ctx.registry().firmwareUpdate().instance(instId);
+	if (!inst) return NULL;
+	return static_cast<FirmwareUpdate*>(inst);
+}
+
 void FirmwareUpdate::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resLink) {
-	/* --------------- Code_cpp block 6 start --------------- */
+	/* --------------- Code_cpp block 4 start --------------- */
 	WPP_LOGD(TAG, "Server operation -> type: %d, resId: %d, resInstId: %d", type, resLink.resId, resLink.resInstId);
 	switch (type) {
 	case ItemOp::WRITE: {
@@ -72,24 +88,21 @@ void FirmwareUpdate::serverOperationNotifier(Instance *securityInst, ItemOp::TYP
 	}
 	default: break;
 	}
-	/* --------------- Code_cpp block 6 end --------------- */
+	/* --------------- Code_cpp block 4 end --------------- */
 
 	operationNotify(*this, resLink, type);
 
-	/* --------------- Code_cpp block 7 start --------------- */
-	/* --------------- Code_cpp block 7 end --------------- */
+	/* --------------- Code_cpp block 5 start --------------- */
+	/* --------------- Code_cpp block 5 end --------------- */
 }
 
 void FirmwareUpdate::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) {
 	if (type == ItemOp::WRITE) notifyResChanged(resLink.resId, resLink.resInstId);
 
-	/* --------------- Code_cpp block 8 start --------------- */
+	/* --------------- Code_cpp block 6 start --------------- */
 	WPP_LOGD(TAG, "User operation -> type: %d, resId: %d, resInstId: %d", type, resLink.resId, resLink.resInstId);
-	/* --------------- Code_cpp block 8 end --------------- */
+	/* --------------- Code_cpp block 6 end --------------- */
 }
-
-/* --------------- Code_cpp block 9 start --------------- */
-/* --------------- Code_cpp block 9 end --------------- */
 
 void FirmwareUpdate::resourcesCreate() {
 	std::vector<Resource> resources = {
@@ -125,7 +138,7 @@ void FirmwareUpdate::resourcesCreate() {
 }
 
 void FirmwareUpdate::resourcesInit() {
-	/* --------------- Code_cpp block 10 start --------------- */
+	/* --------------- Code_cpp block 7 start --------------- */
 	resource(PACKAGE_0)->set<OPAQUE_T>({});
 	resource(PACKAGE_0)->setDataVerifier((VERIFY_OPAQUE_T)[this](const OPAQUE_T& value) { 
 		if (value.empty() || isDeliveryTypeSupported(PUSH)) return true;
@@ -155,12 +168,12 @@ void FirmwareUpdate::resourcesInit() {
 	#endif
 	resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(PUSH);
 	resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return PULL <= value && value < FW_UPD_DELIVERY_MAX; });
-	/* --------------- Code_cpp block 10 end --------------- */
+	/* --------------- Code_cpp block 7 end --------------- */
 }
 
-/* --------------- Code_cpp block 11 start --------------- */
-bool FirmwareUpdate::setFwUpdater(WppClient ctx, FwUpdater &updater) {
-	FirmwareUpdate *fw = static_cast<FirmwareUpdate*>(ctx.registry().firmwareUpdate().instance());
+/* --------------- Code_cpp block 8 start --------------- */
+bool FirmwareUpdate::setFwUpdater(WppClient &ctx, FwUpdater &updater) {
+	FirmwareUpdate *fw = FirmwareUpdate::instance(ctx);
 	if (!fw) return false;
 	
 	fw->resetStateMachine();
@@ -186,8 +199,8 @@ bool FirmwareUpdate::setFwUpdater(WppClient ctx, FwUpdater &updater) {
 }
 
 #if RES_5_8
-std::vector<FwUpdProtocol> FirmwareUpdate::supportedProtocols(WppClient ctx) {
-	FirmwareUpdate *fw = static_cast<FirmwareUpdate*>(ctx.registry().firmwareUpdate().instance());
+std::vector<FwUpdProtocol> FirmwareUpdate::supportedProtocols(WppClient &ctx) {
+	FirmwareUpdate *fw = FirmwareUpdate::instance(ctx);
 	if (!fw) return false;
 
 	std::vector<FwUpdProtocol> supportedProtocols;
@@ -198,8 +211,8 @@ std::vector<FwUpdProtocol> FirmwareUpdate::supportedProtocols(WppClient ctx) {
 	return supportedProtocols;
 }
 
-bool FirmwareUpdate::setFwExternalDownloader(WppClient ctx, FwExternalDl &downloader) {
-	FirmwareUpdate *fw = static_cast<FirmwareUpdate*>(ctx.registry().firmwareUpdate().instance());
+bool FirmwareUpdate::setFwExternalDownloader(WppClient &ctx, FwExternalDl &downloader) {
+	FirmwareUpdate *fw = FirmwareUpdate::instance(ctx);
 	if (!fw) return false;
 
 	fw->resetStateMachine();
@@ -231,8 +244,8 @@ bool FirmwareUpdate::setFwExternalDownloader(WppClient ctx, FwExternalDl &downlo
 }
 #endif
 
-bool FirmwareUpdate::setFwInternalDownloader(WppClient ctx, FwInternalDl &downloader) {
-	FirmwareUpdate *fw = static_cast<FirmwareUpdate*>(ctx.registry().firmwareUpdate().instance());
+bool FirmwareUpdate::setFwInternalDownloader(WppClient &ctx, FwInternalDl &downloader) {
+	FirmwareUpdate *fw = FirmwareUpdate::instance(ctx);
 	if (!fw) return false;
 
 	// TODO: Update the implementation of this method after creating an
@@ -279,7 +292,7 @@ bool FirmwareUpdate::pkgUpdaterHandler() {
 			notifyResChanged(PKGVERSION_7);
 			#endif
 			#if RES_3_3
-			client.registry().device().instance()->set<STRING_T>(Device::FIRMWARE_VERSION_3, _pkgUpdater->pkgVersion());
+			Device::instance(client)->set<STRING_T>(Device::FIRMWARE_VERSION_3, _pkgUpdater->pkgVersion());
 			#endif
 		}
 
@@ -449,6 +462,6 @@ bool FirmwareUpdate::isDeliveryTypeSupported(FwUpdDelivery type) {
 	if (deliveryType == type || deliveryType == BOTH) return true;
 	return false;
 }
-/* --------------- Code_cpp block 11 end --------------- */
+/* --------------- Code_cpp block 8 end --------------- */
 
 } /* namespace wpp */

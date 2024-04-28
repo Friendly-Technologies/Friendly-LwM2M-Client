@@ -38,8 +38,8 @@ void initAudioClipObj(WppRegistry &registry) {
 	audioObj.createInstance();
 	registry.registerObj(audioObj);
 	#if OBJ_O_2_LWM2M_ACCESS_CONTROL
-	Lwm2mAccessControl::createInst(audioObj);
-	Lwm2mAccessControl::createInst(*audioObj.instance(), TEST_SERVER_SHORT_ID);
+	Lwm2mAccessControl::create(audioObj, Lwm2mAccessControl::ALL_OBJ_RIGHTS);
+	Lwm2mAccessControl::create(*audioObj.instance(), TEST_SERVER_SHORT_ID);
 	#endif
 	#endif
 }

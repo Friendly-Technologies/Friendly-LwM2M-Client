@@ -68,30 +68,48 @@ public:
 	ID_T newInstId(ID_T resId);
 
 	/**
-	 * @brief Set data value by copy for the resource (instance)
+	 * @brief Set data value by copy for the resource
 	 * @param value The data value to set 
 	 * @param resId The resource ID
-	 * @param resInstId The instance ID to set the value, used only for MULTIPLE resources
-	 * @note Before set new value its type will be checked. If resource is SINGLE then
-	 * 		 resInstId not used.
+	 * @note Before set new value its type will be checked. If resource is MULTIPLE then
+	 * 		 method set value for instance with ID SINGLE_INSTANCE_ID.
 	 * @return True if the value is set, false otherwise
 	 */
 	template<typename T>
 	bool set(ID_T resId, const T &value);
+
+	/**
+	 * @brief Set data value by copy for the resource instance
+	 * @param value The data value to set 
+	 * @param resId The resource ID
+	 * @param resInstId The instance ID to set the value, used only for MULTIPLE resources
+	 * @note Before set new value its type will be checked. If resource is SINGLE then
+	 * 		 method will ignore @param resInstId.
+	 * @return True if the value is set, false otherwise
+	 */
 	template<typename T>
     bool set(ID_T resId, ID_T resInstId, const T &value);
 
 	/**
-	 * @brief Set data value by move for the resource (instance)
+	 * @brief Set data value by move for the resource
 	 * @param value The data value to set 
 	 * @param resId The resource ID
-	 * @param resInstId The instance ID to set the value, used only for multiple resources
-	 * @note Before set new value its type will be checked. If resource is SINGLE then
-	 * 		 resInstId not used.
+	 * @note Before set new value its type will be checked. If resource is MULTIPLE then
+	 * 		 method will return false.
 	 * @return True if the value is set, false otherwise
 	 */
 	template<typename T>
 	bool set(ID_T resId, T &&value);
+
+	/**
+	 * @brief Set data value by move for the resource instance
+	 * @param value The data value to set 
+	 * @param resId The resource ID
+	 * @param resInstId The instance ID to set the value, used only for MULTIPLE resources
+	 * @note Before set new value its type will be checked. If resource is SINGLE then
+	 * 		 method will ignore @param resInstId.
+	 * @return True if the value is set, false otherwise
+	 */
 	template<typename T>
 	bool set(ID_T resId, ID_T resInstId, T &&value);
 
@@ -211,7 +229,7 @@ bool ResourceContainer::set(ID_T resId, T &&value) {
 }
 
 template<typename T>
-bool ResourceContainer::set( ID_T resId, ID_T resInstId, T &&value) {
+bool ResourceContainer::set(ID_T resId, ID_T resInstId, T &&value) {
 	auto res = resource(resId);
 	if (res == NULL) {
 		WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] not found", resId);

@@ -1,8 +1,8 @@
-#include "ResourceConatiner.h"
+#include "ResourceContainer.h"
 
 namespace wpp {
 
-bool ResourceContainer::isSingle(ID_T resId) const {
+bool ResourceContainer::isSingle(ID_T resId) {
     auto res = resource(resId);
     if (res == NULL) {
         WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] not found", resId);
@@ -11,7 +11,7 @@ bool ResourceContainer::isSingle(ID_T resId) const {
     return res->isSingle();
 }
 
-bool ResourceContainer::isMultiple(ID_T resId) const {
+bool ResourceContainer::isMultiple(ID_T resId) {
     auto res = resource(resId);
     if (res == NULL) {
         WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] not found", resId);
@@ -67,7 +67,7 @@ bool ResourceContainer::remove(ID_T resId, ID_T resInstId) {
         return false;
     }
     if (!res->remove(resInstId)) return false;
-    operationNotifier(ItemOp::DELETE, resId, resInstId);
+    resourceOperationNotifier(ItemOp::DELETE, resId, resInstId);
     return true;
 }
 
@@ -78,7 +78,7 @@ bool ResourceContainer::clear(ID_T resId) {
         return false;
     }
     if (!res->clear()) return false;
-    operationNotifier(ItemOp::DELETE, resId, ID_T_MAX_VAL);
+    resourceOperationNotifier(ItemOp::DELETE, resId, ID_T_MAX_VAL);
     return true;
 }
 
@@ -87,7 +87,7 @@ void ResourceContainer::setupResources(const std::vector<Resource> &resources) {
 }
 
 void ResourceContainer::setupResources(std::vector<Resource> &&resources) {
-    setupResources(std::move(resources));
+    _resources = std::move(resources);
 }
 
 Resource * ResourceContainer::resource(ID_T resId) {
@@ -96,7 +96,7 @@ Resource * ResourceContainer::resource(ID_T resId) {
 	return res != _resources.end()? &(*res) : NULL;
 }
 
-const std::vector<Resource> & ResourceContainer::resources() { 
+std::vector<Resource> & ResourceContainer::resources() { 
     return _resources; 
 }
 

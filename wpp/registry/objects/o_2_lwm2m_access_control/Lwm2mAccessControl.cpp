@@ -121,7 +121,7 @@ bool Lwm2mAccessControl::createInst(Object &targetObj, uint8_t defaultAcl) {
 	acInst->set<INT_T>(OBJECT_ID_0, targetObj.getObjectID());
 	acInst->set<INT_T>(OBJECT_INSTANCE_ID_1, AC_OBJ_INST_NOT_SET);
 	#if RES_2_2
-	acInst-set<INT_T>(ACL_2, AC_ACL_DEFAULT_ID, defaultAcl & ALL_OBJ_RIGHTS);
+	acInst->set<INT_T>(ACL_2, AC_ACL_DEFAULT_ID, defaultAcl & ALL_OBJ_RIGHTS);
 	#endif
 	acInst->set<INT_T>(ACCESS_CONTROL_OWNER_3, AC_CLIENT_OWNER);
 

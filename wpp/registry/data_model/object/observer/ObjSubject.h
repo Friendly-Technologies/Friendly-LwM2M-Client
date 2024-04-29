@@ -1,7 +1,7 @@
 #ifndef WPP_OBJ_SUBJECT_H_
 #define WPP_OBJ_SUBJECT_H_
 
-#include "InstOp.h"
+#include "ItemOp.h"
 #include "ObjOpObserver.h"
 #include "ObjActObserver.h"
 
@@ -79,11 +79,11 @@ protected:
      * @param instanceId The ID of the object instance.
      * @param type The type of operation (CREATE or DELETE).
      */
-    void operationNotify(Object &obj, ID_T instanceId, InstOp::TYPE type) {
+    void operationNotify(Object &obj, ID_T instanceId, ItemOp::TYPE type) {
         for(ObjOpObserver* observer : _opObservers) {
-            if (type == InstOp::CREATE) {
+            if (type == ItemOp::CREATE) {
                 observer->instanceCreated(obj, instanceId);
-            } else if (type == InstOp::DELETE) {
+            } else if (type == ItemOp::DELETE) {
                 observer->instanceDeleting(obj, instanceId);
             }
         }

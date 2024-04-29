@@ -77,7 +77,7 @@ class ObjectGenerator:
         operation += "),"
         return operation
 
-    def parse_resource_data_type(self, xml_type):
+    def parse_resource_data_type_id(self, xml_type):
         resource_type = f"{const.TYPE_ID}::"
         match xml_type:
             case "NONE":
@@ -101,8 +101,35 @@ class ObjectGenerator:
             case "CORELNK":
                 resource_type += "CORE_LINK"
             case default:
-                raise Exception(f"Undefined type of the resource ({xml_type})")
+                raise Exception(f"parse_resource_data_type_id(): Undefined type of the resource ({xml_type})")
         resource_type += " },"
+        return resource_type
+
+    def parse_resource_data_type(self, xml_type):
+        resource_type = ""
+        match xml_type:
+            case "NONE":
+                resource_type += "EXECUTE_T"
+            case "INTEGER":
+                resource_type += "INT_T"
+            case "UNSIGNED_INTEGER":
+                resource_type += "UINT_T"
+            case "BOOLEAN":
+                resource_type += "BOOL_T"
+            case "STRING":
+                resource_type += "STRING_T"
+            case "OPAQUE":
+                resource_type += "OPAQUE_T"
+            case "FLOAT":
+                resource_type += "FLOAT_T"
+            case "TIME":
+                resource_type += "TIME_T"
+            case "OBJLNK":
+                resource_type += "OBJ_LINK_T"
+            case "CORELNK":
+                resource_type += "CORE_LINK_T"
+            case default:
+                raise Exception(f"parse_resource_data_type(): Undefined type of the resource ({xml_type})")
         return resource_type
 
     def get_map_of_resources(self, resources_list_xml):
@@ -126,7 +153,7 @@ class ObjectGenerator:
                             self.parse_operation(resource_xml[const.DATA_KEYS[const.KEY_OPERATIONS]]),
                             f"IS_SINGLE::{resource_xml[const.DATA_KEYS[const.KEY_IS_MULTIPLE]]},",
                             f"IS_MANDATORY::{resource_xml[const.DATA_KEYS[const.KEY_IS_MANDATORY]]},",
-                            self.parse_resource_data_type(resource_xml[const.DATA_KEYS[const.KEY_TYPE]])]
+                            self.parse_resource_data_type_id(resource_xml[const.DATA_KEYS[const.KEY_TYPE]])]
 
             # wrap into "#if-directive" if the resource is not mandatory:
             if resource_xml[const.DATA_KEYS[const.KEY_IS_MANDATORY]] != "MANDATORY":
@@ -148,18 +175,19 @@ class ObjectGenerator:
         content = f"""void __CLASS_NAME__::resourcesInit() {{\n""" \
                   f"""\t/* --------------- Code_cpp block 10 start --------------- */\n"""
         for resource in self.resources_data:
+            resource_type = self.parse_resource_data_type(resource[const.DATA_KEYS[const.KEY_TYPE]])
             if resource[ "Mandatory"] == "MANDATORY":
                 # content += f"""\t\t#if {resource["Name"]}_{resource["Mandatory"]}\n\t"""
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].set( /* TODO */ );\n"
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n\n"
-                content += f"\tresource({resource['Name']}_{resource['ID']})->set( /* TODO */ );\n"
+                content += f"\tresource({resource['Name']}_{resource['ID']})->set<{resource_type}>( /* TODO */ );\n"
                 content += f"\tresource({resource['Name']}_{resource['ID']})->setDataVerifier( /* TODO */ );\n"
                 # content += f"\t\t#endif\n\n"
             if resource["Mandatory"] == "OPTIONAL":
                 content += f"""\t#if {resource["Define"]}\n"""
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].set( /* TODO */ );\n"
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n"
-                content += f"\tresource({resource['Name']}_{resource['ID']})->set( /* TODO */ );\n"
+                content += f"\tresource({resource['Name']}_{resource['ID']})->set<{resource_type}>( /* TODO */ );\n"
                 content += f"\tresource({resource['Name']}_{resource['ID']})->setDataVerifier( /* TODO */ );\n"
                 content += f"\t#endif\n"
         content += f"""\t/* --------------- Code_cpp block 10 end --------------- */\n}}"""
@@ -185,9 +213,9 @@ class ObjectGenerator:
             return f"""WPP_LOGD(TAG, {text});"""
 
     def get_content_serverOperationNotifier(self):
-        cases = ["READ", "WRITE", "EXECUTE", "DISCOVER"]
+        cases = ["READ", "WRITE", "EXECUTE"]
         base = \
-            f"""void __CLASS_NAME__::serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resLink) {{\n""" \
+            f"""void __CLASS_NAME__::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resLink) {{\n""" \
             f"""\t/* --------------- Code_cpp block 6 start --------------- */\n""" \
             f"""\t/* --------------- Code_cpp block 6 end --------------- */\n""" \
             f"""\n\toperationNotify(*this, resLink, type);\n\n""" \
@@ -205,7 +233,7 @@ class ObjectGenerator:
     def get_content_userOperationNotifier(self):
         cases = ["READ", "WRITE", "DELETE"]
         prefix = \
-            f"""void __CLASS_NAME__::userOperationNotifier(ResOp::TYPE type, const ResLink &resLink) {{\n""" \
+            f"""void __CLASS_NAME__::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) {{\n""" \
             f"""\t/* --------------- Code_cpp block 8 start --------------- */\n""" \
             f"""\tswitch (type) {{\n\t"""
         for case in cases:
@@ -254,7 +282,7 @@ class ObjectGenerator:
     def generate_content_info_header(self):
         is_multiple = "MULTIPLE" if self.object_data[const.DATA_KEYS[const.KEY_IS_MULTIPLE]] else "SINGLE"
         is_mandatory = "MANDATORY" if self.object_data[const.DATA_KEYS[const.KEY_IS_MANDATORY]] else "OPTIONAL"
-        inst_operations = "InstOp::CREATE | InstOp::DELETE" if self.object_data[const.DATA_KEYS[const.KEY_IS_MULTIPLE]] else ""
+        inst_operations = "ItemOp::CREATE|\n\t\t   ItemOp::DELETE|" if self.object_data[const.DATA_KEYS[const.KEY_IS_MULTIPLE]] else ""
 
         content = func.get_content_from_file(const.FILE_TMPLT_INFO)[1]
         content = content.replace("__DATETIME__", DATETIME)

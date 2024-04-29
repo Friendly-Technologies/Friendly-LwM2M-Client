@@ -12,13 +12,14 @@
 
 #include "liblwm2m.h"
 #include "Resource.h"
-#include "ResOp.h"
+#include "ItemOp.h"
 #include "WppTypes.h"
 #include "InstSubject.h"
 
 namespace wpp {
 
 class WppRegistry;
+class WppClient;
 
 /**
  * @brief Instance is interface class that implements manipulation with derived class resources.
@@ -34,11 +35,6 @@ class WppRegistry;
  * of any of the resources changes bypassing the Instance::get()/set() methods, then the developer
  * must immediately call the method WppClient::notifyServerResChanged() or the one that encapsulates
  * this call. It is necessary to notify about the change for all resources except those marked as EXECUTE.
- * 
- * @note From server side, empty resource == undefined resource.
- * TODO: Avoid of using clear and remove methods, because it is not clear what to do with resources.
- * Instead, replace the approach to act with MULTIPLE resources. Add the ability to set/get the whole
- * resource at one time.
  */
 class Instance: public InstSubject {
 public:
@@ -54,72 +50,44 @@ public:
 	OBJ_LINK_T getLink() const { return _id; }
 	OBJ_ID getObjectID() const { return (OBJ_ID)_id.objId; }
 	ID_T getInstanceID() const { return _id.objInstId; }
+
 	/**
- 	 * @brief Sets resource value.
-	 * This version of the method is used with SINGLE resources.
-	 * If resource is multiple then resource instance will be set to 0.
+	 * @brief Return context that can be used by derived class.
 	 */
-	template<typename T>
-	bool set(ID_T resId, const T &value);
+	lwm2m_context_t& getContext();
+
 	/**
- 	 * @brief Sets resource value, this version of the method is used with MULTIPLE resources.
+ 	 * @brief Helpfull methods to get client instances. 
 	 */
-	template<typename T>
-	bool set(const ResLink &resLink, const T &value);
+	WppClient& getClient();
+
 	/**
- 	 * @brief Sets resource value by moving user data to resource to avoid extra copy.
-	 * This version of the method is used with SINGLE resources.
-	 * If resource is multiple then resource instance will be set to 0.
+	 * @brief Helpfull methods to get registry instances. 
 	 */
-	template<typename T>
-	bool setMove(ID_T resId, T &value);
+	WppRegistry& getRegistry();
+
 	/**
- 	 * @brief Sets resource value by moving user data to resource to avoid extra copy.
-	 * This version of the method is used with MULTIPLE resources.
+ 	 * @brief This method return resource ptr if it exists.
+	 * 		  If resources does not exist then return NULL.
+	 * @param resId - Resource ID.
+	 * @return Resource pointer or NULL.
 	 */
-	template<typename T>
-	bool setMove(const ResLink &resLink, T &value);
+	Resource * resource(ID_T resId);
+
 	/**
- 	 * @brief Returns copy of resource value.
-	 * This version of the method is used with SINGLE resources.
-	 * If resource is multiple then resource instance will be set to 0.
-	 */
-	template<typename T>
-	bool get(ID_T resId, T &value);
+	 * @brief Retrieves a reference to the Resource with the given id.
+	 * @param resId The ID of the Resource to retrieve.
+	 * @note If the Resource is not found, a reference to an empty Resource is returned.
+	 * @return A reference to the Resource if found.
+	 */	
+	Resource & operator[](ID_T resId);
+
 	/**
- 	 * @brief Returns copy of resource value.
-	 * This version of the method is used with MULTIPLE resources.
+	 * @brief Check if resource exists.
+	 * @param resId - Resource ID.
+	 * @return True if resource exists, false otherwise.
 	 */
-	template<typename T>
-	bool get(const ResLink &resLink, T &value);
-	/**
- 	 * @brief Returns const ptr to resource data for avoid extra copy.
-	 * This version of the method is used with SINGLE resources.
-	 * If resource is multiple then resource instance will be set to 0.
-	 */
-	template<typename T>
-	bool getPtr(ID_T resId, const T **value);
-	/**
- 	 * @brief Returns const ptr to resource data for avoid extra copy.
-	 * This version of the method is used with MULTIPLE resources.
-	 */
-	template<typename T>
-	bool getPtr(const ResLink &resLink, const T **value);
-	/**
- 	 * @brief It is quite dangerous to leave a resource without instances,
-	 * because when the server tries to read its value, the server
-	 * will not receive anything if the resource is SINGLE, but if
-	 * the resource is MANDATORY, then it will generally lead to
-	 * reading error. After the cleanup operation, the user must
-	 * set the value of the resource.
-	 */
-	bool clear(ID_T resId);
-	/**
- 	 * @brief Remove resource instance if resource is multiple and instance exists,
-	 * if the resource is SINGLE or it has the last instance remove is not
-	 * possible. Because instantiated resources must have at least one instance.
-	 */
-	bool remove(const ResLink &resLink);
+	bool isExist(ID_T resId);
 
 	/* ------------- Server operation methods ------------- */
 	/**
@@ -133,70 +101,50 @@ public:
 	uint8_t writeAsServer(lwm2m_server_t *server, int numData, lwm2m_data_t *dataArray, lwm2m_write_type_t writeType);
 	uint8_t executeAsServer(lwm2m_server_t *server, ID_T resId, uint8_t *buffer, int length);
 	uint8_t discoverAsServer(lwm2m_server_t *server, int * numDataP, lwm2m_data_t **dataArray);
-	#ifdef LWM2M_RAW_BLOCK1_REQUESTS
-	uint8_t blockWriteAsServer(lwm2m_server_t *server, lwm2m_uri_t *uri, lwm2m_media_type_t format, uint8_t *buffer, int length, uint32_t blockNum, uint8_t blockMore);
-	uint8_t blockExecuteAsServer(lwm2m_server_t *server, lwm2m_uri_t *uri, uint8_t *buffer, int length, uint32_t blockNum, uint8_t blockMore);
-	#endif
 
 protected: /* Interface that can be used by derived class */
 	/**
  	 * @brief Notify server about resource value change.
 	 */
-	void notifyServerResChanged(const ResLink &resLink);
+	void notifyServerResChanged(ID_T resId, ID_T resInstId = ID_T_MAX_VAL);
+
 	/**
  	 * @brief This method return list with resources that has been instantiated.
 	 * If resources does not exist then return empty list.
 	 */
 	std::vector<Resource *> getInstantiatedResList();
-	std::vector<Resource *> getInstantiatedResList(const ResOp& filter);
+	std::vector<Resource *> getInstantiatedResList(const ItemOp& filter);
+
 	/**
- 	 * @brief This method return iterator for resource if it exists.
+ 	 * @brief This method return list with all resources that has been defined.
 	 * If resources does not exist then return empty list.
 	 */
-	std::vector<Resource>::iterator resource(ID_T resId);
-	/**
- 	 * @brief Return context that can be used by derived class.
-	 */
-	lwm2m_context_t& getContext();
-	/**
-	 * @brief Helpfull methods to get registry instances. 
-	 */
-	WppRegistry& getRegistry();
+	std::vector<Resource *> getResList();
+
 
 protected: /* Interface that must be implemented by derived class */
 	/**
  	 * @brief This method must be implemented by the derived class, and handle
-	 * information about resource operation (READ, WRITE, EXECUTE, DISCOVER). 
+	 * information about resource operation (READ, WRITE, EXECUTE). 
 	 * Called by Instance after resource operation performed by SERVER if the operation is  
-	 * READ/WRITE/DISCOVER, if the operation is EXECUTE then called before this operation.
+	 * READ/WRITE, if the operation is EXECUTE then called before this operation.
 	 * When the EXECUTE operation, the handler that was set before the serverOperationNotifier()
 	 * call is used.
 	 * @param securityInst - Contains security instance when the request received
 	 * 						 from the server or NULL if the request is initiated by the core.
 	 */
-	virtual void serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resLink) = 0;
+	virtual void serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resLink) = 0;
+
 	/**
  	 * @brief This method must be implemented by the derived class, and handle
      * information about resource operation (READ, WRITE, DELETE).
 	 * Called by Instance after resource operation performed by the USER.
 	 */
-	virtual void userOperationNotifier(ResOp::TYPE type, const ResLink &resLink) = 0;
-	#ifdef LWM2M_RAW_BLOCK1_REQUESTS
-	/**
- 	 * @brief This method must be implemented by the derived class, and handle
-	 * information about resource block operation (BLOCK_WRITE, BLOCK_EXECUTE).
-	 * During block operation resource value is not changed, instead user
-	 * dirrectly handle block data. Also, the EXECUTE_T resource is not
-	 * called, all information and data about the block operation is
-	 * transferred through this method to the final implementation of the
-	 * Instance class, which decides on the necessary actions. This is done 
-	 * to minimize memory usage.
-	 */
-	virtual void serverBlockOperationNotifier(ResOp::TYPE type, const ResLink &resLink, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock);
-	#endif
+	virtual void userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) = 0;
 
 private: /* Interface used by Object or Instance class */
 	Instance *getSecurityInst(lwm2m_server_t *server);
+
 	/* ------------- Compatibility with core data structure ------------- */
 	/**
  	 * @brief This methods can be used for convert resource to lwm2m_data_t
@@ -204,6 +152,7 @@ private: /* Interface used by Object or Instance class */
 	 */
 	bool resourceToLwm2mData(Resource &res, ID_T instanceId, lwm2m_data_t &data);
 	bool lwm2mDataToResource(const lwm2m_data_t &data, Resource &res, ID_T instanceId);
+
 	/* ------------- Helpful methods for server callbacks ------------- */
 	Resource* getValidatedResForWrite(const lwm2m_data_t &data, lwm2m_write_type_t writeType, uint8_t &errCode);
 	uint8_t resourceWrite(lwm2m_server_t *server, Resource &res, const lwm2m_data_t &data, lwm2m_write_type_t writeType);
@@ -218,97 +167,8 @@ private: /* Interface used by Object or Instance class */
 protected:
 	lwm2m_context_t &_context;
 	OBJ_LINK_T _id;
-
 	std::vector<Resource> _resources;
 };
-
-/* ---------- Implementation of template methods ----------*/
-/**
- * @brief Sets resource value
- */
-template<typename T>
-bool Instance::set(ID_T resId, const T &value) { 
-	return set({resId, SINGLE_INSTANCE_ID}, value); 
-}
-
-template<typename T>
-bool Instance::set(const ResLink &resLink, const T &value)  {
-	auto res = resource(resLink.resId);
-	if (res == _resources.end()) return false;
-
-	if (!res->set(value, resLink.resInstId)) return false;
-
-	const ResLink &link = res->isMultiple()? resLink : ResLink {resLink.resId,};
-	userOperationNotifier(ResOp::WRITE, link);
-	notifyServerResChanged(link);
-
-	return true;
-}
-
-/**
- * @brief Sets resource value by moving user data to resource to avoid extra copy
- */
-template<typename T>
-bool Instance::setMove(ID_T resId, T &value) {
-	return setMove({resId, SINGLE_INSTANCE_ID}, value);
-}
-
-template<typename T>
-bool Instance::setMove(const ResLink &resLink, T &value) {
-	auto res = resource(resLink.resId);
-	if (res == _resources.end()) return false;
-	if (!res->setMove(value, resLink.resInstId)) return false;
-
-	const ResLink &link = res->isMultiple()? resLink : ResLink {resLink.resId,};
-	userOperationNotifier(ResOp::WRITE, link);
-	notifyServerResChanged(link);
-
-	return true;
-}
-
-/**
- * @brief Returns copy of resource value
- */
-template<typename T>
-bool Instance::get(ID_T resId, T &value) {
-	return get({resId, SINGLE_INSTANCE_ID}, value);
-}
-
-template<typename T>
-bool Instance::get(const ResLink &resLink, T &value) {
-	auto res = resource(resLink.resId);
-	if (res == _resources.end()) return false;
-
-	if (!res->get(value, resLink.resInstId)) return false;
-	
-	if (res->isMultiple()) userOperationNotifier(ResOp::READ, resLink);
-	else userOperationNotifier(ResOp::READ, {resLink.resId,});
-
-	return true;
-}
-
-/**
- * @brief Returns const ptr to resource data for avoid extra copy
- */
-template<typename T>
-bool Instance::getPtr(ID_T resId, const T **value) {
-	return getPtr({resId, SINGLE_INSTANCE_ID}, value);
-}
-
-template<typename T>
-bool Instance::getPtr(const ResLink &resLink, const T **value) {
-	auto res = resource(resLink.resId);
-	if (res == _resources.end()) return false;
-
-	T *tmpValue = NULL;
-	if (!res->ptr(&tmpValue, resLink.resInstId) || !tmpValue) return false;
-	*value = tmpValue;
-
-	if (res->isMultiple()) userOperationNotifier(ResOp::READ, resLink);
-	else userOperationNotifier(ResOp::READ, {resLink.resId,});
-
-	return true;
-}
 
 } /* namespace wpp */
 

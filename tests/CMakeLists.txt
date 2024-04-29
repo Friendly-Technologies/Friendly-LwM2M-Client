@@ -8,10 +8,8 @@ set(WPP_DEFINITIONS "")
 
 # Include file with compiler config
 include(../wpp/configs/compiler_config.cmake)
-# Include file with Wakaama core config
-include(../wpp/configs/wakaama_config.cmake)
-# Include file with wpp object configs
-include(../wpp/configs/objects_config.cmake)
+# Include file with wpp config
+include(../wpp/configs/wpp_config.cmake)
 # Add file with wpp lib configs
 include(../wpp/wpp.cmake)
 
@@ -33,7 +31,7 @@ add_executable(Catch2Tests ${SOURCES} ${TEST_SOURCES})
 # Set properties
 target_compile_definitions(Catch2Tests PUBLIC ${WPP_DEFINITIONS})
 # Link wpp sources to tests
-target_link_wpp(Catch2Tests)
+target_link_wpp(Catch2Tests wpp)
 # Link pthread library to tests
 target_link_libraries(Catch2Tests pthread)
 # Include Catch2 library for test executable file

@@ -8,7 +8,7 @@
 #ifndef WPP_OBJECT_H_
 #define WPP_OBJECT_H_
 
-#include <unordered_map>
+#include <vector>
 #include <variant>
 
 #include "ObjSubject.h"
@@ -17,6 +17,9 @@
 #include "WppLogs.h"
 
 namespace wpp {
+
+class WppRegistry;
+class WppClient;
 
 /**
  * @class Object
@@ -34,6 +37,11 @@ private:
 	Object& operator=(Object&&) = delete;
 
 public:
+	/**
+	 * Default constructor.
+	 */
+	Object(lwm2m_context_t &context);
+
 	/**
 	 * @brief Constructs an Object instance.
 	 * 
@@ -71,9 +79,19 @@ public:
 	lwm2m_object_t& getLwm2mObject();
 
 	/**
-	 * @brief Clears the object.
+	 * @brief Return context that can be used by derived class.
 	 */
-	void clear();
+	lwm2m_context_t& getContext();
+
+	/**
+ 	 * @brief Helpfull methods to get client instances. 
+	 */
+	WppClient& getClient();
+
+	/**
+	 * @brief Helpfull methods to get registry instances. 
+	 */
+	WppRegistry& getRegistry();
 
 	/**
 	 * @brief Restores the object.
@@ -96,22 +114,35 @@ public:
 	 * @param instanceID The instance ID.
 	 * @return True if the instance was successfully removed, false otherwise.
 	 */
-	bool removeInstance(ID_T instanceID);
+	bool remove(ID_T instanceID);
+
+	/**
+	 * @brief Clears the object.
+	 */
+	void clear();
 
 	/**
 	 * @brief Gets an instance of the object.
 	 * 
-	 * @param instanceID The instance ID.
+	 * @param instanceID The instance ID. If not provided, the first available instance is returned.
 	 * @return A pointer to the Instance object.
 	 */
-	Instance* instance(ID_T instanceID = 0);
+	Instance* instance(ID_T instanceID = ID_T_MAX_VAL);
+
+	/**
+	 * @brief Retrieves a reference to the Instance with the given id.
+	 * @param instanceID The ID of the Instance to retrieve.
+	 * @note If the Instance is not found, a reference to an empty Instance is returned.
+	 * @return A reference to the Instance if found.
+	 */
+	Instance & operator[](ID_T instanceID);
 
 	/**
 	 * @brief Gets all instances of the object.
 	 * 
 	 * @return A vector of pointers to the Instance objects.
 	 */
-	const std::vector<Instance*>& getInstances();
+	const std::vector<Instance*>& instances();
 
 	/**
 	 * @brief Gets the number of instances of the object.
@@ -126,7 +157,7 @@ public:
 	 * @param instanceID The instance ID.
 	 * @return True if the instance exists, false otherwise.
 	 */
-	bool isInstanceExist(ID_T instanceID);
+	bool isExist(ID_T instanceID);
 
 protected:
 	/**
@@ -223,55 +254,6 @@ protected:
 	 * @return The result of the delete operation.
 	 */
 	static uint8_t serverDelete_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, ID_T instanceId, lwm2m_object_t * objectP);
-
-#ifdef LWM2M_RAW_BLOCK1_REQUESTS
-	/**
-	 * @brief The block create callback function for the Lwm2m core.
-	 * 
-	 * @param contextP The lwm2m_context_t object.
-	 * @param server Contains valid pointer when request retrieved from server or NULL if request initiated by core.
-	 * @param uriP The lwm2m_uri_t object.
-	 * @param format The media type format.
-	 * @param buffer The buffer.
-	 * @param length The length.
-	 * @param objectP The lwm2m_object_t object.
-	 * @param block_num The block number.
-	 * @param block_more The block more flag.
-	 * @return The result of the block create operation.
-	 */
-	static uint8_t serverBlockCreate_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, lwm2m_uri_t * uriP, lwm2m_media_type_t format, uint8_t * buffer, int length, lwm2m_object_t * objectP, uint32_t block_num, uint8_t block_more);
-
-	/**
-	 * @brief The block write callback function for the Lwm2m core.
-	 * 
-	 * @param contextP The lwm2m_context_t object.
-	 * @param server Contains valid pointer when request retrieved from server or NULL if request initiated by core.
-	 * @param uriP The lwm2m_uri_t object.
-	 * @param format The media type format.
-	 * @param buffer The buffer.
-	 * @param length The length.
-	 * @param objectP The lwm2m_object_t object.
-	 * @param block_num The block number.
-	 * @param block_more The block more flag.
-	 * @return The result of the block write operation.
-	 */
-	static uint8_t serverBlockWrite_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, lwm2m_uri_t * uriP, lwm2m_media_type_t format, uint8_t * buffer, int length, lwm2m_object_t * objectP, uint32_t block_num, uint8_t block_more);
-
-	/**
-	 * @brief The block execute callback function for the Lwm2m core.
-	 * 
-	 * @param contextP The lwm2m_context_t object.
-	 * @param server Contains valid pointer when request retrieved from server or NULL if request initiated by core.
-	 * @param uriP The lwm2m_uri_t object.
-	 * @param buffer The buffer.
-	 * @param length The length.
-	 * @param objectP The lwm2m_object_t object.
-	 * @param block_num The block number.
-	 * @param block_more The block more flag.
-	 * @return The result of the block execute operation.
-	 */
-	static uint8_t serverBlockExecute_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, lwm2m_uri_t * uriP, uint8_t * buffer, int length, lwm2m_object_t * objectP, uint32_t block_num, uint8_t block_more);
-#endif
 
 protected:
 	std::vector<Instance*> _instances;

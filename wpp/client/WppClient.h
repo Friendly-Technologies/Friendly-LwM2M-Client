@@ -141,24 +141,7 @@ public:
 	time_t loop();
 
 	/* ------------- WppClient server operations ------------- */
-
-	/**
-	 * @brief Updates the server registration for the specified server ID.
-	 * @param serverId The ID of the server to update the registration for.
-	 * @param withLifetime Whether to include lifetime in the registration update.
-	 * @param withObjects Whether to include objects in the registration update.
-	 * @return True if the server registration is updated successfully, false otherwise.
-	 */
-	bool updateServerRegistration(INT_T serverId, bool withLifetime = false, bool withObjects = false);
-
-	/**
-	 * @brief Updates the server registration for all servers.
-	 * @param withLifetime Whether to include lifetime in the registration update.
-	 * @param withObjects Whether to include objects in the registration update.
-	 * @return True if the server registration is updated successfully, false otherwise.
-	 */
-	bool updateServerRegistration(bool withLifetime = false, bool withObjects = false);
-
+	
 	/**
 	 * @brief Deregisters the client from the servers.
 	 */

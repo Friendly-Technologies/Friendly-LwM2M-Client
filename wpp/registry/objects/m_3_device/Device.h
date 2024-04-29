@@ -141,11 +141,11 @@ protected:
 	/*
 	 * Handles information about resource operation that made server
 	 */
-	void serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resLink) override;
+	void serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resLink) override;
 	/*
 	 * Handles information about resource operation that made user
 	 */
-	void userOperationNotifier(ResOp::TYPE type, const ResLink &resLink) override;
+	void userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) override;
 
 	/* --------------- Code_h block 3 start --------------- */
 	/* --------------- Code_h block 3 end --------------- */
@@ -158,8 +158,7 @@ private:
 	void resourcesCreate();
 	/*
 	 * Initialize resources with default values
-	 * Resource always must have at least one instance.
-	 * Note: From server side, empty resource == undefined resource.
+	 * SINGLE resource always must have at least one instance.
 	 */	
 	void resourcesInit();
 	

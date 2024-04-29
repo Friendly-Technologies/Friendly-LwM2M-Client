@@ -132,18 +132,12 @@ std::vector<ID_T> Resource::instIds() const {
 }
 
 ID_T Resource::newInstId() const {
-	// Usually, each subsequent free index will be equal to the number of created objects
-	ID_T id = _instances.size();
-	if (id == ID_T_MAX_VAL) return id;
-	// But it won't always be like that
+	// Usually, each subsequent free index will be equal to the number of created instances
+	if (!isExist(_instances.size())) return _instances.size();
+	// If there are no free indexes, we will search for the first free index
+	ID_T id = 0;
 	while (isExist(id) && id != ID_T_MAX_VAL) id++;
-	// It is also possible that all indexes after the current size are occupied
-	if (id == ID_T_MAX_VAL) {
-		id = 0;
-		// In this case, we need to check the indexes that are before the current size
-		while (isExist(id) && id < _instances.size()) id++;
-	}
-	return id == _instances.size()? ID_T_MAX_VAL : id;
+	return id;
 }
 
 /* ---------- Methods for get and set resource value ----------*/

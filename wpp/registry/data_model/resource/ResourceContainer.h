@@ -137,7 +137,11 @@ public:
 	 * @param resId The resource ID
 	 * @note If the resource is SINGLE, the method will return false.
 	 * 		 If the data type is not valid, the method will return false.
-	 * 		 Instance ID will be generated automatically.
+	 * 		 Instance ID will be generated automatically.The ID is determined 
+	 * 		 according to the following algorithm: if the ID is equal to the
+	 * 		 number of free instances, then we return it, otherwise, starting
+	 * 		 with ID 0, we search for the first free index, if no free indexes
+	 * 		 are found, then method returns false.
 	 * @return True if the instance is added, false otherwise
 	 */
 	template<typename T>
@@ -149,7 +153,11 @@ public:
 	 * @param resId The resource ID
 	 * @note If the resource is SINGLE, the method will return false.
 	 * 		 If the data type is not valid, the method will return false.
-	 * 		 Instance ID will be generated automatically.
+	 * 		 Instance ID will be generated automatically. The ID is determined 
+	 * 		 according to the following algorithm: if the ID is equal to the
+	 * 		 number of free instances, then we return it, otherwise, starting
+	 * 		 with ID 0, we search for the first free index, if no free indexes
+	 * 		 are found, then method returns false.
 	 * @return True if the instance is added, false otherwise
 	 */
 	template<typename T>
@@ -268,7 +276,12 @@ bool ResourceContainer::add(ID_T resId, const T &value) {
 		WPP_LOGE(TAG_WPP_RES_CON, "Resource[%d] is SINGLE", resId);
 		return false;
 	}
+
 	ID_T newId = res->newInstId();
+	if (newId == ID_T_MAX_VAL) {
+		WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] new instance ID not found", resId);
+		return false;
+	}
 	if (!res->set(value, newId)) {
 		WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] operation failed", resId);
 		return false;
@@ -288,7 +301,13 @@ bool ResourceContainer::add(ID_T resId, T &&value) {
 		WPP_LOGE(TAG_WPP_RES_CON, "Resource[%d] is SINGLE", resId);
 		return false;
 	}
+
 	ID_T newId = res->newInstId();
+	if (newId == ID_T_MAX_VAL) {
+		WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] new instance ID not found", resId);
+		return false;
+	}
+	WPP_LOGD(TAG_WPP_RES_CON, "Resource[%d] new instance ID: %d", resId, newId);
 	if (!res->set(std::move(value), newId)) {
 		WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] operation failed", resId);
 		return false;

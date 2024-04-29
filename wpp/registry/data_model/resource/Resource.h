@@ -182,7 +182,11 @@ public: /* ---------- Public methods for common usage ----------*/
 	 * @note If the resource is SINGLE, the method will return false.
 	 * 		 If the verifier is set, the value will be checked.
 	 * 		 If the data type is not valid, the method will return false.
-	 * 		 Instance ID will be generated automatically.
+	 * 		 Instance ID will be generated automatically.The ID is determined 
+	 * 		 according to the following algorithm: if the ID is equal to the
+	 * 		 number of free instances, then we return it, otherwise, starting
+	 * 		 with ID 0, we search for the first free index, if no free indexes
+	 * 		 are found, then method returns false.
 	 * @return True if the instance is added, false otherwise
 	 */
 	template<typename T>
@@ -194,7 +198,11 @@ public: /* ---------- Public methods for common usage ----------*/
 	 * @note If the resource is SINGLE, the method will return false.
 	 * 		 If the verifier is set, the value will be checked.
 	 * 		 If the data type is not valid, the method will return false.
-	 * 		 Instance ID will be generated automatically.
+	 * 		 Instance ID will be generated automatically.The ID is determined 
+	 * 		 according to the following algorithm: if the ID is equal to the
+	 * 		 number of free instances, then we return it, otherwise, starting
+	 * 		 with ID 0, we search for the first free index, if no free indexes
+	 * 		 are found, then method returns false.
 	 * @return True if the instance is added, false otherwise
 	 */
 	template<typename T>

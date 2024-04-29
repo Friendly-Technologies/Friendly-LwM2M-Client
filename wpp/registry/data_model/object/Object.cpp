@@ -68,6 +68,9 @@ void Object::clear() {
 		_lwm2m_object.instanceList = _lwm2m_object.instanceList->next;
 		delete instance;
 
+		// Update server registration
+		if (getContext().state > STATE_BOOTSTRAPPING) lwm2m_update_registration(&getContext(), 0, false, true);
+
 		auto inst = getInstIter(id);
 		if (inst == _instances.end()) continue;
 
@@ -102,17 +105,9 @@ bool Object::remove(ID_T instanceId) {
 }
 
 Instance* Object::instance(ID_T instanceID) {
-	// If user want to access instance with ID that does not exist, then we can not do it
+	// If user want to access instance with ID that does not exist, then we can not do that
 	auto inst = (instanceID != ID_T_MAX_VAL)? getInstIter(instanceID) : _instances.begin();
 	return inst != _instances.end()? *inst : NULL;
-}
-
-Instance & Object::operator[](ID_T instanceID) {
-	auto inst = instance(instanceID);
-	if (inst == NULL) {
-		WPP_LOGE(TAG_WPP_OBJ, "Instance %d:%d does not exist", getObjectID(), instanceID);
-	};
-	return *inst;
 }
 
 const std::vector<Instance*> & Object::instances() {
@@ -134,16 +129,10 @@ std::vector<Instance*>::iterator Object::getInstIter(ID_T instanceID) {
 
 ID_T Object::getFirstAvailableInstanceID() {
 	// Usually, each subsequent free index will be equal to the number of created objects
-	ID_T id = _instances.size();
-	if (id == ID_T_MAX_VAL) return id;
-	// But it won't always be like that
+	if (!isExist(_instances.size())) return _instances.size();
+	// If there are no free indexes, we will search for the first free index
+	ID_T id = 0;
 	while (isExist(id) && id != ID_T_MAX_VAL) id++;
-	// It is also possible that all indexes after the current size are occupied
-	if (id == ID_T_MAX_VAL) {
-		id = 0;
-		// In this case, we need to check the indexes that are before the current size
-		while (isExist(id) && id < _instances.size()) id++;
-	}
 	return id;
 }
 

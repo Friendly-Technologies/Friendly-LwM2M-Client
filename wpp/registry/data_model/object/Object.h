@@ -125,17 +125,9 @@ public:
 	 * @brief Gets an instance of the object.
 	 * 
 	 * @param instanceID The instance ID. If not provided, the first available instance is returned.
-	 * @return A pointer to the Instance object.
+	 * @return A pointer to the Instance object or NULL.
 	 */
 	Instance* instance(ID_T instanceID = ID_T_MAX_VAL);
-
-	/**
-	 * @brief Retrieves a reference to the Instance with the given id.
-	 * @param instanceID The ID of the Instance to retrieve.
-	 * @note If the Instance is not found, a reference to an empty Instance is returned.
-	 * @return A reference to the Instance if found.
-	 */
-	Instance & operator[](ID_T instanceID);
 
 	/**
 	 * @brief Gets all instances of the object.

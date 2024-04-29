@@ -10,17 +10,17 @@ void FirmwareUpdateImpl::init(Object &obj) {
     _lastUpdateResult = FwUpdRes::R_INITIAL;
 
 	obj.actSubscribe(this);
-	FirmwareUpdate *fwInst = static_cast<FirmwareUpdate *>(obj.createInstance(0));
+	Instance *fwInst = obj.createInstance(0);
 
-    fwInst->setFwUpdater(*this);
-    fwInst->setFwInternalDownloader(_internalDownloader);
+    FirmwareUpdate::setFwUpdater(obj.getClient(), *this);
+    FirmwareUpdate::setFwInternalDownloader(obj.getClient(), _internalDownloader);
     #if RES_5_8
-    fwInst->setFwExternalDownloader(_uriDownloader);
+    FirmwareUpdate::setFwExternalDownloader(obj.getClient(), _uriDownloader);
     #endif
 
     #if OBJ_O_2_LWM2M_ACCESS_CONTROL
-	Lwm2mAccessControl::createInst(obj, Lwm2mAccessControl::ALL_OBJ_RIGHTS);
-	Lwm2mAccessControl::createInst(*fwInst, TEST_SERVER_SHORT_ID);
+	Lwm2mAccessControl::create(obj, Lwm2mAccessControl::ALL_OBJ_RIGHTS);
+	Lwm2mAccessControl::create(*fwInst, TEST_SERVER_SHORT_ID);
 	#endif
 }
 

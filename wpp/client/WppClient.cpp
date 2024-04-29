@@ -122,8 +122,8 @@ time_t WppClient::loop() {
 		WPP_LOGW(TAG_WPP_CLIENT, "LWM2M core step failed, error code: %d", result);
 		if (getState() == STATE_BOOTSTRAPPING || getState() == STATE_BOOTSTRAP_REQUIRED) {
 			WPP_LOGW(TAG_WPP_CLIENT, "Trying to restore security and server objects");
-			registry().object(OBJ_ID::LWM2M_SECURITY)->restore();
-			registry().object(OBJ_ID::LWM2M_SERVER)->restore();
+			Lwm2mSecurity::object(*this).restore();
+			Lwm2mServer::object(*this).restore();
 		}
 		_lwm2m_context->state = STATE_INITIAL;
 	}
@@ -158,9 +158,9 @@ void WppClient::lwm2mContextClose() {
 }
 
 bool WppClient::lwm2mConfigure(const std::string &endpointName, const std::string &msisdn, const std::string &altPath) {
-	lwm2m_object_t *lwm2m_major_objects[] = {&registry().object(OBJ_ID::LWM2M_SECURITY)->getLwm2mObject(),
-											&registry().object(OBJ_ID::LWM2M_SERVER)->getLwm2mObject(),
-										    &registry().object(OBJ_ID::DEVICE)->getLwm2mObject()};
+	lwm2m_object_t *lwm2m_major_objects[] = {&Lwm2mSecurity::object(*this).getLwm2mObject(),
+											 &Lwm2mServer::object(*this).getLwm2mObject(),
+										     &Device::object(*this).getLwm2mObject()};
 	uint16_t objectsCnt = sizeof(lwm2m_major_objects) / sizeof(lwm2m_object_t *);
 	const char *msisdn_c = msisdn.empty()? NULL : msisdn.c_str();
 	const char *altPath_c = altPath.empty()? NULL : altPath.c_str();

@@ -15,6 +15,7 @@
 #include "ItemOp.h"
 #include "WppTypes.h"
 #include "InstSubject.h"
+#include "ResourceContainer.h"
 
 namespace wpp {
 
@@ -32,16 +33,11 @@ class WppClient;
  * interface at the Instance implementation level, whether it will be setters and getters or
  * more abstract methods with algorithm encapsulation, it is not important. It is important
  * that the developer is responsible for notifying the core about resource changes, if the value
- * of any of the resources changes bypassing the Instance::get()/set() methods, then the developer
- * must immediately call the method WppClient::notifyServerResChanged() or the one that encapsulates
- * this call. It is necessary to notify about the change for all resources except those marked as EXECUTE.
- * 
- * @note From server side, empty resource == undefined resource.
- * TODO: Avoid of using clear and remove methods, because it is not clear what to do with resources.
- * Instead, replace the approach to act with MULTIPLE resources. Add the ability to set/get the whole
- * resource at one time.
+ * of any of the resources changes, then the developer MUST immediately call the method 
+ * Instance::notifyResChanged(). It is necessary to notify about the change for all resources
+ * except those marked as EXECUTE.
  */
-class Instance: public InstSubject {
+class Instance: public InstSubject, public ResourceContainer {
 public:
 	Instance(lwm2m_context_t &context, const OBJ_LINK_T &id): _context(context), _id(id) {}
 	virtual ~Instance() {}
@@ -51,7 +47,7 @@ public:
 	Instance& operator=(const Instance&) = delete;
 	Instance& operator=(Instance&&) = delete;
 
-	/* ------------- User operation methods ------------- */
+	/* ------------- User helpful methods ------------- */
 	OBJ_LINK_T getLink() const { return _id; }
 	OBJ_ID getObjectID() const { return (OBJ_ID)_id.objId; }
 	ID_T getInstanceID() const { return _id.objInstId; }
@@ -71,29 +67,6 @@ public:
 	 */
 	WppRegistry& getRegistry();
 
-	/**
- 	 * @brief This method return resource ptr if it exists.
-	 * 		  If resources does not exist then return NULL.
-	 * @param resId - Resource ID.
-	 * @return Resource pointer or NULL.
-	 */
-	Resource * resource(ID_T resId);
-
-	/**
-	 * @brief Retrieves a reference to the Resource with the given id.
-	 * @param resId The ID of the Resource to retrieve.
-	 * @note If the Resource is not found, a reference to an empty Resource is returned.
-	 * @return A reference to the Resource if found.
-	 */	
-	Resource & operator[](ID_T resId);
-
-	/**
-	 * @brief Check if resource exists.
-	 * @param resId - Resource ID.
-	 * @return True if resource exists, false otherwise.
-	 */
-	bool isExist(ID_T resId);
-
 	/* ------------- Server operation methods ------------- */
 	/**
  	 * @brief This methods is called by the core when the server wants to read,
@@ -111,7 +84,7 @@ protected: /* Interface that can be used by derived class */
 	/**
  	 * @brief Notify server about resource value change.
 	 */
-	void notifyServerResChanged(ID_T resId, ID_T resInstId = ID_T_MAX_VAL);
+	void notifyResChanged(ID_T resId, ID_T resInstId = ID_T_MAX_VAL);
 
 	/**
  	 * @brief This method return list with resources that has been instantiated.
@@ -120,12 +93,25 @@ protected: /* Interface that can be used by derived class */
 	std::vector<Resource *> getInstantiatedResList();
 	std::vector<Resource *> getInstantiatedResList(const ItemOp& filter);
 
+	/**
+ 	 * @brief This method return list with all resources that has been defined.
+	 * If resources does not exist then return empty list.
+	 */
+	std::vector<Resource *> getResList();
+
+	/**
+ 	 * @brief Handle information about resource operation (WRITE, DELETE).
+	 * Called by ResourceContainer after resource operation performed.
+	 */
+	void resourceOperationNotifier(ItemOp::TYPE type, ID_T resId, ID_T resInstId) override;
+
+
 protected: /* Interface that must be implemented by derived class */
 	/**
  	 * @brief This method must be implemented by the derived class, and handle
-	 * information about resource operation (READ, WRITE, EXECUTE). 
+	 * information about resource operation (WRITE, EXECUTE). 
 	 * Called by Instance after resource operation performed by SERVER if the operation is  
-	 * READ/WRITE, if the operation is EXECUTE then called before this operation.
+	 * WRITE, if the operation is EXECUTE then called before this operation.
 	 * When the EXECUTE operation, the handler that was set before the serverOperationNotifier()
 	 * call is used.
 	 * @param securityInst - Contains security instance when the request received
@@ -135,7 +121,7 @@ protected: /* Interface that must be implemented by derived class */
 
 	/**
  	 * @brief This method must be implemented by the derived class, and handle
-     * information about resource operation (READ, WRITE, DELETE).
+     * information about resource operation (WRITE, DELETE).
 	 * Called by Instance after resource operation performed by the USER.
 	 */
 	virtual void userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) = 0;
@@ -162,10 +148,9 @@ private: /* Interface used by Object or Instance class */
 	uint8_t replaceInstance(lwm2m_server_t *server, int numData, lwm2m_data_t *dataArray);
 	uint8_t replaceResource(lwm2m_server_t *server, int numData, lwm2m_data_t *dataArray, lwm2m_write_type_t writeType);
 
-protected:
+private:
 	lwm2m_context_t &_context;
 	OBJ_LINK_T _id;
-	std::vector<Resource> _resources;
 };
 
 } /* namespace wpp */

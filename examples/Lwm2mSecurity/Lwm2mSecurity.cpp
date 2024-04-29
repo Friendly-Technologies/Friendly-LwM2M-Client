@@ -24,8 +24,8 @@ void Lwm2mSecurityImpl::init(Object &obj) {
         string url = "coaps://demodm.friendly-tech.com:";//"coap://eu.iot.avsystem.cloud:"; //"coaps://leshan.eclipseprojects.io:";
         #if DTLS_WITH_PSK
             url += "5684";
-            string pskId = "SINAI_TEST_DEV_ID_VS";
-            inst0->set<INT_T>((Lwm2mSecurity::SECURITY_MODE_2, LWM2M_SECURITY_MODE_PRE_SHARED_KEY);
+            string pskId = "SINAI_TEST_DEV_ID";
+            inst0->set<INT_T>(Lwm2mSecurity::SECURITY_MODE_2, LWM2M_SECURITY_MODE_PRE_SHARED_KEY);
             inst0->set(Lwm2mSecurity::PUBLIC_KEY_OR_IDENTITY_3, OPAQUE_T(pskId.begin(), pskId.end()));
             //00112233445566778899998877665544
             inst0->set(Lwm2mSecurity::SECRET_KEY_5, OPAQUE_T {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0x99, 0x88, 0x77, 0x66, 0x55, 0x44});

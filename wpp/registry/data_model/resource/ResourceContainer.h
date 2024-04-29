@@ -19,20 +19,20 @@ public:
 	 * @brief Check if the resource is SINGLE
 	 * @param resId The resource ID
 	 */
-	bool isSingle(ID_T resId) const;
+	bool isSingle(ID_T resId);
 
 	/**
 	 * @brief Check if the resource is MULTIPLE
 	 * @param resId The resource ID
 	 */
-    bool isMultiple(ID_T resId) const;
+    bool isMultiple(ID_T resId);
 
 	/**
 	 * @brief Check if the instance ID is exist
 	 * @param resId The resource ID
 	 * @return True if the instance ID is exist, false otherwise
 	 */
-	bool isExist(ID_T resId) const;
+	bool isExist(ID_T resId);
 
 	/**
 	 * @brief Check if the instance ID is exist
@@ -41,7 +41,7 @@ public:
 	 * @note If the resource is SINGLE, the instance ID always SINGLE_INSTANCE_ID
 	 * @return True if the instance ID is exist, false otherwise
 	 */
-	bool isExist(ID_T resId, ID_T resInstId) const;
+	bool isExist(ID_T resId, ID_T resInstId);
 
 	/**
 	 * @brief Get the number of resource instances
@@ -49,7 +49,7 @@ public:
 	 * @note If the resource is SINGLE, the number of instances is always 1
 	 * @return The number of resource instances
 	 */
-	size_t instCount(ID_T resId) const;
+	size_t instCount(ID_T resId);
 
 	/**
  	 * @brief Returns vector with available ids of resource instances
@@ -57,7 +57,7 @@ public:
 	 * @note If the resource is SINGLE, the vector will be contain only one
 	 * 		 element with value SINGLE_INSTANCE_ID
 	 */
-	std::vector<ID_T> instIds(ID_T resId) const;
+	std::vector<ID_T> instIds(ID_T resId);
 
 	/**
 	 * @brief Find first available instance ID that is not used
@@ -65,7 +65,7 @@ public:
 	 * @note If the resource is SINGLE, the method will return ID_T_MAX_VAL
 	 * @return The first available instance ID else ID_T_MAX_VAL
 	 */
-	ID_T newInstId(ID_T resId) const;
+	ID_T newInstId(ID_T resId);
 
 	/**
 	 * @brief Set data value by copy for the resource (instance)
@@ -171,7 +171,7 @@ protected:
 	/**
 	 * @brief This method return list with all resources that has been defined.
 	 */
-    const std::vector<Resource> & resources();
+    std::vector<Resource> & resources();
 
 	/**
  	 * @brief This method must be implemented by the derived class, and handle
@@ -198,15 +198,15 @@ bool ResourceContainer::set(ID_T resId, ID_T resInstId, const T &value) {
 		return false;
 	}
 	if (!res->set(value, resInstId)) {
-		WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] operation failed", resId)
+		WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] operation failed", resId);
 		return false;
 	}
-	operationNotifier(ItemOp::WRITE, resId, res->isSingle()? ID_T_MAX_VAL : resInstId);
+	resourceOperationNotifier(ItemOp::WRITE, resId, res->isSingle()? ID_T_MAX_VAL : resInstId);
 	return true;
 }
 
 template<typename T>
-bool set(ID_T resId, T &&value) {
+bool ResourceContainer::set(ID_T resId, T &&value) {
 	return set(resId, SINGLE_INSTANCE_ID, std::move(value));
 }
 
@@ -218,10 +218,10 @@ bool ResourceContainer::set( ID_T resId, ID_T resInstId, T &&value) {
 		return false;
 	}
 	if (!res->set(std::move(value), resInstId)) {
-		WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] operation failed", resId)
+		WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] operation failed", resId);
 		return false;
 	}
-	operationNotifier(ItemOp::WRITE, resId, res->isSingle()? ID_T_MAX_VAL : resInstId);
+	resourceOperationNotifier(ItemOp::WRITE, resId, res->isSingle()? ID_T_MAX_VAL : resInstId);
 	return true;
 }
 
@@ -252,10 +252,10 @@ bool ResourceContainer::add(ID_T resId, const T &value) {
 	}
 	ID_T newId = res->newInstId();
 	if (!res->set(value, newId)) {
-		WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] operation failed", resId)
+		WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] operation failed", resId);
 		return false;
 	}
-	operationNotifier(ItemOp::WRITE, resId, newId);
+	resourceOperationNotifier(ItemOp::WRITE, resId, newId);
 	return true;
 }
 
@@ -272,10 +272,10 @@ bool ResourceContainer::add(ID_T resId, T &&value) {
 	}
 	ID_T newId = res->newInstId();
 	if (!res->set(std::move(value), newId)) {
-		WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] operation failed", resId)
+		WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] operation failed", resId);
 		return false;
 	}
-	operationNotifier(ItemOp::WRITE, resId, newId);
+	resourceOperationNotifier(ItemOp::WRITE, resId, newId);
 	return true;
 }
 

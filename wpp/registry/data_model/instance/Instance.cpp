@@ -24,7 +24,7 @@ void Instance::notifyResChanged(ID_T resId, ID_T resInstId) {
 std::vector<Resource *> Instance::getInstantiatedResList() {
 	std::vector<Resource *> list;
 	for (auto &res : resources()) {
-		if (res.size()) list.push_back(&res);
+		if (res.instCount()) list.push_back(&res);
 	}
 	return list;
 }
@@ -32,7 +32,7 @@ std::vector<Resource *> Instance::getInstantiatedResList() {
 std::vector<Resource *> Instance::getInstantiatedResList(const ItemOp& filter) {
 	std::vector<Resource *> list;
 	for (auto &res : resources()) {
-		if (res.size() && filter.isCompatible(res.getOperation())) list.push_back(&res);
+		if (res.instCount() && filter.isCompatible(res.getOperation())) list.push_back(&res);
 	}
 	return list;
 }
@@ -277,10 +277,10 @@ uint8_t Instance::resourceRead(lwm2m_server_t *server, lwm2m_data_t &data, Resou
 	// if has been received data for multiple resource with not allocated memory
 	// then we ourselves allocate memory for instances
 	if (res.isMultiple() && data.type != LWM2M_TYPE_MULTIPLE_RESOURCE) {
-		lwm2m_data_t *subData = lwm2m_data_new(res.size());
+		lwm2m_data_t *subData = lwm2m_data_new(res.instCount());
 		lwm2m_data_t *dataCnt = subData;
 		for (auto id : res.instIds()) (dataCnt++)->id = id;
-		lwm2m_data_encode_instances(subData, res.size(), &data);
+		lwm2m_data_encode_instances(subData, res.instCount(), &data);
 	}
 
 	size_t count = 1;

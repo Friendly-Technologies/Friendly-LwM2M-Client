@@ -39,7 +39,7 @@ public:
 			{9, ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL, TYPE_ID::OPAQUE},
 			{10, ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL, TYPE_ID::CORE_LINK},
 		};
-	    _resources = std::move(resources);
+	    setupResources(std::move(resources));
 
 		REQUIRE(resource(0)->set((STRING_T)"test1"));
 		REQUIRE(resource(1)->set((TIME_T)123));

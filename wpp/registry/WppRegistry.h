@@ -101,14 +101,6 @@ public:
 	Object * object(OBJ_ID objId);
 
 	/**
-	 * @brief Retrieves a reference to the Object with the given objId.
-	 * @param objId The ID of the Object to retrieve.
-	 * @note If the Object is not found, a reference to an empty Object is returned.
-	 * @return A reference to the Object if found.
-	 */
-	Object & operator[](OBJ_ID objId);
-
-	/**
 	 * @brief Gets all registered objects.
 	 *
 	 * @return A vector of pointers to the registered objects.

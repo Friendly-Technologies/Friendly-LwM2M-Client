@@ -130,14 +130,6 @@ public:
 	Instance* instance(ID_T instanceID = ID_T_MAX_VAL);
 
 	/**
-	 * @brief Retrieves a reference to the Instance with the given id.
-	 * @param instanceID The ID of the Instance to retrieve.
-	 * @note If the Instance is not found, a reference to an empty Instance is returned.
-	 * @return A reference to the Instance if found.
-	 */
-	Instance & operator[](ID_T instanceID);
-
-	/**
 	 * @brief Gets all instances of the object.
 	 * 
 	 * @return A vector of pointers to the Instance objects.

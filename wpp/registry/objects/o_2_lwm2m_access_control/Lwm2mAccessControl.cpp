@@ -58,6 +58,8 @@ void Lwm2mAccessControl::serverOperationNotifier(Instance *securityInst, ItemOp:
 }
 
 void Lwm2mAccessControl::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) {
+	if (type == ItemOp::WRITE) notifyResChanged(resLink.resId, resLink.resInstId);
+
 	/* --------------- Code_cpp block 8 start --------------- */
 	/* --------------- Code_cpp block 8 end --------------- */
 }
@@ -74,7 +76,7 @@ void Lwm2mAccessControl::resourcesCreate() {
 		#endif                                                                                                                                                     
 		{ACCESS_CONTROL_OWNER_3, ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE,   IS_MANDATORY::MANDATORY, TYPE_ID::INT }, 
 	};
-	_resources = std::move(resources);
+	setupResources(std::move(resources));
 }
 
 void Lwm2mAccessControl::resourcesInit() {
@@ -101,8 +103,8 @@ void Lwm2mAccessControl::resourcesInit() {
 Lwm2mAccessControl * Lwm2mAccessControl::getAcInstForTarget(Object &acObj, ID_T objId, ID_T objInstId) {
 	// Find the ac object instance for the target object
 	for (auto &inst : acObj.instances()) {
-		INT_T tmpObjId = inst->resource(OBJECT_ID_0)->get<INT_T>();
-		INT_T tmpObjInstId = inst->resource(OBJECT_INSTANCE_ID_1)->get<INT_T>();
+		INT_T tmpObjId = inst->get<INT_T>(OBJECT_ID_0);
+		INT_T tmpObjInstId = inst->get<INT_T>(OBJECT_INSTANCE_ID_1);
 		if (tmpObjId == objId && tmpObjInstId == objInstId) return static_cast<Lwm2mAccessControl*>(inst);
 	}
 	return NULL;
@@ -116,12 +118,12 @@ bool Lwm2mAccessControl::createInst(Object &targetObj, uint8_t defaultAcl) {
 	if (getAcInstForTarget(acObj, targetObj.getObjectID(), AC_OBJ_INST_NOT_SET)) return false;
 
 	Lwm2mAccessControl *acInst = acObj.createInstanceSpec();
-	acInst->resource(OBJECT_ID_0)->set<INT_T>(targetObj.getObjectID());
-	acInst->resource(OBJECT_INSTANCE_ID_1)->set<INT_T>(AC_OBJ_INST_NOT_SET);
+	acInst->set<INT_T>(OBJECT_ID_0, targetObj.getObjectID());
+	acInst->set<INT_T>(OBJECT_INSTANCE_ID_1, AC_OBJ_INST_NOT_SET);
 	#if RES_2_2
-	acInst->resource(ACL_2)->set<INT_T>(defaultAcl & ALL_OBJ_RIGHTS, AC_ACL_DEFAULT_ID);
+	acInst->set<INT_T>(ACL_2, AC_ACL_DEFAULT_ID, defaultAcl & ALL_OBJ_RIGHTS);
 	#endif
-	acInst->resource(ACCESS_CONTROL_OWNER_3)->set<INT_T>(AC_CLIENT_OWNER);
+	acInst->set<INT_T>(ACCESS_CONTROL_OWNER_3, AC_CLIENT_OWNER);
 
 	return true;
 }
@@ -142,7 +144,7 @@ bool Lwm2mAccessControl::addAcl(Object &targetObj, ID_T serverShortId, uint8_t a
 
 	if (!acInst) return false;
 
-	acInst->resource(ACL_2)->set<INT_T>(acl & ALL_OBJ_RIGHTS, serverShortId);
+	acInst->set<INT_T>(ACL_2, serverShortId, acl & ALL_OBJ_RIGHTS);
 
 	return true;
 }
@@ -152,8 +154,8 @@ void Lwm2mAccessControl::removeAcl(Object &targetObj, ID_T serverShortId) {
 	auto &acObj = registry.lwm2mAccessControl();
 	Lwm2mAccessControl *acInst = getAcInstForTarget(acObj, targetObj.getObjectID(), AC_OBJ_INST_NOT_SET);
 
-	if (!acInst || !acInst->resource(ACL_2)->isExist(serverShortId)) return;
-	acInst->resource(ACL_2)->remove(serverShortId);
+	if (!acInst || !acInst->isExist(ACL_2, serverShortId)) return;
+	acInst->remove(ACL_2, serverShortId);
 }
 #endif
 
@@ -165,12 +167,12 @@ bool Lwm2mAccessControl::createInst(Instance &targetInst, ID_T owner, uint8_t de
 	if (getAcInstForTarget(acObj, targetInst.getObjectID(), targetInst.getInstanceID())) return false;
 
 	Lwm2mAccessControl *acInst = acObj.createInstanceSpec();
-	acInst->resource(OBJECT_ID_0)->set<INT_T>(targetInst.getObjectID());
-	acInst->resource(OBJECT_INSTANCE_ID_1)->set<INT_T>(targetInst.getInstanceID());
+	acInst->set<INT_T>(OBJECT_ID_0, targetInst.getObjectID());
+	acInst->set<INT_T>(OBJECT_INSTANCE_ID_1, targetInst.getInstanceID());
 	#if RES_2_2
-	acInst->resource(ACL_2)->set<INT_T>(defaultAcl & ALL_INST_RIGHTS, AC_ACL_DEFAULT_ID);
+	acInst->set<INT_T>(ACL_2, AC_ACL_DEFAULT_ID, defaultAcl & ALL_INST_RIGHTS);
 	#endif
-	acInst->resource(ACCESS_CONTROL_OWNER_3)->set<INT_T>(owner);
+	acInst->set<INT_T>(ACCESS_CONTROL_OWNER_3, owner);
 
 	return true;
 }
@@ -190,7 +192,7 @@ bool Lwm2mAccessControl::addAcl(Instance &targetInst, ID_T serverShortId, uint8_
 	Lwm2mAccessControl *acInst = getAcInstForTarget(acObj, targetInst.getObjectID(), targetInst.getInstanceID());
 
 	if (!acInst) return false;
-	acInst->resource(ACL_2)->set<INT_T>(acl & ALL_INST_RIGHTS, serverShortId);
+	acInst->set<INT_T>(ACL_2, serverShortId, acl & ALL_INST_RIGHTS);
 
 	return true;
 }
@@ -200,8 +202,8 @@ void Lwm2mAccessControl::removeAcl(Instance &targetInst, ID_T serverShortId) {
 	auto &acObj = registry.lwm2mAccessControl();
 	Lwm2mAccessControl *acInst = getAcInstForTarget(acObj, targetInst.getObjectID(), targetInst.getInstanceID());
 
-	if (!acInst || !acInst->resource(ACL_2)->isExist(serverShortId)) return;
-	acInst->resource(ACL_2)->remove(serverShortId);
+	if (!acInst || !acInst->isExist(ACL_2, serverShortId)) return;
+	acInst->remove(ACL_2, serverShortId);
 }
 #endif
 /* --------------- Code_cpp block 11 end --------------- */

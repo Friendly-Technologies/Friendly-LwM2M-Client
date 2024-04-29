@@ -67,14 +67,6 @@ Object * WppRegistry::object(OBJ_ID objId) {
 	return objIter != _objects.end()? *objIter : NULL;
 }
 
-Object & WppRegistry::operator[](OBJ_ID objId) {
-	Object * obj = object(objId);
-	if (obj == NULL) {
-		WPP_LOGE(TAG_WPP_REG, "Object with id %d not found", objId);
-	}
-	return *obj;
-}
-
 std::vector<Object *> & WppRegistry::objects() {
 	return _objects;
 }

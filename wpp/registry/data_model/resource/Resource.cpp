@@ -120,11 +120,11 @@ bool Resource::isTypeIdCompatible(TYPE_ID type) const {
 	return _typeID == type;
 }
 
-size_t Resource::size() const {
+size_t Resource::instCount() const {
 	return _instances.size();
 }
 
-const std::vector<ID_T> Resource::instIds() const {
+std::vector<ID_T> Resource::instIds() const {
 	std::vector<ID_T> ids;
 	ids.reserve(_instances.size());
 	std::transform(_instances.begin(), _instances.end(), std::back_inserter(ids), [](const auto& inst) { return inst.id; });
@@ -148,7 +148,10 @@ ID_T Resource::newInstId() const {
 
 /* ---------- Methods for get and set resource value ----------*/
 bool Resource::remove(ID_T resInstId) {
-	if (isSingle() || !isExist(resInstId)) return false;
+	if (isSingle() || !isExist(resInstId)) {
+		WPP_LOGW(TAG_WPP_RES, "Resource[%d], instance with ID %d not found or resource is SINGLE", _id, resInstId);
+		return false;
+	}
 	auto instForRemove = getInstIter(resInstId);
 	_instances.erase(instForRemove);
 
@@ -156,13 +159,19 @@ bool Resource::remove(ID_T resInstId) {
 }
 
 bool Resource::clear() {
-	if (isSingle()) return false;
+	if (isSingle()) {
+		WPP_LOGW(TAG_WPP_RES, "Resource[%d] is SINGLE", _id);
+		return false;
+	}
 	_instances.clear();
 	return true;
 }
 
 bool Resource::setDataVerifier(const DATA_VERIFIER_T &verifier) {
-	if (!isDataVerifierValid(verifier)) return false;
+	if (!isDataVerifierValid(verifier)) {
+		WPP_LOGW(TAG_WPP_RES, "Resource[%d] verifier is not valid", _id);
+		return false;
+	}
 	_dataVerifier = verifier;
 	return true;
 }

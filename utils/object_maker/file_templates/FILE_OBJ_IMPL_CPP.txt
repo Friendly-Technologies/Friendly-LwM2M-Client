@@ -46,7 +46,7 @@ void __CLASS_NAME__::resourcesCreate() {
 	std::vector<Resource> resources = {
 __RESOURCES_TABLE__
 	};
-	_resources = std::move(resources);
+	setupResources(std::move(resources));
 }
 
 __F_RESOURCE_INIT__

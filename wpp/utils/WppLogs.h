@@ -11,6 +11,7 @@
 #define TAG_WPP_OBJ         "Object"
 #define TAG_WPP_INST        "Instance"
 #define TAG_WPP_RES         "Resource"
+#define TAG_WPP_RES_CON     "ResourceContainer"
 #define TAG_WPP_TASK        "WppTaskQueue"
 /* ---------- WPP components log TAGs end ---------- */
 

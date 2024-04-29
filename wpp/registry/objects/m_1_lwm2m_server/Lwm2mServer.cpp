@@ -59,6 +59,8 @@ void Lwm2mServer::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE t
 }
 
 void Lwm2mServer::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) {
+	if (type == ItemOp::WRITE) notifyResChanged(resLink.resId, resLink.resInstId);
+
 	/* --------------- Code_cpp block 8 start --------------- */
 	if (type == ItemOp::WRITE && resLink.resId == LIFETIME_1 && getContext().state == STATE_READY){
 		INT_T serverId = resource(SHORT_SERVER_ID_0)->get<INT_T>();
@@ -143,7 +145,7 @@ void Lwm2mServer::resourcesCreate() {
 		{MUTE_SEND_23,                                    ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::BOOL },     
 		#endif                                                                                                                                                                                 
 	};
-	_resources = std::move(resources);
+	setupResources(std::move(resources));
 }
 
 void Lwm2mServer::resourcesInit() {

@@ -22,7 +22,7 @@ namespace wpp {
 class WppClient;
 class Object;
 
-/* --------------- Сode_h block 1 end --------------- */
+/* --------------- Сode_h block 1 start --------------- */
 /* --------------- Сode_h block 1 end --------------- */
 
 class Lwm2mServer : public Instance {
@@ -98,7 +98,7 @@ public:
 public:
 	Lwm2mServer(lwm2m_context_t &context, const OBJ_LINK_T &id);
 	~Lwm2mServer();
-	
+
 	/* --------------- Helpful methods --------------- */
 	/**
 	 * @brief Gets the Object reference.

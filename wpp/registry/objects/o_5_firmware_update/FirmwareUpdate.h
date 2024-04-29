@@ -27,7 +27,7 @@ namespace wpp {
 class WppClient;
 class Object;
 
-/* --------------- Сode_h block 1 end --------------- */
+/* --------------- Сode_h block 1 start --------------- */
 /* --------------- Сode_h block 1 end --------------- */
 
 class FirmwareUpdate : public Instance {

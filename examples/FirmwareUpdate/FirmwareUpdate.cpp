@@ -12,10 +12,10 @@ void FirmwareUpdateImpl::init(Object &obj) {
 	obj.actSubscribe(this);
 	Instance *fwInst = obj.createInstance(0);
 
-    FirmwareUpdate::setFwUpdater(obj->getClient(), *this);
-    FirmwareUpdate::setFwInternalDownloader(obj->getClient(), _internalDownloader);
+    FirmwareUpdate::setFwUpdater(obj.getClient(), *this);
+    FirmwareUpdate::setFwInternalDownloader(obj.getClient(), _internalDownloader);
     #if RES_5_8
-    FirmwareUpdate::setFwExternalDownloader(obj->getClient(), _uriDownloader);
+    FirmwareUpdate::setFwExternalDownloader(obj.getClient(), _uriDownloader);
     #endif
 
     #if OBJ_O_2_LWM2M_ACCESS_CONTROL

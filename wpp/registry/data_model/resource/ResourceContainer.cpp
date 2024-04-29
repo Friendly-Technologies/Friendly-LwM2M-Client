@@ -60,7 +60,7 @@ ID_T ResourceContainer::newInstId(ID_T resId) {
     return res->newInstId();
 }
 
-bool ResourceContainer::remove(ID_T resId, ID_T resInstId) {
+bool ResourceContainer::removeRes(ID_T resId, ID_T resInstId) {
     auto res = resource(resId);
     if (res == NULL) {
         WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] not found", resId);
@@ -71,7 +71,7 @@ bool ResourceContainer::remove(ID_T resId, ID_T resInstId) {
     return true;
 }
 
-bool ResourceContainer::clear(ID_T resId) {
+bool ResourceContainer::clearRes(ID_T resId) {
     auto res = resource(resId);
     if (res == NULL) {
         WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] not found", resId);

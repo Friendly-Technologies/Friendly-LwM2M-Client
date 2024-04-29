@@ -50,13 +50,13 @@ Lwm2mSecurity * Lwm2mSecurity::instance(WppClient &ctx, ID_T instId) {
 	return static_cast<Lwm2mSecurity*>(inst);
 }
 
-Lwm2mSecurity * Lwm2mSecurity::create(WppClient &ctx, ID_T instId) {
+Lwm2mSecurity * Lwm2mSecurity::createInst(WppClient &ctx, ID_T instId) {
 	Instance *inst = ctx.registry().lwm2mSecurity().createInstance(instId);
 	if (!inst) return NULL;
 	return static_cast<Lwm2mSecurity*>(inst);
 }
 
-bool Lwm2mSecurity::remove(WppClient &ctx, ID_T instId) {
+bool Lwm2mSecurity::removeInst(WppClient &ctx, ID_T instId) {
 	return ctx.registry().lwm2mSecurity().remove(instId);
 }
 

@@ -121,7 +121,7 @@ public:
 	 * @param instanceID The instance ID.
 	 * @return A pointer to the created Instance object or NULL.
 	 */
-	static Lwm2mServer * create(WppClient &ctx, ID_T instId = ID_T_MAX_VAL);
+	static Lwm2mServer * createInst(WppClient &ctx, ID_T instId = ID_T_MAX_VAL);
 
 	/**
 	 * @brief Removes an instance of the object.
@@ -129,7 +129,7 @@ public:
 	 * @param instId The instance ID.
 	 * @return True if the instance was successfully removed, false otherwise.
 	 */
-	static bool remove(WppClient &ctx, ID_T instId);
+	static bool removeInst(WppClient &ctx, ID_T instId);
 
 	/* --------------- Code_h block 3 start --------------- */
 	/* --------------- Code_h block 3 end --------------- */

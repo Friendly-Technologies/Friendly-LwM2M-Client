@@ -144,14 +144,14 @@ public:
 	 * @param resInstId The instance ID to remove
 	 * @return True if the instance is removed, false otherwise.
 	 */
-	bool remove(ID_T resId, ID_T resInstId);
+	bool removeRes(ID_T resId, ID_T resInstId);
 
 	/**
  	 * @brief Remove all instances.
 	 * @note If the resource is SINGLE, the method will return false.
 	 * @return True if all instances are removed, false otherwise.
 	 */
-	bool clear(ID_T resId);
+	bool clearRes(ID_T resId);
 
 protected:
 	/**

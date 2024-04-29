@@ -78,7 +78,7 @@ public:
 	 * @param instanceID The instance ID.
 	 * @return A pointer to the created Instance object or NULL.
 	 */
-	static Lwm2mAccessControl * create(WppClient &ctx, ID_T instId = ID_T_MAX_VAL);
+	static Lwm2mAccessControl * createInst(WppClient &ctx, ID_T instId = ID_T_MAX_VAL);
 
 	/**
 	 * @brief Removes an instance of the object.
@@ -86,7 +86,7 @@ public:
 	 * @param instId The instance ID.
 	 * @return True if the instance was successfully removed, false otherwise.
 	 */
-	static bool remove(WppClient &ctx, ID_T instId);
+	static bool removeInst(WppClient &ctx, ID_T instId);
 
 	/* --------------- Code_h block 3 start --------------- */
 	/**
@@ -94,7 +94,7 @@ public:
 	 * @param targetObj Target object
 	 * @param defaultAcl Default ACL for target object, can be NO_ACCESS or ALL_OBJ_RIGHTS
 	 */
-	static bool create(Object &targetObj, uint8_t defaultAcl = NO_ACCESS);
+	static Lwm2mAccessControl * create(Object &targetObj, uint8_t defaultAcl = NO_ACCESS);
 
 	/**
 	 * @brief Delete Lwm2mAccessControl object instance for target object
@@ -122,7 +122,7 @@ public:
 	 * @param owner Target object instance owner, should be set to AC_CLIENT_OWNER or server short id
 	 * @param defaultAcl Default ACL for target object, can be NO_ACCESS or ALL_INST_RIGHTS
 	 */
-	static bool create(Instance &targetInst, ID_T owner = AC_CLIENT_OWNER, uint8_t defaultAcl = NO_ACCESS);
+	static Lwm2mAccessControl * create(Instance &targetInst, ID_T owner = AC_CLIENT_OWNER, uint8_t defaultAcl = NO_ACCESS);
 
 	/**
 	 * @brief Delete Lwm2mAccessControl object instance for target object instance

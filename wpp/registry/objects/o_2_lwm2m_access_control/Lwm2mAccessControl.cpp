@@ -56,13 +56,13 @@ Lwm2mAccessControl * Lwm2mAccessControl::instance(WppClient &ctx, ID_T instId) {
 	return static_cast<Lwm2mAccessControl*>(inst);
 }
 
-Lwm2mAccessControl * Lwm2mAccessControl::create(WppClient &ctx, ID_T instId) {
+Lwm2mAccessControl * Lwm2mAccessControl::createInst(WppClient &ctx, ID_T instId) {
 	Instance *inst = ctx.registry().lwm2mAccessControl().createInstance(instId);
 	if (!inst) return NULL;
 	return static_cast<Lwm2mAccessControl*>(inst);
 }
 
-bool Lwm2mAccessControl::remove(WppClient &ctx, ID_T instId) {
+bool Lwm2mAccessControl::removeInst(WppClient &ctx, ID_T instId) {
 	return ctx.registry().lwm2mAccessControl().remove(instId);
 }
 
@@ -125,12 +125,12 @@ Lwm2mAccessControl * Lwm2mAccessControl::getAcInstForTarget(Object &acObj, ID_T 
 	return NULL;
 }
 
-bool Lwm2mAccessControl::create(Object &targetObj, uint8_t defaultAcl) {
+Lwm2mAccessControl * Lwm2mAccessControl::create(Object &targetObj, uint8_t defaultAcl) {
 	WppRegistry &registry = targetObj.getRegistry();
 	auto &acObj = registry.lwm2mAccessControl();
 
 	// Check if the object instance already exists
-	if (getAcInstForTarget(acObj, targetObj.getObjectID(), AC_OBJ_INST_NOT_SET)) return false;
+	if (getAcInstForTarget(acObj, targetObj.getObjectID(), AC_OBJ_INST_NOT_SET)) return NULL;
 
 	Lwm2mAccessControl *acInst = static_cast<Lwm2mAccessControl *>(acObj.createInstance());
 	acInst->set<INT_T>(OBJECT_ID_0, targetObj.getObjectID());
@@ -140,7 +140,7 @@ bool Lwm2mAccessControl::create(Object &targetObj, uint8_t defaultAcl) {
 	#endif
 	acInst->set<INT_T>(ACCESS_CONTROL_OWNER_3, AC_CLIENT_OWNER);
 
-	return true;
+	return acInst;
 }
 
 void Lwm2mAccessControl::remove(Object &targetObj) {
@@ -170,16 +170,16 @@ void Lwm2mAccessControl::removeAcl(Object &targetObj, ID_T serverShortId) {
 	Lwm2mAccessControl *acInst = getAcInstForTarget(acObj, targetObj.getObjectID(), AC_OBJ_INST_NOT_SET);
 
 	if (!acInst || !acInst->isExist(ACL_2, serverShortId)) return;
-	acInst->remove(ACL_2, serverShortId);
+	acInst->removeRes(ACL_2, serverShortId);
 }
 #endif
 
-bool Lwm2mAccessControl::create(Instance &targetInst, ID_T owner, uint8_t defaultAcl) {
+Lwm2mAccessControl * Lwm2mAccessControl::create(Instance &targetInst, ID_T owner, uint8_t defaultAcl) {
 	WppRegistry &registry = targetInst.getRegistry();
 	auto &acObj = registry.lwm2mAccessControl();
 
 	// Check if the object instance already exists
-	if (getAcInstForTarget(acObj, targetInst.getObjectID(), targetInst.getInstanceID())) return false;
+	if (getAcInstForTarget(acObj, targetInst.getObjectID(), targetInst.getInstanceID())) return NULL;
 
 	Lwm2mAccessControl *acInst = static_cast<Lwm2mAccessControl *>(acObj.createInstance());
 	acInst->set<INT_T>(OBJECT_ID_0, targetInst.getObjectID());
@@ -189,7 +189,7 @@ bool Lwm2mAccessControl::create(Instance &targetInst, ID_T owner, uint8_t defaul
 	#endif
 	acInst->set<INT_T>(ACCESS_CONTROL_OWNER_3, owner);
 
-	return true;
+	return acInst;
 }
 
 void Lwm2mAccessControl::remove(Instance &targetInst) {
@@ -218,7 +218,7 @@ void Lwm2mAccessControl::removeAcl(Instance &targetInst, ID_T serverShortId) {
 	Lwm2mAccessControl *acInst = getAcInstForTarget(acObj, targetInst.getObjectID(), targetInst.getInstanceID());
 
 	if (!acInst || !acInst->isExist(ACL_2, serverShortId)) return;
-	acInst->remove(ACL_2, serverShortId);
+	acInst->removeRes(ACL_2, serverShortId);
 }
 #endif
 /* --------------- Code_cpp block 8 end --------------- */

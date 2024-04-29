@@ -70,13 +70,13 @@ ConnectivityMonitoring * ConnectivityMonitoring::instance(WppClient &ctx, ID_T i
 	return static_cast<ConnectivityMonitoring*>(inst);
 }
 
-ConnectivityMonitoring * ConnectivityMonitoring::create(WppClient &ctx, ID_T instId) {
+ConnectivityMonitoring * ConnectivityMonitoring::createInst(WppClient &ctx, ID_T instId) {
 	Instance *inst = ctx.registry().connectivityMonitoring().createInstance(instId);
 	if (!inst) return NULL;
 	return static_cast<ConnectivityMonitoring*>(inst);
 }
 
-bool ConnectivityMonitoring::remove(WppClient &ctx, ID_T instId) {
+bool ConnectivityMonitoring::removeInst(WppClient &ctx, ID_T instId) {
 	return ctx.registry().connectivityMonitoring().remove(instId);
 }
 

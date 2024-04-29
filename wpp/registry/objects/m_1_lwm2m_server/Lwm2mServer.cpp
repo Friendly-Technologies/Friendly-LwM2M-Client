@@ -55,13 +55,13 @@ Lwm2mServer * Lwm2mServer::instance(WppClient &ctx, ID_T instId) {
 	return static_cast<Lwm2mServer*>(inst);
 }
 
-Lwm2mServer * Lwm2mServer::create(WppClient &ctx, ID_T instId) {
+Lwm2mServer * Lwm2mServer::createInst(WppClient &ctx, ID_T instId) {
 	Instance *inst = ctx.registry().lwm2mServer().createInstance(instId);
 	if (!inst) return NULL;
 	return static_cast<Lwm2mServer*>(inst);
 }
 
-bool Lwm2mServer::remove(WppClient &ctx, ID_T instId) {
+bool Lwm2mServer::removeInst(WppClient &ctx, ID_T instId) {
 	return ctx.registry().lwm2mServer().remove(instId);
 }
 

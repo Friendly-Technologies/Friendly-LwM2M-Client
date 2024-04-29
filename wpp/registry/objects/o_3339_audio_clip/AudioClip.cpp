@@ -46,13 +46,13 @@ AudioClip * AudioClip::instance(WppClient &ctx, ID_T instId) {
 	return static_cast<AudioClip*>(inst);
 }
 
-AudioClip * AudioClip::create(WppClient &ctx, ID_T instId) {
+AudioClip * AudioClip::createInst(WppClient &ctx, ID_T instId) {
 	Instance *inst = ctx.registry().audioClip().createInstance(instId);
 	if (!inst) return NULL;
 	return static_cast<AudioClip*>(inst);
 }
 
-bool AudioClip::remove(WppClient &ctx, ID_T instId) {
+bool AudioClip::removeInst(WppClient &ctx, ID_T instId) {
 	return ctx.registry().audioClip().remove(instId);
 }
 

@@ -56,13 +56,13 @@ Device * Device::instance(WppClient &ctx, ID_T instId) {
 	return static_cast<Device*>(inst);
 }
 
-Device * Device::create(WppClient &ctx, ID_T instId) {
+Device * Device::createInst(WppClient &ctx, ID_T instId) {
 	Instance *inst = ctx.registry().device().createInstance(instId);
 	if (!inst) return NULL;
 	return static_cast<Device*>(inst);
 }
 
-bool Device::remove(WppClient &ctx, ID_T instId) {
+bool Device::removeInst(WppClient &ctx, ID_T instId) {
 	return ctx.registry().device().remove(instId);
 }
 

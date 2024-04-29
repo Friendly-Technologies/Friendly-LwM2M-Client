@@ -69,13 +69,13 @@ FirmwareUpdate * FirmwareUpdate::instance(WppClient &ctx, ID_T instId) {
 	return static_cast<FirmwareUpdate*>(inst);
 }
 
-FirmwareUpdate * FirmwareUpdate::create(WppClient &ctx, ID_T instId) {
+FirmwareUpdate * FirmwareUpdate::createInst(WppClient &ctx, ID_T instId) {
 	Instance *inst = ctx.registry().firmwareUpdate().createInstance(instId);
 	if (!inst) return NULL;
 	return static_cast<FirmwareUpdate*>(inst);
 }
 
-bool FirmwareUpdate::remove(WppClient &ctx, ID_T instId) {
+bool FirmwareUpdate::removeInst(WppClient &ctx, ID_T instId) {
 	return ctx.registry().firmwareUpdate().remove(instId);
 }
 
@@ -185,7 +185,7 @@ bool FirmwareUpdate::setFwUpdater(WppClient &ctx, FwUpdater &updater) {
 
 	fw->_pkgUpdater = &updater;
 	// Set the update method
-	fw->resource(UPDATE_2)->set<EXECUTE_T>([fw](Instance& inst, ID_T resId, const OPAQUE_T& data) { return pkgUpdaterHandler(); });
+	fw->resource(UPDATE_2)->set<EXECUTE_T>([fw](Instance& inst, ID_T resId, const OPAQUE_T& data) { return fw->pkgUpdaterHandler(); });
 	// Set last update result
 	fw->resource(UPDATE_RESULT_5)->set<INT_T>(updater.lastUpdateResult());
 	fw->notifyResChanged(UPDATE_RESULT_5);
@@ -205,7 +205,7 @@ bool FirmwareUpdate::setFwUpdater(WppClient &ctx, FwUpdater &updater) {
 #if RES_5_8
 std::vector<FwUpdProtocol> FirmwareUpdate::supportedProtocols(WppClient &ctx) {
 	FirmwareUpdate *fw = FirmwareUpdate::instance(ctx);
-	if (!fw) return false;
+	if (!fw) return {};
 
 	std::vector<FwUpdProtocol> supportedProtocols;
 	for (auto id : fw->resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->instIds()) {

@@ -297,4 +297,3 @@ target_compile_definitions(<YOUR_EXECUTABLE> PUBLIC ${WPP_DEFINITIONS})
 target_link_wpp(<YOUR_EXECUTABLE>)
 ```
  <br />
- <br />

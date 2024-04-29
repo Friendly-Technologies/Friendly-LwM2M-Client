@@ -68,30 +68,48 @@ public:
 	ID_T newInstId(ID_T resId);
 
 	/**
-	 * @brief Set data value by copy for the resource (instance)
+	 * @brief Set data value by copy for the resource
 	 * @param value The data value to set 
 	 * @param resId The resource ID
-	 * @param resInstId The instance ID to set the value, used only for MULTIPLE resources
-	 * @note Before set new value its type will be checked. If resource is SINGLE then
-	 * 		 resInstId not used.
+	 * @note Before set new value its type will be checked. If resource is MULTIPLE then
+	 * 		 method set value for instance with ID SINGLE_INSTANCE_ID.
 	 * @return True if the value is set, false otherwise
 	 */
 	template<typename T>
 	bool set(ID_T resId, const T &value);
+
+	/**
+	 * @brief Set data value by copy for the resource instance
+	 * @param value The data value to set 
+	 * @param resId The resource ID
+	 * @param resInstId The instance ID to set the value, used only for MULTIPLE resources
+	 * @note Before set new value its type will be checked. If resource is SINGLE then
+	 * 		 method will ignore @param resInstId.
+	 * @return True if the value is set, false otherwise
+	 */
 	template<typename T>
     bool set(ID_T resId, ID_T resInstId, const T &value);
 
 	/**
-	 * @brief Set data value by move for the resource (instance)
+	 * @brief Set data value by move for the resource
 	 * @param value The data value to set 
 	 * @param resId The resource ID
-	 * @param resInstId The instance ID to set the value, used only for multiple resources
-	 * @note Before set new value its type will be checked. If resource is SINGLE then
-	 * 		 resInstId not used.
+	 * @note Before set new value its type will be checked. If resource is MULTIPLE then
+	 * 		 method will return false.
 	 * @return True if the value is set, false otherwise
 	 */
 	template<typename T>
 	bool set(ID_T resId, T &&value);
+
+	/**
+	 * @brief Set data value by move for the resource instance
+	 * @param value The data value to set 
+	 * @param resId The resource ID
+	 * @param resInstId The instance ID to set the value, used only for MULTIPLE resources
+	 * @note Before set new value its type will be checked. If resource is SINGLE then
+	 * 		 method will ignore @param resInstId.
+	 * @return True if the value is set, false otherwise
+	 */
 	template<typename T>
 	bool set(ID_T resId, ID_T resInstId, T &&value);
 
@@ -119,7 +137,11 @@ public:
 	 * @param resId The resource ID
 	 * @note If the resource is SINGLE, the method will return false.
 	 * 		 If the data type is not valid, the method will return false.
-	 * 		 Instance ID will be generated automatically.
+	 * 		 Instance ID will be generated automatically.The ID is determined 
+	 * 		 according to the following algorithm: if the ID is equal to the
+	 * 		 number of free instances, then we return it, otherwise, starting
+	 * 		 with ID 0, we search for the first free index, if no free indexes
+	 * 		 are found, then method returns false.
 	 * @return True if the instance is added, false otherwise
 	 */
 	template<typename T>
@@ -131,7 +153,11 @@ public:
 	 * @param resId The resource ID
 	 * @note If the resource is SINGLE, the method will return false.
 	 * 		 If the data type is not valid, the method will return false.
-	 * 		 Instance ID will be generated automatically.
+	 * 		 Instance ID will be generated automatically. The ID is determined 
+	 * 		 according to the following algorithm: if the ID is equal to the
+	 * 		 number of free instances, then we return it, otherwise, starting
+	 * 		 with ID 0, we search for the first free index, if no free indexes
+	 * 		 are found, then method returns false.
 	 * @return True if the instance is added, false otherwise
 	 */
 	template<typename T>
@@ -144,14 +170,14 @@ public:
 	 * @param resInstId The instance ID to remove
 	 * @return True if the instance is removed, false otherwise.
 	 */
-	bool remove(ID_T resId, ID_T resInstId);
+	bool removeRes(ID_T resId, ID_T resInstId);
 
 	/**
  	 * @brief Remove all instances.
 	 * @note If the resource is SINGLE, the method will return false.
 	 * @return True if all instances are removed, false otherwise.
 	 */
-	bool clear(ID_T resId);
+	bool clearRes(ID_T resId);
 
 protected:
 	/**
@@ -211,7 +237,7 @@ bool ResourceContainer::set(ID_T resId, T &&value) {
 }
 
 template<typename T>
-bool ResourceContainer::set( ID_T resId, ID_T resInstId, T &&value) {
+bool ResourceContainer::set(ID_T resId, ID_T resInstId, T &&value) {
 	auto res = resource(resId);
 	if (res == NULL) {
 		WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] not found", resId);
@@ -250,7 +276,12 @@ bool ResourceContainer::add(ID_T resId, const T &value) {
 		WPP_LOGE(TAG_WPP_RES_CON, "Resource[%d] is SINGLE", resId);
 		return false;
 	}
+
 	ID_T newId = res->newInstId();
+	if (newId == ID_T_MAX_VAL) {
+		WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] new instance ID not found", resId);
+		return false;
+	}
 	if (!res->set(value, newId)) {
 		WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] operation failed", resId);
 		return false;
@@ -270,7 +301,13 @@ bool ResourceContainer::add(ID_T resId, T &&value) {
 		WPP_LOGE(TAG_WPP_RES_CON, "Resource[%d] is SINGLE", resId);
 		return false;
 	}
+
 	ID_T newId = res->newInstId();
+	if (newId == ID_T_MAX_VAL) {
+		WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] new instance ID not found", resId);
+		return false;
+	}
+	WPP_LOGD(TAG_WPP_RES_CON, "Resource[%d] new instance ID: %d", resId, newId);
 	if (!res->set(std::move(value), newId)) {
 		WPP_LOGW(TAG_WPP_RES_CON, "Resource[%d] operation failed", resId);
 		return false;

@@ -14,8 +14,8 @@ void Lwm2mServerImpl::init(Object &obj) {
 	inst0->set<BOOL_T>(Lwm2mServer::NOTIFICATION_STORING_WHEN_DISABLED_OR_OFFLINE_6, false);
 
 	#if OBJ_O_2_LWM2M_ACCESS_CONTROL
-	Lwm2mAccessControl::createInst(obj, Lwm2mAccessControl::ALL_OBJ_RIGHTS);
-	Lwm2mAccessControl::createInst(*inst0, TEST_SERVER_SHORT_ID);
+	Lwm2mAccessControl::create(obj, Lwm2mAccessControl::ALL_OBJ_RIGHTS);
+	Lwm2mAccessControl::create(*inst0, TEST_SERVER_SHORT_ID);
 	#endif
 }
 

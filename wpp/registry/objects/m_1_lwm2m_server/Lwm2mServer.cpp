@@ -10,6 +10,7 @@
 #include "ItemOp.h"
 #include "WppTypes.h"
 #include "WppLogs.h"
+#include "WppClient.h"
 
 /* --------------- Code_cpp block 0 start --------------- */
 #if RES_1_11
@@ -44,24 +45,44 @@ Lwm2mServer::~Lwm2mServer() {
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
+Object & Lwm2mServer::object(WppClient &ctx) {
+	return ctx.registry().lwm2mServer();
+}
+
+Lwm2mServer * Lwm2mServer::instance(WppClient &ctx, ID_T instId) {
+	Instance *inst = ctx.registry().lwm2mServer().instance(instId);
+	if (!inst) return NULL;
+	return static_cast<Lwm2mServer*>(inst);
+}
+
+Lwm2mServer * Lwm2mServer::createInst(WppClient &ctx, ID_T instId) {
+	Instance *inst = ctx.registry().lwm2mServer().createInstance(instId);
+	if (!inst) return NULL;
+	return static_cast<Lwm2mServer*>(inst);
+}
+
+bool Lwm2mServer::removeInst(WppClient &ctx, ID_T instId) {
+	return ctx.registry().lwm2mServer().remove(instId);
+}
+
 void Lwm2mServer::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resLink) {
-	/* --------------- Code_cpp block 6 start --------------- */
+	/* --------------- Code_cpp block 4 start --------------- */
 	if (type == ItemOp::WRITE && resLink.resId == LIFETIME_1) {
 		INT_T serverId = resource(SHORT_SERVER_ID_0)->get<INT_T>();
 		lwm2m_update_registration(&getContext(), serverId, true, false);
 	}
-	/* --------------- Code_cpp block 6 end --------------- */
+	/* --------------- Code_cpp block 4 end --------------- */
 
 	operationNotify(*this, resLink, type);
 
-	/* --------------- Code_cpp block 7 start --------------- */
-	/* --------------- Code_cpp block 7 end --------------- */
+	/* --------------- Code_cpp block 5 start --------------- */
+	/* --------------- Code_cpp block 5 end --------------- */
 }
 
 void Lwm2mServer::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) {
 	if (type == ItemOp::WRITE) notifyResChanged(resLink.resId, resLink.resInstId);
 
-	/* --------------- Code_cpp block 8 start --------------- */
+	/* --------------- Code_cpp block 6 start --------------- */
 	if (type == ItemOp::WRITE && resLink.resId == LIFETIME_1 && getContext().state == STATE_READY){
 		INT_T serverId = resource(SHORT_SERVER_ID_0)->get<INT_T>();
 		INT_T lifetime = resource(LIFETIME_1)->get<INT_T>();
@@ -74,11 +95,8 @@ void Lwm2mServer::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLin
 		lwm2m_update_server_mute(&getContext(), serverId, mute);
 	}
 	#endif
-	/* --------------- Code_cpp block 8 end --------------- */
+	/* --------------- Code_cpp block 6 end --------------- */
 }
-
-/* --------------- Code_cpp block 9 start --------------- */
-/* --------------- Code_cpp block 9 end --------------- */
 
 void Lwm2mServer::resourcesCreate() {
 	std::vector<Resource> resources = {
@@ -149,7 +167,7 @@ void Lwm2mServer::resourcesCreate() {
 }
 
 void Lwm2mServer::resourcesInit() {
-	/* --------------- Code_cpp block 10 start --------------- */
+	/* --------------- Code_cpp block 7 start --------------- */
 	// TODO: The most part of the server resources logic must be implemented
 	// on wakaama core level, because the Server is only a state holder and
 	// at this level, it does not have the required information for doing
@@ -277,10 +295,10 @@ void Lwm2mServer::resourcesInit() {
 	#if RES_1_23                                                                                                                                                                                                                             
 	resource(MUTE_SEND_23)->set<BOOL_T>(true);
 	#endif 
-	/* --------------- Code_cpp block 10 end --------------- */
+	/* --------------- Code_cpp block 7 end --------------- */
 }
 
-/* --------------- Code_cpp block 11 start --------------- */
-/* --------------- Code_cpp block 11 end --------------- */
+/* --------------- Code_cpp block 8 start --------------- */
+/* --------------- Code_cpp block 8 end --------------- */
 
 } /* namespace wpp */

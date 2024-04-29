@@ -10,6 +10,7 @@
 #include "ItemOp.h"
 #include "WppTypes.h"
 #include "WppLogs.h"
+#include "WppClient.h"
 
 /* --------------- Code_cpp block 0 start --------------- */
 /* --------------- Code_cpp block 0 end --------------- */
@@ -35,12 +36,29 @@ __CLASS_NAME__::~__CLASS_NAME__() {
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
+Object & __CLASS_NAME__::object(WppClient &ctx) {
+	return ctx.registry().__CLASS_NAME_CAMELCASE__();
+}
+
+__CLASS_NAME__ * __CLASS_NAME__::instance(WppClient &ctx, ID_T instId) {
+	Instance *inst = ctx.registry().__CLASS_NAME_CAMELCASE__().instance(instId);
+	if (!inst) return NULL;
+	return static_cast<__CLASS_NAME__*>(inst);
+}
+
+__CLASS_NAME__ * __CLASS_NAME__::createInst(WppClient &ctx, ID_T instId) {
+	Instance *inst = ctx.registry().__CLASS_NAME_CAMELCASE__().createInstance(instId);
+	if (!inst) return NULL;
+	return static_cast<__CLASS_NAME__*>(inst);
+}
+
+bool __CLASS_NAME__::removeInst(WppClient &ctx, ID_T instId) {
+	return ctx.registry().__CLASS_NAME_CAMELCASE__().remove(instId);
+}
+
 __F_SERVER_OPERATION_NOTIFIER__
 
 __F_USER_OPERATION_NOTIFIER__
-
-/* --------------- Code_cpp block 9 start --------------- */
-/* --------------- Code_cpp block 9 end --------------- */
 
 void __CLASS_NAME__::resourcesCreate() {
 	std::vector<Resource> resources = {
@@ -51,7 +69,7 @@ __RESOURCES_TABLE__
 
 __F_RESOURCE_INIT__
 
-/* --------------- Code_cpp block 11 start --------------- */
-/* --------------- Code_cpp block 11 end --------------- */
+/* --------------- Code_cpp block 8 start --------------- */
+/* --------------- Code_cpp block 8 end --------------- */
 
 } /* namespace wpp */

@@ -44,19 +44,21 @@ TEST_CASE("objectLwm2mServer", "[objectLwm2mServer]")
 
         serverMock.setDefaultState();
 
-        // serverMock.serverOperationNotifier(0, ItemOp::TYPE::READ, {0, 0});
+        serverMock.serverOperationNotifier(0, ItemOp::TYPE::READ, {0, 0});
+        serverMock.serverOperationNotifier(0, ItemOp::TYPE::READ, {1, 1});
+        serverMock.serverOperationNotifier(0, ItemOp::TYPE::WRITE, {1, 1});
         serverMock.userOperationNotifier(ItemOp::TYPE::WRITE, {10, 10});
-        // EXECUTE_T exe;
-        // serverMock.get(8, exe); TODO
-        // REQUIRE(exe(serverMock, 8, OPAQUE_T()));
+        EXECUTE_T exe;
+        exe = serverMock.resource(8)->get<EXECUTE_T>();
+        REQUIRE(exe(serverMock, 8, OPAQUE_T()));
         #if RES_1_9
         WppClient client;
         REQUIRE(WppTaskQueue::getTaskCnt() == 0);
-        // serverMock.get(9, exe); TODO
-        // REQUIRE(exe(serverMock, 9, OPAQUE_T()));
-        // REQUIRE(WppTaskQueue::getTaskCnt() == 1);
-        // REQUIRE(exe(serverMock, 9, OPAQUE_T()));
-        // REQUIRE(WppTaskQueue::getTaskCnt() == 1);
+        exe = serverMock.resource(9)->get<EXECUTE_T>();
+        REQUIRE(exe(serverMock, 9, OPAQUE_T()));
+        REQUIRE(WppTaskQueue::getTaskCnt() == 1);
+        REQUIRE(exe(serverMock, 9, OPAQUE_T()));
+        REQUIRE(WppTaskQueue::getTaskCnt() == 1);
         std::this_thread::sleep_for(std::chrono::seconds(WPP_TASK_DEF_DELAY_S+1));
         WppTaskQueue::handleEachTask(client);
         REQUIRE(WppTaskQueue::getTaskCnt() == 0);

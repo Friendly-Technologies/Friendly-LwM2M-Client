@@ -57,9 +57,9 @@ TEST_CASE("objectDevice", "[objectDevice]")
         deviceMock.serverOperationNotifier(0, ItemOp::TYPE::READ, {0, 0});
         deviceMock.userOperationNotifier(ItemOp::TYPE::WRITE, {10, 10});
 
-        // EXECUTE_T exe;
-        // deviceMock.get(4, exe);
-        // REQUIRE(exe(deviceMock, 4, OPAQUE_T()));
+        EXECUTE_T exe;
+        exe = deviceMock.resource(4)->get<EXECUTE_T>();
+        REQUIRE(exe(deviceMock, 4, OPAQUE_T()));
 
         WppClient client;
         WppTaskQueue::handleEachTask(client);

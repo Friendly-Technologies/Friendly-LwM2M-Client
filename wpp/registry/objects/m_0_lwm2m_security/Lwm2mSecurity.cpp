@@ -10,6 +10,7 @@
 #include "ItemOp.h"
 #include "WppTypes.h"
 #include "WppLogs.h"
+#include "WppClient.h"
 
 /* --------------- Code_cpp block 0 start --------------- */
 #define SERVER_URI_MAX_SIZE	255
@@ -39,23 +40,42 @@ Lwm2mSecurity::~Lwm2mSecurity() {
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
+Object & Lwm2mSecurity::object(WppClient &ctx) {
+	return ctx.registry().lwm2mSecurity();
+}
+
+Lwm2mSecurity * Lwm2mSecurity::instance(WppClient &ctx, ID_T instId) {
+	Instance *inst = ctx.registry().lwm2mSecurity().instance(instId);
+	if (!inst) return NULL;
+	return static_cast<Lwm2mSecurity*>(inst);
+}
+
+Lwm2mSecurity * Lwm2mSecurity::createInst(WppClient &ctx, ID_T instId) {
+	Instance *inst = ctx.registry().lwm2mSecurity().createInstance(instId);
+	if (!inst) return NULL;
+	return static_cast<Lwm2mSecurity*>(inst);
+}
+
+bool Lwm2mSecurity::removeInst(WppClient &ctx, ID_T instId) {
+	return ctx.registry().lwm2mSecurity().remove(instId);
+}
+
 void Lwm2mSecurity::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resLink) {
-	/* --------------- Code_cpp block 6 start --------------- */
-	/* --------------- Code_cpp block 6 end --------------- */
+	/* --------------- Code_cpp block 4 start --------------- */
+	/* --------------- Code_cpp block 4 end --------------- */
 
 	operationNotify(*this, resLink, type);
 
-	/* --------------- Code_cpp block 7 start --------------- */
-	/* --------------- Code_cpp block 7 end --------------- */
+	/* --------------- Code_cpp block 5 start --------------- */
+	/* --------------- Code_cpp block 5 end --------------- */
 }
 
 void Lwm2mSecurity::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) {
-	/* --------------- Code_cpp block 8 start --------------- */
-	/* --------------- Code_cpp block 8 end --------------- */
-}
+	if (type == ItemOp::WRITE) notifyResChanged(resLink.resId, resLink.resInstId);
 
-/* --------------- Code_cpp block 9 start --------------- */
-/* --------------- Code_cpp block 9 end --------------- */
+	/* --------------- Code_cpp block 6 start --------------- */
+	/* --------------- Code_cpp block 6 end --------------- */
+}
 
 void Lwm2mSecurity::resourcesCreate() {
 	std::vector<Resource> resources = {
@@ -102,11 +122,11 @@ void Lwm2mSecurity::resourcesCreate() {
 		{OSCORE_SECURITY_MODE_17,             ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::OBJ_LINK }, 
 		#endif                                                                                                                                                                       
 	};
-	_resources = std::move(resources);
+	setupResources(std::move(resources));
 }
 
 void Lwm2mSecurity::resourcesInit() {
-	/* --------------- Code_cpp block 10 start --------------- */
+	/* --------------- Code_cpp block 7 start --------------- */
 	resource(LWM2M_SERVER_URI_0)->set<STRING_T>("");
 	resource(LWM2M_SERVER_URI_0)->setDataVerifier((VERIFY_STRING_T)[](const STRING_T& value) { return value.size() < SERVER_URI_MAX_SIZE; });
 
@@ -173,10 +193,10 @@ void Lwm2mSecurity::resourcesInit() {
 	#if RES_0_17
 	resource(OSCORE_SECURITY_MODE_17)->set<OBJ_LINK_T>({});                                                                                                                                                                                                                        
 	#endif  
-	/* --------------- Code_cpp block 10 end --------------- */
+	/* --------------- Code_cpp block 7 end --------------- */
 }
 
-/* --------------- Code_cpp block 11 start --------------- */
-/* --------------- Code_cpp block 11 end --------------- */
+/* --------------- Code_cpp block 8 start --------------- */
+/* --------------- Code_cpp block 8 end --------------- */
 
 } /* namespace wpp */

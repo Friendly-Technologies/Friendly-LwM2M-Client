@@ -10,6 +10,7 @@
 #include "ItemOp.h"
 #include "WppTypes.h"
 #include "WppLogs.h"
+#include "WppClient.h"
 
 /* --------------- Code_cpp block 0 start --------------- */
 #if RES_3_9
@@ -45,23 +46,42 @@ Device::~Device() {
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
+Object & Device::object(WppClient &ctx) {
+	return ctx.registry().device();
+}
+
+Device * Device::instance(WppClient &ctx, ID_T instId) {
+	Instance *inst = ctx.registry().device().instance(instId);
+	if (!inst) return NULL;
+	return static_cast<Device*>(inst);
+}
+
+Device * Device::createInst(WppClient &ctx, ID_T instId) {
+	Instance *inst = ctx.registry().device().createInstance(instId);
+	if (!inst) return NULL;
+	return static_cast<Device*>(inst);
+}
+
+bool Device::removeInst(WppClient &ctx, ID_T instId) {
+	return ctx.registry().device().remove(instId);
+}
+
 void Device::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resLink) {
-	/* --------------- Code_cpp block 6 start --------------- */
-	/* --------------- Code_cpp block 6 end --------------- */
+	/* --------------- Code_cpp block 4 start --------------- */
+	/* --------------- Code_cpp block 4 end --------------- */
 
 	operationNotify(*this, resLink, type);
 
-	/* --------------- Code_cpp block 7 start --------------- */
-	/* --------------- Code_cpp block 7 end --------------- */
+	/* --------------- Code_cpp block 5 start --------------- */
+	/* --------------- Code_cpp block 5 end --------------- */
 }
 
 void Device::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) {
-	/* --------------- Code_cpp block 8 start --------------- */
-	/* --------------- Code_cpp block 8 end --------------- */
-}
+	if (type == ItemOp::WRITE) notifyResChanged(resLink.resId, resLink.resInstId);
 
-/* --------------- Code_cpp block 9 start --------------- */
-/* --------------- Code_cpp block 9 end --------------- */
+	/* --------------- Code_cpp block 6 start --------------- */
+	/* --------------- Code_cpp block 6 end --------------- */
+}
 
 void Device::resourcesCreate() {
 	std::vector<Resource> resources = {
@@ -129,11 +149,11 @@ void Device::resourcesCreate() {
 		{EXTDEVINFO_22,                  ItemOp(ItemOp::READ),              IS_SINGLE::MULTIPLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::OBJ_LINK }, 
 		#endif                                                                                                                                                                  
 	};
-	_resources = std::move(resources);
+	setupResources(std::move(resources));
 }
 
 void Device::resourcesInit() {
-	/* --------------- Code_cpp block 10 start --------------- */
+	/* --------------- Code_cpp block 7 start --------------- */
 	#if RES_3_0                                                                                                                                                                                        
 	resource(MANUFACTURER_0)->set<STRING_T>("");
 	#endif          
@@ -175,7 +195,7 @@ void Device::resourcesInit() {
 	resource(RESET_ERROR_CODE_12)->set<EXECUTE_T>([this](Instance& inst, ID_T resId, const OPAQUE_T& buff) { 
 		resource(ERROR_CODE_11)->clear();
 		resource(ERROR_CODE_11)->set<INT_T>(NO_ERROR);
-		notifyServerResChanged(ERROR_CODE_11);
+		notifyResChanged(ERROR_CODE_11);
 		return true;
 	});
 	#endif
@@ -185,7 +205,7 @@ void Device::resourcesInit() {
 	_currentTimeTaskId = WppTaskQueue::addTask(1, [this](WppClient &client, void *ctx) -> bool {
 		TIME_T currentTime = WppPlatform::getTime();
 		resource(CURRENT_TIME_13)->set<TIME_T>(currentTime);
-		notifyServerResChanged(CURRENT_TIME_13);
+		notifyResChanged(CURRENT_TIME_13);
 		return false;
 	});
 	#endif                                                                                                                                                                                                              
@@ -221,10 +241,10 @@ void Device::resourcesInit() {
 	#if RES_3_21                                                                                                                                                                                          
 	resource(MEMORY_TOTAL_21)->set<INT_T>(NO_ERROR);
 	#endif                                                                                                                                                                                                                  
-	/* --------------- Code_cpp block 10 end --------------- */
+	/* --------------- Code_cpp block 7 end --------------- */
 }
 
-/* --------------- Code_cpp block 11 start --------------- */
-/* --------------- Code_cpp block 11 end --------------- */
+/* --------------- Code_cpp block 8 start --------------- */
+/* --------------- Code_cpp block 8 end --------------- */
 
 } /* namespace wpp */

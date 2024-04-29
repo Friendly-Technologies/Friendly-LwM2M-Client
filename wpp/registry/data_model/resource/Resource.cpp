@@ -120,11 +120,11 @@ bool Resource::isTypeIdCompatible(TYPE_ID type) const {
 	return _typeID == type;
 }
 
-size_t Resource::size() const {
+size_t Resource::instCount() const {
 	return _instances.size();
 }
 
-const std::vector<ID_T> Resource::instIds() const {
+std::vector<ID_T> Resource::instIds() const {
 	std::vector<ID_T> ids;
 	ids.reserve(_instances.size());
 	std::transform(_instances.begin(), _instances.end(), std::back_inserter(ids), [](const auto& inst) { return inst.id; });
@@ -132,23 +132,20 @@ const std::vector<ID_T> Resource::instIds() const {
 }
 
 ID_T Resource::newInstId() const {
-	// Usually, each subsequent free index will be equal to the number of created objects
-	ID_T id = _instances.size();
-	if (id == ID_T_MAX_VAL) return id;
-	// But it won't always be like that
+	// Usually, each subsequent free index will be equal to the number of created instances
+	if (!isExist(_instances.size())) return _instances.size();
+	// If there are no free indexes, we will search for the first free index
+	ID_T id = 0;
 	while (isExist(id) && id != ID_T_MAX_VAL) id++;
-	// It is also possible that all indexes after the current size are occupied
-	if (id == ID_T_MAX_VAL) {
-		id = 0;
-		// In this case, we need to check the indexes that are before the current size
-		while (isExist(id) && id < _instances.size()) id++;
-	}
-	return id == _instances.size()? ID_T_MAX_VAL : id;
+	return id;
 }
 
 /* ---------- Methods for get and set resource value ----------*/
 bool Resource::remove(ID_T resInstId) {
-	if (isSingle() || !isExist(resInstId)) return false;
+	if (isSingle() || !isExist(resInstId)) {
+		WPP_LOGW(TAG_WPP_RES, "Resource[%d], instance with ID %d not found or resource is SINGLE", _id, resInstId);
+		return false;
+	}
 	auto instForRemove = getInstIter(resInstId);
 	_instances.erase(instForRemove);
 
@@ -156,13 +153,19 @@ bool Resource::remove(ID_T resInstId) {
 }
 
 bool Resource::clear() {
-	if (isSingle()) return false;
+	if (isSingle()) {
+		WPP_LOGW(TAG_WPP_RES, "Resource[%d] is SINGLE", _id);
+		return false;
+	}
 	_instances.clear();
 	return true;
 }
 
 bool Resource::setDataVerifier(const DATA_VERIFIER_T &verifier) {
-	if (!isDataVerifierValid(verifier)) return false;
+	if (!isDataVerifierValid(verifier)) {
+		WPP_LOGW(TAG_WPP_RES, "Resource[%d] verifier is not valid", _id);
+		return false;
+	}
 	_dataVerifier = verifier;
 	return true;
 }

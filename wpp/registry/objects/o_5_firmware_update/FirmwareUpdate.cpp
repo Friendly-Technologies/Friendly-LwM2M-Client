@@ -10,6 +10,7 @@
 #include "ItemOp.h"
 #include "WppTypes.h"
 #include "WppLogs.h"
+#include "WppClient.h"
 
 /* --------------- Code_cpp block 0 start --------------- */
 #include <cstring>
@@ -58,8 +59,28 @@ FirmwareUpdate::~FirmwareUpdate() {
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
+Object & FirmwareUpdate::object(WppClient &ctx) {
+	return ctx.registry().firmwareUpdate();
+}
+
+FirmwareUpdate * FirmwareUpdate::instance(WppClient &ctx, ID_T instId) {
+	Instance *inst = ctx.registry().firmwareUpdate().instance(instId);
+	if (!inst) return NULL;
+	return static_cast<FirmwareUpdate*>(inst);
+}
+
+FirmwareUpdate * FirmwareUpdate::createInst(WppClient &ctx, ID_T instId) {
+	Instance *inst = ctx.registry().firmwareUpdate().createInstance(instId);
+	if (!inst) return NULL;
+	return static_cast<FirmwareUpdate*>(inst);
+}
+
+bool FirmwareUpdate::removeInst(WppClient &ctx, ID_T instId) {
+	return ctx.registry().firmwareUpdate().remove(instId);
+}
+
 void FirmwareUpdate::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resLink) {
-	/* --------------- Code_cpp block 6 start --------------- */
+	/* --------------- Code_cpp block 4 start --------------- */
 	WPP_LOGD(TAG, "Server operation -> type: %d, resId: %d, resInstId: %d", type, resLink.resId, resLink.resInstId);
 	switch (type) {
 	case ItemOp::WRITE: {
@@ -71,22 +92,21 @@ void FirmwareUpdate::serverOperationNotifier(Instance *securityInst, ItemOp::TYP
 	}
 	default: break;
 	}
-	/* --------------- Code_cpp block 6 end --------------- */
+	/* --------------- Code_cpp block 4 end --------------- */
 
 	operationNotify(*this, resLink, type);
 
-	/* --------------- Code_cpp block 7 start --------------- */
-	/* --------------- Code_cpp block 7 end --------------- */
+	/* --------------- Code_cpp block 5 start --------------- */
+	/* --------------- Code_cpp block 5 end --------------- */
 }
 
 void FirmwareUpdate::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) {
-	/* --------------- Code_cpp block 8 start --------------- */
-	WPP_LOGD(TAG, "User operation -> type: %d, resId: %d, resInstId: %d", type, resLink.resId, resLink.resInstId);
-	/* --------------- Code_cpp block 8 end --------------- */
-}
+	if (type == ItemOp::WRITE) notifyResChanged(resLink.resId, resLink.resInstId);
 
-/* --------------- Code_cpp block 9 start --------------- */
-/* --------------- Code_cpp block 9 end --------------- */
+	/* --------------- Code_cpp block 6 start --------------- */
+	WPP_LOGD(TAG, "User operation -> type: %d, resId: %d, resInstId: %d", type, resLink.resId, resLink.resInstId);
+	/* --------------- Code_cpp block 6 end --------------- */
+}
 
 void FirmwareUpdate::resourcesCreate() {
 	std::vector<Resource> resources = {
@@ -118,11 +138,11 @@ void FirmwareUpdate::resourcesCreate() {
 		{MAXIMUM_DEFER_PERIOD_13,            ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::UINT },    
 		#endif                                                                                                                                                                     
 	};
-	_resources = std::move(resources);
+	setupResources(std::move(resources));
 }
 
 void FirmwareUpdate::resourcesInit() {
-	/* --------------- Code_cpp block 10 start --------------- */
+	/* --------------- Code_cpp block 7 start --------------- */
 	resource(PACKAGE_0)->set<OPAQUE_T>({});
 	resource(PACKAGE_0)->setDataVerifier((VERIFY_OPAQUE_T)[this](const OPAQUE_T& value) { 
 		if (value.empty() || isDeliveryTypeSupported(PUSH)) return true;
@@ -152,91 +172,102 @@ void FirmwareUpdate::resourcesInit() {
 	#endif
 	resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(PUSH);
 	resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return PULL <= value && value < FW_UPD_DELIVERY_MAX; });
-	/* --------------- Code_cpp block 10 end --------------- */
+	/* --------------- Code_cpp block 7 end --------------- */
 }
 
-/* --------------- Code_cpp block 11 start --------------- */
-bool FirmwareUpdate::setFwUpdater(FwUpdater &updater) {
-	resetStateMachine();
-	clearArtifacts();
+/* --------------- Code_cpp block 8 start --------------- */
+bool FirmwareUpdate::setFwUpdater(WppClient &ctx, FwUpdater &updater) {
+	FirmwareUpdate *fw = FirmwareUpdate::instance(ctx);
+	if (!fw) return false;
+	
+	fw->resetStateMachine();
+	fw->clearArtifacts();
 
-	_pkgUpdater = &updater;
+	fw->_pkgUpdater = &updater;
 	// Set the update method
-	resource(UPDATE_2)->set<EXECUTE_T>([this](Instance& inst, ID_T resId, const OPAQUE_T& data) { return pkgUpdaterHandler(); });
+	fw->resource(UPDATE_2)->set<EXECUTE_T>([fw](Instance& inst, ID_T resId, const OPAQUE_T& data) { return fw->pkgUpdaterHandler(); });
 	// Set last update result
-	resource(UPDATE_RESULT_5)->set<INT_T>(updater.lastUpdateResult());
-	notifyServerResChanged(UPDATE_RESULT_5);
+	fw->resource(UPDATE_RESULT_5)->set<INT_T>(updater.lastUpdateResult());
+	fw->notifyResChanged(UPDATE_RESULT_5);
 	// Set the package name and version
 	#if RES_5_6
-	resource(PKGNAME_6)->set<STRING_T>(updater.pkgName());
-	notifyServerResChanged(PKGNAME_6);
+	fw->resource(PKGNAME_6)->set<STRING_T>(updater.pkgName());
+	fw->notifyResChanged(PKGNAME_6);
 	#endif
 	#if RES_5_7
-	resource(PKGVERSION_7)->set<STRING_T>(updater.pkgVersion());
-	notifyServerResChanged(PKGVERSION_7);
+	fw->resource(PKGVERSION_7)->set<STRING_T>(updater.pkgVersion());
+	fw->notifyResChanged(PKGVERSION_7);
 	#endif
 
 	return true;
 }
 
 #if RES_5_8
-std::vector<FwUpdProtocol> FirmwareUpdate::supportedProtocols() {
+std::vector<FwUpdProtocol> FirmwareUpdate::supportedProtocols(WppClient &ctx) {
+	FirmwareUpdate *fw = FirmwareUpdate::instance(ctx);
+	if (!fw) return {};
+
 	std::vector<FwUpdProtocol> supportedProtocols;
-	for (auto id : resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->instIds()) {
-		INT_T protocol = resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->get<INT_T>(id);
+	for (auto id : fw->resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->instIds()) {
+		INT_T protocol = fw->resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->get<INT_T>(id);
 		supportedProtocols.push_back(FwUpdProtocol(protocol));
 	}
-
 	return supportedProtocols;
 }
 
-bool FirmwareUpdate::setFwExternalDownloader(FwExternalDl &downloader) {
-	resetStateMachine();
-	clearArtifacts();
+bool FirmwareUpdate::setFwExternalDownloader(WppClient &ctx, FwExternalDl &downloader) {
+	FirmwareUpdate *fw = FirmwareUpdate::instance(ctx);
+	if (!fw) return false;
 
-	_externalDownloader = &downloader;
+	fw->resetStateMachine();
+	fw->clearArtifacts();
 
-	std::vector<FwUpdProtocol> dlSupportedProtocols = _externalDownloader->supportedProtocols();
+	fw->_externalDownloader = &downloader;
+
+	std::vector<FwUpdProtocol> dlSupportedProtocols = fw->_externalDownloader->supportedProtocols();
 	if (dlSupportedProtocols.empty()) {
-		_externalDownloader = NULL;
+		fw->_externalDownloader = NULL;
 		return false;
 	}
 
 	// Setup delivery type
-	if (_internalDownloader) resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(BOTH);
-	else resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(PULL);
-	notifyServerResChanged(FIRMWARE_UPDATE_DELIVERY_METHOD_9);
+	if (fw->_internalDownloader) fw->resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(BOTH);
+	else fw->resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(PULL);
+	fw->notifyResChanged(FIRMWARE_UPDATE_DELIVERY_METHOD_9);
 
 	// Setup supported protocols
 	ID_T instId = 0;
-	resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->clear();
+	fw->resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->clear();
 	for (auto prot : dlSupportedProtocols) {
-		resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->set<INT_T>(prot, instId);
+		fw->resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->set<INT_T>(prot, instId);
 		instId++;
 	}
-	notifyServerResChanged(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8);
+	fw->notifyResChanged(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8);
 
 	return true;
 }
 #endif
 
-bool FirmwareUpdate::setFwInternalDownloader(FwInternalDl &downloader) {
+bool FirmwareUpdate::setFwInternalDownloader(WppClient &ctx, FwInternalDl &downloader) {
+	FirmwareUpdate *fw = FirmwareUpdate::instance(ctx);
+	if (!fw) return false;
+
 	// TODO: Update the implementation of this method after creating an
 	// interface for downloading firmware via uri using the wpp library.
 	// Currently, FwInternalDl only supports loading through the PACKAGE_0 resource.
-	resetStateMachine();
-	clearArtifacts();
+	fw->resetStateMachine();
+	fw->clearArtifacts();
 
-	_internalDownloader = &downloader;
+	fw->_internalDownloader = &downloader;
 	
 	// Setup delivery type
 	#if RES_5_8
-	if (_externalDownloader) resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(BOTH);
-	else resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(PUSH);
+	if (fw->_externalDownloader) fw->resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(BOTH);
+	else fw->resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(PUSH);
 	#else
-	resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(PUSH);
+	fw->resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(PUSH);
 	#endif
-	notifyServerResChanged(FIRMWARE_UPDATE_DELIVERY_METHOD_9);
+	fw->notifyResChanged(FIRMWARE_UPDATE_DELIVERY_METHOD_9);
 
 	return true;
 }
@@ -258,14 +289,14 @@ bool FirmwareUpdate::pkgUpdaterHandler() {
 		if (res == R_FW_UPD_SUCCESS) {
 			#if RES_5_6
 			resource(PKGNAME_6)->set<STRING_T>(_pkgUpdater->pkgName());
-			notifyServerResChanged(PKGNAME_6);
+			notifyResChanged(PKGNAME_6);
 			#endif
 			#if RES_5_7
 			resource(PKGVERSION_7)->set<STRING_T>(_pkgUpdater->pkgVersion());
-			notifyServerResChanged(PKGVERSION_7);
+			notifyResChanged(PKGVERSION_7);
 			#endif
 			#if RES_3_3
-			client.registry().device().instance()->resource(Device::FIRMWARE_VERSION_3)->set<STRING_T>(_pkgUpdater->pkgVersion());
+			Device::instance(client)->set<STRING_T>(Device::FIRMWARE_VERSION_3, _pkgUpdater->pkgVersion());
 			#endif
 		}
 
@@ -338,12 +369,12 @@ void FirmwareUpdate::internalDownloaderHandler() {
 
 void FirmwareUpdate::changeUpdRes(FwUpdRes res) {
 	resource(UPDATE_RESULT_5)->set<INT_T>(res);
-	notifyServerResChanged(UPDATE_RESULT_5);
+	notifyResChanged(UPDATE_RESULT_5);
 }
 
 void FirmwareUpdate::changeState(FwUpdState state) {
 	resource(STATE_3)->set<INT_T>(state);
-	notifyServerResChanged(STATE_3);
+	notifyResChanged(STATE_3);
 }
 
 void FirmwareUpdate::resetStateMachine() {
@@ -368,9 +399,9 @@ void FirmwareUpdate::resetStateMachine() {
 
 void FirmwareUpdate::clearArtifacts() {
 	resource(PACKAGE_0)->set<OPAQUE_T>({});
-	notifyServerResChanged(PACKAGE_0);
+	notifyResChanged(PACKAGE_0);
 	resource(PACKAGE_URI_1)->set<STRING_T>("");
-	notifyServerResChanged(PACKAGE_URI_1);
+	notifyResChanged(PACKAGE_URI_1);
 }
 
 bool FirmwareUpdate::isUriValid(STRING_T uri) {
@@ -435,6 +466,6 @@ bool FirmwareUpdate::isDeliveryTypeSupported(FwUpdDelivery type) {
 	if (deliveryType == type || deliveryType == BOTH) return true;
 	return false;
 }
-/* --------------- Code_cpp block 11 end --------------- */
+/* --------------- Code_cpp block 8 end --------------- */
 
 } /* namespace wpp */

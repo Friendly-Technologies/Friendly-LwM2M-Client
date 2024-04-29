@@ -77,7 +77,7 @@ void Device::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, 
 }
 
 void Device::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) {
-	if (type == ItemOp::WRITE) notifyResChanged(resLink.resId, resLink.resInstId);
+	if (type == ItemOp::WRITE || type == ItemOp::DELETE) notifyResChanged(resLink.resId, resLink.resInstId);
 
 	/* --------------- Code_cpp block 6 start --------------- */
 	/* --------------- Code_cpp block 6 end --------------- */

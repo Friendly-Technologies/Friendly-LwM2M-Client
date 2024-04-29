@@ -91,7 +91,7 @@ void ConnectivityMonitoring::serverOperationNotifier(Instance *securityInst, Ite
 }
 
 void ConnectivityMonitoring::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) {
-	if (type == ItemOp::WRITE) notifyResChanged(resLink.resId, resLink.resInstId);
+	if (type == ItemOp::WRITE || type == ItemOp::DELETE) notifyResChanged(resLink.resId, resLink.resInstId);
 
 	/* --------------- Code_cpp block 6 start --------------- */
 	/* --------------- Code_cpp block 6 end --------------- */

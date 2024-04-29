@@ -76,7 +76,7 @@ void AudioClip::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE typ
 }
 
 void AudioClip::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) {
-	if (type == ItemOp::WRITE) notifyResChanged(resLink.resId, resLink.resInstId);
+	if (type == ItemOp::WRITE || type == ItemOp::DELETE) notifyResChanged(resLink.resId, resLink.resInstId);
 
 	/* --------------- Code_cpp block 6 start --------------- */
 	switch (type) {

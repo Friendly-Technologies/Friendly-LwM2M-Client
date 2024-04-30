@@ -101,7 +101,7 @@ void FirmwareUpdate::serverOperationNotifier(Instance *securityInst, ItemOp::TYP
 }
 
 void FirmwareUpdate::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) {
-	if (type == ItemOp::WRITE) notifyResChanged(resLink.resId, resLink.resInstId);
+	if (type == ItemOp::WRITE || type == ItemOp::DELETE) notifyResChanged(resLink.resId, resLink.resInstId);
 
 	/* --------------- Code_cpp block 6 start --------------- */
 	WPP_LOGD(TAG, "User operation -> type: %d, resId: %d, resInstId: %d", type, resLink.resId, resLink.resInstId);

@@ -80,7 +80,7 @@ void Lwm2mServer::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE t
 }
 
 void Lwm2mServer::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) {
-	if (type == ItemOp::WRITE) notifyResChanged(resLink.resId, resLink.resInstId);
+	if (type == ItemOp::WRITE || type == ItemOp::DELETE) notifyResChanged(resLink.resId, resLink.resInstId);
 
 	/* --------------- Code_cpp block 6 start --------------- */
 	if (type == ItemOp::WRITE && resLink.resId == LIFETIME_1 && getContext().state == STATE_READY){

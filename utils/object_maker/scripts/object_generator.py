@@ -234,7 +234,7 @@ class ObjectGenerator:
         cases = ["WRITE", "DELETE"]
         prefix = \
             f"""void __CLASS_NAME__::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) {{\n""" \
-            f"""\tif (type == ItemOp::WRITE) notifyResChanged(resLink.resId, resLink.resInstId);\n\n""" \
+            f"""\tif (type == ItemOp::WRITE || type == ItemOp::DELETE) notifyResChanged(resLink.resId, resLink.resInstId);\n\n""" \
             f"""\t/* --------------- Code_cpp block 6 start --------------- */\n""" \
             f"""\tswitch (type) {{\n\t"""
         for case in cases:

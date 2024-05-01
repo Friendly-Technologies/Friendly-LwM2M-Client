@@ -15,9 +15,6 @@
 #ifdef OBJ_O_4_CONNECTIVITY_MONITORING
 #include "ConnectivityMonitoring.h"
 #endif
-#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL
-#include "Lwm2mAccessControl.h"
-#endif
 #ifdef OBJ_O_5_FIRMWARE_UPDATE
 #include "FirmwareUpdate.h"
 #endif
@@ -35,9 +32,19 @@ void socketPolling(Connection *connection, DeviceImpl *device) {
 	}
 }
 
+void initAudioClipObj(WppRegistry &registry) {
+	#ifdef OBJ_O_3339_AUDIO_CLIP
+	Object &audioObj = registry.audioClip();
+	audioObj.createInstance();
+	registry.registerObj(audioObj);
+	#if OBJ_O_2_LWM2M_ACCESS_CONTROL
+	Lwm2mAccessControl::createInst(audioObj);
+	Lwm2mAccessControl::createInst(*audioObj.instance(), TEST_SERVER_SHORT_ID);
+	#endif
+	#endif
+}
+
 // Found Wakaama bugs:
-// TODO: Coap post not working correctly for write
-// TODO: Observation with set pmin attribute did not work properly
 // TODO: Device work with NON confirmation messages
 
 int main() {
@@ -48,9 +55,6 @@ int main() {
 	DeviceImpl device;
 	#ifdef OBJ_O_4_CONNECTIVITY_MONITORING
 	ConnectivityMonitoringImpl conn_mon;
-	#endif
-	#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL
-	Lwm2mAccessControlImpl accessCtrl;
 	#endif
 	#ifdef OBJ_O_5_FIRMWARE_UPDATE
 	FirmwareUpdateImpl fwUpd;
@@ -83,7 +87,6 @@ int main() {
 	#endif
 	#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL
 	cout << endl << "---- Initialization wpp AccessControl ----" << endl;
-	accessCtrl.init(registry.lwm2mAccessControl());
 	registry.registerObj(registry.lwm2mAccessControl());
 	#endif
 	#ifdef OBJ_O_5_FIRMWARE_UPDATE
@@ -93,12 +96,21 @@ int main() {
 	#endif
 	#ifdef OBJ_O_3339_AUDIO_CLIP
 	cout << endl << "---- Initialization wpp AudioClip ----" << endl;
-	registry.registerObj(registry.audioClip());
-	registry.audioClip().createInstance();
+	initAudioClipObj(registry);
 	#endif
 	
 	// Giving ownership to registry
 	client->giveOwnership();
+
+	// Add tasks with send operation
+	#if defined(LWM2M_SUPPORT_SENML_JSON) && RES_1_23 && RES_3_13
+	WppTaskQueue::addTask(5, [](WppClient &client, void *ctx) {
+		WPP_LOGD(TAG_WPP_TASK, "Task: Send operation, sending current time to the server");
+		DataLink dataLink = {{OBJ_ID::DEVICE, 0}, {Device::CURRENT_TIME_13,}};
+		client.send(dataLink);
+		return false;
+	});
+	#endif
 
 	cout << endl << "---- Starting Connection thread ----" << endl;
 	thread my_thread(socketPolling, &connection, &device);

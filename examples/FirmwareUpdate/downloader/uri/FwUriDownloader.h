@@ -7,23 +7,25 @@
 #include "FwDownloaderCoap.h"
 #include "FwDownloaderHttp.h"
 
+#include "FirmwareChecker.h"
+
 using namespace wpp;
 using namespace std;
 
 class FwUriDownloader : public FwExternalDl {
 public:
     std::vector<FwUpdProtocol> supportedProtocols() override {
-        cout << "FwUriDownloader::supportedProtocols" << endl;
+        cout << "FwUriDownloader::supportedProtocols()" << endl;
         return {FwUpdProtocol::HTTP, FwUpdProtocol::HTTPS, FwUpdProtocol::COAP, FwUpdProtocol::COAPS};
     }
 
     void startDownloading(const STRING_T &uri, Lwm2mSecurity &security) override {
-        cout << "FwUriDownloader::startDownloading, uri: " << uri << endl;
+        cout << "FwUriDownloader::startDownloading(), uri: " << uri << endl;
 
-        auto downloadedClb = [this](string file) { 
-            cout << "FwUriDownloader FW is downloaded to file: " << file << endl;
+        auto downloadedClb = [this](string file, wpp::FwUpdRes fwUpdRes) {
             _isDownloaded = true;
-            _downloadResult = R_INITIAL;
+            _downloadResult = fwUpdRes;
+            // cout << "FwUriDownloader FW is downloaded to file: " << file << " with error: " << (int)fwUpdRes << endl;    // TODO: update comment
         };
 
         if (isHttpScheme(uri) || isHttpsScheme(uri)) {
@@ -39,17 +41,20 @@ public:
     }
 
     bool isDownloaded() override {
-        cout << "FwUriDownloader::isDownloaded " << _isDownloaded << endl;
+        cout << "FwUriDownloader::isDownloaded() " << _isDownloaded << endl;
         return _isDownloaded;
     }
 
     FwUpdRes downloadResult() override {
-        cout << "FwUriDownloader::downloadResult " << _downloadResult << endl;
+        if (_downloadResult == R_INITIAL) {
+            _downloadResult = FirmwareChecker::getFwDownloadRes();
+        }
+        cout << "FwUriDownloader::downloadResult(): " << (int)_downloadResult << endl;
         return _downloadResult;
     }
 
     void reset() override {
-        cout << "FwUriDownloader::reset" << endl;
+        cout << "FwUriDownloader::reset()" << endl;
         _isDownloaded = false;
         _downloadResult = R_INITIAL;
     }

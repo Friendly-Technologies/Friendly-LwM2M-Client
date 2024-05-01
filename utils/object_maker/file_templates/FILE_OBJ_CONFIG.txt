@@ -1,0 +1,16 @@
+/*
+ * Generated on: __DATETIME__
+ * Created by: SinaiR&D
+ */
+
+#ifndef WPP_<<IF_DEF_DIRECTIVE>>_CONFIG_H
+#define WPP_<<IF_DEF_DIRECTIVE>>_CONFIG_H
+
+#ifdef __OBJ_DEFINE__
+
+/* --------------- Config block 0 start --------------- */
+__RES_DEFINES__
+/* --------------- Config block 0 end --------------- */
+
+#endif // WPP_<<IF_DEF_DIRECTIVE>>_CONFIG_H
+#endif // __OBJ_DEFINE__

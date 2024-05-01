@@ -1,0 +1,15 @@
+# Generated on: __DATETIME__
+# Created by: SinaiR&D
+
+wpp_check_definition("__OBJ_DEFINE__" is_defined)
+if(is_defined)
+	# Update SOURCES variable from parent scope.
+	set(WPP_SOURCES ${WPP_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/__CLASS_NAME__.cpp)
+
+	# --------------- CMake block 0 start ---------------
+	# --------------- CMake block 0 end ---------------
+
+	# Update WPP_SOURCES variable from parent scope.
+	set(WPP_SOURCES ${WPP_SOURCES} PARENT_SCOPE)
+
+endif()

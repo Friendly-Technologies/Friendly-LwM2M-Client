@@ -11,302 +11,275 @@
 #include <unordered_map>
 #include <variant>
 
-#include "Lwm2mObject.h"
-#include "ObjObserver.h"
 #include "ObjSubject.h"
 #include "Instance.h"
-#include "types.h"
+#include "WppTypes.h"
 #include "WppLogs.h"
 
 namespace wpp {
 
-class WppClient;
-
-/*
- * Object<T> is class that implements manipulation with Instance interface class and his inheritors.
+/**
+ * @class Object
+ * @brief The Object class implements manipulation with Instance interface class and its inheritors.
+ * 
  * The main target of this class is to encapsulate operations like instance create and delete, binding
- * instance callbacks to core interface, for avoid multiple definition of this mechanism in instance
+ * instance callbacks to the core interface, to avoid multiple definitions of this mechanism in instance
  * implementation classes.
  */
-template<typename T>
-class Object : public Lwm2mObject, public ObjSubject<T> {
+class Object : public ObjSubject {
 private:
-	Object(WppClient &client, const ObjectInfo &info);
-
 	Object(const Object&) = delete;
 	Object(Object&&) = delete;
 	Object& operator=(const Object&) = delete;
 	Object& operator=(Object&&) = delete;
 
 public:
-	~Object();
+	/**
+	 * @brief Constructs an Object instance.
+	 * 
+	 * @param context The lwm2m_context_t object.
+	 * @param info The ObjectInfo object.
+	 */
+	Object(lwm2m_context_t &context, const ObjectInfo &info);
 
-/* ------------- Object management ------------- */
-	static bool create(WppClient &client, const ObjectInfo &info);
-	static bool isCreated();
-	static Object<T>* object();
+	/**
+	 * @brief Destroys the Object instance.
+	 */
+	virtual ~Object();
 
-/* ------------- Object instance management ------------- */
-	T* createInstance(ID_T instanceID = ID_T_MAX_VAL);
+	/* ------------- Object management ------------- */
+
+	/**
+	 * @brief Gets the object ID.
+	 * 
+	 * @return The object ID.
+	 */
+	OBJ_ID getObjectID() const;
+
+	/**
+	 * @brief Gets the object information.
+	 * 
+	 * @return The ObjectInfo object.
+	 */
+	const ObjectInfo& getObjectInfo() const;
+
+	/**
+	 * @brief Gets the lwm2m_object_t object.
+	 * 
+	 * @return The lwm2m_object_t object.
+	 */
+	lwm2m_object_t& getLwm2mObject();
+
+	/**
+	 * @brief Clears the object.
+	 */
+	void clear();
+
+	/**
+	 * @brief Restores the object.
+	 */
+	void restore();
+
+	/* ------------- Object instance management ------------- */
+
+	/**
+	 * @brief Creates an instance of the object.
+	 * 
+	 * @param instanceID The instance ID.
+	 * @return A pointer to the created Instance object.
+	 */
+	virtual Instance* createInstance(ID_T instanceID = ID_T_MAX_VAL) = 0;
+
+	/**
+	 * @brief Removes an instance of the object.
+	 * 
+	 * @param instanceID The instance ID.
+	 * @return True if the instance was successfully removed, false otherwise.
+	 */
 	bool removeInstance(ID_T instanceID);
-	void clear() override;
-	void restore() override;
 
-	T* instance(ID_T instanceID = 0);
-	const std::unordered_map<ID_T, T*> & getInstances();
-	size_t instanceCnt() override;
-	bool isInstanceExist(ID_T instanceID) override;
+	/**
+	 * @brief Gets an instance of the object.
+	 * 
+	 * @param instanceID The instance ID.
+	 * @return A pointer to the Instance object.
+	 */
+	Instance* instance(ID_T instanceID = 0);
 
-private:
+	/**
+	 * @brief Gets all instances of the object.
+	 * 
+	 * @return A vector of pointers to the Instance objects.
+	 */
+	const std::vector<Instance*>& getInstances();
+
+	/**
+	 * @brief Gets the number of instances of the object.
+	 * 
+	 * @return The number of instances.
+	 */
+	size_t instanceCnt();
+
+	/**
+	 * @brief Checks if an instance exists.
+	 * 
+	 * @param instanceID The instance ID.
+	 * @return True if the instance exists, false otherwise.
+	 */
+	bool isInstanceExist(ID_T instanceID);
+
+protected:
+	/**
+	 * @brief Gets the iterator to the instance.
+	 * 
+	 * @param instanceID The instance ID.
+	 * @return The iterator to the instance.
+	 */
+	std::vector<Instance*>::iterator getInstIter(ID_T instanceID);
+
+	/**
+	 * @brief Gets the first available instance ID.
+	 * 
+	 * @return The first available instance ID.
+	 */
 	ID_T getFirstAvailableInstanceID();
 
-/* ------------- Lwm2m core callback ------------- */
-	static uint8_t read_clb(lwm2m_context_t * contextP, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP);
-	static uint8_t write_clb(lwm2m_context_t * contextP, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP, lwm2m_write_type_t writeType);
-	static uint8_t execute_clb(lwm2m_context_t * contextP, ID_T instanceId, ID_T resId, uint8_t * buffer, int length, lwm2m_object_t * objectP);
-	static uint8_t discover_clb(lwm2m_context_t * contextP, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP);
-	static uint8_t create_clb(lwm2m_context_t * contextP, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP);
-	static uint8_t delete_clb(lwm2m_context_t * contextP, ID_T instanceId, lwm2m_object_t * objectP);
+	/* ------------- Lwm2m core callback ------------- */
+
+	/**
+	 * @brief The read callback function for the Lwm2m core.
+	 * 
+	 * @param contextP The lwm2m_context_t object.
+	 * @param server Contains valid pointer when request retrieved from server or NULL if request initiated by core.
+	 * @param instanceId The instance ID.
+	 * @param numDataP The number of data.
+	 * @param dataArrayP The data array.
+	 * @param objectP The lwm2m_object_t object.
+	 * @return The result of the read operation.
+	 */
+	static uint8_t serverRead_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP);
+
+	/**
+	 * @brief The write callback function for the Lwm2m core.
+	 * 
+	 * @param contextP The lwm2m_context_t object.
+	 * @param server Contains valid pointer when request retrieved from server or NULL if request initiated by core.
+	 * @param instanceId The instance ID.
+	 * @param numData The number of data.
+	 * @param dataArray The data array.
+	 * @param objectP The lwm2m_object_t object.
+	 * @param writeType The write type.
+	 * @return The result of the write operation.
+	 */
+	static uint8_t serverWrite_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP, lwm2m_write_type_t writeType);
+
+	/**
+	 * @brief The execute callback function for the Lwm2m core.
+	 * 
+	 * @param contextP The lwm2m_context_t object.
+	 * @param server Contains valid pointer when request retrieved from server or NULL if request initiated by core.
+	 * @param instanceId The instance ID.
+	 * @param resId The resource ID.
+	 * @param buffer The buffer.
+	 * @param length The length.
+	 * @param objectP The lwm2m_object_t object.
+	 * @return The result of the execute operation.
+	 */
+	static uint8_t serverExecute_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, ID_T instanceId, ID_T resId, uint8_t * buffer, int length, lwm2m_object_t * objectP);
+
+	/**
+	 * @brief The discover callback function for the Lwm2m core.
+	 * 
+	 * @param contextP The lwm2m_context_t object.
+	 * @param server Contains valid pointer when request retrieved from server or NULL if request initiated by core.
+	 * @param instanceId The instance ID.
+	 * @param numDataP The number of data.
+	 * @param dataArrayP The data array.
+	 * @param objectP The lwm2m_object_t object.
+	 * @return The result of the discover operation.
+	 */
+	static uint8_t serverDiscover_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP);
+
+	/**
+	 * @brief The create callback function for the Lwm2m core.
+	 * 
+	 * @param contextP The lwm2m_context_t object.
+	 * @param server Contains valid pointer when request retrieved from server or NULL if request initiated by core.
+	 * @param instanceId The instance ID.
+	 * @param numData The number of data.
+	 * @param dataArray The data array.
+	 * @param objectP The lwm2m_object_t object.
+	 * @return The result of the create operation.
+	 */
+	static uint8_t serverCreate_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP);
+
+	/**
+	 * @brief The delete callback function for the Lwm2m core.
+	 * 
+	 * @param contextP The lwm2m_context_t object.
+	 * @param server Contains valid pointer when request retrieved from server or NULL if request initiated by core.
+	 * @param instanceId The instance ID.
+	 * @param objectP The lwm2m_object_t object.
+	 * @return The result of the delete operation.
+	 */
+	static uint8_t serverDelete_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, ID_T instanceId, lwm2m_object_t * objectP);
+
 #ifdef LWM2M_RAW_BLOCK1_REQUESTS
-	// TODO Implement this functionality
-	static uint8_t block1Ccreate_clb(lwm2m_context_t * contextP, lwm2m_uri_t * uriP, lwm2m_media_type_t format, uint8_t * buffer, int length, lwm2m_object_t * objectP, uint32_t block_num, uint8_t block_more);
-	static uint8_t block1Write_clb(lwm2m_context_t * contextP, lwm2m_uri_t * uriP, lwm2m_media_type_t format, uint8_t * buffer, int length, lwm2m_object_t * objectP, uint32_t block_num, uint8_t block_more);
-	static uint8_t block1Execute_clb(lwm2m_context_t * contextP, lwm2m_uri_t * uriP, uint8_t * buffer, int length, lwm2m_object_t * objectP, uint32_t block_num, uint8_t block_more);
+	/**
+	 * @brief The block create callback function for the Lwm2m core.
+	 * 
+	 * @param contextP The lwm2m_context_t object.
+	 * @param server Contains valid pointer when request retrieved from server or NULL if request initiated by core.
+	 * @param uriP The lwm2m_uri_t object.
+	 * @param format The media type format.
+	 * @param buffer The buffer.
+	 * @param length The length.
+	 * @param objectP The lwm2m_object_t object.
+	 * @param block_num The block number.
+	 * @param block_more The block more flag.
+	 * @return The result of the block create operation.
+	 */
+	static uint8_t serverBlockCreate_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, lwm2m_uri_t * uriP, lwm2m_media_type_t format, uint8_t * buffer, int length, lwm2m_object_t * objectP, uint32_t block_num, uint8_t block_more);
+
+	/**
+	 * @brief The block write callback function for the Lwm2m core.
+	 * 
+	 * @param contextP The lwm2m_context_t object.
+	 * @param server Contains valid pointer when request retrieved from server or NULL if request initiated by core.
+	 * @param uriP The lwm2m_uri_t object.
+	 * @param format The media type format.
+	 * @param buffer The buffer.
+	 * @param length The length.
+	 * @param objectP The lwm2m_object_t object.
+	 * @param block_num The block number.
+	 * @param block_more The block more flag.
+	 * @return The result of the block write operation.
+	 */
+	static uint8_t serverBlockWrite_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, lwm2m_uri_t * uriP, lwm2m_media_type_t format, uint8_t * buffer, int length, lwm2m_object_t * objectP, uint32_t block_num, uint8_t block_more);
+
+	/**
+	 * @brief The block execute callback function for the Lwm2m core.
+	 * 
+	 * @param contextP The lwm2m_context_t object.
+	 * @param server Contains valid pointer when request retrieved from server or NULL if request initiated by core.
+	 * @param uriP The lwm2m_uri_t object.
+	 * @param buffer The buffer.
+	 * @param length The length.
+	 * @param objectP The lwm2m_object_t object.
+	 * @param block_num The block number.
+	 * @param block_more The block more flag.
+	 * @return The result of the block execute operation.
+	 */
+	static uint8_t serverBlockExecute_clb(lwm2m_context_t * contextP, lwm2m_server_t *server, lwm2m_uri_t * uriP, uint8_t * buffer, int length, lwm2m_object_t * objectP, uint32_t block_num, uint8_t block_more);
 #endif
-private:
-	static Object<T> *_object;
-	
-	WppClient &_client;
-	std::unordered_map<ID_T, Instance*> _instances; // TODO: maybe here is better to use share_ptr instead simple Instance*
+
+protected:
+	std::vector<Instance*> _instances;
+	lwm2m_context_t &_context;
+	lwm2m_object_t _lwm2m_object;
+	ObjectInfo _objInfo;
 };
 
-
-/* ---------- Implementation of methods ----------*/
-template<typename T>
-Object<T> *Object<T>::_object = NULL;
-
-template<typename T>
-Object<T>::Object(WppClient &client, const ObjectInfo &info): Lwm2mObject(info), _client(client) {
-	WPP_LOGD_ARG(TAG_WPP_OBJ, "Creating object with ID -> %d", (ID_T)info.objID);
-
-	// Initialising core object representation
-	_lwm2m_object.objID 	   = (ID_T)_objInfo.objID;
-	_lwm2m_object.instanceList = NULL;
-	_lwm2m_object.versionMajor = _objInfo.objVersion.major;
-	_lwm2m_object.versionMinor = _objInfo.objVersion.minor;
-	_lwm2m_object.userData = NULL;
-
-	if (_objInfo.operation.isRead()) _lwm2m_object.readFunc = read_clb;
-	else  _lwm2m_object.readFunc = NULL;
-	if (_objInfo.operation.isDiscover()) _lwm2m_object.discoverFunc = discover_clb;
-	else  _lwm2m_object.discoverFunc = NULL;
-	if (_objInfo.operation.isWrite()) _lwm2m_object.writeFunc = write_clb;
-	else  _lwm2m_object.writeFunc = NULL;
-	if (_objInfo.operation.isExecute()) _lwm2m_object.executeFunc = execute_clb;
-	else  _lwm2m_object.executeFunc = NULL;
-	if (_objInfo.operation.isCreate()) _lwm2m_object.createFunc = create_clb;
-	else  _lwm2m_object.createFunc = NULL;
-	if (_objInfo.operation.isDelete()) _lwm2m_object.deleteFunc = delete_clb;
-	else  _lwm2m_object.deleteFunc = NULL;
-#ifdef LWM2M_RAW_BLOCK1_REQUESTS
-	if (_objInfo.operation.isBlock1Create()) _lwm2m_object.rawBlock1CreateFunc = block1Ccreate_clb;
-	else  _lwm2m_object.rawBlock1CreateFunc = NULL;
-	if (_objInfo.operation.isBlock1Write()) _lwm2m_object.rawBlock1WriteFunc = block1Write_clb;
-	else  _lwm2m_object.rawBlock1WriteFunc = NULL;
-	if (_objInfo.operation.isBlock1Execute()) _lwm2m_object.rawBlock1ExecuteFunc = block1Execute_clb;
-	else  _lwm2m_object.rawBlock1ExecuteFunc = NULL;
-#endif
-}
-
-template<typename T>
-Object<T>::~Object() {
-	clear();
-}
-
-/* ------------- Object management ------------- */
-template<typename T>
-bool Object<T>::create(WppClient &client, const ObjectInfo &info) {
-	_object = new Object<T>(client, info);
-	return true;
-}
-
-template<typename T>
-bool Object<T>::isCreated() {
-	return _object != NULL;
-}
-
-template<typename T>
-Object<T>* Object<T>::object() {
-	return _object;
-}
-
-/* ------------- Object instance management ------------- */
-template<typename T>
-T* Object<T>::createInstance(ID_T instanceId) {
-	// If object is single and instance has already exist, then we can not create new one and return NULL
-	if (_objInfo.isSingle == IS_SINGLE::SINGLE && _instances.size() != 0) {
-		WPP_LOGW_ARG(TAG_WPP_OBJ, "Not possible to create instance %d:%d, object is single", getObjectID(), instanceId);
-		return NULL;
-	}
-	// If instanceId == ID_T_MAX_VAL, it is mean that user do not want to set its own identifier, so we will choose ours
-	if (instanceId == ID_T_MAX_VAL) instanceId = getFirstAvailableInstanceID();
-	// If ID has been already occupied, then we can not create new instance with such ID and returns NULL
-	if (instanceId == ID_T_MAX_VAL || isInstanceExist(instanceId)) {
-		WPP_LOGW_ARG(TAG_WPP_OBJ, "Not possible to create instance %d:%d, ID has been already occupied", getObjectID(), instanceId);
-		return NULL;
-	}
-
-	WPP_LOGD_ARG(TAG_WPP_OBJ, "Creating instance %d:%d", getObjectID(), instanceId);
-	// Creation and registration new instance in core object
-	 lwm2m_list_t *element = new lwm2m_list_t;
-	 if (NULL == element) return NULL;
-	 element->next = NULL;
-	 element->id = instanceId;
-	 _lwm2m_object.instanceList = LWM2M_LIST_ADD(_lwm2m_object.instanceList, element);
-
-	// TODO: Use lwm2m_object_t.instanceList and its elements lwm2m_list_t * for save instances instead std:: conatainer
-	// TODO: Add check to each new or malloc operation
-	// Creating new instance
-	_instances[instanceId] = new T(_client, {(ID_T)_objInfo.objID, instanceId});
-	return static_cast<T*>(_instances[instanceId]);
-}
-
-template<typename T>
-bool Object<T>::removeInstance(ID_T instanceId) {
-	// If user want to delete instance with ID that does not exist, then we can not do it
-	if (!isInstanceExist(instanceId)) return false;
-
-	WPP_LOGD_ARG(TAG_WPP_OBJ, "Removing instance %d:%d", getObjectID(), instanceId);
-	// Deleting registered instance from core object
-	 lwm2m_list_t *element = NULL;
-	 _lwm2m_object.instanceList = LWM2M_LIST_RM(_lwm2m_object.instanceList, instanceId, (lwm2m_list_t **)&element);
-	 if (NULL != element) delete element;
-
-	delete _instances[instanceId];
-	_instances.erase(instanceId);
-	return true;
-}
-
-template<typename T>
-void Object<T>::clear() {
-	WPP_LOGD_ARG(TAG_WPP_OBJ, "Clearing object with ID -> %d", getObjectID());
-	// Deleting registered instances from core object
-	while (_lwm2m_object.instanceList != NULL) {
-		lwm2m_list_t * instance = (lwm2m_list_t *)_lwm2m_object.instanceList;
-		ID_T id = instance->id;
-
-		_lwm2m_object.instanceList = _lwm2m_object.instanceList->next;
-		delete instance;
-
-		delete _instances[id];
-		_instances.erase(id);
-	}
-}
-
-template<typename T>
-void Object<T>::restore() {
-	WPP_LOGD_ARG(TAG_WPP_OBJ, "Restoring object with ID -> %d", getObjectID());
-    this->observerDoAction(*this, ObjSubject<T>::Action::RESTORE);
-}
-
-template<typename T>
-T* Object<T>::instance(ID_T instanceID) {
-	// If user want to access instance with ID that does not exist, then we can not do it
-	if (!isInstanceExist(instanceID)) return NULL;
-	return static_cast<T*>(_instances[instanceID]);
-}
-
-template<typename T>
-const std::unordered_map<ID_T, T*> & Object<T>::getInstances() {
-	return _instances;
-}
-
-template<typename T>
-size_t Object<T>::instanceCnt() {
-	return _instances.size();
-}
-
-template<typename T>
-bool  Object<T>::isInstanceExist(ID_T instanceID) {
-	return _instances.find(instanceID) != _instances.end();
-}
-
-template<typename T>
-ID_T Object<T>::getFirstAvailableInstanceID() {
-	// Usually, each subsequent free index will be equal to the number of created objects
-	ID_T id = _instances.size();
-	if (id == ID_T_MAX_VAL) return id;
-	// But it won't always be like that
-	while (isInstanceExist(id) && id != ID_T_MAX_VAL) id++;
-	// It is also possible that all indexes after the current size are occupied
-	if (id == ID_T_MAX_VAL) {
-		id = 0;
-		// In this case, we need to check the indexes that are before the current size
-		while (isInstanceExist(id) && id < _instances.size()) id++;
-	}
-
-	return id;
-}
-
-/* ------------- Lwm2m core callback ------------- */
-template<typename T>
-uint8_t Object<T>::read_clb(lwm2m_context_t * contextP, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP) {
-	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
-	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama read %d:%d", object()->getObjectID(), instanceId);
-	return object()->_instances[instanceId]->resourceRead(instanceId, numDataP, dataArrayP);
-}
-
-template<typename T>
-uint8_t Object<T>::write_clb(lwm2m_context_t * contextP, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP, lwm2m_write_type_t writeType) {
-	if (writeType == LWM2M_WRITE_REPLACE_INSTANCE) {
-		delete_clb(contextP, instanceId, objectP);
-		return create_clb(contextP, instanceId, numData, dataArray, objectP);
-	} else {
-		if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
-		WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama write %d:%d", object()->getObjectID(), instanceId);
-		return object()->_instances[instanceId]->resourceWrite(instanceId, numData, dataArray, writeType);
-	}
-}
-
-template<typename T>
-uint8_t Object<T>::execute_clb(lwm2m_context_t * contextP, ID_T instanceId, ID_T resId, uint8_t * buffer, int length, lwm2m_object_t * objectP) {
-	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
-	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama execute %d:%d", object()->getObjectID(), instanceId);
-	return object()->_instances[instanceId]->resourceExecute(instanceId, resId, buffer, length);
-}
-
-template<typename T>
-uint8_t Object<T>::discover_clb(lwm2m_context_t * contextP, ID_T instanceId, int * numDataP, lwm2m_data_t ** dataArrayP, lwm2m_object_t * objectP) {
-	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
-	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama discover %d:%d", object()->getObjectID(), instanceId);
-	return object()->_instances[instanceId]->resourceDiscover(instanceId, numDataP, dataArrayP);
-}
-
-template<typename T>
-uint8_t Object<T>::create_clb(lwm2m_context_t * contextP, ID_T instanceId, int numData, lwm2m_data_t * dataArray, lwm2m_object_t * objectP) {
-	if (!object()->createInstance(instanceId)) return COAP_500_INTERNAL_SERVER_ERROR;
-	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama create %d:%d", object()->getObjectID(), instanceId);
-	// Notify user about creating instance
-	object()->observerNotify(*object(), instanceId, Operation::TYPE::CREATE);
-
-	uint8_t result = write_clb(contextP, instanceId, numData, dataArray, objectP, LWM2M_WRITE_REPLACE_RESOURCES);
-	if (result != COAP_204_CHANGED) {
-		delete_clb(contextP, instanceId, objectP);
-		return result;
-	}
-
-	return COAP_201_CREATED;
-}
-
-template<typename T>
-uint8_t Object<T>::delete_clb(lwm2m_context_t * contextP, ID_T instanceId, lwm2m_object_t * objectP) {
-	if (!object()->isInstanceExist(instanceId)) return COAP_404_NOT_FOUND;
-	WPP_LOGD_ARG(TAG_WPP_OBJ, "wakaama delete %d:%d", object()->getObjectID(), instanceId);
-	// Notify user about deleting instance
-	object()->observerNotify(*object(), instanceId, Operation::TYPE::DELETE);
-
-	return object()->removeInstance(instanceId)? COAP_202_DELETED : COAP_404_NOT_FOUND;
-}
-
 } // namespace wpp
+
 #endif /* WPP_OBJECT_H_ */

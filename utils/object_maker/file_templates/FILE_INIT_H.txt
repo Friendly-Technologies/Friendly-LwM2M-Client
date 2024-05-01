@@ -1,0 +1,18 @@
+#ifndef <<IF_DEF_DIRECTIVE>>_H_
+#define <<IF_DEF_DIRECTIVE>>_H_
+
+__INCLUDES__
+
+using namespace wpp;
+
+class __CLASS_NAME__Impl: __INHERITANCES__ {
+public:
+    __CLASS_NAME__Impl();
+    ~__CLASS_NAME__Impl();
+
+    void init(Object &obj);
+
+private:
+__CALLBACKS__};
+
+#endif // <<IF_DEF_DIRECTIVE>>_H_

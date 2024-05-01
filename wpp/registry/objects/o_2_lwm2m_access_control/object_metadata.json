@@ -1,0 +1,23 @@
+{
+    "object_data": {
+        "name": "LwM2M Access Control",
+        "id": "2",
+        "version": "1.1",
+        "lwm2m_version": "1.0",
+        "is_mandatory": false,
+        "is_multiple": true
+    },
+    "object_names": {
+        "class": "Lwm2mAccessControl",
+        "camelcase": "lwm2mAccessControl",
+        "define": "OBJ_O_2_LWM2M_ACCESS_CONTROL",
+        "up_underline": "LWM2M_ACCESS_CONTROL"
+    },
+    "object_files": {
+        "impl_h": "Lwm2mAccessControl.h",
+        "impl_cpp": "Lwm2mAccessControl.cpp",
+        "config": "Lwm2mAccessControlConfig.h",
+        "info": "Lwm2mAccessControlInfo.h",
+        "cmake": "CMakeLists.txt"
+    }
+}

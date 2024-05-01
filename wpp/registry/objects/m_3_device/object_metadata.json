@@ -1,0 +1,23 @@
+{
+    "object_data": {
+        "name": "Device",
+        "id": "3",
+        "version": "1.2",
+        "lwm2m_version": "1.1",
+        "is_mandatory": true,
+        "is_multiple": false
+    },
+    "object_names": {
+        "class": "Device",
+        "camelcase": "device",
+        "define": "OBJ_M_3_DEVICE",
+        "up_underline": "DEVICE"
+    },
+    "object_files": {
+        "impl_h": "Device.h",
+        "impl_cpp": "Device.cpp",
+        "config": "DeviceConfig.h",
+        "info": "DeviceInfo.h",
+        "cmake": "CMakeLists.txt"
+    }
+}

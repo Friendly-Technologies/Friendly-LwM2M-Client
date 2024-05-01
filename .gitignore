@@ -1,2 +1,5 @@
 /_build/
-/utils/.idea
+/utils/object_maker/.idea
+/utils/object_maker/__pycache__
+/utils/object_maker/scripts/__pycache__
+/docs/html

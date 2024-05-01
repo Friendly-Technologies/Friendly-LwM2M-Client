@@ -1,5 +1,5 @@
 //============================================================================
-// Name        : ObjectRegestry.cpp
+// Name        : main.cpp
 // Author      : Valentin
 // Version     :
 //============================================================================
@@ -8,10 +8,19 @@
 #include <thread>
 #include <chrono>
 
-#include "Server.h"
-#include "Security.h"
+#include "Lwm2mServer.h"
+#include "Lwm2mSecurity.h"
 #include "Device.h"
 #include "Connection.h"
+#ifdef OBJ_O_4_CONNECTIVITY_MONITORING
+#include "ConnectivityMonitoring.h"
+#endif
+#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL
+#include "Lwm2mAccessControl.h"
+#endif
+#ifdef OBJ_O_5_FIRMWARE_UPDATE
+#include "FirmwareUpdate.h"
+#endif
 
 #include "WppClient.h"
 #include "WppRegistry.h"
@@ -19,19 +28,33 @@
 using namespace std;
 using namespace wpp;
 
-void socketPolling(Connection *connection) {
-	while (true) {
+void socketPolling(Connection *connection, DeviceImpl *device) {
+	while (!device->isNeededReboot()) {
 		connection->loop();
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 }
 
+// Found Wakaama bugs:
+// TODO: Coap post not working correctly for write
+// TODO: Observation with set pmin attribute did not work properly
+// TODO: Device work with NON confirmation messages
+
 int main() {
 	cout << endl << "---- Creating requiered components ----" << endl;
 	Connection connection("56830", AF_INET);
-	ServerImpl server;
-	SecurityImpl security;
+	Lwm2mServerImpl server;
+	Lwm2mSecurityImpl security;
 	DeviceImpl device;
+	#ifdef OBJ_O_4_CONNECTIVITY_MONITORING
+	ConnectivityMonitoringImpl conn_mon;
+	#endif
+	#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL
+	Lwm2mAccessControlImpl accessCtrl;
+	#endif
+	#ifdef OBJ_O_5_FIRMWARE_UPDATE
+	FirmwareUpdateImpl fwUpd;
+	#endif
 
 	// Client initialization
 	cout << endl << "---- Creating WppClient ----" << endl;
@@ -41,30 +64,50 @@ int main() {
 	#elif DTLS_WITH_RPK
 	clientName += "RPK";
 	#endif
-
+	cout << "WppClient name: " << clientName << endl;
 	WppClient::create({clientName, "", ""}, connection);
 	WppClient *client = WppClient::takeOwnership();
 	WppRegistry &registry = client->registry();
 
 	// Initialize wpp objects
 	cout << endl << "---- Initialization wpp Server ----" << endl;
-	server.init(registry.server());
+	server.init(registry.lwm2mServer());
 	cout << endl << "---- Initialization wpp Security ----" << endl;
-	security.init(registry.security());
+	security.init(registry.lwm2mSecurity());
 	cout << endl << "---- Initialization wpp Device ----" << endl;
 	device.init(registry.device());
+	#ifdef OBJ_O_4_CONNECTIVITY_MONITORING
+	cout << endl << "---- Initialization wpp ConnectivityMonitoring ----" << endl;
+	conn_mon.init(registry.connectivityMonitoring());
+	registry.registerObj(registry.connectivityMonitoring());
+	#endif
+	#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL
+	cout << endl << "---- Initialization wpp AccessControl ----" << endl;
+	accessCtrl.init(registry.lwm2mAccessControl());
+	registry.registerObj(registry.lwm2mAccessControl());
+	#endif
+	#ifdef OBJ_O_5_FIRMWARE_UPDATE
+	cout << endl << "---- Initialization wpp FirmwareUpdate ----" << endl;
+	fwUpd.init(registry.firmwareUpdate());
+	registry.registerObj(registry.firmwareUpdate());
+	#endif
+	#ifdef OBJ_O_3339_AUDIO_CLIP
+	cout << endl << "---- Initialization wpp AudioClip ----" << endl;
+	registry.registerObj(registry.audioClip());
+	registry.audioClip().createInstance();
+	#endif
 	
 	// Giving ownership to registry
 	client->giveOwnership();
 
 	cout << endl << "---- Starting Connection thread ----" << endl;
-	thread my_thread(socketPolling, &connection);
+	thread my_thread(socketPolling, &connection, &device);
 
 	time_t callTime = 0;
-	for (int iterationCnt = 0; true; iterationCnt++) {
+	for (int iterationCnt = 0; !device.isNeededReboot(); iterationCnt++) {
 		time_t currTime = time(NULL);
 
-		cout << endl << "---- iteration:" << iterationCnt << " ----" << endl;
+		cout << endl << "---- iteration:" << iterationCnt << ", time: " << time(NULL) << " ----" << endl;
 		if (currTime >= callTime || connection.getPacketQueueSize()) {
 			// Handle client state and process packets from the server
 			client = WppClient::takeOwnership();
@@ -76,5 +119,11 @@ int main() {
 		}
 		this_thread::sleep_for(chrono::seconds(1));
 	}
+
+	cout << endl << "---- Closing example ----" << endl;
+	my_thread.join();
+	WppClient::remove();
+	
+	return 0;
 }
 

@@ -1,0 +1,23 @@
+{
+    "object_data": {
+        "name": "Audio Clip",
+        "id": "3339",
+        "version": "1.0",
+        "lwm2m_version": "1.0",
+        "is_mandatory": false,
+        "is_multiple": true
+    },
+    "object_names": {
+        "class": "AudioClip",
+        "camelcase": "audioClip",
+        "define": "OBJ_O_3339_AUDIO_CLIP",
+        "up_underline": "AUDIO_CLIP"
+    },
+    "object_files": {
+        "impl_h": "AudioClip.h",
+        "impl_cpp": "AudioClip.cpp",
+        "config": "AudioClipConfig.h",
+        "info": "AudioClipInfo.h",
+        "cmake": "CMakeLists.txt"
+    }
+}

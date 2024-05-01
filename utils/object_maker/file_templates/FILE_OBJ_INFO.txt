@@ -1,0 +1,44 @@
+/*
+ * Generated on: __DATETIME__
+ * Created by: SinaiR&D
+ */
+
+#ifndef WPP_<<IF_DEF_DIRECTIVE>>_INFO_H
+#define WPP_<<IF_DEF_DIRECTIVE>>_INFO_H
+
+#include "ObjectInfo.h"
+
+#ifdef __OBJ_DEFINE__
+
+namespace wpp {
+
+inline const ObjectInfo __UPNAME___OBJ_INFO = {
+	/* Name */
+	"__NAME__",
+	/* Object ID */
+	OBJ_ID::__OBJ_ID__,
+	/* URN */
+	__URN__,
+	/* Object version */
+	__VERSION__,
+	/* Lwm2m version */
+	__LWM2M_VERSION__,
+	/* Is single */
+	IS_SINGLE::__MULTIPLE__,
+	/* Is Mandatory */
+	IS_MANDATORY::__MANDATORY__,
+	/* Object supported operations */
+	/* --------------- Info block 0 start --------------- */
+	InstOp(__INST_OP__),
+	ResOp(ResOp::READ|
+		  ResOp::WRITE|
+		  ResOp::DISCOVER|
+		  ResOp::EXECUTE|
+		  ResOp::DELETE),
+	/* --------------- Info block 0 end --------------- */
+};
+
+} /* namespace wpp */
+
+#endif /* __OBJ_DEFINE__ */
+#endif // WPP_<<IF_DEF_DIRECTIVE>>_INFO_H

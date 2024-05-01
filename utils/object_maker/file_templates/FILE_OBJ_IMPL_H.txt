@@ -1,0 +1,73 @@
+/*
+ * __CLASS_NAME__
+ * Generated on: __DATETIME__
+ * Created by: SinaiR&D
+ */
+
+#ifndef WPP_<<IF_DEF_DIRECTIVE>>_H
+#define WPP_<<IF_DEF_DIRECTIVE>>_H
+
+#include "__CLASS_NAME__Config.h"
+#include "__CLASS_NAME__Info.h"
+#include "Instance.h"
+#include "InstSubject.h"
+
+/* --------------- Сode_h block 0 start --------------- */
+/* --------------- Сode_h block 0 end --------------- */
+
+namespace wpp {
+
+class __CLASS_NAME__ : public Instance {
+public:
+	enum ID: ID_T {
+__ID_ENUM__	};
+
+	/* --------------- Code_h block 1 start --------------- */
+	/* --------------- Code_h block 1 end --------------- */
+
+public:
+	__CLASS_NAME__(lwm2m_context_t &context, const OBJ_LINK_T &id);
+	~__CLASS_NAME__();
+
+	/* --------------- Code_h block 2 start --------------- */
+	/* --------------- Code_h block 2 end --------------- */
+
+protected:
+	/* --------------- Instance implementation part --------------- */
+	/*
+	 * Handles information about resource operation that made server
+	 */
+	void serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resId) override;
+	/*
+	 * Handles information about resource operation that made user
+	 */
+	void userOperationNotifier(ResOp::TYPE type, const ResLink &resId) override;
+
+	/* --------------- Code_h block 3 start --------------- */
+	/* --------------- Code_h block 3 end --------------- */
+
+private:
+	/* --------------- Class private methods --------------- */
+	/*
+	 * Creates resources without initializing.
+	 */
+	void resourcesCreate();
+	/*
+	 * Initialize resources with default values
+	 * Resource always must have at least one instance.
+	 * Note: From server side, empty resource == undefined resource.
+	 */	
+	void resourcesInit();
+	
+	/* --------------- Code_h block 4 start --------------- */
+	/* --------------- Code_h block 4 end --------------- */
+
+private:
+	/* --------------- Class private properties --------------- */
+	/* --------------- Code_h block 5 start --------------- */
+	/* --------------- Code_h block 5 end --------------- */
+};
+
+} /* namespace wpp */
+
+#endif /* WPP_<<IF_DEF_DIRECTIVE>>_H */

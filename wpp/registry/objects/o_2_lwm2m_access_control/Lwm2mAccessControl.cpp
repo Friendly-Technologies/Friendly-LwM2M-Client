@@ -32,6 +32,7 @@ namespace wpp {
 Lwm2mAccessControl::Lwm2mAccessControl(lwm2m_context_t &context, const OBJ_LINK_T &id): Instance(context, id) {
 
 	/* --------------- Code_cpp block 1 start --------------- */
+	lwm2m_ac_request_update_policy(&context, false);
 	/* --------------- Code_cpp block 1 end --------------- */
 
 	resourcesCreate();
@@ -43,6 +44,7 @@ Lwm2mAccessControl::Lwm2mAccessControl(lwm2m_context_t &context, const OBJ_LINK_
 
 Lwm2mAccessControl::~Lwm2mAccessControl() {
 	/* --------------- Code_cpp block 3 start --------------- */
+	lwm2m_ac_request_update_policy(&getContext(), false);
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
@@ -68,6 +70,7 @@ bool Lwm2mAccessControl::removeInst(WppClient &ctx, ID_T instId) {
 
 void Lwm2mAccessControl::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resLink) {
 	/* --------------- Code_cpp block 4 start --------------- */
+	lwm2m_ac_request_update_policy(&getContext(), false);
 	/* --------------- Code_cpp block 4 end --------------- */
 
 	operationNotify(*this, resLink, type);
@@ -80,6 +83,7 @@ void Lwm2mAccessControl::userOperationNotifier(ItemOp::TYPE type, const ResLink 
 	if (type == ItemOp::WRITE || type == ItemOp::DELETE) notifyResChanged(resLink.resId, resLink.resInstId);
 
 	/* --------------- Code_cpp block 6 start --------------- */
+	lwm2m_ac_request_update_policy(&getContext(), false);
 	/* --------------- Code_cpp block 6 end --------------- */
 }
 

@@ -473,7 +473,7 @@ uint8_t Instance::writeAsServer(lwm2m_server_t *server, int numData, lwm2m_data_
 		if (!IS_RES_PTR_VALID(res)) continue;
 		if (!res->getOperation().isWrite() && (_context.state != STATE_BOOTSTRAPPING) && server != NULL) {
 			WPP_LOGE(TAG_WPP_INST, "Trying to write read-only resource %d:%d:%d", _id.objId, _id.objInstId, dataArray[i].id);
-			return COAP_400_BAD_REQUEST;
+			return COAP_405_METHOD_NOT_ALLOWED;
 		}
 	}
 

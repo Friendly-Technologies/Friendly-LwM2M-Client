@@ -1,5 +1,6 @@
 #include "catch_amalgamated.hpp"
 #include "o_4_connectivity_monitoring/ConnectivityMonitoring.h"
+#include "WppClient.h"
 
 #define NTWRK_BRR_MIN 0
 #define NTWRK_BRR_MAX 50
@@ -98,11 +99,51 @@ TEST_CASE("objectConnectivityMonitoring", "[objectConnectivityMonitoring]")
 
         lwm2m_context_t mockContext;
         OBJ_LINK_T mockId = {0, 1};
-        // Create an instance of ConnectivityMonitoringMock
         ConnectivityMonitoringMock connectivitymonitoringMock(mockContext, mockId);
 
         connectivitymonitoringMock.setDefaultState();
         connectivitymonitoringMock.serverOperationNotifier(0, ItemOp::TYPE::READ, {0, 0}); // TODO Instance *securityInst
         connectivitymonitoringMock.userOperationNotifier(ItemOp::TYPE::WRITE, {10, 10});
+    }
+
+    SECTION("instansesConnectivityMonitoring")
+    {
+
+        class ConnectivityMonitoringMock : public ConnectivityMonitoring
+        {
+        public:
+            ConnectivityMonitoringMock(lwm2m_context_t &context, const OBJ_LINK_T &id) : ConnectivityMonitoring(context, id) {}
+        };
+
+        WppClient::ClientInfo clientInfo;
+        clientInfo.endpointName = "exampleEndpoint";
+        clientInfo.msisdn = "1234567890";
+        clientInfo.altPath = "";
+
+        lwm2m_context_t mockContext;
+        OBJ_LINK_T mockId = {0, 0};
+        ConnectivityMonitoringMock connm(mockContext, mockId);
+        WppClient *defclient = WppClient::takeOwnership();
+        defclient->giveOwnership();
+
+        connm.object(*WppClient::takeOwnership());
+        defclient->giveOwnership();
+
+        REQUIRE(connm.instance(*WppClient::takeOwnership(), 1) == NULL);
+        defclient->giveOwnership();
+
+        REQUIRE(connm.instance(*WppClient::takeOwnership(), ID_T_MAX_VAL) == NULL);
+        defclient->giveOwnership();
+
+        REQUIRE(connm.createInst(*WppClient::takeOwnership(), 1) != NULL);
+        defclient->giveOwnership();
+        REQUIRE(connm.createInst(*WppClient::takeOwnership(), 1) == NULL);
+        defclient->giveOwnership();
+
+        REQUIRE(connm.instance(*WppClient::takeOwnership(), 1) != NULL);
+        defclient->giveOwnership();
+
+        REQUIRE(connm.removeInst(*WppClient::takeOwnership(), 1));
+        defclient->giveOwnership();
     }
 }

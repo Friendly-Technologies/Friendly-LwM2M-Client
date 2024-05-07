@@ -1,7 +1,15 @@
 #include "catch_amalgamated.hpp"
 #include "./../../../../../wpp/registry/objects/m_0_lwm2m_security/Lwm2mSecurity.h"
-
+#include "WppConnection.h"
+#include "WppTaskQueue.h"
+#include "WppClient.h"
 using namespace wpp;
+
+static WppTaskQueue::task_t createDummyTask()
+{
+    return [](WppClient &, void *)
+    { return true; };
+}
 
 TEST_CASE("objectLwm2mSecurity", "[objectLwm2mSecurity]")
 {
@@ -29,12 +37,41 @@ TEST_CASE("objectLwm2mSecurity", "[objectLwm2mSecurity]")
             void userOperationNotifier(ItemOp::TYPE type, const ResLink &resId) { Lwm2mSecurity::userOperationNotifier(type, resId); }
         };
 
+        WppClient::ClientInfo clientInfo;
+        clientInfo.endpointName = "exampleEndpoint";
+        clientInfo.msisdn = "1234567890";
+        clientInfo.altPath = "";
+
         lwm2m_context_t mockContext;
         OBJ_LINK_T mockId = {0, 1};
         // Create an instance of SecurityMock
         Lwm2mSecurityMock securityMock(mockContext, mockId);
 
         securityMock.setDefaultState();
+
+        WppClient *defclient = WppClient::takeOwnership();
+        defclient->giveOwnership();
+
+        securityMock.object(*WppClient::takeOwnership());
+        defclient->giveOwnership();
+
+        REQUIRE(securityMock.instance(*WppClient::takeOwnership(), 1) == NULL);
+        defclient->giveOwnership();
+
+        REQUIRE(securityMock.instance(*WppClient::takeOwnership(), ID_T_MAX_VAL) == NULL);
+        defclient->giveOwnership();
+
+        REQUIRE(securityMock.createInst(*WppClient::takeOwnership(), 1) != NULL);
+        defclient->giveOwnership();
+        REQUIRE(securityMock.createInst(*WppClient::takeOwnership(), 1) == NULL);
+        defclient->giveOwnership();
+
+        REQUIRE(securityMock.instance(*WppClient::takeOwnership(), 1) != NULL);
+        defclient->giveOwnership();
+
+        REQUIRE(securityMock.removeInst(*WppClient::takeOwnership(), 1));
+        defclient->giveOwnership();
+
         securityMock.serverOperationNotifier(0, ItemOp::TYPE::READ, {0, 0});
         securityMock.userOperationNotifier(ItemOp::TYPE::WRITE, {10, 10});
     }

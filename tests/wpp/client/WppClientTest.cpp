@@ -59,12 +59,6 @@ TEST_CASE("WppClient", "[wppclient]")
 
         conmock.handlePacketsInQueue(*defclient); // COAP_NO_ERROR
 
-        // REQUIRE(defclient->updateServerRegistration(true) == true);
-        // REQUIRE(defclient->updateServerRegistration(false) == true);
-        // REQUIRE(defclient->updateServerRegistration(0, true) == true);
-        // REQUIRE(defclient->updateServerRegistration(0, false) == true);
-        // REQUIRE_FALSE(defclient->updateServerRegistration(1, true) == true);
-
         WppTaskQueue::addTask(WPP_TASK_DEF_DELAY_S, createDummyTask());
         REQUIRE(defclient->loop() == WPP_TASK_DEF_DELAY_S);
         WppTaskQueue::hardReset();
@@ -77,7 +71,7 @@ TEST_CASE("WppClient", "[wppclient]")
         REQUIRE(defclient->loop() == WPP_CLIENT_MAX_SLEEP_TIME_S);
         WppTaskQueue::hardReset();
 
-        // defclient->send();
+        defclient->send({}); // DataLink &link
         defclient->deregister();
         WppClient::remove();
 

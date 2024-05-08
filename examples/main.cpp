@@ -8,94 +8,84 @@
 #include <thread>
 #include <chrono>
 
-#include "Lwm2mServer.h"
-#include "Lwm2mSecurity.h"
-#include "Device.h"
 #include "Connection.h"
-#ifdef OBJ_O_4_CONNECTIVITY_MONITORING
-#include "ConnectivityMonitoring.h"
-#endif
-#ifdef OBJ_O_5_FIRMWARE_UPDATE
-#include "FirmwareUpdate.h"
-#endif
-
-#include "WppClient.h"
-#include "WppRegistry.h"
+#include "objects.h"
 
 using namespace std;
 using namespace wpp;
 
-void socketPolling(Connection *connection, DeviceImpl *device) {
-	while (!device->isNeededReboot()) {
+void socketPolling(Connection *connection) {
+	while (!isDeviceShouldBeRebooted()) {
 		connection->loop();
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 }
 
-void initAudioClipObj(WppClient &client) {
-	#ifdef OBJ_O_3339_AUDIO_CLIP
-	AudioClip::createInst(client);
-	client.registry().registerObj(AudioClip::object(client));
-	#if OBJ_O_2_LWM2M_ACCESS_CONTROL
-	Lwm2mAccessControl::create(AudioClip::object(client), Lwm2mAccessControl::ALL_OBJ_RIGHTS);
-	Lwm2mAccessControl::create(*AudioClip::instance(client), TEST_SERVER_SHORT_ID);
-	#endif
-	#endif
+void wppErrorHandler(WppClient &client, int errCode) {
+	cout << "wppErrorHandler(): Error: " << errCode << endl;
+	if (client.getState() == STATE_BOOTSTRAPPING || client.getState() == STATE_BOOTSTRAP_REQUIRED) {
+		cout << "Trying to restore security and server objects" << endl;
+		Object &securityObj = Lwm2mSecurity::object(client);
+		Object &serverObj = Lwm2mServer::object(client);
+
+		#if OBJ_O_2_LWM2M_ACCESS_CONTROL
+		for (auto *inst : securityObj.instances()) Lwm2mAccessControl::remove(*inst);
+		for (auto *inst : serverObj.instances()) Lwm2mAccessControl::remove(*inst);
+		#endif
+
+		securityObj.clear();
+		serverObj.clear();
+
+		securityInit(client);
+		serverInit(client);
+	}
 }
 
 // Found Wakaama bugs:
 // TODO: Device work with NON confirmation messages
 
 int main() {
-	cout << endl << "---- Creating requiered components ----" << endl;
+	cout << endl << "---- Creating required components ----" << endl;
 	Connection connection("56830", AF_INET);
-	Lwm2mServerImpl server;
-	Lwm2mSecurityImpl security;
-	DeviceImpl device;
-	#ifdef OBJ_O_4_CONNECTIVITY_MONITORING
-	ConnectivityMonitoringImpl conn_mon;
-	#endif
-	#ifdef OBJ_O_5_FIRMWARE_UPDATE
-	FirmwareUpdateImpl fwUpd;
+	#if OBJ_O_5_FIRMWARE_UPDATE
+    FwUriDownloader fwUriDownloader;
+    FwAutoDownloader fwAutoDownloader;
+	FirmwareUpdater fwUpdater;
 	#endif
 
 	// Client initialization
 	cout << endl << "---- Creating WppClient ----" << endl;
-	string clientName = "SinaiTestLwm2m";
+	string clientName = "sinaiVs";
 	#if DTLS_WITH_PSK
 	clientName += "PSK";
 	#elif DTLS_WITH_RPK
 	clientName += "RPK";
 	#endif
 	cout << "WppClient name: " << clientName << endl;
-	WppClient::create({clientName, "", ""}, connection);
-	WppClient *client = WppClient::takeOwnership();
-	WppRegistry &registry = client->registry();
+	WppClient::create({clientName, "", ""}, connection, wppErrorHandler);
+	WppClient *client = WppClient::takeOwnershipBlocking();
 
 	// Initialize wpp objects
-	cout << endl << "---- Initialization wpp Server ----" << endl;
-	server.init(registry.lwm2mServer());
-	cout << endl << "---- Initialization wpp Security ----" << endl;
-	security.init(registry.lwm2mSecurity());
-	cout << endl << "---- Initialization wpp Device ----" << endl;
-	device.init(registry.device());
-	#ifdef OBJ_O_4_CONNECTIVITY_MONITORING
-	cout << endl << "---- Initialization wpp ConnectivityMonitoring ----" << endl;
-	conn_mon.init(registry.connectivityMonitoring());
-	registry.registerObj(registry.connectivityMonitoring());
-	#endif
 	#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL
-	cout << endl << "---- Initialization wpp AccessControl ----" << endl;
-	registry.registerObj(registry.lwm2mAccessControl());
+	acInit(*client);
 	#endif
+	cout << endl << "---- Initialization wpp Server ----" << endl;
+	serverInit(*client);
+	cout << endl << "---- Initialization wpp Security ----" << endl;
+	securityInit(*client);
+	cout << endl << "---- Initialization wpp Device ----" << endl;
+	deviceInit(*client);
 	#ifdef OBJ_O_5_FIRMWARE_UPDATE
 	cout << endl << "---- Initialization wpp FirmwareUpdate ----" << endl;
-	fwUpd.init(registry.firmwareUpdate());
-	registry.registerObj(registry.firmwareUpdate());
+	fwUpdaterInit(*client, fwUpdater, fwUriDownloader, fwAutoDownloader);
+	#endif
+	#ifdef OBJ_O_4_CONNECTIVITY_MONITORING
+	cout << endl << "---- Initialization wpp ConnectivityMonitoring ----" << endl;
+	connMonitoringInit(*client);
 	#endif
 	#ifdef OBJ_O_3339_AUDIO_CLIP
 	cout << endl << "---- Initialization wpp AudioClip ----" << endl;
-	initAudioClipObj(*client);
+	audioClipInit(*client);
 	#endif
 	
 	// Giving ownership to registry
@@ -112,10 +102,10 @@ int main() {
 	#endif
 
 	cout << endl << "---- Starting Connection thread ----" << endl;
-	thread my_thread(socketPolling, &connection, &device);
+	thread my_thread(socketPolling, &connection);
 
 	time_t callTime = 0;
-	for (int iterationCnt = 0; !device.isNeededReboot(); iterationCnt++) {
+	for (int iterationCnt = 0; !isDeviceShouldBeRebooted(); iterationCnt++) {
 		time_t currTime = time(NULL);
 
 		cout << endl << "---- iteration:" << iterationCnt << ", time: " << time(NULL) << " ----" << endl;

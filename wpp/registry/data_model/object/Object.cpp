@@ -79,11 +79,6 @@ void Object::clear() {
 	}
 }
 
-void Object::restore() {
-	WPP_LOGD(TAG_WPP_OBJ, "Restoring object with ID -> %d", getObjectID());
-    this->observerDoAction(*this, ObjSubject::Action::RESTORE);
-}
-
 bool Object::remove(ID_T instanceId) {
 	// If user want to delete instance with ID that does not exist, then we can not do it
 	auto inst = getInstIter(instanceId);

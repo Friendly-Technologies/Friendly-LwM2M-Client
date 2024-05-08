@@ -44,7 +44,7 @@ else()
 endif()
 
 # Variables that will be filled in subdirectories
-set(SOURCES main.cpp)
+set(SOURCES main.cpp objects.cpp)
 set(INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/)
 
 # General options
@@ -65,16 +65,9 @@ target_link_libraries(WakaamaPlusExample Wpp pthread ${libcoap_path}/libcoap-3.s
 
 # Add subdiretories with sources
 add_subdirectory(platform)
-add_subdirectory(Lwm2mServer)
-add_subdirectory(Lwm2mSecurity)
-add_subdirectory(Device)
-check_target_definition(WakaamaPlusExample "OBJ_O_4_CONNECTIVITY_MONITORING" is_defined)
-if(is_defined)
-    add_subdirectory(ConnectivityMonitoring)
-endif()
 check_target_definition(WakaamaPlusExample "OBJ_O_5_FIRMWARE_UPDATE" is_defined)
 if(is_defined)
-    add_subdirectory(FirmwareUpdate)
+    add_subdirectory(FirmwareUpdater)
 endif()
 
 # Include sources

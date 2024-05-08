@@ -93,11 +93,6 @@ public:
 	 */
 	WppRegistry& getRegistry();
 
-	/**
-	 * @brief Restores the object.
-	 */
-	void restore();
-
 	/* ------------- Object instance management ------------- */
 
 	/**

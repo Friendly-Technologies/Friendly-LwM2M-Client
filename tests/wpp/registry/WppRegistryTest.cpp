@@ -14,6 +14,7 @@ TEST_CASE("WppRegistry constructor creates objects", "[WppRegistry]")
     {
         REQUIRE_FALSE(WppRegistryInstance.isExist(OBJ_ID(-1)));
         REQUIRE_FALSE(WppRegistryInstance.object(OBJ_ID(-1)) != NULL);
+        WppRegistryInstance.objects(); // TODO
     }
 
 #ifdef OBJ_M_3_DEVICE
@@ -22,8 +23,9 @@ TEST_CASE("WppRegistry constructor creates objects", "[WppRegistry]")
         REQUIRE(WppRegistryInstance.isExist(OBJ_ID::DEVICE));
         REQUIRE(WppRegistryInstance.object(OBJ_ID::DEVICE) != NULL);
 
-        ObjectSpec<Device> &obj = WppRegistryInstance.device();
-
+        Object &obj = WppRegistryInstance.device();
+        WppRegistryInstance.objects(); // TODO
+        WppRegistryInstance.audioClip(); // TODO
         REQUIRE(obj.getObjectID() == OBJ_ID(3));
         REQUIRE(WppRegistryInstance.object(OBJ_ID(3)) == &obj);
         REQUIRE(WppRegistryInstance.registerObj(obj) == true);
@@ -39,7 +41,7 @@ TEST_CASE("WppRegistry constructor creates objects", "[WppRegistry]")
         REQUIRE(WppRegistryInstance.isExist(OBJ_ID::LWM2M_SERVER));
         REQUIRE(WppRegistryInstance.object(OBJ_ID::LWM2M_SERVER) != NULL);
 
-        ObjectSpec<Lwm2mServer> &obj = WppRegistryInstance.lwm2mServer();
+        Object &obj = WppRegistryInstance.lwm2mServer();
 
         REQUIRE(obj.getObjectID() == OBJ_ID(1));
         REQUIRE(WppRegistryInstance.object(OBJ_ID(1)) == &obj);
@@ -56,7 +58,7 @@ TEST_CASE("WppRegistry constructor creates objects", "[WppRegistry]")
         REQUIRE(WppRegistryInstance.isExist(OBJ_ID::LWM2M_SECURITY));
         REQUIRE(WppRegistryInstance.object(OBJ_ID::LWM2M_SECURITY) != NULL);
 
-        ObjectSpec<Lwm2mSecurity> &obj = WppRegistryInstance.lwm2mSecurity();
+        Object &obj = WppRegistryInstance.lwm2mSecurity();
 
         REQUIRE(obj.getObjectID() == OBJ_ID(0));
         REQUIRE(WppRegistryInstance.object(OBJ_ID(0)) == &obj);
@@ -73,7 +75,7 @@ TEST_CASE("WppRegistry constructor creates objects", "[WppRegistry]")
         REQUIRE(WppRegistryInstance.isExist(OBJ_ID::CONNECTIVITY_MONITORING));
         REQUIRE(WppRegistryInstance.object(OBJ_ID::CONNECTIVITY_MONITORING) != NULL);
 
-        ObjectSpec<ConnectivityMonitoring> &obj = WppRegistryInstance.connectivityMonitoring();
+        Object &obj = WppRegistryInstance.connectivityMonitoring();
 
         REQUIRE(obj.getObjectID() == OBJ_ID(4));
         REQUIRE(WppRegistryInstance.object(OBJ_ID(4)) == &obj);
@@ -90,7 +92,7 @@ TEST_CASE("WppRegistry constructor creates objects", "[WppRegistry]")
         REQUIRE(WppRegistryInstance.isExist(OBJ_ID::LWM2M_ACCESS_CONTROL));
         REQUIRE(WppRegistryInstance.object(OBJ_ID::LWM2M_ACCESS_CONTROL) != NULL);
 
-        ObjectSpec<Lwm2mAccessControl> &obj = WppRegistryInstance.lwm2mAccessControl();
+        Object &obj = WppRegistryInstance.lwm2mAccessControl();
 
         REQUIRE(obj.getObjectID() == OBJ_ID(2));
         REQUIRE(WppRegistryInstance.object(OBJ_ID(2)) == &obj);
@@ -107,7 +109,7 @@ TEST_CASE("WppRegistry constructor creates objects", "[WppRegistry]")
         REQUIRE(WppRegistryInstance.isExist(OBJ_ID::FIRMWARE_UPDATE));
         REQUIRE(WppRegistryInstance.object(OBJ_ID::FIRMWARE_UPDATE) != NULL);
 
-        ObjectSpec<FirmwareUpdate> &obj = WppRegistryInstance.firmwareUpdate();
+        Object &obj = WppRegistryInstance.firmwareUpdate();
 
         REQUIRE(obj.getObjectID() == OBJ_ID(5));
         REQUIRE(WppRegistryInstance.object(OBJ_ID(5)) == &obj);

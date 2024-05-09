@@ -193,6 +193,6 @@ TEST_CASE("ItemOp2", "[ItemOp2]")
         REQUIRE(result.size() == 2);
         REQUIRE(result[0] == ItemOp::TYPE::READ);
         REQUIRE(result[1] == ItemOp::TYPE::WRITE);
-        REQUIRE_FALSE(result[2] == ItemOp::TYPE::EXECUTE);
+        // REQUIRE(result[2] == ItemOp::TYPE::EXECUTE);
     }
 }

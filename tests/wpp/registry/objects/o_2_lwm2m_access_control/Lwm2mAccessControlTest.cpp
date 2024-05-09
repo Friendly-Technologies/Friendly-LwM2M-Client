@@ -1,5 +1,6 @@
 #include "catch_amalgamated.hpp"
 #include "./../../../../../wpp/registry/objects/o_2_lwm2m_access_control/Lwm2mAccessControl.h"
+#include "WppClient.h"
 
 #define AC_OBJ_ID_MIN 1
 #define AC_OBJ_ID_MAX (ID_T_MAX_VAL-1)
@@ -48,6 +49,11 @@ TEST_CASE("objectLwm2mAccessControl", "[objectLwm2mAccessControl]")
                 REQUIRE_FALSE(Lwm2mAccessControl::resource(ACCESS_CONTROL_OWNER_3)->set(INT_T(AC_OWNER_MAX + 1)));
             }
 
+            void getAcMock()
+            {
+                // Lwm2mAccessControl::object(??);
+            }
+
             void serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resId) { Lwm2mAccessControl::serverOperationNotifier(securityInst, type, resId); }
             void userOperationNotifier(ItemOp::TYPE type, const ResLink &resId) { Lwm2mAccessControl::userOperationNotifier(type, resId); }
         };
@@ -58,8 +64,48 @@ TEST_CASE("objectLwm2mAccessControl", "[objectLwm2mAccessControl]")
         Lwm2mAccessControlMock accesscontrolMock(mockContext, mockId);
 
         accesscontrolMock.setDefaultState();
-
         accesscontrolMock.serverOperationNotifier(0, ItemOp::TYPE::READ, {0, 0});
         accesscontrolMock.userOperationNotifier(ItemOp::TYPE::WRITE, {10, 10});
+    }
+
+        SECTION("instansesAccessControl")
+    {
+
+        class Lwm2mAccessControlMock : public Lwm2mAccessControl
+        {
+        public:
+            Lwm2mAccessControlMock(lwm2m_context_t &context, const OBJ_LINK_T &id) : Lwm2mAccessControl(context, id) {}
+        };
+
+        WppClient::ClientInfo clientInfo;
+        clientInfo.endpointName = "exampleEndpoint";
+        clientInfo.msisdn = "1234567890";
+        clientInfo.altPath = "";
+
+        lwm2m_context_t mockContext;
+        OBJ_LINK_T mockId = {0, 0};
+        Lwm2mAccessControlMock acont(mockContext, mockId);
+        WppClient *defclient = WppClient::takeOwnership();
+        defclient->giveOwnership();
+
+        acont.object(*WppClient::takeOwnership());
+        defclient->giveOwnership();
+
+        REQUIRE(acont.instance(*WppClient::takeOwnership(), 1) == NULL);
+        defclient->giveOwnership();
+
+        REQUIRE(acont.instance(*WppClient::takeOwnership(), ID_T_MAX_VAL) == NULL);
+        defclient->giveOwnership();
+
+        REQUIRE(acont.createInst(*WppClient::takeOwnership(), 1) != NULL);
+        defclient->giveOwnership();
+        REQUIRE(acont.createInst(*WppClient::takeOwnership(), 1) == NULL);
+        defclient->giveOwnership();
+
+        REQUIRE(acont.instance(*WppClient::takeOwnership(), 1) != NULL);
+        defclient->giveOwnership();
+
+        REQUIRE(acont.removeInst(*WppClient::takeOwnership(), 1));
+        defclient->giveOwnership();
     }
 }

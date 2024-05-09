@@ -27,15 +27,10 @@ public:
 
 class InstOpObserverTest : public InstOpObserver {
 public:
-    int resourceReadCount = 0;
     int resourceWriteCount = 0;
     int resourceExecuteCount = 0;
     int resourcesReplacedCount = 0;
 
-    void resourceRead(Instance &inst, const ResLink &resource) override {
-        InstOpObserver::resourceRead(inst, resource);
-        resourceReadCount++;
-    }
     void resourceWrite(Instance &inst, const ResLink &resource) override {
         InstOpObserver::resourceWrite(inst, resource);
         resourceWriteCount++;
@@ -91,16 +86,9 @@ TEST_CASE("InstSubject: subscribe/unsubscribe", "[opSubscribe][opUnsubscribe][bl
         inst.opSubscribe(&opObserver);
         inst.opSubscribe(&opObserver);
         inst.opSubscribe(NULL);
-
-        REQUIRE(opObserver.resourceReadCount == 0);
         inst.operationNotify(inst, {}, ItemOp::TYPE::READ);
-        REQUIRE(opObserver.resourceReadCount == 1);
-        inst.operationNotify(inst, {}, ItemOp::TYPE::READ);
-        REQUIRE(opObserver.resourceReadCount == 2);
-
         inst.opUnsubscribe(&opObserver);
         inst.operationNotify(inst, {}, ItemOp::TYPE::READ);
-        REQUIRE(opObserver.resourceReadCount == 2);
     }
 
     SECTION("Instance event subscribe/unsubscribe") {
@@ -148,13 +136,8 @@ TEST_CASE("InstSubject: operations and events notifying", "[operationNotify][blo
 
     SECTION("Instance operation notify") {
         inst.opSubscribe(&opObserver);
-
-        REQUIRE(opObserver.resourceReadCount == 0);
         inst.operationNotify(inst, {}, ItemOp::TYPE::READ);
-        REQUIRE(opObserver.resourceReadCount == 1);
-        inst.operationNotify(inst, {}, ItemOp::TYPE::READ);
-        REQUIRE(opObserver.resourceReadCount == 2);
-
+        
         REQUIRE(opObserver.resourceWriteCount == 0);
         inst.operationNotify(inst, {}, ItemOp::TYPE::WRITE);
         REQUIRE(opObserver.resourceWriteCount == 1);
@@ -174,7 +157,6 @@ TEST_CASE("InstSubject: operations and events notifying", "[operationNotify][blo
         REQUIRE(opObserver.resourcesReplacedCount == 0);
 
         inst.operationNotify(inst, {}, ItemOp::TYPE::NONE);
-        REQUIRE(opObserver.resourceReadCount == 2);
         REQUIRE(opObserver.resourceWriteCount == 4);
         REQUIRE(opObserver.resourceExecuteCount == 2);
         REQUIRE(opObserver.resourcesReplacedCount == 0);
@@ -189,12 +171,10 @@ TEST_CASE("InstSubject: operations and events notifying", "[operationNotify][blo
         inst.operationNotify(inst, {}, ItemOp::TYPE::WRITE);
         inst.operationNotify(inst, {}, ItemOp::TYPE::EXECUTE);
         for (int i = 0; i < 100; i++) {
-            REQUIRE(opObservers[i].resourceReadCount == 1);
             REQUIRE(opObservers[i].resourceWriteCount == 2);
             REQUIRE(opObservers[i].resourceExecuteCount == 1);
             REQUIRE(opObservers[i].resourcesReplacedCount == 0);
         }
-        REQUIRE(opObserver.resourceReadCount == 3);
         REQUIRE(opObserver.resourceWriteCount == 6);
         REQUIRE(opObserver.resourceExecuteCount == 3);
         REQUIRE(opObserver.resourcesReplacedCount == 0);

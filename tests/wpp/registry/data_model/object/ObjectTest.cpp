@@ -1,448 +1,172 @@
-// #include "catch_amalgamated.hpp"
-// #include "Object.h"
+#include "catch_amalgamated.hpp"
+#include "Object.h"
 // #include "ObjectImpl.h"
-// #include "Instance.h"
-// #include <cstring>
 
-// using namespace wpp;
-// Object::Object(lwm2m_context_t &context) : _context(context) {}
-// lwm2m_context_t mockContext = {};
-// // static lwm2m_server_t mockServer = {};
-// ObjectInfo mockInfo = {
-//     "Test Object",
-//     OBJ_ID::MAX_ID,
-//     "urn:oma:lwm2m:oma:123:1",
-//     Version{1, 0},
-//     Version{1, 0},
-//     IS_SINGLE::MULTIPLE,
-//     IS_MANDATORY::OPTIONAL,
-//     ItemOp(ItemOp::CREATE | ItemOp::DELETE),
-//     // ItemOp(ItemOp::READ | ItemOp::WRITE | ItemOp::DISCOVER | ItemOp::EXECUTE | ItemOp::DELETE),
-// };
+using namespace wpp;
 
-// class InstanceMock : public Instance
-// {
-// public:
-//     InstanceMock(lwm2m_context_t &context, const OBJ_LINK_T &id) : Instance(context, id) {}
+class ObjectMock : public Object
+{
+public:
+    ObjectMock(lwm2m_context_t &context) : Object(context) {}
 
-//     void setDefaultState() {}
+    ObjectMock(lwm2m_context_t &context, const ObjectInfo &info) : Object(context, info) {}
+    ~ObjectMock(){};
 
-//     void serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resId) override {}
+    Instance *createInstance(ID_T instanceID) override { return 0; }
+    Instance *instance(ID_T instanceID = 0) { return Object::instance(instanceID); }
+    lwm2m_context_t &getContext() { return _context; }
+    ID_T getFirstAvailableInstanceID() { return Object::getFirstAvailableInstanceID(); }
 
-//     void userOperationNotifier(ItemOp::TYPE type, const ResLink &resId) override {}
-// };
+    uint8_t serverRead_clb(lwm2m_context_t *contextP, lwm2m_server_t *server, ID_T instanceId, int *numDataP, lwm2m_data_t **dataArrayP, lwm2m_object_t *objectP) { return Object::serverRead_clb(contextP, server, instanceId, numDataP, dataArrayP, objectP); }
+    uint8_t serverWrite_clb(lwm2m_context_t *contextP, lwm2m_server_t *server, ID_T instanceId, int numData, lwm2m_data_t *dataArray, lwm2m_object_t *objectP, lwm2m_write_type_t writeType) { return Object::serverWrite_clb(contextP, server, instanceId, numData, dataArray, objectP, writeType); }
+    uint8_t serverExecute_clb(lwm2m_context_t *contextP, lwm2m_server_t *server, ID_T instanceId, ID_T resId, uint8_t *buffer, int length, lwm2m_object_t *objectP) { return Object::serverExecute_clb(contextP, server, instanceId, resId, buffer, length, objectP); }
+    uint8_t serverDiscover_clb(lwm2m_context_t *contextP, lwm2m_server_t *server, ID_T instanceId, int *numDataP, lwm2m_data_t **dataArrayP, lwm2m_object_t *objectP) { return Object::serverDiscover_clb(contextP, server, instanceId, numDataP, dataArrayP, objectP); }
+    uint8_t serverCreate_clb(lwm2m_context_t *contextP, lwm2m_server_t *server, ID_T instanceId, int numData, lwm2m_data_t *dataArray, lwm2m_object_t *objectP) { return Object::serverCreate_clb(contextP, server, instanceId, numData, dataArray, objectP); }
+    uint8_t serverDelete_clb(lwm2m_context_t *contextP, lwm2m_server_t *server, ID_T instanceId, lwm2m_object_t *objectP) { return Object::serverDelete_clb(contextP, server, instanceId, objectP); }
 
-// class ObjectMock : public Object
-// {
-// public:
-//     ObjectMock(lwm2m_context_t &context, ObjectInfo &mockInfo) : Object(context, mockInfo) : _context(context), _objInfo(mockInfo){};
-//     // ~ObjectMock(){};
+    WppRegistry &getRegistry() { return Object::getRegistry(); }
+};
 
-//     Instance *createInstance(ID_T instanceID) { return 0; }
+ObjectInfo mockInfo = {
+    "Test Object",
+    OBJ_ID::MAX_ID,
+    "urn:oma:lwm2m:oma:123:1",
+    Version{1, 0},
+    Version{1, 0},
+    IS_SINGLE::MULTIPLE,
+    IS_MANDATORY::OPTIONAL,
+    ItemOp(ItemOp::CREATE | ItemOp::DELETE),
+};
 
-//     Instance *instance(ID_T instanceID = 0) { return Object::instance(instanceID); }
+class InstanceMock : public Instance
+{
+public:
+    InstanceMock(lwm2m_context_t &context, const OBJ_LINK_T &id) : Instance(context, id) {}
 
-//     lwm2m_context_t &getContext() { return _context; }
+    void setDefaultState() {}
+    void serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resId) override {}
+    void userOperationNotifier(ItemOp::TYPE type, const ResLink &resId) override {}
+};
 
-//     WppClient &getClient() { return *static_cast<wpp::WppClient *>(getContext()->userData); }
-//     WppRegistry &getRegistry()
-//     {
-//         return static_cast<wpp::WppClient *>(getContext().userData)->registry();
-//     }
-// };
+class ObjOpObserverTest : public ObjOpObserver
+{
+public:
+    int instanceCreatedCount = 0;
+    int instanceDeletingCount = 0;
 
-// class ObjOpObserverTest : public ObjOpObserver
-// {
-// public:
-//     int instanceCreatedCount = 0;
-//     int instanceDeletingCount = 0;
+    void instanceCreated(Object &object, ID_T instanceId) override
+    {
+        ObjOpObserver::instanceCreated(object, instanceId);
+        instanceCreatedCount++;
+    }
 
-//     void instanceCreated(Object &object, ID_T instanceId) override
-//     {
-//         ObjOpObserver::instanceCreated(object, instanceId);
-//         instanceCreatedCount++;
-//     }
+    void instanceDeleting(Object &object, ID_T instanceId) override
+    {
+        ObjOpObserver::instanceDeleting(object, instanceId);
+        instanceDeletingCount++;
+    }
+};
 
-//     void instanceDeleting(Object &object, ID_T instanceId) override
-//     {
-//         ObjOpObserver::instanceDeleting(object, instanceId);
-//         instanceDeletingCount++;
-//     }
-// };
+lwm2m_context_t mockContextObj = {};
+static lwm2m_server_t mockServer = {};
+ObjectMock obj(mockContextObj, mockInfo);
+ObjectMock obj2(mockContextObj);
 
-// class ObjActObserverTest : public ObjActObserver
-// {
-// public:
-//     int objectRestoreCount = 0;
+TEST_CASE("Object: constructing/destucting and getting infor", "[Object][Object][getObjectID][getLwm2mObject][getObjectInfo]")
+{
 
-//     void objectRestore(Object &object) override
-//     {
-//         objectRestoreCount++;
-//     }
-// };
+    SECTION("Constructor")
+    {
+        REQUIRE(obj.getObjectID() == OBJ_ID::MAX_ID);
+        REQUIRE(obj2.getObjectID() == 0);
+        REQUIRE(std::strcmp(obj.getObjectInfo().name, "Test Object") == 0);
+        REQUIRE(obj.getObjectInfo().objID == OBJ_ID::MAX_ID);
+        REQUIRE(std::strcmp(obj.getObjectInfo().urn, "urn:oma:lwm2m:oma:123:1") == 0);
+        REQUIRE(obj.getObjectInfo().lwm2mVersion.minor == 0);
+        REQUIRE(obj.getObjectInfo().lwm2mVersion.major == 1);
+        REQUIRE(obj.getObjectInfo().objVersion.minor == 0);
+        REQUIRE(obj.getObjectInfo().objVersion.major == 1);
+        REQUIRE(obj.getObjectInfo().isSingle == IS_SINGLE::MULTIPLE);
+        REQUIRE(obj.getObjectInfo().isMandatory == IS_MANDATORY::OPTIONAL);
+        REQUIRE(obj.getObjectInfo().operations.getFlags() == ItemOp(ItemOp::CREATE | ItemOp::DELETE).getFlags());
+        REQUIRE(obj.getObjectInfo().operations.getFlags() != ItemOp(ItemOp::READ |
+                                                                    ItemOp::WRITE |
+                                                                    ItemOp::DISCOVER |
+                                                                    ItemOp::EXECUTE |
+                                                                    ItemOp::DELETE)
+                                                                 .getFlags());
 
-// TEST_CASE("Object: constructing/destucting and getting infor", "[Object][Object][getObjectID][getLwm2mObject][getObjectInfo]")
-// {
-//     ObjectMock obj(mockContext, mockInfo);
+        REQUIRE(obj.getFirstAvailableInstanceID() == 0);
+        lwm2m_object_t lwm2mObj = obj.getLwm2mObject();
+        REQUIRE(lwm2mObj.objID == (ID_T)OBJ_ID::MAX_ID);
+        REQUIRE(lwm2mObj.instanceList == NULL);
+        REQUIRE(lwm2mObj.versionMajor == 1);
+        REQUIRE(lwm2mObj.versionMinor == 0);
+        REQUIRE(lwm2mObj.userData == &obj);
+        REQUIRE(lwm2mObj.readFunc == NULL);
+        REQUIRE(lwm2mObj.discoverFunc == NULL);
+        REQUIRE(lwm2mObj.writeFunc == NULL);
+        REQUIRE(lwm2mObj.executeFunc == NULL);
+        REQUIRE(lwm2mObj.createFunc != NULL);
+        REQUIRE(lwm2mObj.deleteFunc != NULL);
 
-//     SECTION("Constructor")
-//     {
-//         REQUIRE(obj.getObjectID() == OBJ_ID::MAX_ID);
+        ObjectInfo constrainedObjInfo = mockInfo;
+        constrainedObjInfo.operations = ItemOp(ItemOp::NONE);
+        ObjectMock constrainedObj(mockContextObj, constrainedObjInfo);
+        lwm2m_object_t constrainedLwm2mObj = constrainedObj.getLwm2mObject();
+        REQUIRE(constrainedLwm2mObj.userData == &constrainedObj);
+        REQUIRE(constrainedLwm2mObj.readFunc == NULL);
+        REQUIRE(constrainedLwm2mObj.discoverFunc == NULL);
+        REQUIRE(constrainedLwm2mObj.writeFunc == NULL);
+        REQUIRE(constrainedLwm2mObj.executeFunc == NULL);
+        REQUIRE(constrainedLwm2mObj.createFunc == NULL);
+        REQUIRE(constrainedLwm2mObj.deleteFunc == NULL);
+    }
 
-//         REQUIRE(std::strcmp(obj.getObjectInfo().name, "Test Object") == 0);
-//         REQUIRE(obj.getObjectInfo().objID == OBJ_ID::MAX_ID);
-//         REQUIRE(std::strcmp(obj.getObjectInfo().urn, "urn:oma:lwm2m:oma:123:1") == 0);
-//         REQUIRE(obj.getObjectInfo().lwm2mVersion.minor == 0);
-//         REQUIRE(obj.getObjectInfo().lwm2mVersion.major == 1);
-//         REQUIRE(obj.getObjectInfo().objVersion.minor == 0);
-//         REQUIRE(obj.getObjectInfo().objVersion.major == 1);
-//         REQUIRE(obj.getObjectInfo().isSingle == IS_SINGLE::MULTIPLE);
-//         REQUIRE(obj.getObjectInfo().isMandatory == IS_MANDATORY::OPTIONAL);
-//         REQUIRE(obj.getObjectInfo().operations.getFlags() == ItemOp(ItemOp::CREATE | ItemOp::DELETE).getFlags());
-//         REQUIRE(obj.getObjectInfo().operations.getFlags() != ItemOp(ItemOp::READ |
-//                                                                     ItemOp::WRITE |
-//                                                                     ItemOp::DISCOVER |
-//                                                                     ItemOp::EXECUTE |
-//                                                                     ItemOp::DELETE)
-//                                                                  .getFlags());
+    SECTION("Object: Destructor")
+    {
+        REQUIRE(obj.instanceCnt() == 0);
+    }
+}
 
-//         lwm2m_object_t lwm2mObj = obj.getLwm2mObject();
-//         REQUIRE(lwm2mObj.objID == (ID_T)OBJ_ID::MAX_ID);
-//         REQUIRE(lwm2mObj.instanceList == NULL);
-//         REQUIRE(lwm2mObj.versionMajor == 1);
-//         REQUIRE(lwm2mObj.versionMinor == 0);
-//         REQUIRE(lwm2mObj.userData == &obj);
-//         REQUIRE(lwm2mObj.readFunc == NULL);     // TODO
-//         REQUIRE(lwm2mObj.discoverFunc == NULL); // TODO
-//         REQUIRE(lwm2mObj.writeFunc == NULL);    // TODO
-//         REQUIRE(lwm2mObj.executeFunc == NULL);  // TODO
-//         REQUIRE(lwm2mObj.createFunc != NULL);   // TODO
-//         REQUIRE(lwm2mObj.deleteFunc != NULL);   // TODO
+TEST_CASE("Object: instance clb/remove", "[clb][remove][instanceCnt][isExist][restore]")
+{
+    ObjOpObserverTest actObserver;
+    lwm2m_object_t lwm2mObj = obj.getLwm2mObject();
 
-//         ObjectInfo constrainedObjInfo = mockInfo;
-//         constrainedObjInfo.operations = ItemOp(ItemOp::NONE);
-//         ObjectMock constrainedObj(mockContext, constrainedObjInfo);
-//         lwm2m_object_t constrainedLwm2mObj = constrainedObj.getLwm2mObject();
-//         REQUIRE(constrainedLwm2mObj.userData == &constrainedObj);
-//         REQUIRE(constrainedLwm2mObj.readFunc == NULL);
-//         REQUIRE(constrainedLwm2mObj.discoverFunc == NULL);
-//         REQUIRE(constrainedLwm2mObj.writeFunc == NULL);
-//         REQUIRE(constrainedLwm2mObj.executeFunc == NULL);
-//         REQUIRE(constrainedLwm2mObj.createFunc == NULL);
-//         REQUIRE(constrainedLwm2mObj.deleteFunc == NULL);
-//     }
+    obj.opSubscribe(&actObserver);
+    obj.getClient();
+    obj.instances();
+    obj.instance(1);
 
-//     SECTION("Object: Destructor")
-//     {
-//         REQUIRE(obj.createInstance(0) != NULL);
-//         REQUIRE(obj.instanceCnt() == 1);
-//     }
-// }
+    REQUIRE(obj.getFirstAvailableInstanceID() == 0);
+    REQUIRE(obj.serverRead_clb(&mockContextObj, &mockServer, 0, 0, 0, &lwm2mObj) == COAP_404_NOT_FOUND);
+    REQUIRE(obj.serverWrite_clb(&mockContextObj, &mockServer, 0, 0, 0, &lwm2mObj, LWM2M_WRITE_PARTIAL_UPDATE) == COAP_404_NOT_FOUND);
+    REQUIRE(obj.serverExecute_clb(&mockContextObj, &mockServer, 0, 0, 0, 0, &lwm2mObj) == COAP_404_NOT_FOUND);
+    REQUIRE(obj.serverDiscover_clb(&mockContextObj, &mockServer, 0, 0, 0, &lwm2mObj) == COAP_404_NOT_FOUND);
+    REQUIRE(obj.serverCreate_clb(&mockContextObj, &mockServer, 0, 0, 0, &lwm2mObj) == COAP_500_INTERNAL_SERVER_ERROR);
+    REQUIRE(obj.serverDelete_clb(&mockContextObj, &mockServer, 0, &lwm2mObj) == COAP_404_NOT_FOUND);
 
-// // TEST_CASE("Object: instance creating/removing", "[createInstance][createInstance][remove][clear][instanceCnt][isExist][restore]")
-// // {
-// //     ObjectMock obj(mockContext, mockInfo);
-// //     ObjActObserverTest actObserver;
-// //     obj.actSubscribe(&actObserver);
+    obj.createInstance(2);
 
-// //     SECTION("createInstance")
-// //     {
-// //         REQUIRE(obj.createInstance(0) != NULL);
-// //         REQUIRE(obj.instanceCnt() == 1);
-// //         REQUIRE(obj.isExist(0));
-// //         REQUIRE(obj.createInstance(0) == NULL);
-// //         REQUIRE(obj.instanceCnt() == 1);
-// //         REQUIRE(obj.createInstance(1) != NULL);
-// //         REQUIRE(obj.instanceCnt() == 2);
-// //         REQUIRE(obj.isExist(1));
-// //         REQUIRE(obj.createInstance(1) == NULL);
-// //         REQUIRE(obj.instanceCnt() == 2);
+    // obj.getRegistry();
 
-// //         Instance *instance = obj.createInstance(0);
-// //         REQUIRE(instance != NULL);
-// //         REQUIRE(obj.isExist(2));
-// //         REQUIRE(obj.instanceCnt() == 3);
-// //         REQUIRE(instance->getInstanceID() == 2);
+    SECTION("createInstance")
+    {
+        REQUIRE(obj.instanceCnt() == 0);
+        REQUIRE_FALSE(obj.isExist(0));
+        REQUIRE(obj.instanceCnt() == 0);
 
-// //         REQUIRE(obj.createInstance(4) != NULL);
-// //         REQUIRE(obj.instanceCnt() == 4);
-// //         instance = obj.createInstance(0);
-// //         REQUIRE(instance != NULL);
-// //         REQUIRE(obj.instanceCnt() == 5);
-// //         REQUIRE(instance->getInstanceID() == 5);
+        ObjectInfo constrainedObjInfo = mockInfo;
+        constrainedObjInfo.isSingle = IS_SINGLE::SINGLE;
+        ObjectMock constrainedObj(mockContextObj, constrainedObjInfo);
+    }
 
-// //         ObjectInfo constrainedObjInfo = mockInfo;
-// //         constrainedObjInfo.isSingle = IS_SINGLE::SINGLE;
-// //         ObjectMock constrainedObj(mockContext, constrainedObjInfo);
-// //         REQUIRE(constrainedObj.createInstance(0) != NULL);
-// //         REQUIRE(constrainedObj.instanceCnt() == 1);
-// //         REQUIRE(constrainedObj.createInstance(2) == NULL);
-// //         REQUIRE(constrainedObj.instanceCnt() == 1);
-// //         REQUIRE(constrainedObj.createInstance(0) == NULL);
-// //         REQUIRE(constrainedObj.instanceCnt() == 1);
-// //     }
-
-// //     SECTION("createInstance")
-// //     {
-// //         Instance *instance = obj.createInstance(0);
-// //         REQUIRE(instance != NULL);
-// //         REQUIRE(obj.instanceCnt() == 1);
-// //         REQUIRE(instance->getInstanceID() == 0);
-// //         REQUIRE(obj.createInstance(0) == NULL);
-// //     }
-
-// // SECTION("remove")
-// // {
-// //     REQUIRE(obj.createInstance(0) != NULL);
-// //     REQUIRE(obj.createInstance(1) != NULL);
-// //     REQUIRE(obj.createInstance(2) != NULL);
-// //     REQUIRE(obj.createInstance(3) != NULL);
-// //     REQUIRE(obj.createInstance(4) != NULL);
-
-// //     REQUIRE_FALSE(obj.remove(5));
-// //     REQUIRE(obj.instanceCnt() == 5);
-// //     REQUIRE_FALSE(obj.remove(ID_T_MAX_VAL));
-// //     REQUIRE(obj.instanceCnt() == 5);
-
-// //     REQUIRE(obj.remove(0));
-// //     REQUIRE_FALSE(obj.isExist(0));
-// //     REQUIRE(obj.instanceCnt() == 4);
-// //     REQUIRE_FALSE(obj.remove(0));
-// //     REQUIRE(obj.instanceCnt() == 4);
-// //     REQUIRE(obj.remove(1));
-// //     REQUIRE_FALSE(obj.isExist(1));
-// //     REQUIRE(obj.instanceCnt() == 3);
-// //     REQUIRE(obj.remove(2));
-// //     REQUIRE_FALSE(obj.isExist(2));
-// //     REQUIRE(obj.instanceCnt() == 2);
-// //     REQUIRE(obj.remove(3));
-// //     REQUIRE_FALSE(obj.isExist(3));
-// //     REQUIRE(obj.instanceCnt() == 1);
-// //     REQUIRE(obj.remove(4));
-// //     REQUIRE_FALSE(obj.isExist(4));
-// //     REQUIRE(obj.instanceCnt() == 0);
-// // }
-
-// // SECTION("clear")
-// // {
-// //     REQUIRE(obj.createInstance(0) != NULL);
-// //     REQUIRE(obj.createInstance(1) != NULL);
-// //     REQUIRE(obj.createInstance(2) != NULL);
-// //     REQUIRE(obj.createInstance(3) != NULL);
-// //     REQUIRE(obj.createInstance(4) != NULL);
-
-// //     obj.clear();
-// //     REQUIRE(obj.instanceCnt() == 0);
-// // }
-
-// // SECTION("restore")
-// // {
-// //     REQUIRE(obj.createInstance(0) != NULL);
-// //     REQUIRE(obj.instanceCnt() == 1);
-// //     obj.restore();
-// //     REQUIRE(obj.instanceCnt() == 1);
-// //     REQUIRE(actObserver.objectRestoreCount == 1);
-// // }
-// // }
-
-// // TEST_CASE("Object: instance accessing", "[instance][instance][getInstances]")
-// // {
-// //     ObjectMock obj(mockContext, mockInfo);
-// //     ObjActObserverTest actObserver;
-// //     obj.actSubscribe(&actObserver);
-
-// //     SECTION("instance")
-// //     {
-// //         REQUIRE(obj.createInstance(0) != NULL);
-// //         REQUIRE(obj.createInstance(1) != NULL);
-// //         REQUIRE(obj.createInstance(2) != NULL);
-// //         REQUIRE(obj.createInstance(3) != NULL);
-// //         REQUIRE(obj.createInstance(4) != NULL);
-
-// //         REQUIRE(obj.instance(0) != NULL);
-// //         REQUIRE(obj.instance(1) != NULL);
-// //         REQUIRE(obj.instance(2) != NULL);
-// //         REQUIRE(obj.instance(3) != NULL);
-// //         REQUIRE(obj.instance(4) != NULL);
-// //         REQUIRE(obj.instance(5) == NULL);
-// //         REQUIRE(obj.instance(ID_T_MAX_VAL) != NULL);
-// //     }
-
-// //     SECTION("instance")
-// //     {
-// //         REQUIRE(obj.createInstance(0) != NULL);
-// //         REQUIRE(obj.createInstance(1) != NULL);
-// //         REQUIRE(obj.createInstance(2) != NULL);
-// //         REQUIRE(obj.createInstance(3) != NULL);
-// //         REQUIRE(obj.createInstance(4) != NULL);
-
-// //         REQUIRE(obj.instance(0) != NULL);
-// //         REQUIRE(obj.instance(1) != NULL);
-// //         REQUIRE(obj.instance(2) != NULL);
-// //         REQUIRE(obj.instance(3) != NULL);
-// //         REQUIRE(obj.instance(4) != NULL);
-// //         REQUIRE(obj.instance(5) == NULL);
-// //         REQUIRE(obj.instance(ID_T_MAX_VAL) != NULL);
-// //     }
-
-// //     SECTION("getInstances")
-// //     {
-// //         REQUIRE(obj.createInstance(0) != NULL);
-// //         REQUIRE(obj.createInstance(1) != NULL);
-// //         REQUIRE(obj.createInstance(2) != NULL);
-// //         REQUIRE(obj.createInstance(3) != NULL);
-// //         REQUIRE(obj.createInstance(4) != NULL);
-
-// //         const std::vector<Instance *> &instances = obj.instances();
-// //         REQUIRE(instances.size() == 5);
-// //         for (int i = 0; i < 5; i++)
-// //         {
-// //             REQUIRE(instances[i] != NULL);
-// //             REQUIRE(instances[i]->getInstanceID() == i);
-// //         }
-// //     }
-// // }
-
-// // TEST_CASE("Object: internals", "[getFirstAvailableInstanceID][serverRead_clb][serverWrite_clb][serverExecute_clb][serverDiscover_clb][serverCreate_clb][serverDelete_clb]")
-// // {
-// //     ObjectMock obj(mockContext, mockInfo);
-// //     ObjOpObserverTest opObserver;
-// //     obj.opSubscribe(&opObserver);
-
-// //     SECTION("getFirstAvailableInstanceID")
-// //     {
-// //         ObjectMock obj1(mockContext, mockInfo);
-// //         for (int i = 0; i < ID_T_MAX_VAL; i++)
-// //         {
-// //             REQUIRE(obj1.createInstance(i) != NULL);
-// //         }
-// //         REQUIRE(obj1.instanceCnt() == ID_T_MAX_VAL);
-// //         REQUIRE(obj1.createInstance(0) == NULL);
-// //         REQUIRE(obj1.instanceCnt() == ID_T_MAX_VAL);
-
-// //         ObjectMock obj2(mockContext, mockInfo);
-// //         REQUIRE(obj2.createInstance(0) != NULL);
-// //         REQUIRE(obj2.createInstance(4) != NULL);
-// //         for (int i = 5; i < ID_T_MAX_VAL; i++)
-// //         {
-// //             REQUIRE(obj2.createInstance(i) != NULL);
-// //         }
-// //         REQUIRE(obj2.instanceCnt() == (ID_T_MAX_VAL - 3));
-
-// //         Instance *inst = obj2.createInstance(0);
-// //         REQUIRE(inst != NULL);
-// //         REQUIRE(inst->getInstanceID() == 1);
-// //         inst = obj2.createInstance(0);
-// //         REQUIRE(inst != NULL);
-// //         REQUIRE(inst->getInstanceID() == 2);
-// //         inst = obj2.createInstance(0);
-// //         REQUIRE(inst != NULL);
-// //         REQUIRE(inst->getInstanceID() == 3);
-
-// //         REQUIRE(obj2.instanceCnt() == ID_T_MAX_VAL);
-// //         REQUIRE(obj2.createInstance(0) == NULL);
-// //         REQUIRE(obj2.instanceCnt() == ID_T_MAX_VAL);
-// //     }
-
-// // SECTION("serverRead_clb")
-// // {
-// //     lwm2m_object_t &lwm2mObj = obj.getLwm2mObject();
-// //     REQUIRE(obj.createInstance(0) != NULL);
-// //     REQUIRE(lwm2mObj.readFunc(&mockContext, &mockServer, 0, NULL, NULL, &lwm2mObj) == COAP_500_INTERNAL_SERVER_ERROR);
-// //     REQUIRE(lwm2mObj.readFunc(&mockContext, &mockServer, 1, NULL, NULL, &lwm2mObj) == COAP_404_NOT_FOUND);
-// // }
-
-// // SECTION("serverWrite_clb")
-// // {
-// //     lwm2m_object_t &lwm2mObj = obj.getLwm2mObject();
-// //     REQUIRE(obj.createInstance(0) != NULL);
-// //     REQUIRE(lwm2mObj.writeFunc(&mockContext, &mockServer, 0, 0, NULL, &lwm2mObj, LWM2M_WRITE_PARTIAL_UPDATE) == COAP_204_CHANGED);
-// //     REQUIRE(lwm2mObj.writeFunc(&mockContext, &mockServer, 0, 1, NULL, &lwm2mObj, LWM2M_WRITE_PARTIAL_UPDATE) == COAP_500_INTERNAL_SERVER_ERROR);
-// //     REQUIRE(lwm2mObj.writeFunc(&mockContext, &mockServer, 1, 0, NULL, &lwm2mObj, LWM2M_WRITE_PARTIAL_UPDATE) == COAP_404_NOT_FOUND);
-// // }
-
-// // SECTION("serverExecute_clb")
-// // {
-// //     lwm2m_object_t &lwm2mObj = obj.getLwm2mObject();
-// //     REQUIRE(obj.createInstance(0) != NULL);
-// //     REQUIRE(lwm2mObj.executeFunc(&mockContext, &mockServer, 0, 0, NULL, 0, &lwm2mObj) == COAP_404_NOT_FOUND);
-// //     REQUIRE(lwm2mObj.executeFunc(&mockContext, &mockServer, 1, 0, NULL, 0, &lwm2mObj) == COAP_404_NOT_FOUND);
-// // }
-
-// // SECTION("serverDiscover_clb")
-// // {
-// //     lwm2m_object_t &lwm2mObj = obj.getLwm2mObject();
-// //     REQUIRE(obj.createInstance(0) != NULL);
-// //     REQUIRE(lwm2mObj.discoverFunc(&mockContext, &mockServer, 0, NULL, NULL, &lwm2mObj) == COAP_500_INTERNAL_SERVER_ERROR);
-// //     REQUIRE(lwm2mObj.discoverFunc(&mockContext, &mockServer, 1, NULL, NULL, &lwm2mObj) == COAP_404_NOT_FOUND);
-// // }
-
-// // SECTION("serverCreate_clb")
-// // {
-// //     REQUIRE(obj.instanceCnt() == 0);
-// //     lwm2m_object_t &lwm2mObj = obj.getLwm2mObject();
-// //     REQUIRE(lwm2mObj.createFunc(&mockContext, &mockServer, 0, 0, NULL, &lwm2mObj) == COAP_201_CREATED);
-// //     REQUIRE(obj.instanceCnt() == 1);
-// //     REQUIRE(obj.isExist(0));
-// //     REQUIRE(opObserver.instanceCreatedCount == 1);
-
-// //     REQUIRE(lwm2mObj.createFunc(&mockContext, &mockServer, 1, 0, NULL, &lwm2mObj) == COAP_201_CREATED);
-// //     REQUIRE(obj.instanceCnt() == 2);
-// //     REQUIRE(obj.isExist(1));
-// //     REQUIRE(opObserver.instanceCreatedCount == 2);
-
-// //     REQUIRE(lwm2mObj.createFunc(&mockContext, &mockServer, 1, 0, NULL, &lwm2mObj) == COAP_500_INTERNAL_SERVER_ERROR);
-// //     REQUIRE(opObserver.instanceCreatedCount == 2);
-
-// //     REQUIRE(opObserver.instanceDeletingCount == 0);
-// //     REQUIRE(lwm2mObj.createFunc(&mockContext, &mockServer, 2, 1, NULL, &lwm2mObj) == COAP_500_INTERNAL_SERVER_ERROR);
-// //     REQUIRE(obj.instanceCnt() == 2);
-// //     REQUIRE_FALSE(obj.isExist(2));
-// //     REQUIRE(opObserver.instanceCreatedCount == 3);
-// //     REQUIRE(opObserver.instanceDeletingCount == 1);
-// // }
-
-// // SECTION("serverDelete_clb")
-// // {
-// //     lwm2m_object_t &lwm2mObj = obj.getLwm2mObject();
-// //     REQUIRE(obj.createInstance(0) != NULL);
-// //     REQUIRE(obj.createInstance(1) != NULL);
-// //     REQUIRE(obj.createInstance(2) != NULL);
-// //     REQUIRE(obj.createInstance(3) != NULL);
-// //     REQUIRE(obj.createInstance(4) != NULL);
-// //     REQUIRE(obj.instanceCnt() == 5);
-
-// //     REQUIRE(lwm2mObj.deleteFunc(&mockContext, &mockServer, 0, &lwm2mObj) == COAP_202_DELETED);
-// //     REQUIRE(obj.instanceCnt() == 4);
-// //     REQUIRE_FALSE(obj.isExist(0));
-// //     REQUIRE(opObserver.instanceDeletingCount == 1);
-
-// //     REQUIRE(lwm2mObj.deleteFunc(&mockContext, &mockServer, 0, &lwm2mObj) == COAP_404_NOT_FOUND);
-// //     REQUIRE(obj.instanceCnt() == 4);
-// //     REQUIRE(opObserver.instanceDeletingCount == 1);
-
-// //     REQUIRE(lwm2mObj.deleteFunc(&mockContext, &mockServer, 1, &lwm2mObj) == COAP_202_DELETED);
-// //     REQUIRE(obj.instanceCnt() == 3);
-// //     REQUIRE_FALSE(obj.isExist(1));
-// //     REQUIRE(opObserver.instanceDeletingCount == 2);
-
-// //     REQUIRE(lwm2mObj.deleteFunc(&mockContext, &mockServer, 2, &lwm2mObj) == COAP_202_DELETED);
-// //     REQUIRE(obj.instanceCnt() == 2);
-// //     REQUIRE_FALSE(obj.isExist(2));
-// //     REQUIRE(opObserver.instanceDeletingCount == 3);
-
-// //     REQUIRE(lwm2mObj.deleteFunc(&mockContext, &mockServer, 3, &lwm2mObj) == COAP_202_DELETED);
-// //     REQUIRE(obj.instanceCnt() == 1);
-// //     REQUIRE_FALSE(obj.isExist(3));
-// //     REQUIRE(opObserver.instanceDeletingCount == 4);
-
-// //     REQUIRE(lwm2mObj.deleteFunc(&mockContext, &mockServer, 4, &lwm2mObj) == COAP_202_DELETED);
-// //     REQUIRE(obj.instanceCnt() == 0);
-// //     REQUIRE_FALSE(obj.isExist(4));
-// //     REQUIRE(opObserver.instanceDeletingCount == 5);
-
-// //     REQUIRE(lwm2mObj.deleteFunc(&mockContext, &mockServer, 5, &lwm2mObj) == COAP_404_NOT_FOUND);
-// //     REQUIRE(obj.instanceCnt() == 0);
-// //     REQUIRE(opObserver.instanceDeletingCount == 5);
-// // }
-// // }
+    SECTION("remove")
+    {
+        REQUIRE_FALSE(obj.remove(5));
+        REQUIRE(obj.instanceCnt() == 0);
+        REQUIRE_FALSE(obj.remove(ID_T_MAX_VAL));
+        REQUIRE_FALSE(obj.isExist(0));
+    }
+}

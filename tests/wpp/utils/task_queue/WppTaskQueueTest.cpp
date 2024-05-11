@@ -36,8 +36,9 @@ static WppTaskQueue::task_t createDummyTask()
 TEST_CASE("WppTaskQueue: Task creating", "[addTask][addTaskWithCopy]")
 {
     char str[] = "Hello, world!";
-    WppTaskQueue::requestToRemoveEachTask();
-    // WppTaskQueue::handleEachTask(client);
+
+    clearWppTaskQueue();
+
     REQUIRE(WppTaskQueue::getTaskCnt() == 0);
 
     SECTION("Add Task without context")

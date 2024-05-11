@@ -22,9 +22,16 @@ WppClient::WppClient(WppConnection &connection, WppErrHandler errHandler): _conn
 }
 
 WppClient::~WppClient() {
-	WPP_LOGE(TAG_WPP_CLIENT, "Destroying WppClient");
-	lwm2mContextClose();
+	WPP_LOGI(TAG_WPP_CLIENT, "Destroying WppClient");
+	WPP_LOGI(TAG_WPP_CLIENT, "Destroying WppRegistry");
 	delete _registry;
+	_registry = NULL;
+	WPP_LOGI(TAG_WPP_CLIENT, "Clearing wpp tasks");
+	WppTaskQueue::hardReset();
+	WPP_LOGI(TAG_WPP_CLIENT, "Clearing packet queue");
+	connection().clearPacketQueue();
+	WPP_LOGI(TAG_WPP_CLIENT, "Closing lwm2m context");
+	lwm2mContextClose();
 	_client = NULL;
 }
 

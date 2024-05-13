@@ -18,17 +18,6 @@ public:
     bool sendPacket(const Packet &packet) override { return true; }
 };
 
-class FwInternalDlMock : public FwInternalDl
-{
-public:
-    FwInternalDlMock() : FwInternalDl() {}
-    void downloadIsStarted() = 0;
-    bool saveDownloadedBlock(const OPAQUE_T &dataBlock) = 0;
-    void downloadIsCompleted() = 0;
-    FwUpdRes downloadResult() = 0;
-    void reset() = 0;
-};
-
 class FirmwareUpdateMock : public FirmwareUpdate
 {
 public:
@@ -36,24 +25,15 @@ public:
 
     void serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resId) { FirmwareUpdate::serverOperationNotifier(securityInst, type, resId); }
     void userOperationNotifier(ItemOp::TYPE type, const ResLink &resId) { FirmwareUpdate::userOperationNotifier(type, resId); }
-    // void internalDownloaderHandler() { FirmwareUpdate::internalDownloaderHandler(); }
-    // bool setFwInternalDownloader(WppClient &ctx, FwInternalDl &downloader) { return FirmwareUpdate::setFwInternalDownloader(ctx, downloader); }
-    // std::vector<FwUpdProtocol> supportedProtocols(WppClient &ctx) { FirmwareUpdate::supportedProtocols(ctx); }
 
     OPAQUE_T getPACKAGE_0() { return FirmwareUpdate::resource(PACKAGE_0)->get<OPAQUE_T>(); }
     STRING_T getPACKAGE_URI_1() { return FirmwareUpdate::resource(PACKAGE_URI_1)->get<STRING_T>(); }
     EXECUTE_T getUPDATE_2() { return FirmwareUpdate::resource(UPDATE_2)->get<EXECUTE_T>(); }
     INT_T getSTATE_3() { return FirmwareUpdate::resource(STATE_3)->get<INT_T>(); }
     INT_T getUPDATE_RESULT_5() { return FirmwareUpdate::resource(UPDATE_RESULT_5)->get<INT_T>(); }
-#if RES_5_6
     STRING_T getPKGNAME_6() { return FirmwareUpdate::resource(PKGNAME_6)->get<STRING_T>(); }
-#endif
-#if RES_5_7
     STRING_T getPKGVERSION_7() { return FirmwareUpdate::resource(PKGVERSION_7)->get<STRING_T>(); }
-#endif
-#if RES_5_8
     INT_T getUPDATE_PROTOCOL_SUPPORT_8() { return FirmwareUpdate::resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->get<INT_T>(); }
-#endif
     INT_T getUPDATE_DELIVERY_METHOD_9() { return FirmwareUpdate::resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->get<INT_T>(); }
 
     bool setPACKAGE_0(OPAQUE_T pack) { return FirmwareUpdate::resource(PACKAGE_0)->set<OPAQUE_T>(pack); }
@@ -61,26 +41,21 @@ public:
     bool setUPDATE_2(EXECUTE_T upd) { return FirmwareUpdate::resource(UPDATE_2)->set<EXECUTE_T>(upd); }
     bool setSTATE_3(INT_T intgr) { return FirmwareUpdate::resource(STATE_3)->set<INT_T>(intgr); }
     bool setUPDATE_RESULT_5(INT_T res) { return FirmwareUpdate::resource(UPDATE_RESULT_5)->set<INT_T>(res); }
-#if RES_5_6
     bool setPKGNAME_6(STRING_T pcgn) { return FirmwareUpdate::resource(PKGNAME_6)->set<STRING_T>(pcgn); }
-#endif
-#if RES_5_7
     bool setPKGVERSION_7(STRING_T pckv) { return FirmwareUpdate::resource(PKGVERSION_7)->set<STRING_T>(pckv); }
-#endif
-#if RES_5_8
     bool setUPDATE_PROTOCOL_SUPPORT_8(INT_T supp) { return FirmwareUpdate::resource(FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8)->set<INT_T>(supp); }
-#endif
     bool setUPDATE_DELIVERY_METHOD_9(INT_T meth) { return FirmwareUpdate::resource(FIRMWARE_UPDATE_DELIVERY_METHOD_9)->set<INT_T>(meth); }
+
+    FwUpdater *pkgUpdater;
+    FwInternalDl *downloaderI;
+    FwExternalDl *downloaderE;
 };
 
 TEST_CASE("FirmwareUpdate: resource initialization", "[resourcesCreate][resourcesInit][setDefaultState]")
 {
-
     lwm2m_context_t mockContext;
     OBJ_LINK_T mockId = {0, 0};
     FirmwareUpdateMock fwu(mockContext, mockId);
-
-    // FwInternalDlMock fwinternal();
 
     // Create client info
     WppClient::ClientInfo clientInfo;
@@ -91,6 +66,20 @@ TEST_CASE("FirmwareUpdate: resource initialization", "[resourcesCreate][resource
 
     SECTION("lwm2m_connect_server")
     {
+
+        SECTION("www")
+        {
+            REQUIRE(WppClient::create(clientInfo, conmock));
+            WppClient *defclient = WppClient::takeOwnership();
+            defclient->giveOwnership();
+            FirmwareUpdate::setFwUpdater(*WppClient::takeOwnership(), *fwu.pkgUpdater);
+            defclient->giveOwnership();
+            FirmwareUpdate::setFwExternalDownloader(*WppClient::takeOwnership(), *fwu.downloaderE);
+
+            defclient->giveOwnership();
+            FirmwareUpdate::setFwInternalDownloader(*WppClient::takeOwnership(), *fwu.downloaderI);
+            // fwu.downloaderI = ?;
+        }
 
         SECTION("resourcesCreate&resourcesInit")
         {
@@ -134,8 +123,7 @@ TEST_CASE("FirmwareUpdate: resource initialization", "[resourcesCreate][resource
 
             fwu.userOperationNotifier(ItemOp::TYPE::WRITE, {0, 0});
             fwu.userOperationNotifier(ItemOp::TYPE::WRITE, {1, 1});
-
-            FirmwareUpdate::supportedProtocols(*WppClient::takeOwnership());
+            fwu.userOperationNotifier(ItemOp::TYPE::DELETE, {1, 1});
         }
 
         SECTION("setDefaultState")
@@ -157,7 +145,6 @@ TEST_CASE("FirmwareUpdate: resource initialization", "[resourcesCreate][resource
             REQUIRE(fwu.setPKGVERSION_7(str));
             REQUIRE(fwu.setUPDATE_PROTOCOL_SUPPORT_8(HTTP));
             REQUIRE(fwu.setUPDATE_DELIVERY_METHOD_9(PUSH));
-
             REQUIRE(fwu.getPACKAGE_0() == opaque);
             REQUIRE(fwu.getPACKAGE_URI_1() == "");
             REQUIRE(fwu.getUPDATE_2() == NULL);

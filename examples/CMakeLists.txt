@@ -41,6 +41,8 @@ if(NOT result STREQUAL "0")
     message(FATAL_ERROR "Failed to build libcoap: ${error}")
 else()
     message(STATUS "libcoap built successfully. Library path: ${libcoap_path}")
+    # Move libcoap_path/lib to build directory
+    file(COPY ${libcoap_path}/lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
 # Variables that will be filled in subdirectories

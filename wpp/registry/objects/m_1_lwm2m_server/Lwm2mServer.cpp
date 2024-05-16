@@ -95,6 +95,13 @@ void Lwm2mServer::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLin
 		lwm2m_update_server_mute(&getContext(), serverId, mute);
 	}
 	#endif
+	#if RES_1_5
+	if (type == ItemOp::WRITE && resLink.resId == DISABLE_TIMEOUT_5) {
+		INT_T serverId = resource(SHORT_SERVER_ID_0)->get<INT_T>();
+		INT_T timeout = resource(DISABLE_TIMEOUT_5)->get<INT_T>();
+		lwm2m_update_server_disable_timeout(&getContext(), serverId, timeout);
+	}
+	#endif
 	/* --------------- Code_cpp block 6 end --------------- */
 }
 
@@ -186,12 +193,12 @@ void Lwm2mServer::resourcesInit() {
 	resource(DEFAULT_MAXIMUM_PERIOD_3)->set<INT_T>(0);                                                                                                                                                                                                         
 	#endif                       
 
-	// TODO: Disable (Res id 4) must be implemented by wakaama core or WppClient
 	#if RES_1_4
 	// Resource starts the separated task to deregistration from all currently registered servers. 
 	// The registration proccess performs after deregistration immediatelly. If the object delete
 	// before task execution, this task will be deleted at destructor.
 	resource(DISABLE_4)->set<EXECUTE_T>([this](Instance& inst, ID_T resId, const OPAQUE_T& data) {
+		#ifdef LWM2M_BOOTSTRAP
 		if (!WppTaskQueue::isTaskExist(_requestDeregistrationTaskId)) {
 			WPP_LOGI(TAG, "Deregistration Request Trigger: Deregistration is started");
 			_requestDeregistrationTaskId = WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, [this](WppClient &client, void *ctx) -> bool {
@@ -201,6 +208,9 @@ void Lwm2mServer::resourcesInit() {
 		} else {
 			WPP_LOGI(TAG, "Deregistration Request Trigger: Deregistration is already in the progress");
 		}
+		#else
+		(void)this;
+		#endif
 		return true;
 	});
 	#endif

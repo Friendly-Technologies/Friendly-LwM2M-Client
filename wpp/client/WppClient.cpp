@@ -134,14 +134,14 @@ void WppClient::deregister() {
 	lwm2m_deregister(_lwm2m_context);
 }
 
-// #if defined(LWM2M_SUPPORT_SENML_JSON) && RES_1_23
+#if defined(LWM2M_SUPPORT_SENML_JSON) && RES_1_23
 bool WppClient::send(const DataLink &link) {
 	WPP_LOGD(TAG_WPP_CLIENT, "Send data to servers: object ID -> %d, instance ID -> %d, resource ID -> %d, resource instance ID -> %d",
 				link.instance.objId, link.instance.objInstId, link.resource.resId, link.resource.resInstId);
 	lwm2m_uri_t uri = {link.instance.objId, link.instance.objInstId, link.resource.resId, link.resource.resInstId};
 	return !lwm2m_send_operation(_lwm2m_context, &uri);
 }
-// #endif
+#endif
 
 /* ------------- Wakaama client initialisation ------------- */
 bool WppClient::lwm2mContextOpen() {

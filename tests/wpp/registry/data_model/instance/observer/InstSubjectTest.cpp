@@ -10,12 +10,12 @@ public:
     Instance() {}
     ~Instance() {}
 
-    void operationNotify(Instance &inst, const ResLink &resId, ResOp::TYPE type) {
+    void operationNotify(Instance &inst, const ResLink &resId, ItemOp::TYPE type) {
         InstSubject::operationNotify(inst, resId, type);
     }
 
     #ifdef LWM2M_RAW_BLOCK1_REQUESTS
-    void blockOperationNotify(Instance &inst, const ResLink &resId, ResOp::TYPE type, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock) {
+    void blockOperationNotify(Instance &inst, const ResLink &resId, ItemOp::TYPE type, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock) {
         InstSubject::blockOperationNotify(inst, resId, type, buff, blockNum, isLastBlock);
     }
     #endif
@@ -27,15 +27,10 @@ public:
 
 class InstOpObserverTest : public InstOpObserver {
 public:
-    int resourceReadCount = 0;
     int resourceWriteCount = 0;
     int resourceExecuteCount = 0;
     int resourcesReplacedCount = 0;
 
-    void resourceRead(Instance &inst, const ResLink &resource) override {
-        InstOpObserver::resourceRead(inst, resource);
-        resourceReadCount++;
-    }
     void resourceWrite(Instance &inst, const ResLink &resource) override {
         InstOpObserver::resourceWrite(inst, resource);
         resourceWriteCount++;
@@ -44,10 +39,10 @@ public:
         InstOpObserver::resourceExecute(inst, resource);
         resourceExecuteCount++;
     }
-    void resourcesReplaced(Instance &inst) override {
-        InstOpObserver::resourcesReplaced(inst);
-        resourcesReplacedCount++;
-    }
+    // void resourcesReplaced(Instance &inst) override {
+    //     InstOpObserver::resourcesReplaced(inst);
+    //     resourcesReplacedCount++;
+    // }
 };
 
 class InstEventObserverTest : public InstEventObserver {
@@ -91,16 +86,9 @@ TEST_CASE("InstSubject: subscribe/unsubscribe", "[opSubscribe][opUnsubscribe][bl
         inst.opSubscribe(&opObserver);
         inst.opSubscribe(&opObserver);
         inst.opSubscribe(NULL);
-
-        REQUIRE(opObserver.resourceReadCount == 0);
-        inst.operationNotify(inst, {}, ResOp::TYPE::READ);
-        REQUIRE(opObserver.resourceReadCount == 1);
-        inst.operationNotify(inst, {}, ResOp::TYPE::READ);
-        REQUIRE(opObserver.resourceReadCount == 2);
-
+        inst.operationNotify(inst, {}, ItemOp::TYPE::READ);
         inst.opUnsubscribe(&opObserver);
-        inst.operationNotify(inst, {}, ResOp::TYPE::READ);
-        REQUIRE(opObserver.resourceReadCount == 2);
+        inst.operationNotify(inst, {}, ItemOp::TYPE::READ);
     }
 
     SECTION("Instance event subscribe/unsubscribe") {
@@ -126,13 +114,13 @@ TEST_CASE("InstSubject: subscribe/unsubscribe", "[opSubscribe][opUnsubscribe][bl
         inst.blockOpSubscribe(NULL);
 
         REQUIRE(blockOpObserver.resourceBlockWriteCount == 0);
-        inst.blockOperationNotify(inst, {}, ResOp::BLOCK_WRITE, {}, 0, false);
+        inst.blockOperationNotify(inst, {}, ItemOp::BLOCK_WRITE, {}, 0, false);
         REQUIRE(blockOpObserver.resourceBlockWriteCount == 1);
-        inst.blockOperationNotify(inst, {}, ResOp::BLOCK_WRITE, {}, 0, false);
+        inst.blockOperationNotify(inst, {}, ItemOp::BLOCK_WRITE, {}, 0, false);
         REQUIRE(blockOpObserver.resourceBlockWriteCount == 2);
 
         inst.blockOpUnsubscribe(&blockOpObserver);
-        inst.blockOperationNotify(inst, {}, ResOp::BLOCK_WRITE, {}, 0, false);
+        inst.blockOperationNotify(inst, {}, ItemOp::BLOCK_WRITE, {}, 0, false);
         REQUIRE(blockOpObserver.resourceBlockWriteCount == 2);
     }
     #endif
@@ -148,56 +136,48 @@ TEST_CASE("InstSubject: operations and events notifying", "[operationNotify][blo
 
     SECTION("Instance operation notify") {
         inst.opSubscribe(&opObserver);
-
-        REQUIRE(opObserver.resourceReadCount == 0);
-        inst.operationNotify(inst, {}, ResOp::TYPE::READ);
-        REQUIRE(opObserver.resourceReadCount == 1);
-        inst.operationNotify(inst, {}, ResOp::TYPE::READ);
-        REQUIRE(opObserver.resourceReadCount == 2);
-
+        inst.operationNotify(inst, {}, ItemOp::TYPE::READ);
+        
         REQUIRE(opObserver.resourceWriteCount == 0);
-        inst.operationNotify(inst, {}, ResOp::TYPE::WRITE_UPD);
+        inst.operationNotify(inst, {}, ItemOp::TYPE::WRITE);
         REQUIRE(opObserver.resourceWriteCount == 1);
-        inst.operationNotify(inst, {}, ResOp::TYPE::WRITE_UPD);
+        inst.operationNotify(inst, {}, ItemOp::TYPE::WRITE);
         REQUIRE(opObserver.resourceWriteCount == 2);
 
         REQUIRE(opObserver.resourceExecuteCount == 0);
-        inst.operationNotify(inst, {}, ResOp::TYPE::EXECUTE);
+        inst.operationNotify(inst, {}, ItemOp::TYPE::EXECUTE);
         REQUIRE(opObserver.resourceExecuteCount == 1);
-        inst.operationNotify(inst, {}, ResOp::TYPE::EXECUTE);
+        inst.operationNotify(inst, {}, ItemOp::TYPE::EXECUTE);
         REQUIRE(opObserver.resourceExecuteCount == 2);
 
         REQUIRE(opObserver.resourcesReplacedCount == 0);
-        inst.operationNotify(inst, {}, ResOp::TYPE::WRITE_REPLACE_INST);
-        REQUIRE(opObserver.resourcesReplacedCount == 1);
-        inst.operationNotify(inst, {}, ResOp::TYPE::WRITE_REPLACE_INST);
-        REQUIRE(opObserver.resourcesReplacedCount == 2);
+        inst.operationNotify(inst, {}, ItemOp::TYPE::WRITE);
+        REQUIRE(opObserver.resourcesReplacedCount == 0);
+        inst.operationNotify(inst, {}, ItemOp::TYPE::WRITE);
+        REQUIRE(opObserver.resourcesReplacedCount == 0);
 
-        inst.operationNotify(inst, {}, ResOp::TYPE::NONE);
-        REQUIRE(opObserver.resourceReadCount == 2);
-        REQUIRE(opObserver.resourceWriteCount == 2);
+        inst.operationNotify(inst, {}, ItemOp::TYPE::NONE);
+        REQUIRE(opObserver.resourceWriteCount == 4);
         REQUIRE(opObserver.resourceExecuteCount == 2);
-        REQUIRE(opObserver.resourcesReplacedCount == 2);
+        REQUIRE(opObserver.resourcesReplacedCount == 0);
 
         InstOpObserverTest opObservers[100];
         for (int i = 0; i < 100; i++) {
             inst.opSubscribe(&opObservers[i]);
         }
 
-        inst.operationNotify(inst, {}, ResOp::TYPE::READ);
-        inst.operationNotify(inst, {}, ResOp::TYPE::WRITE_UPD);
-        inst.operationNotify(inst, {}, ResOp::TYPE::WRITE_REPLACE_INST);
-        inst.operationNotify(inst, {}, ResOp::TYPE::EXECUTE);
+        inst.operationNotify(inst, {}, ItemOp::TYPE::READ);
+        inst.operationNotify(inst, {}, ItemOp::TYPE::WRITE);
+        inst.operationNotify(inst, {}, ItemOp::TYPE::WRITE);
+        inst.operationNotify(inst, {}, ItemOp::TYPE::EXECUTE);
         for (int i = 0; i < 100; i++) {
-            REQUIRE(opObservers[i].resourceReadCount == 1);
-            REQUIRE(opObservers[i].resourceWriteCount == 1);
+            REQUIRE(opObservers[i].resourceWriteCount == 2);
             REQUIRE(opObservers[i].resourceExecuteCount == 1);
-            REQUIRE(opObservers[i].resourcesReplacedCount == 1);
+            REQUIRE(opObservers[i].resourcesReplacedCount == 0);
         }
-        REQUIRE(opObserver.resourceReadCount == 3);
-        REQUIRE(opObserver.resourceWriteCount == 3);
+        REQUIRE(opObserver.resourceWriteCount == 6);
         REQUIRE(opObserver.resourceExecuteCount == 3);
-        REQUIRE(opObserver.resourcesReplacedCount == 3);
+        REQUIRE(opObserver.resourcesReplacedCount == 0);
     }
 
     SECTION("Instance event notify") {
@@ -228,18 +208,18 @@ TEST_CASE("InstSubject: operations and events notifying", "[operationNotify][blo
         inst.blockOpSubscribe(&blockOpObserver);
 
         REQUIRE(blockOpObserver.resourceBlockWriteCount == 0);
-        inst.blockOperationNotify(inst, {}, ResOp::BLOCK_WRITE, {}, 0, false);
+        inst.blockOperationNotify(inst, {}, ItemOp::BLOCK_WRITE, {}, 0, false);
         REQUIRE(blockOpObserver.resourceBlockWriteCount == 1);
-        inst.blockOperationNotify(inst, {}, ResOp::BLOCK_WRITE, {}, 0, false);
+        inst.blockOperationNotify(inst, {}, ItemOp::BLOCK_WRITE, {}, 0, false);
         REQUIRE(blockOpObserver.resourceBlockWriteCount == 2);
 
         REQUIRE(blockOpObserver.resourceBlockExecuteCount == 0);
-        inst.blockOperationNotify(inst, {}, ResOp::BLOCK_EXECUTE, {}, 0, false);
+        inst.blockOperationNotify(inst, {}, ItemOp::BLOCK_EXECUTE, {}, 0, false);
         REQUIRE(blockOpObserver.resourceBlockExecuteCount == 1);
-        inst.blockOperationNotify(inst, {}, ResOp::BLOCK_EXECUTE, {}, 0, false);
+        inst.blockOperationNotify(inst, {}, ItemOp::BLOCK_EXECUTE, {}, 0, false);
         REQUIRE(blockOpObserver.resourceBlockExecuteCount == 2);
 
-        inst.blockOperationNotify(inst, {}, ResOp::NONE, {}, 0, false);
+        inst.blockOperationNotify(inst, {}, ItemOp::NONE, {}, 0, false);
         REQUIRE(blockOpObserver.resourceBlockWriteCount == 2);
         REQUIRE(blockOpObserver.resourceBlockExecuteCount == 2);
 
@@ -248,8 +228,8 @@ TEST_CASE("InstSubject: operations and events notifying", "[operationNotify][blo
             inst.blockOpSubscribe(&blockOpObservers[i]);
         }
 
-        inst.blockOperationNotify(inst, {}, ResOp::BLOCK_EXECUTE, {}, 0, false);
-        inst.blockOperationNotify(inst, {}, ResOp::BLOCK_WRITE, {}, 0, false);
+        inst.blockOperationNotify(inst, {}, ItemOp::BLOCK_EXECUTE, {}, 0, false);
+        inst.blockOperationNotify(inst, {}, ItemOp::BLOCK_WRITE, {}, 0, false);
         for (int i = 0; i < 100; i++) {
             REQUIRE(blockOpObservers[i].resourceBlockWriteCount == 1);
             REQUIRE(blockOpObservers[i].resourceBlockExecuteCount == 1);

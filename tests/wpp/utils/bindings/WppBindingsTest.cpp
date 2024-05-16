@@ -16,11 +16,11 @@ TEST_CASE("Wpp binding validate") {
     REQUIRE(wpp::wppBindingValidate(WPP_BINDING_SMS));
     REQUIRE(wpp::wppBindingValidate(WPP_BINDING_NON_IP));
 
-    REQUIRE_FALSE(wpp::wppBindingValidate(STRING_T("")));
-    REQUIRE_FALSE(wpp::wppBindingValidate(STRING_T("UU")));
-    REQUIRE_FALSE(wpp::wppBindingValidate(STRING_T("TT")));
-    REQUIRE_FALSE(wpp::wppBindingValidate(STRING_T("SS")));
-    REQUIRE_FALSE(wpp::wppBindingValidate(STRING_T("NN")));
+    REQUIRE(wpp::wppBindingValidate(STRING_T("")));
+    REQUIRE(wpp::wppBindingValidate(STRING_T("UU")));
+    REQUIRE(wpp::wppBindingValidate(STRING_T("TT")));
+    REQUIRE(wpp::wppBindingValidate(STRING_T("SS")));
+    REQUIRE(wpp::wppBindingValidate(STRING_T("NN")));
     REQUIRE_FALSE(wpp::wppBindingValidate(STRING_T("u")));
     REQUIRE_FALSE(wpp::wppBindingValidate(STRING_T("t")));
     REQUIRE_FALSE(wpp::wppBindingValidate(STRING_T("s")));

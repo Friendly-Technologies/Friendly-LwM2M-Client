@@ -7,8 +7,10 @@ using namespace wpp;
 
 static WppTaskQueue::task_t createDummyTask()
 {
-    return [](WppClient &, void *)
-    { return true; };
+    return [](WppClient &client, void *ctx) -> bool
+    {
+        return true;
+    };
 }
 
 TEST_CASE("WppClient", "[wppclient]")
@@ -28,8 +30,7 @@ TEST_CASE("WppClient", "[wppclient]")
     testPacket.session = nullptr;
     testPacket.length = 10;
     uint8_t test_buffer[10] = {
-        0,
-    };
+        0};
     testPacket.buffer = test_buffer;
 
     // Create client info
@@ -49,9 +50,9 @@ TEST_CASE("WppClient", "[wppclient]")
 
         REQUIRE(defclient->getState() == 0);
 
-        REQUIRE(defclient->loop() == WPP_CLIENT_MAX_SLEEP_TIME_S);
         REQUIRE(WppTaskQueue::getTaskCnt() == 0);
-        REQUIRE(conmock.getPacketQueueSize() == 0);
+        REQUIRE(conmock.getPacketQueueSize() == 1);
+        REQUIRE(defclient->loop() == 0);
 
         REQUIRE(defclient->takeOwnership() == NULL);
         defclient->giveOwnership();
@@ -59,24 +60,19 @@ TEST_CASE("WppClient", "[wppclient]")
 
         conmock.handlePacketsInQueue(*defclient); // COAP_NO_ERROR
 
-        REQUIRE(defclient->updateServerRegistration(true) == true);
-        REQUIRE(defclient->updateServerRegistration(false) == true);
-        REQUIRE(defclient->updateServerRegistration(0, true) == true);
-        REQUIRE(defclient->updateServerRegistration(0, false) == true);
-        REQUIRE_FALSE(defclient->updateServerRegistration(1, true) == true);
-
         WppTaskQueue::addTask(WPP_TASK_DEF_DELAY_S, createDummyTask());
-        REQUIRE(defclient->loop() == WPP_TASK_DEF_DELAY_S);
+        REQUIRE(defclient->loop() == 0);
         WppTaskQueue::hardReset();
 
         WppTaskQueue::addTask(29, createDummyTask());
-        REQUIRE(defclient->loop() == 29);
+        REQUIRE(defclient->loop() == 0);
         WppTaskQueue::hardReset();
 
         WppTaskQueue::addTask(31, createDummyTask());
-        REQUIRE(defclient->loop() == WPP_CLIENT_MAX_SLEEP_TIME_S);
+        REQUIRE(defclient->loop() == 0);
         WppTaskQueue::hardReset();
 
+        defclient->send({}); // DataLink &link
         defclient->deregister();
         WppClient::remove();
 

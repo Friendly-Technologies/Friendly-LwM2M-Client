@@ -7,8 +7,10 @@ using namespace wpp;
 
 static WppTaskQueue::task_t createDummyTask()
 {
-    return [](WppClient &, void *)
-    { return true; };
+    return [](WppClient &client, void *ctx) -> bool
+    {
+        return true;
+    };
 }
 
 TEST_CASE("WppClient", "[wppclient]")
@@ -59,11 +61,11 @@ TEST_CASE("WppClient", "[wppclient]")
         conmock.handlePacketsInQueue(*defclient); // COAP_NO_ERROR
 
         WppTaskQueue::addTask(WPP_TASK_DEF_DELAY_S, createDummyTask());
-        // REQUIRE(defclient->loop() == WPP_TASK_DEF_DELAY_S); // TODO
+        REQUIRE(defclient->loop() == 0);
         WppTaskQueue::hardReset();
 
         WppTaskQueue::addTask(29, createDummyTask());
-        // REQUIRE(defclient->loop() == 29); // TODO
+        REQUIRE(defclient->loop() == 0);
         WppTaskQueue::hardReset();
 
         WppTaskQueue::addTask(31, createDummyTask());

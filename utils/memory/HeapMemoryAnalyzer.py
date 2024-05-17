@@ -1,33 +1,60 @@
 #!/usr/bin/env python3
 
+# @file HeapMemoryAnalyzer.py
+# @version 1.0.0
+# @ref https://github.com/VSkoshchuk/HeapMemoryAnalyzer
+#
+# MIT License
+# Copyright (c) 2023 VSkoshchuk skoschuk999@gmail.com
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+#
+# USAGE:
 # For analyze heap memory usage and detect leak or double free, add next lines to
 # main.cpp, after that collect logs to the file and run this script with retrieved logs.
 #
 # void* operator new(std::size_t sz) {
-# 	void *ptr = std::malloc(sz);
-# 	cout << endl << "[_NEW_:" << hex << ptr << dec << ":" << sz << "]" << endl;
+#   void *ptr = std::malloc(sz);
+#   cout << endl << "[_NEW_:" << hex << ptr << dec << ":" << sz << "]" << endl;
 #   return ptr;
 # }
 #
 # void* operator new[](std::size_t sz) {
 #   void *ptr = std::malloc(sz);
-# 	cout << endl << "[_NEW_:" << hex << ptr << dec << ":" << sz << "]" << dec << endl;
+#   cout << endl << "[_NEW_:" << hex << ptr << dec << ":" << sz << "]" << dec << endl;
 #   return ptr;
 # }
 #
 # void operator delete(void* ptr) noexcept {
-# 	cout << endl << "[_DELETE_:" << hex << ptr << "]" << dec << endl;
+#   cout << endl << "[_DELETE_:" << hex << ptr << "]" << dec << endl;
 #   std::free(ptr);
 # }
 #
 # void operator delete[](void* ptr) noexcept {
-# 	cout << endl << "[_DELETE_:" << hex << ptr << "]" <<  dec << endl;
+#   cout << endl << "[_DELETE_:" << hex << ptr << "]" <<  dec << endl;
 #   std::free(ptr);
 # }
 
 import sys
 from typing import Optional
 from typing import Tuple
+
 
 DEFAULT_OUT_FILE_PATH = "mem_heap_analyze_info_with_logs.txt"
 
@@ -150,7 +177,7 @@ class MemActsLogParser:
                 new_file.write(f"######## {double_free.to_str()}\n")
 
             new_file.write(f"\n################ LOGS WITH INFORMATION ABOUT MEMORY CORRUPTION\n")
-            with open(self.__logs_file) as old_file:
+            with open(self.__logs_file, 'r', encoding='utf-8', errors='ignore') as old_file:
                 log_lines = old_file.readlines()
                 for line_id in range(len(log_lines)):
                     line = log_lines[line_id]
@@ -168,7 +195,7 @@ class MemActsLogParser:
 
     def __get_mem_acts(self) -> list[MemAct]:
         data = list()
-        with open(self.__logs_file) as f:
+        with open(self.__logs_file, 'r', encoding='utf-8', errors='ignore') as f:
             line_cnt = 1
             for line in f:
                 action = self.__parse_log_line(line, line_cnt)

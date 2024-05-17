@@ -29,9 +29,7 @@ inline const ObjectInfo DEVICE_OBJ_INFO = {
 	IS_MANDATORY::MANDATORY,
 	/* Object supported operations */
 	/* --------------- Info block 0 start --------------- */
-	ItemOp(ItemOp::CREATE|
-		   ItemOp::DELETE|
-		   ItemOp::READ|
+	ItemOp(ItemOp::READ|
 		   ItemOp::WRITE|
 		   ItemOp::DISCOVER|
 		   ItemOp::EXECUTE),

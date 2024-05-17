@@ -194,24 +194,25 @@ to write into a string constant, but only if you have been very careful about us
 
 ### Object configuration {#b_objectconf}
 
-PATH - `wpp/configs/objects_config.cmake`
+PATH - `wpp/configs/wpp_config.cmake`
 
 #### Mandatory objects config
 
-**OBJ_M_3_DEVICE_V12** - include mandatory Device object in the build (default: **ON**)<br />
-**OBJ_M_1_LWM2M_SERVER_V11** - include mandatory Lwm2mServer object in the build  (default: **ON**)<br />
-**OBJ_M_0_LWM2M_SECURITY_V11** - include mandatory Lwm2mSecurity object in the build  (default: **ON**)
+**OBJ_M_3_DEVICE** - include mandatory Device object in the build (default: **ON**)<br />
+**OBJ_M_1_LWM2M_SERVER** - include mandatory Lwm2mServer object in the build  (default: **ON**)<br />
+**OBJ_M_0_LWM2M_SECURITY** - include mandatory Lwm2mSecurity object in the build  (default: **ON**)
 
 #### Optional objects config
 
-**OBJ_O_4_CONNECTIVITY_MONITORING_V13** - include optional ConnectivityMonitoring object in the build  (default: **ON**)<br />
-**OBJ_O_2_LWM2M_ACCESS_CONTROL_V11** - include optional Lwm2mAccessControl object in the build  (default: **ON**)<br />
-**OBJ_O_5_FIRMWARE_UPDATE_V11** - include optional FirmwareUpdate object in the build  (default: **ON**)
+**OBJ_O_4_CONNECTIVITY_MONITORING** - include optional ConnectivityMonitoring object in the build  (default: **ON**)<br />
+**OBJ_O_2_LWM2M_ACCESS_CONTROL** - include optional Lwm2mAccessControl object in the build  (default: **ON**)<br />
+**OBJ_O_5_FIRMWARE_UPDATE** - include optional FirmwareUpdate object in the build  (default: **ON**)
 
 ### Wakaama configuration {#b_wakaamaconf}
 
-PATH - `wpp/configs/wakaama_config.cmake`
+PATH - `wpp/configs/wpp_config.cmake`
 
+**LWM2M_CLIENT_MODE** - Wakaama should be always in the client mode<br /> 
 **LWM2M_BOOTSTRAP** - enable LWM2M Bootstrap support in a LWM2M Client (default: **OFF**)<br />
 **LWM2M_SUPPORT_SENML_JSON** - enable SenML JSON payload support (default: **OFF**)<br />
 **LWM2M_SUPPORT_JSON** - enable JSON payload support (default: **OFF**)<br />

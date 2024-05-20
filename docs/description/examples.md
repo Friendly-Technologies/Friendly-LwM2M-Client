@@ -5,6 +5,7 @@ This section covers examples of the use of the user interface and code generatio
 - [State Management](@ref ex_client_state_management)
 - [Registry Management](@ref ex_registry_management)
 - [Object Management](@ref ex_object_management)
+- [Description of additional functionality](@ref ex_desc_add_func)
 - [Platform Dependencies](@ref ex_platform_dependent)
 - [Wpp Task Queue](@ref ex_wpp_task_queue)
 - [Object Maker Tools](@ref ex_object_maker_tools)
@@ -560,6 +561,45 @@ int main() {
     WppClient::remove();
 }
 \endcode
+
+### Description of additional functionality {#ex_desc_add_func}
+
+**SEND operation.**
+The **SEND** operation is used by the LwM2M Client to send data to the LwM2M Server without explicit request by that
+Server. The **SEND** operation can be used by the LwM2M Client to report values for Resources and Resource Instances of
+LwM2M Object Instance(s) to the LwM2M Server. The Resources and Resource Instances to send is implementation
+specific. The LwM2M Server MAY use the "Mute Send" Resource in the LwM2M Server Object (Resource ID 23) to enable
+or disable the use of the **SEND** operation.
+Для відправлення серверу повідомлення з використанням **SEND** операції, використовується наступний інтерфейс метод **wpp::WppClient::send()** у який передається посилання на дані які потрбно надіслати.
+\code{.cpp}
+Connection connection("56830", AF_INET);
+
+WppClient::create({"SinaiRnDTestLwm2m", "", ""}, connection);
+if (WppClient::isCreated() == false) return -1;
+WppClient *client = WppClient::takeOwnershipBlocking();
+
+DataLink dataLink = {{OBJ_ID::DEVICE, 0}, {Device::CURRENT_TIME_13,}};
+client->send(dataLink);
+\endcode
+
+**Lwm2mAccessControl usage.**
+If you need control over access to objects for different servers, you can enable Access Control, for this need to declare the **OBJ_O_2_LWM2M_ACCESS_CONTROL** definition during compilation and register the **Lwm2mAccessControl** object in the registry by calling **wpp::WppRegistry::registerObj()**. After these actions, the bootstrap server will be able to create the necessary configurations for object availability. If the user needs to independently limit access to specific objects, he can use the static interface of the **Lwm2mAccessControl** class. Which allows to create rules for: objects and instances, as well as modify them.
+
+An example of creating access rules for the **Device** object and its instance with ID 0, for server 123:
+\code{.cpp}
+Connection connection("56830", AF_INET);
+
+WppClient::create({"SinaiRnDTestLwm2m", "", ""}, connection);
+if (WppClient::isCreated() == false) return -1;
+WppClient *client = WppClient::takeOwnershipBlocking();
+
+#if OBJ_O_2_LWM2M_ACCESS_CONTROL
+Lwm2mAccessControl::create(Device::object(client), Lwm2mAccessControl::ALL_OBJ_RIGHTS);
+Lwm2mAccessControl::create(*Device::instance(client), 123);
+#endif
+\endcode
+
+**FirmwareUpdate usage.** It consists of three interfaces: **FwInternalDl**, **FwExternalDl** and **FwUpdater** that allowі to partially simplify the process of downloading and installing firmware. **FwInternalDl** and **FwExternalDl** are responsible for the download process, if the user plans to download the firmware himself, then he should implement only **FwExternalDl**, if the firmware will be downloaded by **wpp** library, then user needs to implement **FwInternalDl**. **FwUpdater** is responsible for the process of updating the downloaded firmware and provides information about the name and version of the firmware, as well as the update status. An example of the implementation of the mentioned interfaces and how to use them can be seen in the folder [**FirmwareUpdater**](../../examples/FirmwareUpdater).
 
 ### Platform Dependencies {#ex_platform_dependent}
 

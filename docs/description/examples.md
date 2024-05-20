@@ -16,7 +16,6 @@ Consider the initialization of **wpp::WppClient** and its use. Assume that the u
 We include the header file of the library that describes the client. Then include the header file of the library that describes the registry. If necessary, make the wpp namespace available for the entire file.
 \code{.cpp}
 #include "WppClient.h"
-#include "WppRegistry.h"
 using namespace wpp;
 \endcode
 
@@ -24,7 +23,7 @@ In the **main()** function, we initialize the client and start state processing.
 
 We create an instance of the class that implements the **wpp::WppConnection** interface.
 \code{.cpp}
-Connection connection;
+Connection connection("56830", AF_INET);
 \endcode
 
 We create the WppClient object and pass the structure with the client name "SinaiRnDTestLwm2m" and the connection object that will allow receiving and sending messages.
@@ -83,11 +82,10 @@ WppClient::remove();
 Will give a full example of the code in which the client can be used by several threads at the same time, but with blocking of the main cycle. By using the **wpp::WppClient::takeOwnershipBlocking()** method, which blocks execution until it takes ownership.
 \code{.cpp}
 #include "WppClient.h"
-#include "WppRegistry.h"
 using namespace wpp;
 
 int main() {
-    Connection connection;
+    Connection connection("56830", AF_INET);
     
     WppClient::create({"SinaiRnDTestLwm2m", "", ""}, connection);
     if (WppClient::isCreated() == false) return -1;
@@ -113,11 +111,10 @@ int main() {
 An example of code in which the client can be used by several threads at the same time, without blocking the main loop. Because it uses **wpp::WppClient::takeOwnership()** which immediately returns **NULL** when the client take ownership fails.
 \code{.cpp}
 #include "WppClient.h"
-#include "WppRegistry.h"
 using namespace wpp;
 
 int main() {
-    Connection connection;
+    Connection connection("56830", AF_INET);
     
     WppClient::create({"SinaiRnDTestLwm2m", "", ""}, connection);
     if (WppClient::isCreated() == false) return -1;
@@ -145,11 +142,10 @@ int main() {
 An example of code in which the client can be used by only one thread, so in this case there are no blocking.
 \code{.cpp}
 #include "WppClient.h"
-#include "WppRegistry.h"
 using namespace wpp;
 
 int main() {
-    Connection connection;
+    Connection connection("56830", AF_INET);
     
     WppClient::create({"SinaiRnDTestLwm2m", "", ""}, connection);
     if (WppClient::isCreated() == false) return -1;
@@ -172,7 +168,6 @@ int main() {
 In the section [State Management](@ref ex_client_state_management) an example of creating, initializing and using **wpp::WppClient** was considered. This section will consider the interface for accessing and interacting with the registry. As a basis, we will use the code from the [State Management](@ref ex_client_state_management) section, adding to it the **objects_registering()** method, which will interact with the registry.
 \code{.cpp}
 #include "WppClient.h"
-#include "WppRegistry.h"
 using namespace wpp;
 
 bool objects_registering(WppClient &client) {
@@ -180,7 +175,7 @@ bool objects_registering(WppClient &client) {
 }
 
 int main() {
-    Connection connection;
+    Connection connection("56830", AF_INET);
     
     WppClient::create({"SinaiRnDTestLwm2m", "", ""}, connection);
     if (WppClient::isCreated() == false) return -1;
@@ -197,40 +192,40 @@ int main() {
 }
 \endcode
 
-According to [**Lightweight Machine to Machine Technical Specification**](https://www.openmobilealliance.org/release/LightweightM2M/V1_1_1-20190617-A/OMA-TS-LightweightM2M_Core-V1_1_1-20190617-A.pdf) objects can be of two types MANDATORY and OPTIONAL. MANDATORY objects are obliged to be present for the correct work of the client. In **wpp::WppRegistry**, this division is conditional, the only feature inherent in MANDATORY objects is that they are immediately registered in the client after creating **wpp::WppClient**, that is, for MANDATORY objects you do not need to separately call **wpp::WppRegistry::registerObj()**, but this behavior applies only to the three MANDATORY objects **wpp::Device**, **wpp::Lwm2mServer** and **wpp::Lwm2mSecurity**. The registry allows to disable and enable the necessary objects at the compilation stage to save client resources, this is done through the [**objects_config.cmake**](../../wpp/configs/objects_config.cmake) configuration file. The integration of new objects into the registry is also supported due to the set of utilities [**object_maker**](../../utils/object_maker).
+According to [**Lightweight Machine to Machine Technical Specification**](https://www.openmobilealliance.org/release/LightweightM2M/V1_1_1-20190617-A/OMA-TS-LightweightM2M_Core-V1_1_1-20190617-A.pdf) objects can be of two types MANDATORY and OPTIONAL. MANDATORY objects are obliged to be present for the correct work of the client. In **wpp::WppRegistry**, this division is conditional, the only feature inherent in MANDATORY objects is that they are immediately registered in the client after creating **wpp::WppClient**, that is, for MANDATORY objects you do not need to separately call **wpp::WppRegistry::registerObj()**, but this behavior applies only to the three MANDATORY objects **wpp::Device**, **wpp::Lwm2mServer** and **wpp::Lwm2mSecurity**. The registry allows to disable and enable the necessary objects at the compilation stage to save client resources, this is done through the [**wpp_config.cmake**](../../wpp/configs/wpp_config.cmake) configuration file. The integration of new objects into the registry is also supported due to the set of utilities [**object_maker**](../../utils/object_maker).
 
-For example, in the file [**objects_config.cmake**](../../wpp/configs/objects_config.cmake) support for six objects was enabled: **wpp::Device**, **wpp::Lwm2mServer**, **wpp::Lwm2mSecurity**, **wpp::ConnectivityMonitoring**, **wpp::Lwm2mAccessControl**, **wpp::FirmwareUpdate** corresponding configurations.
+For example, in the file [**wpp_config.cmake**](../../wpp/configs/objects_config.cmake) support for six objects was enabled: **wpp::Device**, **wpp::Lwm2mServer**, **wpp::Lwm2mSecurity**, **wpp::ConnectivityMonitoring**, **wpp::Lwm2mAccessControl**, **wpp::FirmwareUpdate** corresponding configurations.
 
 Consider an example of using the **wpp::WppRegistry** interface. We will release the **objects_registering()** method. First, we will get access to the register of objects.
 \code{.cpp}
 WppRegistry &registry = client.registry();
 \endcode
 
-Objects **wpp::Device**, **wpp::Lwm2mServer** and **wpp::Lwm2mSecurity** are already registered, so it remains to register **wpp::ConnectivityMonitoring**, **wpp::Lwm2mAccessControl**, **wpp::FirmwareUpdate**. Registration of objects is necessary for the client to inform the server of their presence, since the client sends the server a list of all registered objects, not existing ones. Before registering, we should make sure that the objects exist, this can be done using the **wpp::WppRegistry::isObjExist()** method.
+Objects **wpp::Device**, **wpp::Lwm2mServer** and **wpp::Lwm2mSecurity** are already registered, so it remains to register **wpp::ConnectivityMonitoring**, **wpp::Lwm2mAccessControl**, **wpp::FirmwareUpdate**. Registration of objects is necessary for the client to inform the server of their presence, since the client sends the server a list of all registered objects, not existing ones. Before registering, we should make sure that the objects exist, this can be done using the **wpp::WppRegistry::isExist()** method.
 \code{.cpp}
-if (registry.isObjExist(OBJ_ID::CONNECTIVITY_MONITORING) == false) return false;
-if (registry.isObjExist(OBJ_ID::LWM2M_ACCESS_CONTROL) == false) return false;
-if (registry.isObjExist(OBJ_ID::FIRMWARE_UPDATE) == false) return false;
+if (registry.isExist(OBJ_ID::CONNECTIVITY_MONITORING) == false) return false;
+if (registry.isExist(OBJ_ID::LWM2M_ACCESS_CONTROL) == false) return false;
+if (registry.isExist(OBJ_ID::FIRMWARE_UPDATE) == false) return false;
 \endcode
 
-To register objects in the **wpp::WppRegistry::registerObj()** method, we need to pass the inheritor of the **wpp::Object** class. There are two ways to get **wpp::Object**: through a specialized method that always returns an object of the same type such as **wpp::WppRegistry::device()**, or through **wpp::WppRegistry::object()** which returns a **wpp::Object** with the specified **wpp::OBJ_ID**. The first approach exists for using a specialized interface specific to a specific object, the other for using an object through a generalized interface.
+To register objects in the **wpp::WppRegistry::registerObj()** method, we need to pass the **wpp::Object** instance. There are two ways to get **wpp::Object**: through a  method that always returns an object of the same type such as **wpp::WppRegistry::device()**, or through **wpp::WppRegistry::object()** which returns a **wpp::Object** with the specified **wpp::OBJ_ID**.
 \code{.cpp}
-Object *connMon = &registry.connectivityMonitoring();
-Object *acl = &registry.lwm2mAccessControl();
+Object &connMon = registry.connectivityMonitoring();
+Object &acl = registry.lwm2mAccessControl();
 Object *fwUpd = registry.object(OBJ_ID::FIRMWARE_UPDATE);
 \endcode
 
 We perform the registration of the necessary objects.
 \code{.cpp}
-registry.registerObj(*connMon);
-registry.registerObj(*acl);
+registry.registerObj(connMon);
+registry.registerObj(acl);
 registry.registerObj(*fwUpd);
 \endcode
 
 After registration, we can check whether the objects are registered by calling the **wpp::WppRegistry::isObjRegistered()** method.
 \code{.cpp}
-if (registry.isObjRegistered(*connMon) == false) return false;
-if (registry.isObjRegistered(*acl) == false) return false;
+if (registry.isObjRegistered(connMon) == false) return false;
+if (registry.isObjRegistered(acl) == false) return false;
 if (registry.isObjRegistered(*fwUpd) == false) return false;
 \endcode
 

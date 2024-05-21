@@ -26,8 +26,9 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Map=output.map")
 
 # Find the libcurl package
 find_package(CURL REQUIRED)
-# Include directories
-include_directories(${CURL_INCLUDE_DIR})
+
+# Find OpenSSL
+find_package(OpenSSL REQUIRED)
 
 # Build libcoap
 execute_process(
@@ -41,8 +42,6 @@ if(NOT result STREQUAL "0")
     message(FATAL_ERROR "Failed to build libcoap: ${error}")
 else()
     message(STATUS "libcoap built successfully. Library path: ${libcoap_path}")
-    # Move libcoap_path/lib to build directory
-    file(COPY ${libcoap_path}/lib DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
 # Variables that will be filled in subdirectories
@@ -63,7 +62,7 @@ target_compile_definitions(WakaamaPlusExample PUBLIC ${WPP_DEFINITIONS})
 # Link wpp sources to tests
 target_link_wpp(WakaamaPlusExample wpp)
 # Link with Wpp library
-target_link_libraries(WakaamaPlusExample Wpp pthread ${libcoap_path}/libcoap-3.so ${CURL_LIBRARIES})
+target_link_libraries(WakaamaPlusExample Wpp pthread ${libcoap_path}/libcoap-3.so CURL::libcurl OpenSSL::SSL OpenSSL::Crypto)
 
 # Add subdiretories with sources
 add_subdirectory(platform)

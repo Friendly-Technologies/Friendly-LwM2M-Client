@@ -76,7 +76,7 @@ Instance* ObjectImpl<T>::createInstance(ID_T instanceId) {
 	_instances.push_back(inst);
 
 	// Update server registration
-	if (getContext().state > STATE_BOOTSTRAPPING) lwm2m_update_registration(&getContext(), 0, false, true);
+	lwm2m_update_registration(&getContext(), 0, false, true);
 
 	return inst;
 }

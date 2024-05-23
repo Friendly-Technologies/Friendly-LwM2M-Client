@@ -239,6 +239,8 @@ bool Connection::sendPacket(const Packet &packet) {
         if (sendData(packet) ) return false;
     } else {
         if (DTLS_NAT_TIMEOUT > 0 && (time(NULL) - conn->lastSend) > DTLS_NAT_TIMEOUT) {
+            cout << "Connection: can't send due to NAT timeout" << endl;
+            cout << "Connection: rehandshake" << endl;
             // we need to rehandhake because our source IP/port probably changed for the server
             if (!rehandshake(conn, false)) {
                 cout << "Connection: can't send due to rehandshake error" << endl;

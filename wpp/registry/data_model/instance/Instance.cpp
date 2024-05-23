@@ -156,9 +156,13 @@ bool Instance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &res, ID_T
 	}
 	case TYPE_ID::OPAQUE: {
 		if (data.type != LWM2M_TYPE_OPAQUE && data.type != LWM2M_TYPE_STRING) return false;
-		size_t len = data.value.asBuffer.length;
-		uint8_t *buffer =  data.value.asBuffer.buffer;
-		if (!res.set(OPAQUE_T(buffer, buffer+len), instanceId)) return false;
+		size_t len = 0;
+		uint8_t *buffer = NULL;
+		if (!lwm2m_data_decode_opaque(&data, &buffer, &len) || !res.set(OPAQUE_T(buffer, buffer+len), instanceId)) {
+			if (len) lwm2m_free(buffer);
+			return false;
+		}
+		if (len) lwm2m_free(buffer);
 		break;
 	}
 	case TYPE_ID::STRING: {

@@ -110,10 +110,10 @@ void deviceInit(WppClient &client) {
 #ifdef OBJ_O_5_FIRMWARE_UPDATE
 void fwUpdaterInit(WppClient &client) {
     #if RES_5_8
-    FwUriDownloader fwUriDownloader;
+    static FwUriDownloader fwUriDownloader;
 	#endif
-    FwAutoDownloader fwAutoDownloader;
-	FirmwareUpdater fwUpdater;
+    static FwAutoDownloader fwAutoDownloader;
+	static FirmwareUpdater fwUpdater;
 
     client.registry().registerObj(FirmwareUpdate::object(client));
     FirmwareUpdate::createInst(client);

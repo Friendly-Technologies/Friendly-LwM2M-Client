@@ -4,10 +4,13 @@
 #include <arpa/inet.h>
 #include <cstring>
 
+using namespace std;
+
 /* ------------- Internal helpful states and methods ------------- */
 
 static bool _rebootDevice = false;
 
+#ifdef OBJ_O_4_CONNECTIVITY_MONITORING
 static void getIpAddress(string* ip) {
     struct ifaddrs *interfaces = NULL;
     struct ifaddrs *temp_addr = NULL;
@@ -24,6 +27,7 @@ static void getIpAddress(string* ip) {
     }
     freeifaddrs(interfaces);  // free memory
 }
+#endif // OBJ_O_4_CONNECTIVITY_MONITORING
 
 /* ------------- Methods to init objects ------------- */
 
@@ -104,14 +108,20 @@ void deviceInit(WppClient &client) {
 }
 
 #ifdef OBJ_O_5_FIRMWARE_UPDATE
-void fwUpdaterInit(WppClient &client, FirmwareUpdater &fwUpd, FwUriDownloader &uriDownloader, FwAutoDownloader &autoDownloader) {
+void fwUpdaterInit(WppClient &client) {
+    #if RES_5_8
+    FwUriDownloader fwUriDownloader;
+	#endif
+    FwAutoDownloader fwAutoDownloader;
+	FirmwareUpdater fwUpdater;
+
     client.registry().registerObj(FirmwareUpdate::object(client));
     FirmwareUpdate::createInst(client);
 
-    FirmwareUpdate::setFwUpdater(client, fwUpd);
-    FirmwareUpdate::setFwInternalDownloader(client, autoDownloader);
+    FirmwareUpdate::setFwUpdater(client, fwUpdater);
+    FirmwareUpdate::setFwInternalDownloader(client, fwAutoDownloader);
     #if RES_5_8
-    FirmwareUpdate::setFwExternalDownloader(client, uriDownloader);
+    FirmwareUpdate::setFwExternalDownloader(client, fwUriDownloader);
     #endif
 
     #if OBJ_O_2_LWM2M_ACCESS_CONTROL

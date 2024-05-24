@@ -41,11 +41,6 @@ void wppErrorHandler(WppClient &client, int errCode) {
 int main() {
 	cout << endl << "---- Creating required components ----" << endl;
 	Connection connection("56830", AF_INET);
-	#if OBJ_O_5_FIRMWARE_UPDATE
-    FwUriDownloader fwUriDownloader;
-    FwAutoDownloader fwAutoDownloader;
-	FirmwareUpdater fwUpdater;
-	#endif
 
 	// Client initialization
 	cout << endl << "---- Creating WppClient ----" << endl;
@@ -71,7 +66,7 @@ int main() {
 	deviceInit(*client);
 	#ifdef OBJ_O_5_FIRMWARE_UPDATE
 	cout << endl << "---- Initialization wpp FirmwareUpdate ----" << endl;
-	fwUpdaterInit(*client, fwUpdater, fwUriDownloader, fwAutoDownloader);
+	fwUpdaterInit(*client);
 	#endif
 	#ifdef OBJ_O_4_CONNECTIVITY_MONITORING
 	cout << endl << "---- Initialization wpp ConnectivityMonitoring ----" << endl;

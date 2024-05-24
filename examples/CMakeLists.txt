@@ -30,20 +30,6 @@ find_package(CURL REQUIRED)
 # Find OpenSSL
 find_package(OpenSSL REQUIRED)
 
-# Build libcoap
-execute_process(
-    COMMAND bash libcoap_build.sh
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/coap
-    RESULT_VARIABLE result
-    OUTPUT_VARIABLE libcoap_path
-    ERROR_VARIABLE error
-)
-if(NOT result STREQUAL "0")
-    message(FATAL_ERROR "Failed to build libcoap: ${error}")
-else()
-    message(STATUS "libcoap built successfully. Library path: ${libcoap_path}")
-endif()
-
 # Variables that will be filled in subdirectories
 set(SOURCES main.cpp objects.cpp)
 set(INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/)
@@ -62,12 +48,28 @@ target_compile_definitions(WakaamaPlusExample PUBLIC ${WPP_DEFINITIONS})
 # Link wpp sources to tests
 target_link_wpp(WakaamaPlusExample wpp)
 # Link with Wpp library
-target_link_libraries(WakaamaPlusExample Wpp pthread ${libcoap_path}/libcoap-3.so CURL::libcurl OpenSSL::SSL OpenSSL::Crypto)
+target_link_libraries(WakaamaPlusExample pthread)
 
 # Add subdiretories with sources
 add_subdirectory(platform)
 check_target_definition(WakaamaPlusExample "OBJ_O_5_FIRMWARE_UPDATE" is_defined)
 if(is_defined)
+    # Build libcoap
+    execute_process(
+        COMMAND bash libcoap_build.sh
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/coap
+        RESULT_VARIABLE result
+        OUTPUT_VARIABLE libcoap_path
+        ERROR_VARIABLE error
+    )
+    if(NOT result STREQUAL "0")
+        message(FATAL_ERROR "Failed to build libcoap: ${error}")
+    else()
+        message(STATUS "libcoap built successfully. Library path: ${libcoap_path}")
+    endif()
+    # Add libcoap to the project
+    target_link_libraries(WakaamaPlusExample ${libcoap_path}/libcoap-3.so CURL::libcurl OpenSSL::SSL OpenSSL::Crypto)
+    # Add FirmwareUpdater to the project
     add_subdirectory(FirmwareUpdater)
 endif()
 

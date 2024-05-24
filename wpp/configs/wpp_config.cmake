@@ -57,7 +57,7 @@ set(WPP_DEFINITIONS ${WPP_DEFINITIONS} LWM2M_SUPPORT_TLV)
 # set(WPP_DEFINITIONS ${WPP_DEFINITIONS} LWM2M_REG_PREFERRED_CONTENT_TYPE=110)
 
 # Enable logs for wakaama core
-# set(WPP_DEFINITIONS ${WPP_DEFINITIONS} LWM2M_WITH_LOGS)
+set(WPP_DEFINITIONS ${WPP_DEFINITIONS} LWM2M_WITH_LOGS)
 
 
 
@@ -68,7 +68,12 @@ set(WPP_DEFINITIONS ${WPP_DEFINITIONS} LWM2M_SUPPORT_TLV)
 # Enable logs for WakaamaPlus
 set(WPP_DEFINITIONS ${WPP_DEFINITIONS} WPP_ENABLE_LOGS)
 
-# Set log level
+# Set WakaamaPlus log level
+# Possible values:
+# 0 - Debug logs
+# 1 - Info logs
+# 2 - Warning logs
+# 3 - Error logs
 set(WPP_DEFINITIONS ${WPP_DEFINITIONS} WPP_LOGS_LEVEL=0)
 
 

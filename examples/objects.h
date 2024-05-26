@@ -20,7 +20,7 @@ void securityInit(WppClient &client);
 void deviceInit(WppClient &client);
 
 #ifdef OBJ_O_5_FIRMWARE_UPDATE
-void fwUpdaterInit(WppClient &client, FirmwareUpdater &fwUpd, FwUriDownloader &uriDownloader, FwAutoDownloader &autoDownloader);
+void fwUpdaterInit(WppClient &client);
 #endif
 
 #ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL

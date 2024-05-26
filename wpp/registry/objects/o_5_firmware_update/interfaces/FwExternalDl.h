@@ -5,6 +5,8 @@
 #include "m_0_lwm2m_security/Lwm2mSecurity.h"
 #include "o_5_firmware_update/FwTypes.h"
 
+#ifdef RES_5_8
+
 namespace wpp {
 
 /**
@@ -63,5 +65,7 @@ public:
 };
 
 } // namespace wpp
+
+#endif // RES_5_8
 
 #endif // WPP_FW_EXTERNAL_URI_DOWNLOADER_H

@@ -69,7 +69,7 @@ void Object::clear() {
 		delete instance;
 
 		// Update server registration
-		if (getContext().state > STATE_BOOTSTRAPPING) lwm2m_update_registration(&getContext(), 0, false, true);
+		lwm2m_update_registration(&getContext(), 0, false, true);
 
 		auto inst = getInstIter(id);
 		if (inst == _instances.end()) continue;
@@ -94,7 +94,7 @@ bool Object::remove(ID_T instanceId) {
 	_instances.erase(inst);
 
 	// Update server registration
-	if (getContext().state > STATE_BOOTSTRAPPING) lwm2m_update_registration(&getContext(), 0, false, true);
+	lwm2m_update_registration(&getContext(), 0, false, true);
 	
 	return true;
 }

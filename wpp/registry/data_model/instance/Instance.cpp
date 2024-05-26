@@ -156,9 +156,13 @@ bool Instance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &res, ID_T
 	}
 	case TYPE_ID::OPAQUE: {
 		if (data.type != LWM2M_TYPE_OPAQUE && data.type != LWM2M_TYPE_STRING) return false;
-		size_t len = data.value.asBuffer.length;
-		uint8_t *buffer =  data.value.asBuffer.buffer;
-		if (!res.set(OPAQUE_T(buffer, buffer+len), instanceId)) return false;
+		size_t len = 0;
+		uint8_t *buffer = NULL;
+		if (!lwm2m_data_decode_opaque(&data, &buffer, &len) || !res.set(OPAQUE_T(buffer, buffer+len), instanceId)) {
+			if (len) lwm2m_free(buffer);
+			return false;
+		}
+		if (len) lwm2m_free(buffer);
 		break;
 	}
 	case TYPE_ID::STRING: {
@@ -360,7 +364,7 @@ uint8_t Instance::replaceInstance(lwm2m_server_t *server, int numData, lwm2m_dat
 	std::vector<Resource> replaceInstResources;
 	// During the replace instance operation, request should contains all
 	// mandatory resources for write
-	if (!isAllMandatoryResourcesPresent(numData, dataArray)) return COAP_400_BAD_REQUEST;
+	if (_context.state > STATE_BOOTSTRAPPING && !isAllMandatoryResourcesPresent(numData, dataArray)) return COAP_400_BAD_REQUEST;
 	
 	for (int i = 0; i < numData; i++) {
 		uint8_t errCode = COAP_NO_ERROR;
@@ -471,7 +475,7 @@ uint8_t Instance::writeAsServer(lwm2m_server_t *server, int numData, lwm2m_data_
 	for (int i = 0; i < numData; i++) {
 		auto res = resource(dataArray[i].id);
 		if (!IS_RES_PTR_VALID(res)) continue;
-		if (!res->getOperation().isWrite() && (_context.state != STATE_BOOTSTRAPPING) && server != NULL) {
+		if (!res->getOperation().isWrite() && (_context.state > STATE_BOOTSTRAPPING) && server != NULL) {
 			WPP_LOGE(TAG_WPP_INST, "Trying to write read-only resource %d:%d:%d", _id.objId, _id.objInstId, dataArray[i].id);
 			return COAP_405_METHOD_NOT_ALLOWED;
 		}

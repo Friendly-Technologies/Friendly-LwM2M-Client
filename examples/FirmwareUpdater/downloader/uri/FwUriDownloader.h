@@ -6,11 +6,12 @@
 
 #include "FwDownloaderCoap.h"
 #include "FwDownloaderHttp.h"
-
 #include "FirmwareChecker.h"
 
 using namespace wpp;
 using namespace std;
+
+#if RES_5_8
 
 class FwUriDownloader : public FwExternalDl {
 public:
@@ -82,5 +83,7 @@ private:
     FwDownloaderCoap _coapDownloader;
     FwDownloaderHttp _httpDownloader;
 };
+
+#endif // RES_5_8
 
 #endif // FW_URI_DOWNLOADER_H

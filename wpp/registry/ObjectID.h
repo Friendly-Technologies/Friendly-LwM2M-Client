@@ -11,7 +11,7 @@ namespace wpp {
  * This enumeration represents the object IDs used in the WakaamaPlus library.
  * It includes both mandatory and optional object IDs.
  */
-enum class OBJ_ID: ID_T {
+enum OBJ_ID: ID_T {
 	/* ---------- Mandatory objects ID block begin ---------- */
 	#ifdef OBJ_M_3_DEVICE
 	DEVICE = 3,

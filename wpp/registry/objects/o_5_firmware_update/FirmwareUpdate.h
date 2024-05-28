@@ -1,6 +1,6 @@
 /*
  * FirmwareUpdate
- * Generated on: 2024-03-19 13:06:08
+ * Generated on: 2024-04-03 15:26:42
  * Created by: SinaiR&D
  */
 
@@ -42,6 +42,18 @@ public:
 		FIRMWARE_UPDATE_PROTOCOL_SUPPORT_8 = 8,
 		#endif
 		FIRMWARE_UPDATE_DELIVERY_METHOD_9 = 9,
+		#if RES_5_10
+		CANCEL_10 = 10,
+		#endif
+		#if RES_5_11
+		SEVERITY_11 = 11,
+		#endif
+		#if RES_5_12
+		LAST_STATE_CHANGE_TIME_12 = 12,
+		#endif
+		#if RES_5_13
+		MAXIMUM_DEFER_PERIOD_13 = 13,
+		#endif
 	};
 
 	/* --------------- Code_h block 1 start --------------- */
@@ -89,11 +101,11 @@ protected:
 	/*
 	 * Handles information about resource operation that made server
 	 */
-	void serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resLink) override;
+	void serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resLink) override;
 	/*
 	 * Handles information about resource operation that made user
 	 */
-	void userOperationNotifier(ResOp::TYPE type, const ResLink &resLink) override;
+	void userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) override;
 
 	/* --------------- Code_h block 3 start --------------- */
 	/* --------------- Code_h block 3 end --------------- */
@@ -112,7 +124,7 @@ private:
 	void resourcesInit();
 	
 	/* --------------- Code_h block 4 start --------------- */
-	void pkgUpdaterHandler();
+	bool pkgUpdaterHandler();
 	#if RES_5_8
 	void externalDownloaderHandler(Instance *securityInst);
 	#endif
@@ -121,6 +133,7 @@ private:
 	void changeUpdRes(FwUpdRes res);
 	void changeState(FwUpdState state);
 	void resetStateMachine();
+	void clearArtifacts();
 
 	bool isUriValid(STRING_T uri);
 	STRING_T extractSchemeFromUri(STRING_T uri);

@@ -7,7 +7,7 @@
 #include "m_1_lwm2m_server/Lwm2mServer.h"
 
 #include "Resource.h"
-#include "ResOp.h"
+#include "ItemOp.h"
 #include "WppTypes.h"
 #include "WppLogs.h"
 
@@ -44,9 +44,9 @@ Lwm2mServer::~Lwm2mServer() {
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
-void Lwm2mServer::serverOperationNotifier(Instance *securityInst, ResOp::TYPE type, const ResLink &resLink) {
+void Lwm2mServer::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resLink) {
 	/* --------------- Code_cpp block 6 start --------------- */
-	if (type == ResOp::WRITE && resLink.resId == LIFETIME_1) {
+	if (type == ItemOp::WRITE && resLink.resId == LIFETIME_1) {
 		INT_T serverId;
 		resource(SHORT_SERVER_ID_0)->get(serverId);
 		lwm2m_update_registration(&getContext(), serverId, true, false);
@@ -59,14 +59,23 @@ void Lwm2mServer::serverOperationNotifier(Instance *securityInst, ResOp::TYPE ty
 	/* --------------- Code_cpp block 7 end --------------- */
 }
 
-void Lwm2mServer::userOperationNotifier(ResOp::TYPE type, const ResLink &resLink) {
+void Lwm2mServer::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) {
 	/* --------------- Code_cpp block 8 start --------------- */
-	if (type == ResOp::WRITE && resLink.resId == LIFETIME_1 && getContext().state == STATE_READY){
+	if (type == ItemOp::WRITE && resLink.resId == LIFETIME_1 && getContext().state == STATE_READY){
 		INT_T serverId, lifetime;
 		resource(SHORT_SERVER_ID_0)->get(serverId);
 		resource(LIFETIME_1)->get(lifetime);
 		lwm2m_update_server_lifetime(&getContext(), serverId, lifetime);
 	}
+	#if defined(LWM2M_SUPPORT_SENML_JSON) && RES_1_23
+	if (type == ItemOp::WRITE && resLink.resId == MUTE_SEND_23) {
+		INT_T serverId;
+		BOOL_T mute;
+		resource(SHORT_SERVER_ID_0)->get(serverId);
+		resource(MUTE_SEND_23)->get(mute);
+		lwm2m_update_server_mute(&getContext(), serverId, mute);
+	}
+	#endif
 	/* --------------- Code_cpp block 8 end --------------- */
 }
 
@@ -75,67 +84,67 @@ void Lwm2mServer::userOperationNotifier(ResOp::TYPE type, const ResLink &resLink
 
 void Lwm2mServer::resourcesCreate() {
 	std::vector<Resource> resources = {
-		{SHORT_SERVER_ID_0,                               ResOp(ResOp::READ),              IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::INT },      
-		{LIFETIME_1,                                      ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::INT },      
+		{SHORT_SERVER_ID_0,                               ItemOp(ItemOp::READ),              IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::INT },      
+		{LIFETIME_1,                                      ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::INT },      
 		#if RES_1_2                                                                                                                                                                            
-		{DEFAULT_MINIMUM_PERIOD_2,                        ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },      
+		{DEFAULT_MINIMUM_PERIOD_2,                        ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },      
 		#endif                                                                                                                                                                                 
 		#if RES_1_3                                                                                                                                                                            
-		{DEFAULT_MAXIMUM_PERIOD_3,                        ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },      
+		{DEFAULT_MAXIMUM_PERIOD_3,                        ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },      
 		#endif                                                                                                                                                                                 
 		#if RES_1_4                                                                                                                                                                            
-		{DISABLE_4,                                       ResOp(ResOp::EXECUTE),           IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::EXECUTE },  
+		{DISABLE_4,                                       ItemOp(ItemOp::EXECUTE),           IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::EXECUTE },  
 		#endif                                                                                                                                                                                 
 		#if RES_1_5                                                                                                                                                                            
-		{DISABLE_TIMEOUT_5,                               ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },      
+		{DISABLE_TIMEOUT_5,                               ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },      
 		#endif                                                                                                                                                                                 
-		{NOTIFICATION_STORING_WHEN_DISABLED_OR_OFFLINE_6, ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::BOOL },     
-		{BINDING_7,                                       ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::STRING },   
-		{REGISTRATION_UPDATE_TRIGGER_8,                   ResOp(ResOp::EXECUTE),           IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::EXECUTE },  
+		{NOTIFICATION_STORING_WHEN_DISABLED_OR_OFFLINE_6, ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::BOOL },     
+		{BINDING_7,                                       ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::STRING },   
+		{REGISTRATION_UPDATE_TRIGGER_8,                   ItemOp(ItemOp::EXECUTE),           IS_SINGLE::SINGLE, IS_MANDATORY::MANDATORY, TYPE_ID::EXECUTE },  
 		#if RES_1_9                                                                                                                                                                            
-		{BOOTSTRAP_REQUEST_TRIGGER_9,                     ResOp(ResOp::EXECUTE),           IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::EXECUTE },  
+		{BOOTSTRAP_REQUEST_TRIGGER_9,                     ItemOp(ItemOp::EXECUTE),           IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::EXECUTE },  
 		#endif                                                                                                                                                                                 
 		#if RES_1_10                                                                                                                                                                           
-		{APN_LINK_10,                                     ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::OBJ_LINK }, 
+		{APN_LINK_10,                                     ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::OBJ_LINK }, 
 		#endif                                                                                                                                                                                 
 		#if RES_1_11                                                                                                                                                                           
-		{TLS_DTLS_ALERT_CODE_11,                          ResOp(ResOp::READ),              IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::UINT },     
+		{TLS_DTLS_ALERT_CODE_11,                          ItemOp(ItemOp::READ),              IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::UINT },     
 		#endif                                                                                                                                                                                 
 		#if RES_1_12                                                                                                                                                                           
-		{LAST_BOOTSTRAPPED_12,                            ResOp(ResOp::READ),              IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::TIME },     
+		{LAST_BOOTSTRAPPED_12,                            ItemOp(ItemOp::READ),              IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::TIME },     
 		#endif                                                                                                                                                                                 
 		#if RES_1_13                                                                                                                                                                           
-		{REGISTRATION_PRIORITY_ORDER_13,                  ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::UINT },     
+		{REGISTRATION_PRIORITY_ORDER_13,                  ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::UINT },     
 		#endif                                                                                                                                                                                 
 		#if RES_1_14                                                                                                                                                                           
-		{INITIAL_REGISTRATION_DELAY_TIMER_14,             ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::UINT },     
+		{INITIAL_REGISTRATION_DELAY_TIMER_14,             ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::UINT },     
 		#endif                                                                                                                                                                                 
 		#if RES_1_15                                                                                                                                                                           
-		{REGISTRATION_FAILURE_BLOCK_15,                   ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::BOOL },     
+		{REGISTRATION_FAILURE_BLOCK_15,                   ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::BOOL },     
 		#endif                                                                                                                                                                                 
 		#if RES_1_16                                                                                                                                                                           
-		{BOOTSTRAP_ON_REGISTRATION_FAILURE_16,            ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::BOOL },     
+		{BOOTSTRAP_ON_REGISTRATION_FAILURE_16,            ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::BOOL },     
 		#endif                                                                                                                                                                                 
 		#if RES_1_17                                                                                                                                                                           
-		{COMMUNICATION_RETRY_COUNT_17,                    ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::UINT },     
+		{COMMUNICATION_RETRY_COUNT_17,                    ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::UINT },     
 		#endif                                                                                                                                                                                 
 		#if RES_1_18                                                                                                                                                                           
-		{COMMUNICATION_RETRY_TIMER_18,                    ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::UINT },     
+		{COMMUNICATION_RETRY_TIMER_18,                    ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::UINT },     
 		#endif                                                                                                                                                                                 
 		#if RES_1_19                                                                                                                                                                           
-		{COMMUNICATION_SEQUENCE_DELAY_TIMER_19,           ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::UINT },     
+		{COMMUNICATION_SEQUENCE_DELAY_TIMER_19,           ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::UINT },     
 		#endif                                                                                                                                                                                 
 		#if RES_1_20                                                                                                                                                                           
-		{COMMUNICATION_SEQUENCE_RETRY_COUNT_20,           ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::UINT },     
+		{COMMUNICATION_SEQUENCE_RETRY_COUNT_20,           ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::UINT },     
 		#endif                                                                                                                                                                                 
 		#if RES_1_21                                                                                                                                                                           
-		{TRIGGER_21,                                      ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::BOOL },     
+		{TRIGGER_21,                                      ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::BOOL },     
 		#endif                                                                                                                                                                                 
 		#if RES_1_22                                                                                                                                                                           
-		{PREFERRED_TRANSPORT_22,                          ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::STRING },   
+		{PREFERRED_TRANSPORT_22,                          ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::STRING },   
 		#endif                                                                                                                                                                                 
 		#if RES_1_23                                                                                                                                                                           
-		{MUTE_SEND_23,                                    ResOp(ResOp::READ|ResOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::BOOL },     
+		{MUTE_SEND_23,                                    ItemOp(ItemOp::READ|ItemOp::WRITE), IS_SINGLE::SINGLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::BOOL },     
 		#endif                                                                                                                                                                                 
 	};
 	_resources = std::move(resources);
@@ -269,7 +278,7 @@ void Lwm2mServer::resourcesInit() {
 	#endif
 
 	#if RES_1_23                                                                                                                                                                                                                             
-	resource(MUTE_SEND_23)->set(false);
+	resource(MUTE_SEND_23)->set(true);
 	#endif 
 	/* --------------- Code_cpp block 10 end --------------- */
 }

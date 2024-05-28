@@ -20,7 +20,7 @@ bool Instance::clear(ID_T resId) {
 
 	bool result = res->clear();
 	if (result) {
-		userOperationNotifier(ResOp::DELETE, {resId,});
+		userOperationNotifier(ItemOp::DELETE, {resId,});
 		notifyServerResChanged({resId,});
 	}
 
@@ -33,7 +33,7 @@ bool Instance::remove(const ResLink &resLink) {
 
 	bool result = res->remove(resLink.resInstId);
 	if (result) {
-		userOperationNotifier(ResOp::DELETE, {resLink.resId, resLink.resInstId});
+		userOperationNotifier(ItemOp::DELETE, {resLink.resId, resLink.resInstId});
 		notifyServerResChanged({resLink.resId, resLink.resInstId});
 	}
 
@@ -54,7 +54,7 @@ std::vector<Resource *> Instance::getInstantiatedResList() {
 	return list;
 }
 
-std::vector<Resource *> Instance::getInstantiatedResList(const ResOp& filter) {
+std::vector<Resource *> Instance::getInstantiatedResList(const ItemOp& filter) {
 	std::vector<Resource *> list;
 	for (auto &res : _resources) {
 		if (!res.isEmpty() && filter.isCompatible(res.getOperation())) list.push_back(&res);
@@ -71,15 +71,13 @@ lwm2m_context_t& Instance::getContext() {
 	return _context; 
 }
 
+WppClient& Instance::getClient() {
+	return *static_cast<wpp::WppClient *>(getContext().userData);
+}
+
 WppRegistry& Instance::getRegistry() {
 	return static_cast<wpp::WppClient *>(getContext().userData)->registry();
 }
-
-#ifdef LWM2M_RAW_BLOCK1_REQUESTS
-void Instance::serverBlockOperationNotifier(ResOp::TYPE type, const ResLink &resLink, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock) {
-	WPP_LOGI(TAG_WPP_INST, "Block operation notifier not implemented for: %d:%d:%d, operation type: %d", _id.objId, resLink.resId, resLink.resInstId, type);
-}
-#endif
 
 Instance* Instance::getSecurityInst(lwm2m_server_t *server) {
 	if (!server) return NULL;
@@ -93,7 +91,11 @@ bool Instance::resourceToLwm2mData(Resource &res, ID_T instanceId, lwm2m_data_t 
 		if (res.get(value, instanceId)) lwm2m_data_encode_bool(value, &data);
 		break;
 	}
-	case TYPE_ID::TIME:
+	case TYPE_ID::TIME:  {
+		TIME_T value;
+		if (res.get(value, instanceId)) lwm2m_data_encode_time(value, &data);
+		break;
+	}
 	case TYPE_ID::INT: {
 		INT_T value;
 		if (res.get(value, instanceId)) lwm2m_data_encode_int(value, &data);
@@ -142,7 +144,11 @@ bool Instance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &res, ID_T
 		if (!lwm2m_data_decode_bool(&data, &value) || !res.set(value, instanceId)) return false;
 		break;
 	}
-	case TYPE_ID::TIME:
+	case TYPE_ID::TIME:{
+		TIME_T value;
+		if (!lwm2m_data_decode_time(&data, &value) || !res.set(value, instanceId)) return false;
+		break;
+	}
 	case TYPE_ID::INT: {
 		INT_T value;
 		if (!lwm2m_data_decode_int(&data, &value) || !res.set(value, instanceId)) return false;
@@ -159,8 +165,8 @@ bool Instance::lwm2mDataToResource(const lwm2m_data_t &data, Resource &res, ID_T
 		break;
 	}
 	case TYPE_ID::OBJ_LINK: {
-		if (data.type != LWM2M_TYPE_OBJECT_LINK) return false;
-		if (!res.set(OBJ_LINK_T{data.value.asObjLink.objectId, data.value.asObjLink.objectInstanceId}, instanceId)) return false;
+		OBJ_LINK_T value;
+		if (!lwm2m_data_decode_objlink(&data, &value.objId, &value.objInstId) || !res.setMove(value, instanceId)) return false;
 		break;
 	}
 	case TYPE_ID::OPAQUE: {
@@ -204,7 +210,7 @@ Resource* Instance::getValidatedResForWrite(const lwm2m_data_t &data, lwm2m_writ
 	if ((data.type == LWM2M_TYPE_MULTIPLE_RESOURCE && res->isSingle()) ||
 		  (data.type != LWM2M_TYPE_MULTIPLE_RESOURCE && res->isMultiple())) {
 		WPP_LOGW(TAG_WPP_INST, "Server can not write multiple resource to single and vise verse: %d:%d:%d", _id.objId, _id.objInstId, data.id);
-		errCode = COAP_405_METHOD_NOT_ALLOWED;
+		errCode = COAP_400_BAD_REQUEST;
 		return NULL;
 	}
 	return &(*res);
@@ -239,10 +245,10 @@ uint8_t Instance::resourceWrite(lwm2m_server_t *server, Resource &res, const lwm
 			return COAP_400_BAD_REQUEST;
 		}
 		// Notify implementation about update operation
-		if (writeType == LWM2M_WRITE_PARTIAL_UPDATE) serverOperationNotifier(getSecurityInst(server), ResOp::WRITE, {res.getId(), (res.isSingle()? ID_T_MAX_VAL : resInstId)});
+		if (writeType == LWM2M_WRITE_PARTIAL_UPDATE) serverOperationNotifier(getSecurityInst(server), ItemOp::WRITE, {res.getId(), (res.isSingle()? ID_T_MAX_VAL : resInstId)});
 	}
 	// Notify implementation about replace resource operation
-	if (writeType == LWM2M_WRITE_REPLACE_RESOURCES) serverOperationNotifier(getSecurityInst(server), ResOp::WRITE, {res.getId(), ID_T_MAX_VAL});
+	if (writeType == LWM2M_WRITE_REPLACE_RESOURCES) serverOperationNotifier(getSecurityInst(server), ItemOp::WRITE, {res.getId(), ID_T_MAX_VAL});
 
 	return COAP_NO_ERROR;
 }
@@ -257,13 +263,13 @@ Resource* Instance::getValidatedResForRead(const lwm2m_data_t &data, uint8_t &er
 	// Check the server operation permission for resource
 	if (!res->getOperation().isRead()) {
 		WPP_LOGE(TAG_WPP_INST, "Server does not have permission for read resource: %d:%d:%d", _id.objId, _id.objInstId, data.id);
-		errCode = COAP_405_METHOD_NOT_ALLOWED;
+		errCode = COAP_400_BAD_REQUEST;
 		return NULL;
 	}
 	// Check resource type (single/multiple) matches with data type
 	if (data.type == LWM2M_TYPE_MULTIPLE_RESOURCE && res->isSingle()) {
 		WPP_LOGW(TAG_WPP_INST, "Server can not read single resource to multiple: %d:%d:%d", _id.objId, _id.objInstId, data.id);
-		errCode = COAP_405_METHOD_NOT_ALLOWED;
+		errCode = COAP_400_BAD_REQUEST;
 		return NULL;
 	}
 	// If resource is multile then we should check that all instances are exists
@@ -306,7 +312,7 @@ uint8_t Instance::resourceRead(lwm2m_server_t *server, lwm2m_data_t &data, Resou
 			return COAP_400_BAD_REQUEST;
 		}
 		// Notify implementation about read resource operation
-		serverOperationNotifier(getSecurityInst(server), ResOp::READ, {res.getId(), (res.isSingle()? ID_T_MAX_VAL : resInstId)});
+		serverOperationNotifier(getSecurityInst(server), ItemOp::READ, {res.getId(), (res.isSingle()? ID_T_MAX_VAL : resInstId)});
 	}
 
 	return COAP_NO_ERROR;
@@ -394,7 +400,7 @@ uint8_t Instance::replaceInstance(lwm2m_server_t *server, int numData, lwm2m_dat
 	// Replace original resources with updated resources
 	for (auto &res : replaceInstResources) {
 		*resource(res.getId()) = std::move(res);
-		serverOperationNotifier(getSecurityInst(server), ResOp::WRITE, {res.getId(), ID_T_MAX_VAL});
+		serverOperationNotifier(getSecurityInst(server), ItemOp::WRITE, {res.getId(), ID_T_MAX_VAL});
 	}
 
 	return COAP_NO_ERROR;
@@ -409,7 +415,7 @@ uint8_t Instance::replaceResource(lwm2m_server_t *server, int numData, lwm2m_dat
 			// or read attempt is made, allowing us to ignore a request to read/write these 
 			// resources, but wakaama is implemented in such a way that the behavior of ignoring
 			// optional resources results in an incorrect internal registration system state. 
-			if (server == NULL) {
+			if (server == NULL || errCode != COAP_404_NOT_FOUND) {
 				WPP_LOGW(TAG_WPP_INST, "Resource %d:%d:%d write not possible, error: %d", _id.objId, _id.objInstId, dataArray[i].id, errCode);
 				return errCode;
 			}
@@ -432,32 +438,28 @@ uint8_t Instance::readAsServer(lwm2m_server_t *server, int *numData, lwm2m_data_
 	bool readAllAvailableRes = *numData == 0;
 	WPP_LOGD(TAG_WPP_INST, "Read %d:%d, readAllAvailableRes: %d, numData: %d", _id.objId, _id.objInstId, readAllAvailableRes, *numData);
 	if (readAllAvailableRes) {
-		std::vector<Resource *> readResources = getInstantiatedResList(ResOp(ResOp::READ));
+		std::vector<Resource *> readResources = getInstantiatedResList(ItemOp(ItemOp::READ));
 		uint8_t errCode = createEmptyLwm2mDataArray(readResources, dataArray, numData);
 		if (errCode != COAP_NO_ERROR) {
 			WPP_LOGE(TAG_WPP_INST, "Error during creating lwm2m_data_t for read instance %d:%d", _id.objId, _id.objInstId);
 			return errCode;
 		}
 	}
-
-	// TODO: According to the documentation, optional resources can be missing when a write
-	// or read attempt is made, allowing us to ignore a request to read/write these 
-	// resources, but wakaama is implemented in such a way that the behavior of ignoring
-	// optional resources results in an incorrect internal registration system state. 
-	// One of the workarounds is to determine the number of resources that are read or 
-	// written, wakaama reads resources only one at a time, this allows to determine that
-	// the reading or writing is done by wakaama core and set the correct behavior in the
-	// absence of a resource.
-	bool ignore = *numData > 1;
 	
 	for (int i = 0; i < *numData; i++) {
 		uint8_t errCode = COAP_NO_ERROR;
 		lwm2m_data_t *data = (*dataArray) + i;
 		Resource *res = getValidatedResForRead(*data, errCode);
 		if (!res) {
-			WPP_LOGW(TAG_WPP_INST, "Resource %d:%d:%d read not possible, ignore: %d", _id.objId, _id.objInstId, data->id, ignore);
-			if (ignore) continue;
-			else return errCode;
+			// TODO: According to the documentation, optional resources can be missing when a write
+			// or read attempt is made, allowing us to ignore a request to read/write these 
+			// resources, but wakaama is implemented in such a way that the behavior of ignoring
+			// optional resources results in an incorrect internal registration system state. 
+			if (server == NULL || errCode != COAP_404_NOT_FOUND) {
+				WPP_LOGW(TAG_WPP_INST, "Resource %d:%d:%d read not possible, error: %d", _id.objId, _id.objInstId, data->id, errCode);
+				return errCode;
+			}
+			continue;
 		}
 		
 		errCode = resourceRead(server, *data, *res);
@@ -481,7 +483,7 @@ uint8_t Instance::writeAsServer(lwm2m_server_t *server, int numData, lwm2m_data_
 	for (int i = 0; i < numData; i++) {
 		auto res = resource(dataArray[i].id);
 		if (!IS_ITER_VALID_AND_RES_EXISTS(res)) continue;
-		if (!res->getOperation().isWrite() && (_context.state != STATE_BOOTSTRAPPING)) {
+		if (!res->getOperation().isWrite() && (_context.state != STATE_BOOTSTRAPPING) && server != NULL) {
 			WPP_LOGE(TAG_WPP_INST, "Trying to write read-only resource %d:%d:%d", _id.objId, _id.objInstId, dataArray[i].id);
 			return COAP_400_BAD_REQUEST;
 		}
@@ -510,7 +512,7 @@ uint8_t Instance::executeAsServer(lwm2m_server_t *server, ID_T resId, uint8_t * 
 	}
 
 	// Notify implementation about execute resource operation
-	serverOperationNotifier(getSecurityInst(server), ResOp::EXECUTE, {res->getId(), ID_T_MAX_VAL});
+	serverOperationNotifier(getSecurityInst(server), ItemOp::EXECUTE, {res->getId(), ID_T_MAX_VAL});
 
 	WPP_LOGD(TAG_WPP_INST, "Resource execute: %d:%d:%d, buffer length: %d", _id.objId, _id.objInstId, resId, length);
 	return execute(*this, resId, OPAQUE_T(buffer, buffer + length))? COAP_204_CHANGED : COAP_405_METHOD_NOT_ALLOWED;
@@ -546,72 +548,14 @@ uint8_t Instance::discoverAsServer(lwm2m_server_t *server, int * numData, lwm2m_
 			for (auto id : res->getInstIds()) {
 				(dataCnt++)->id = id;
 				WPP_LOGD(TAG_WPP_INST, "Resource instance discover: %d:%d:%d:%d", _id.objId, _id.objInstId, data->id, id);
-				// Notify implementation about discover resource instance operation
-				serverOperationNotifier(getSecurityInst(server), ResOp::DISCOVER, {res->getId(), id});
 			}
 			lwm2m_data_encode_instances(subData, res->instanceCnt(), data);
 		} else {
 			WPP_LOGD(TAG_WPP_INST, "Resource discover: %d:%d:%d", _id.objId, _id.objInstId, data->id);
-			// Notify implementation about discover resource operation
-			serverOperationNotifier(getSecurityInst(server), ResOp::DISCOVER, {res->getId(), ID_T_MAX_VAL});
 		}
 	}
 	return COAP_205_CONTENT;
 }
-
-#ifdef LWM2M_RAW_BLOCK1_REQUESTS
-uint8_t Instance::blockWriteAsServer(lwm2m_server_t *server, lwm2m_uri_t * uri, lwm2m_media_type_t format, uint8_t * buffer, int length, uint32_t blockNum, uint8_t blockMore) {
-	if (uri == NULL) return COAP_500_INTERNAL_SERVER_ERROR;
-
-	WPP_LOGD(TAG_WPP_INST, "Block write parameters: %d:%d:%d:%d, format: %d, len: %d, block number: %d, blockMore %d",
-								uri->objectId, uri->instanceId, uri->resourceId, uri->resourceInstanceId, format, length, blockNum, blockMore);
-	// TODO: For now is not supported writing multiple resources or whole instance at once
-	if (!LWM2M_URI_IS_SET_RESOURCE(uri) || LWM2M_URI_IS_SET_RESOURCE_INSTANCE(uri)) {
-		WPP_LOGW(TAG_WPP_INST, "Not possible to apply block write operation for: %d:%d:%d:%d", uri->objectId, uri->instanceId, uri->resourceId, uri->resourceInstanceId);
-		return COAP_400_BAD_REQUEST;
-	}
-	ResLink resLink = {uri->resourceId, ID_T_MAX_VAL};
-
-	switch (format) {
-    case LWM2M_CONTENT_TEXT:
-    case LWM2M_CONTENT_OPAQUE:
-        serverBlockOperationNotifier(ResOp::BLOCK_WRITE, resLink, OPAQUE_T(buffer, buffer+length), blockNum, !blockMore);
-		break;
-	#ifdef LWM2M_SUPPORT_TLV
-	case LWM2M_CONTENT_TLV: {
-		if (!blockNum) {
-			lwm2m_data_type_t dataType;
-			ID_T id;
-			size_t dataStart, dataLen;
-			lwm2m_decode_TLV(buffer, length, &dataType, &id, &dataStart, &dataLen);
-			// TODO: For now is not supported writing multiple resources or whole instance at once
-			if (dataType == LWM2M_TYPE_MULTIPLE_RESOURCE) {
-				WPP_LOGW(TAG_WPP_INST, "Not possible to apply block write operation for TLV with multiple resources");
-				return COAP_400_BAD_REQUEST;
-			}
-			serverBlockOperationNotifier(ResOp::BLOCK_WRITE, resLink, OPAQUE_T(buffer+dataStart, buffer+length), blockNum, !blockMore);
-		} else {
-			serverBlockOperationNotifier(ResOp::BLOCK_WRITE, resLink, OPAQUE_T(buffer, buffer+length), blockNum, !blockMore);
-		}
-		break;
-	}
-	#endif
-	default: 
-		WPP_LOGW(TAG_WPP_INST, "Unsupported format: %d", format);
-		return COAP_405_METHOD_NOT_ALLOWED;
-	}
-
-	return blockMore? COAP_231_CONTINUE : COAP_204_CHANGED;
-}
-
-uint8_t Instance::blockExecuteAsServer(lwm2m_server_t *server, lwm2m_uri_t * uri, uint8_t * buffer, int length, uint32_t blockNum, uint8_t blockMore) {
-	if (uri == NULL) return COAP_500_INTERNAL_SERVER_ERROR;
-	
-	WPP_LOGD(TAG_WPP_INST, "Block execute parameters: %d:%d:%d, len: %d, block number: %d, blockMoreL %d", uri->objectId, uri->instanceId, uri->resourceId, length, blockNum, blockMore);
-	serverBlockOperationNotifier(ResOp::BLOCK_EXECUTE, {uri->resourceId, uri->resourceInstanceId}, OPAQUE_T(buffer, buffer+length), blockNum, !blockMore);
-	return blockMore? COAP_231_CONTINUE : COAP_204_CHANGED;
-}
-#endif
 
 } // namespcae wpp
 

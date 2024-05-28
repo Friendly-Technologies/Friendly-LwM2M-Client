@@ -1,5 +1,5 @@
 #include "ConnectivityMonitoring.h"
-
+#include "Lwm2mServer.h"
 #include <ifaddrs.h>
 #include <arpa/inet.h>
 #include <cstring>
@@ -18,6 +18,11 @@ void ConnectivityMonitoringImpl::init(Object &obj) {
                INT_T(ConnectivityMonitoring::NtwrkBrr::ETHERNET));
 	inst0->set(ConnectivityMonitoring::RADIO_SIGNAL_STRENGTH_2, INT_T(-20));
     inst0->set(ConnectivityMonitoring::IP_ADDRESSES_4, ip);
+
+    #if OBJ_O_2_LWM2M_ACCESS_CONTROL
+	Lwm2mAccessControl::createInst(obj, Lwm2mAccessControl::ALL_OBJ_RIGHTS);
+	Lwm2mAccessControl::createInst(*inst0, TEST_SERVER_SHORT_ID);
+	#endif
 }
 
 

@@ -131,21 +131,20 @@ time_t WppClient::loop() {
 	return sleepTimeSec;
 }
 
-bool WppClient::updateServerRegistration(INT_T serverId, bool withLifetime, bool withObjects) {
-	WPP_LOGD(TAG_WPP_CLIENT, "Update registration to server: ID -> %d, withLifetime -> %d, withObjects -> %d", serverId, withLifetime, withObjects);
-	return !lwm2m_update_registration(_lwm2m_context, serverId, withLifetime, withObjects);
-}
-
-bool WppClient::updateServerRegistration(bool withLifetime, bool withObjects) {
-	WPP_LOGD(TAG_WPP_CLIENT, "Update registration to each server: withLifetime -> %d, withObjects -> %d", withLifetime, withObjects);
-	return !lwm2m_update_registration(_lwm2m_context, 0, withLifetime, withObjects);
-}
-
+/* ------------- WppClient server operations ------------- */
 void WppClient::deregister() {
 	WPP_LOGI(TAG_WPP_CLIENT, "Unregister with each server");
 	lwm2m_deregister(_lwm2m_context);
 }
 
+#if defined(LWM2M_SUPPORT_SENML_JSON) && RES_1_23
+bool WppClient::send(const DataLink &link) {
+	WPP_LOGD(TAG_WPP_CLIENT, "Send data to servers: object ID -> %d, instance ID -> %d, resource ID -> %d, resource instance ID -> %d",
+				link.instance.objId, link.instance.objInstId, link.resource.resId, link.resource.resInstId);
+	lwm2m_uri_t uri = {link.instance.objId, link.instance.objInstId, link.resource.resId, link.resource.resInstId};
+	return !lwm2m_send_operation(_lwm2m_context, &uri);
+}
+#endif
 
 /* ------------- Wakaama client initialisation ------------- */
 bool WppClient::lwm2mContextOpen() {

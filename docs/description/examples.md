@@ -349,7 +349,7 @@ Let's initialize the **wpp::Device** object, each object implementation has a li
 \code{.cpp}
 deviceInst->set<INT_T>(Device::ERROR_CODE_11, 0, Device::NO_ERROR);
 deviceInst->set<STRING_T>(Device::SUPPORTED_BINDING_AND_MODES_16, WPP_BINDING_UDP);
-deviceInst->set<STRING_T>(Device::MANUFACTURER_0, "Wakaama Plus");
+deviceInst->set<STRING_T>(Device::MANUFACTURER_0, "Friendly");
 deviceInst->set<STRING_T>(Device::MODEL_NUMBER_1, "Lightweight M2M Client");
 deviceInst->set<STRING_T>(Device::SERIAL_NUMBER_2, "0123456789");
 \endcode
@@ -371,7 +371,7 @@ void device_init(WppClient &client) {
 
     deviceInst->set<INT_T>(Device::ERROR_CODE_11, 0, Device::NO_ERROR);
     deviceInst->set<STRING_T>(Device::SUPPORTED_BINDING_AND_MODES_16, WPP_BINDING_UDP);
-    deviceInst->set<STRING_T>(Device::MANUFACTURER_0, "Wakaama Plus");
+    deviceInst->set<STRING_T>(Device::MANUFACTURER_0, "Friendly");
     deviceInst->set<STRING_T>(Device::MODEL_NUMBER_1, "Lightweight M2M Client");
     deviceInst->set<STRING_T>(Device::SERIAL_NUMBER_2, "0123456789");
     deviceInst->set<EXECUTE_T>(Device::REBOOT_4, [](Instance& inst, ID_T resId, const OPAQUE_T& data) {
@@ -496,7 +496,7 @@ void device_init(WppClient &client) {
 
     deviceInst->set<INT_T>(Device::ERROR_CODE_11, 0, Device::NO_ERROR);
     deviceInst->set<STRING_T>(Device::SUPPORTED_BINDING_AND_MODES_16, WPP_BINDING_UDP);
-    deviceInst->set<STRING_T>(Device::MANUFACTURER_0, "Wakaama Plus");
+    deviceInst->set<STRING_T>(Device::MANUFACTURER_0, "Friendly");
     deviceInst->set<STRING_T>(Device::MODEL_NUMBER_1, "Lightweight M2M Client");
     deviceInst->set<STRING_T>(Device::SERIAL_NUMBER_2, "0123456789");
     deviceInst->set<EXECUTE_T>(Device::REBOOT_4, [](Instance& inst, ID_T resId, const OPAQUE_T& data) {

@@ -62,13 +62,13 @@ set(WPP_DEFINITIONS ${WPP_DEFINITIONS} LWM2M_WITH_LOGS)
 
 
 ####################################################################
-####################### WakaamaPlus configs ########################
+########################### Wpp configs ############################
 ####################################################################
 
-# Enable logs for WakaamaPlus
+# Enable logs for Wpp
 set(WPP_DEFINITIONS ${WPP_DEFINITIONS} WPP_ENABLE_LOGS)
 
-# Set WakaamaPlus log level
+# Set Wpp log level
 # Possible values:
 # 0 - Debug logs
 # 1 - Info logs

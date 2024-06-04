@@ -38,7 +38,8 @@ $CLANG \
 cppcheck \
 llvm \
 libcurl4-openssl-dev \
-cmake"
+cmake
+g++-12"
 
 ptools="\
 cmake-format \

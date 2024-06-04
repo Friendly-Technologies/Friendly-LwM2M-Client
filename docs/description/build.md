@@ -1,7 +1,7 @@
-\page build_tag Build Instructions for WakaamaPlus
+\page build_tag Build Instructions for Friendly LWM2M client
 
 
-This document provides detailed instructions on how to build the WakaamaPlus project. It covers requirements, setup steps, and common issues.
+This document provides detailed instructions on how to build the Friendly LWM2M client project. It covers requirements, setup steps, and common issues.
 - [Setup build environment](@ref b_setupbenv)
   - [Repos Structure](@ref b_repostruct)
   - [Environment Setup](@ref b_envsetup)
@@ -54,7 +54,7 @@ We also install Python tools for building and testing, such as `cmake`, `pylint`
 ## Source code {#b_sourcecode}
 
 
-### WakaamaPlus source code
+### Wpp source code
 
 To work with our implementation of the LWM2M library, clone the [repository](https://github.com/sinai-io/2305-WakaamaPlus) with the submodules using the command below. Our library uses the original Wakaama as a submodule.
 ```
@@ -101,7 +101,7 @@ Ubuntu: 18.04.6 / **22.04**
 * Run the `wpp_env_setup.sh` script to install the necessary utilities. Use sudo permission to run the script. After successfully downloading, installing, and completing the installation process, the script generates documentation about the WPP library using Doxygen and automatically opens a web page to view the documentation.<br />
   `sudo bash wpp_env_setup.sh`
 * Start **VSCode** and go to the open workspace which set up for this project **File → Open Workspace from File**.<br />
-* In the opened window, specify the path to the file `vs-code-wakaamaplus.code-workspace` located in the **2305-WakaamaPlus** repository.
+* In the opened window, specify the path to the file `vs-code-wpp.code-workspace` located in the **2305-WakaamaPlus** repository.
 * After the workspace has loaded, go to **Extensions** `(Ctrl+Shift+x)`, set **Recommended** `(Text field: @recommended)` in the extensions filter, and then install all recommended extensions.
 
 \image html build_2.png
@@ -235,7 +235,7 @@ Define your own endian if the endian is different from the platform default.<br 
 
 PATH - `wpp/configs/wpp_config.cmake`
 
-**WPP_ENABLE_LOGS** - enable logs for WakaamaPlus (default: **ON**)<br />
+**WPP_ENABLE_LOGS** - enable logs for Wpp (default: **ON**)<br />
 **WPP_LOGS_LEVEL** - set logs detalization for `WPP_ENABLE_LOGS ON` (default: **0**)
 
 ***

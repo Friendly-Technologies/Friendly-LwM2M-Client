@@ -23,9 +23,9 @@ namespace wpp {
 
 /**
  * @class WppClient
- * @brief Represents a client interface for Wakaama Plus.
+ * @brief Represents a client interface for Wpp library.
  *
- * The WppClient class provides methods for managing the Wakaama Plus, accessing its components,
+ * The WppClient class provides methods for managing the Wpp library, accessing its components,
  * and processing the state of the Wakaama core. It allows users to create, remove, and check
  * if the WppClient is created. Users can also take ownership of the client, interact with its
  * connection and registry, and perform server registration and deregistration.

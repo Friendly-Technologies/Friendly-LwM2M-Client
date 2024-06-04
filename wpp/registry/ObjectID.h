@@ -6,9 +6,9 @@
 namespace wpp {
 
 /**
- * @brief Enumeration of object IDs in the WakaamaPlus library.
+ * @brief Enumeration of object IDs in the Wpp library.
  * 
- * This enumeration represents the object IDs used in the WakaamaPlus library.
+ * This enumeration represents the object IDs used in the Wpp library.
  * It includes both mandatory and optional object IDs.
  */
 enum OBJ_ID: ID_T {

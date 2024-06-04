@@ -10,8 +10,8 @@ This document provides detailed instructions on how to build the Friendly LWM2M 
 ***
 - [Implementation and customisation](@ref b_implandcustmn)
   - [Definitions and configurations](@ref b_defandconf)
-  - [Static WPP library](@ref b_staticvar)
-  - [Source WPP library](@ref b_sourcevar)
+  - [Static Wpp library](@ref b_staticvar)
+  - [Source Wpp library](@ref b_sourcevar)
 
 
 # Setup build environment {#b_setupbenv}
@@ -231,7 +231,7 @@ Define your own endian if the endian is different from the platform default.<br 
 `set(WPP_DEFINITIONS ${WPP_DEFINITIONS} LWM2M_BIG_ENDIAN)` - big-endian format<br />
 `set(WPP_DEFINITIONS ${WPP_DEFINITIONS} LWM2M_LITTLE_ENDIAN)` - little-endian format
 
-### WPP configuration {#b_wppconf}
+### Wpp configuration {#b_wppconf}
 
 PATH - `wpp/configs/wpp_config.cmake`
 
@@ -239,7 +239,7 @@ PATH - `wpp/configs/wpp_config.cmake`
 **WPP_LOGS_LEVEL** - set logs detalization for `WPP_ENABLE_LOGS ON` (default: **0**)
 
 ***
-## Static WPP library {#b_staticvar}
+## Static Wpp library {#b_staticvar}
 
 **Definition:** The static build option in LwM2M indicates the process of compiling and assembling protocol code that includes all necessary libraries and dependencies, creating a single executable file with closed dependencies.<br />
 **Advantages:** Ease of installation and deployment, as all dependencies are included in one file.<br />

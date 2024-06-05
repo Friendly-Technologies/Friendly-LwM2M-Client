@@ -8,6 +8,14 @@ option(WPP_BUILD_FOR_64_BIT "Build for 64-bit system or 32-bit" ON)
 # This is essential for shared libraries.
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+# Link-time optimization
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ffunction-sections -fdata-sections")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffunction-sections -fdata-sections")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -flto")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
+
 # Main comiler options
 add_compile_options(    
     -Waggregate-return

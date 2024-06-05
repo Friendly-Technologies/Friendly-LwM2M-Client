@@ -4,6 +4,10 @@
 SOURCE_DIR="$1"
 DESTINATION_DIR="$2"
 
+if [ -d "${DESTINATION_DIR}" ]; then
+    rm -rf "${DESTINATION_DIR}"
+fi
+
 mkdir -p "${DESTINATION_DIR}"
 # Copy wpp/ to headers/
 cp -r "${SOURCE_DIR}/" "${DESTINATION_DIR}/wpp/"

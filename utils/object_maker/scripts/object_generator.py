@@ -42,18 +42,16 @@ class ObjectGenerator:
         obj_id = self.object_data[const.DATA_KEYS[const.KEY_ID_OBJ]]                                         # 1
         obj_name_folder = f"{obj_requirement_short.lower()}_" \
                           f"{obj_id}_" \
-                          f"{obj_name_underline_lw}_"\
-                          f"v{obj_version}"                                     # 'm_1_lwm2m_server_v13'
+                          f"{obj_name_underline_lw}"                            # 'm_1_lwm2m_server'
         obj_name_path_to_folder = f"../../wpp/registry/objects/"                # '../../wpp/registry/objects/'
         obj_name_define = f"OBJ_{obj_requirement_short}_" \
                           f"{obj_id}_" \
-                          f"{obj_name_underline_up}_" \
-                          f"V{obj_version}"                                     # 'OBJ_M_1_LWM2M_SERVER_V13'
+                          f"{obj_name_underline_up}"                            # 'OBJ_M_1_LWM2M_SERVER'
 
         object_names[const.KEY_NAME_CLASS] = obj_name_class                     # 'Lwm2mServer'
         object_names[const.KEY_NAME_CAMELCASE] = obj_name_camelcase             # 'lwm2mServer'
-        object_names[const.KEY_NAME_DEFINE] = obj_name_define                   # 'OBJ_M_1_LWM2M_SERVER_V13'
-        object_names[const.KEY_NAME_OF_FOLDER] = obj_name_folder                # 'm_1_lwm2m_server_v13'
+        object_names[const.KEY_NAME_DEFINE] = obj_name_define                   # 'OBJ_M_1_LWM2M_SERVER'
+        object_names[const.KEY_NAME_OF_FOLDER] = obj_name_folder                # 'm_1_lwm2m_server'
         object_names[const.KEY_PATH_TO_FOLDER] = obj_name_path_to_folder        # '../../wpp/registry/objects/'
         object_names[const.KEY_NAME_UNDERLINE] = obj_name_underline_up          # 'LWM2M_SERVER'
 
@@ -63,8 +61,8 @@ class ObjectGenerator:
         return self.object_names[const.KEY_NAME_OF_FOLDER]
 
     def parse_operation(self, xml_operation):
-        type = const.TYPE_OPERATION
-        operation = f"{type}({type}::"
+        operation_type = const.TYPE_OPERATION
+        operation = f"{operation_type}({operation_type}::"
         match xml_operation:
             case "E":
                 operation += "EXECUTE"
@@ -73,15 +71,17 @@ class ObjectGenerator:
             case "W":
                 operation += "WRITE"
             case "RW":
-                operation = f"{type}({type}::READ|{type}::WRITE"
+                operation += f"READ|{operation_type}::WRITE"
             case default:
-                operation = f"{type}({type}::READ|{type}::WRITE"
+                operation += f"READ|{operation_type}::WRITE"
         operation += "),"
         return operation
 
-    def parse_resource_data_type(self, xml_type):
-        resource_type = "TYPE_ID::"
+    def parse_resource_data_type_id(self, xml_type):
+        resource_type = f"{const.TYPE_ID}::"
         match xml_type:
+            case "NONE":
+                resource_type += "EXECUTE"
             case "INTEGER":
                 resource_type += "INT"
             case "UNSIGNED_INTEGER":
@@ -90,26 +90,26 @@ class ObjectGenerator:
                 resource_type += "BOOL"
             case "STRING":
                 resource_type += "STRING"
-            case "EXECUTE":
-                resource_type += "EXECUTE"
             case "OPAQUE":
                 resource_type += "OPAQUE"
-            case "?":
-                resource_type += "FLOAT"  # TODO: check case
-            case "OBJLNK":
-                resource_type += "OBJ_LINK"
+            case "FLOAT":
+                resource_type += "FLOAT"
             case "TIME":
                 resource_type += "TIME"
-            case "?":
-                resource_type += "CORE_LINK"  # TODO: check case
+            case "OBJLNK":
+                resource_type += "OBJ_LINK"
+            case "CORELNK":
+                resource_type += "CORE_LINK"
             case default:
-                resource_type += "EXECUTE"  # TODO: check case
-
+                raise Exception(f"parse_resource_data_type_id(): Undefined type of the resource ({xml_type})")
+        resource_type += " },"
         return resource_type
 
-    def parse_type(self, xml_type):
+    def parse_resource_data_type(self, xml_type):
         resource_type = ""
         match xml_type:
+            case "NONE":
+                resource_type += "EXECUTE_T"
             case "INTEGER":
                 resource_type += "INT_T"
             case "UNSIGNED_INTEGER":
@@ -118,21 +118,18 @@ class ObjectGenerator:
                 resource_type += "BOOL_T"
             case "STRING":
                 resource_type += "STRING_T"
-            case "EXECUTE":
-                resource_type += "EXECUTE_T"
             case "OPAQUE":
                 resource_type += "OPAQUE_T"
             case "FLOAT":
-                resource_type += "FLOAT_T"  # TODO: check case
-            case "OBJLNK":
-                resource_type += "OBJ_LINK_T"
+                resource_type += "FLOAT_T"
             case "TIME":
                 resource_type += "TIME_T"
-            case "CORE_LINK":
-                resource_type += "CORE_LINK_T"  # TODO: check case
+            case "OBJLNK":
+                resource_type += "OBJ_LINK_T"
+            case "CORELNK":
+                resource_type += "CORE_LINK_T"
             case default:
-                resource_type += "NONE"  # TODO: check case
-
+                raise Exception(f"parse_resource_data_type(): Undefined type of the resource ({xml_type})")
         return resource_type
 
     def get_map_of_resources(self, resources_list_xml):
@@ -156,7 +153,7 @@ class ObjectGenerator:
                             self.parse_operation(resource_xml[const.DATA_KEYS[const.KEY_OPERATIONS]]),
                             f"IS_SINGLE::{resource_xml[const.DATA_KEYS[const.KEY_IS_MULTIPLE]]},",
                             f"IS_MANDATORY::{resource_xml[const.DATA_KEYS[const.KEY_IS_MANDATORY]]},",
-                            f"{self.parse_resource_data_type(resource_xml[const.DATA_KEYS[const.KEY_TYPE]])} }},"]
+                            self.parse_resource_data_type_id(resource_xml[const.DATA_KEYS[const.KEY_TYPE]])]
 
             # wrap into "#if-directive" if the resource is not mandatory:
             if resource_xml[const.DATA_KEYS[const.KEY_IS_MANDATORY]] != "MANDATORY":
@@ -176,23 +173,24 @@ class ObjectGenerator:
 
     def get_content_resourcesInit_f(self):
         content = f"""void __CLASS_NAME__::resourcesInit() {{\n""" \
-                  f"""\t/* --------------- Code_cpp block 10 start --------------- */\n"""
+                  f"""\t/* --------------- Code_cpp block 7 start --------------- */\n"""
         for resource in self.resources_data:
+            resource_type = self.parse_resource_data_type(resource[const.DATA_KEYS[const.KEY_TYPE]])
             if resource[ "Mandatory"] == "MANDATORY":
                 # content += f"""\t\t#if {resource["Name"]}_{resource["Mandatory"]}\n\t"""
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].set( /* TODO */ );\n"
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n\n"
-                content += f"\tresource({resource['Name']}_{resource['ID']})->set( /* TODO */ );\n"
+                content += f"\tresource({resource['Name']}_{resource['ID']})->set<{resource_type}>( /* TODO */ );\n"
                 content += f"\tresource({resource['Name']}_{resource['ID']})->setDataVerifier( /* TODO */ );\n"
                 # content += f"\t\t#endif\n\n"
             if resource["Mandatory"] == "OPTIONAL":
                 content += f"""\t#if {resource["Define"]}\n"""
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].set( /* TODO */ );\n"
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n"
-                content += f"\tresource({resource['Name']}_{resource['ID']})->set( /* TODO */ );\n"
+                content += f"\tresource({resource['Name']}_{resource['ID']})->set<{resource_type}>( /* TODO */ );\n"
                 content += f"\tresource({resource['Name']}_{resource['ID']})->setDataVerifier( /* TODO */ );\n"
                 content += f"\t#endif\n"
-        content += f"""\t/* --------------- Code_cpp block 10 end --------------- */\n}}"""
+        content += f"""\t/* --------------- Code_cpp block 7 end --------------- */\n}}"""
 
         return content
 
@@ -215,37 +213,38 @@ class ObjectGenerator:
             return f"""WPP_LOGD(TAG, {text});"""
 
     def get_content_serverOperationNotifier(self):
-        cases = ["READ", "WRITE_UPD", "WRITE_REPLACE_INST", "WRITE_REPLACE_RES", "EXECUTE", "DISCOVER", "DELETE"]
+        cases = ["WRITE", "EXECUTE"]
         base = \
-            f"""void __CLASS_NAME__::serverOperationNotifier(ResOp::TYPE type, const ResLink &resId) {{\n""" \
-            f"""\t/* --------------- Code_cpp block 6 start --------------- */\n""" \
-            f"""\t/* --------------- Code_cpp block 6 end --------------- */\n""" \
-            f"""\n\toperationNotify(*this, resId, type);\n\n""" \
-            f"""\t/* --------------- Code_cpp block 7 start --------------- */\n""" \
+            f"""void __CLASS_NAME__::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resLink) {{\n""" \
+            f"""\t/* --------------- Code_cpp block 4 start --------------- */\n""" \
+            f"""\t/* --------------- Code_cpp block 4 end --------------- */\n""" \
+            f"""\n\toperationNotify(*this, resLink, type);\n\n""" \
+            f"""\t/* --------------- Code_cpp block 5 start --------------- */\n""" \
             f"""\tswitch (type) {{\n\t"""
         for case in cases:
             base += f"""case {const.TYPE_OPERATION}::{case}:\n\t\t{self.create_log_string(
                 f"Server {case} -> resId: %d, resInstId: %d",
-                ["resId.resId", "resId.resInstId"],
+                ["resLink.resId", "resLink.resInstId"],
                 False
             )}\n\t\tbreak;\n\t"""
         return f"""{base}default: break;\n\t}}\n\t""" \
-               f"""/* --------------- Code_cpp block 7 end --------------- */\n}}"""
+               f"""/* --------------- Code_cpp block 5 end --------------- */\n}}"""
 
     def get_content_userOperationNotifier(self):
-        cases = ["READ", "WRITE_UPD", "DELETE"]
+        cases = ["WRITE", "DELETE"]
         prefix = \
-            f"""void __CLASS_NAME__::userOperationNotifier(ResOp::TYPE type, const ResLink &resId) {{\n""" \
-            f"""\t/* --------------- Code_cpp block 8 start --------------- */\n""" \
+            f"""void __CLASS_NAME__::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) {{\n""" \
+            f"""\tif (type == ItemOp::WRITE || type == ItemOp::DELETE) notifyResChanged(resLink.resId, resLink.resInstId);\n\n""" \
+            f"""\t/* --------------- Code_cpp block 6 start --------------- */\n""" \
             f"""\tswitch (type) {{\n\t"""
         for case in cases:
             prefix += f"""case {const.TYPE_OPERATION}::{case}:\n\t\t{self.create_log_string(
                 f"User {case} -> resId: %d, resInstId: %d",
-                ["resId.resId", "resId.resInstId"],
+                ["resLink.resId", "resLink.resInstId"],
                 False
             )}\n\t\tbreak;\n\t"""
         postfix = f"""default: break;\n\t}}\n""" \
-                  f"""\t/* --------------- Code_cpp block 8 end --------------- */\n}}"""
+                  f"""\t/* --------------- Code_cpp block 6 end --------------- */\n}}"""
         return prefix + postfix
 
     def generate_content_header(self, resources_enum):
@@ -269,6 +268,7 @@ class ObjectGenerator:
         data_str_cpp = data_str_cpp.replace("__F_RESOURCE_INIT__",
                                             self.get_content_resourcesInit_f())
         data_str_cpp = data_str_cpp.replace("__CLASS_NAME__", self.object_names[const.KEY_NAME_CLASS])
+        data_str_cpp = data_str_cpp.replace("__CLASS_NAME_CAMELCASE__", self.object_names[const.KEY_NAME_CAMELCASE])
         data_str_cpp = data_str_cpp.replace("__RESOURCES_TABLE__", resources_map)
 
         return data_str_cpp
@@ -284,6 +284,7 @@ class ObjectGenerator:
     def generate_content_info_header(self):
         is_multiple = "MULTIPLE" if self.object_data[const.DATA_KEYS[const.KEY_IS_MULTIPLE]] else "SINGLE"
         is_mandatory = "MANDATORY" if self.object_data[const.DATA_KEYS[const.KEY_IS_MANDATORY]] else "OPTIONAL"
+        inst_operations = "ItemOp::CREATE|\n\t\t   ItemOp::DELETE|" if self.object_data[const.DATA_KEYS[const.KEY_IS_MULTIPLE]] else ""
 
         content = func.get_content_from_file(const.FILE_TMPLT_INFO)[1]
         content = content.replace("__DATETIME__", DATETIME)
@@ -299,6 +300,7 @@ class ObjectGenerator:
                                   f"{{{self.object_data[const.DATA_KEYS[const.KEY_VER_LWM2M]].replace('.', ',')}}}")
         content = content.replace("__MULTIPLE__", is_multiple)
         content = content.replace("__MANDATORY__", is_mandatory)
+        content = content.replace("__INST_OP__", inst_operations)
 
         return content
 

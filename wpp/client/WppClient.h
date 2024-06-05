@@ -12,20 +12,20 @@
 #include <functional>
 
 #include "liblwm2m.h"
-#include "types.h"
+#include "WppTypes.h"
 #include "WppRegistry.h"
 #include "WppConnection.h"
 #include "WppGuard.h"
 
-#define WPP_CLIENT_MAX_SLEEP_TIME_S	30
+#define WPP_CLIENT_MAX_SLEEP_TIME_S	60
 
 namespace wpp {
 
 /**
  * @class WppClient
- * @brief Represents a client interface for Wakaama Plus.
+ * @brief Represents a client interface for Wpp library.
  *
- * The WppClient class provides methods for managing the Wakaama Plus, accessing its components,
+ * The WppClient class provides methods for managing the Wpp library, accessing its components,
  * and processing the state of the Wakaama core. It allows users to create, remove, and check
  * if the WppClient is created. Users can also take ownership of the client, interact with its
  * connection and registry, and perform server registration and deregistration.
@@ -46,13 +46,14 @@ public:
 		std::string altPath; /**< The alternative path of the client. */
 	};
 
+	using WppErrHandler = std::function<void(WppClient &client, int errCode)>;
+
 private:
 	/**
 	 * @brief Constructs a WppClient object with the given connection and maximum sleep time.
 	 * @param connection The WppConnection object to be associated with the client.
-	 * @param maxSleepTime The maximum sleep time in seconds.
 	 */
-	WppClient(WppConnection &connection, time_t maxSleepTime);
+	WppClient(WppConnection &connection, WppErrHandler errHandler = NULL);
 	
 	/**
 	 * @brief Unused constructors of WppClient.
@@ -71,10 +72,9 @@ public:
 	 * @brief Creates a WppClient with the specified client information, connection, and maximum sleep time.
 	 * @param info The client information required to create the WppClient.
 	 * @param connection The WppConnection object to be associated with the client.
-	 * @param maxSleepTimeSec The maximum sleep time in seconds (default: WPP_CLIENT_MAX_SLEEP_TIME_S).
 	 * @return True if the WppClient is created successfully, false otherwise.
 	 */
-	static bool create(const ClientInfo &info, WppConnection &connection, time_t maxSleepTimeSec = WPP_CLIENT_MAX_SLEEP_TIME_S);
+	static bool create(const ClientInfo &info, WppConnection &connection, WppErrHandler errHandler = NULL);
 
 	/**
 	 * @brief Removes the WppClient.
@@ -140,25 +140,24 @@ public:
 	 */
 	time_t loop();
 
+	/* ------------- WppClient server operations ------------- */
+	
 	/**
-	 * @brief Updates the server registration for the specified server ID.
-	 * @param serverId The ID of the server to update the registration for.
-	 * @param withObjects Whether to include objects in the registration update.
-	 * @return True if the server registration is updated successfully, false otherwise.
-	 */
-	bool updateServerRegistration(INT_T serverId, bool withObjects);
-
-	/**
-	 * @brief Updates the server registration for all servers.
-	 * @param withObjects Whether to include objects in the registration update.
-	 * @return True if the server registration is updated successfully, false otherwise.
-	 */
-	bool updateServerRegistration(bool withObjects);
-
-	/**
-	 * @brief Deregisters the client from the server.
+	 * @brief Deregisters the client from the servers.
 	 */
 	void deregister();
+
+	#if defined(LWM2M_SUPPORT_SENML_JSON) && RES_1_23
+	/**
+	 * @brief Sending occurs immediately, without checking the response from the server,
+	 * checking only the parameters. Data is sent to all servers with which a successful
+	 * connection is established, the exception serves only to explicitly disable the send
+	 * operation through resource 23 in the object 1.
+	 * @param link The link to object/instance/resource to send.
+	 * @return True if the data link is correct and sent successfully, false otherwise.
+	 */
+	bool send(const DataLink &link);
+	#endif // LWM2M_SUPPORT_SENML_JSON && RES_1_23
 
 private:
 	/* ------------- Wakaama client initialisation ------------- */
@@ -189,9 +188,7 @@ private:
 
 	WppConnection &_connection;
 	WppRegistry *_registry;
-
-	time_t _maxSleepTimeSec;
-
+	WppErrHandler _errHandler;
 	lwm2m_context_t *_lwm2m_context;
 };
 

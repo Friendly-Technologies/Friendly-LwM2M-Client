@@ -1,107 +1,100 @@
-//============================================================================
-// Name        : main.cpp
-// Author      : Valentin
-// Version     :
-//============================================================================
-
 #include <iostream>
 #include <thread>
 #include <chrono>
 
-#include "Lwm2mServer.h"
-#include "Lwm2mSecurity.h"
-#include "Device.h"
 #include "Connection.h"
-#ifdef OBJ_O_4_CONNECTIVITY_MONITORING_V13
-#include "ConnectivityMonitoring.h"
-#endif
-#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
-#include "Lwm2mAccessControl.h"
-#endif
-#ifdef OBJ_O_5_FIRMWARE_UPDATE_V11
-#include "FirmwareUpdate.h"
-#endif
-
-#include "WppClient.h"
-#include "WppRegistry.h"
+#include "objects.h"
 
 using namespace std;
 using namespace wpp;
 
-void socketPolling(Connection *connection, DeviceImpl *device) {
-	while (!device->isNeededReboot()) {
+void socketPolling(Connection *connection) {
+	while (!isDeviceShouldBeRebooted()) {
 		connection->loop();
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 }
 
+void wppErrorHandler(WppClient &client, int errCode) {
+	cout << "wppErrorHandler(): Error: " << errCode << endl;
+	if (client.getState() == STATE_BOOTSTRAPPING || client.getState() == STATE_BOOTSTRAP_REQUIRED) {
+		cout << "Trying to restore security and server objects" << endl;
+		Object &securityObj = Lwm2mSecurity::object(client);
+		Object &serverObj = Lwm2mServer::object(client);
+
+		#if OBJ_O_2_LWM2M_ACCESS_CONTROL
+		for (auto *inst : securityObj.instances()) Lwm2mAccessControl::remove(*inst);
+		for (auto *inst : serverObj.instances()) Lwm2mAccessControl::remove(*inst);
+		#endif
+
+		securityObj.clear();
+		serverObj.clear();
+
+		securityInit(client);
+		serverInit(client);
+	}
+}
+
 // Found Wakaama bugs:
-// TODO: No payload in response for resource /3/0/0 in TLV format
-// TODO: Coap post not working correctly for write
-// TODO: Observation with set pmin attribute did not work properly
 // TODO: Device work with NON confirmation messages
-// TODO: Problem with converting lwm2mData to resource: 2:0:2:2. This starange behavior related to TLV format, client receive next res 2(res):2(res inst):1(again res inst). Problem related to wakaama core in TLV format.
 
 int main() {
-	cout << endl << "---- Creating requiered components ----" << endl;
+	cout << endl << "---- Creating required components ----" << endl;
 	Connection connection("56830", AF_INET);
-	Lwm2mServerImpl server;
-	Lwm2mSecurityImpl security;
-	DeviceImpl device;
-	#ifdef OBJ_O_4_CONNECTIVITY_MONITORING_V13
-	ConnectivityMonitoringImpl conn_mon;
-	#endif
-	#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
-	Lwm2mAccessControlImpl accessCtrl;
-	#endif
-	#ifdef OBJ_O_5_FIRMWARE_UPDATE_V11
-	FirmwareUpdateImpl fwUpd;
-	#endif
 
 	// Client initialization
 	cout << endl << "---- Creating WppClient ----" << endl;
-	string clientName = "SinaiTestLwm2m";
+	string clientName = "Lwm2mClient";
 	#if DTLS_WITH_PSK
 	clientName += "PSK";
 	#elif DTLS_WITH_RPK
 	clientName += "RPK";
 	#endif
 	cout << "WppClient name: " << clientName << endl;
-	WppClient::create({clientName, "", ""}, connection);
-	WppClient *client = WppClient::takeOwnership();
-	WppRegistry &registry = client->registry();
+	WppClient::create({clientName, "", ""}, connection, wppErrorHandler);
+	WppClient *client = WppClient::takeOwnershipBlocking();
 
 	// Initialize wpp objects
+	#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL
+	acInit(*client);
+	#endif
 	cout << endl << "---- Initialization wpp Server ----" << endl;
-	server.init(registry.lwm2mServer());
+	serverInit(*client);
 	cout << endl << "---- Initialization wpp Security ----" << endl;
-	security.init(registry.lwm2mSecurity());
+	securityInit(*client);
 	cout << endl << "---- Initialization wpp Device ----" << endl;
-	device.init(registry.device());
-	#ifdef OBJ_O_4_CONNECTIVITY_MONITORING_V13
-	cout << endl << "---- Initialization wpp ConnectivityMonitoring ----" << endl;
-	conn_mon.init(registry.connectivityMonitoring());
-	registry.registerObj(registry.connectivityMonitoring());
-	#endif
-	#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
-	cout << endl << "---- Initialization wpp AccessControl ----" << endl;
-	accessCtrl.init(registry.lwm2mAccessControl());
-	registry.registerObj(registry.lwm2mAccessControl());
-	#endif
-	#ifdef OBJ_O_5_FIRMWARE_UPDATE_V11
+	deviceInit(*client);
+	#ifdef OBJ_O_5_FIRMWARE_UPDATE
 	cout << endl << "---- Initialization wpp FirmwareUpdate ----" << endl;
-	fwUpd.init(registry.firmwareUpdate());
-	registry.registerObj(registry.firmwareUpdate());
+	fwUpdaterInit(*client);
+	#endif
+	#ifdef OBJ_O_4_CONNECTIVITY_MONITORING
+	cout << endl << "---- Initialization wpp ConnectivityMonitoring ----" << endl;
+	connMonitoringInit(*client);
+	#endif
+	#ifdef OBJ_O_3339_AUDIO_CLIP
+	cout << endl << "---- Initialization wpp AudioClip ----" << endl;
+	audioClipInit(*client);
 	#endif
 	
 	// Giving ownership to registry
 	client->giveOwnership();
 
+	// Add tasks with send operation
+	#if defined(LWM2M_SUPPORT_SENML_JSON) && RES_1_23 && RES_3_13
+	WppTaskQueue::addTask(5, [](WppClient &client, void *ctx) {
+		WPP_LOGD(TAG_WPP_TASK, "Task: Send operation, sending current time to the server");
+		DataLink dataLink = {{OBJ_ID::DEVICE, 0}, {Device::CURRENT_TIME_13,}};
+		client.send(dataLink);
+		return false;
+	});
+	#endif
+
 	cout << endl << "---- Starting Connection thread ----" << endl;
-	thread my_thread(socketPolling, &connection, &device);
+	thread my_thread(socketPolling, &connection);
 
 	time_t callTime = 0;
-	for (int iterationCnt = 0; !device.isNeededReboot(); iterationCnt++) {
+	for (int iterationCnt = 0; !isDeviceShouldBeRebooted(); iterationCnt++) {
 		time_t currTime = time(NULL);
 
 		cout << endl << "---- iteration:" << iterationCnt << ", time: " << time(NULL) << " ----" << endl;

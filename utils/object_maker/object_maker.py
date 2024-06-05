@@ -47,7 +47,7 @@ def main():
             and not options.remove
             and not options.change
             and not options.initialize):
-        parser.error("no options selected. Use -h for help")
+        parser.error("no options selected. Choose one from: -g, -i, -c, -r, -z.\n\nUse -h for help.")
 
     # ============================= generation =============================
     if options.generate:
@@ -104,7 +104,7 @@ def main():
                          "1 - the path to the folder contain existing Object\n"
                          "2 - the path to the xml file contain the new data of the Object\n"
                          "For example: object_maker.py -c "
-                         "D:\\2305-WakaamaPlus\\wpp\\registry\\objects\\o_4_connectivity_monitoring_v13 "
+                         "D:\\Client\\wpp\\registry\\objects\\o_4_connectivity_monitoring_v13 "
                          "./new_object_data.xml")
         if not OC.ObjectChanger(os.path.normpath(args[0]), args[1]).change():
             sys.exit(1)
@@ -114,7 +114,7 @@ def main():
         if len(args) != 1:
             parser.error("please, provide the path to the folder contain existing Object to remove\n"
                          "For example: object_maker.py -r "
-                         "D:\\2305-WakaamaPlus\\wpp\\registry\\objects\\o_4_connectivity_monitoring_v13")
+                         "D:\\Client\\wpp\\registry\\objects\\o_4_connectivity_monitoring_v13")
         if not OR.ObjectRemover(os.path.normpath(args[0])).remove_object():
             sys.exit(1)
 

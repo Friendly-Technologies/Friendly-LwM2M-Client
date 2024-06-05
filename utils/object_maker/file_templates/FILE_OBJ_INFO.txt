@@ -1,6 +1,6 @@
 /*
  * Generated on: __DATETIME__
- * Created by: SinaiR&D
+ * Created by: Sinai RnD
  */
 
 #ifndef WPP_<<IF_DEF_DIRECTIVE>>_INFO_H
@@ -29,13 +29,11 @@ inline const ObjectInfo __UPNAME___OBJ_INFO = {
 	IS_MANDATORY::__MANDATORY__,
 	/* Object supported operations */
 	/* --------------- Info block 0 start --------------- */
-	InstOp(	InstOp::CREATE |
-			InstOp::DELETE),
-	ResOp(	ResOp::READ|
-			ResOp::WRITE|
-			ResOp::DISCOVER|
-			ResOp::EXECUTE|
-			ResOp::DELETE),
+	ItemOp(__INST_OP__
+		   ItemOp::READ|
+		   ItemOp::WRITE|
+		   ItemOp::DISCOVER|
+		   ItemOp::EXECUTE),
 	/* --------------- Info block 0 end --------------- */
 };
 

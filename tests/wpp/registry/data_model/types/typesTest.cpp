@@ -1,5 +1,5 @@
 #include "catch_amalgamated.hpp"
-#include "types.h"
+#include "WppTypes.h"
 
 using namespace wpp;
 

@@ -1,9 +1,8 @@
 #ifndef WPP_OBJ_SUBJECT_H_
 #define WPP_OBJ_SUBJECT_H_
 
-#include "InstOp.h"
+#include "ItemOp.h"
 #include "ObjOpObserver.h"
-#include "ObjActObserver.h"
 
 namespace wpp {
 
@@ -20,14 +19,6 @@ class Object;
  * @note The ObjSubject class requires the presence of ObjOpObserver and ObjActObserver classes for observer functionality.
  */
 class ObjSubject {
-public:
-    /**
-     * @brief The Action enum represents the possible actions that can be performed on an object.
-     */
-    enum Action : uint8_t {
-        RESTORE, /**< Restore action for object. */
-    };
-
 public:
     /**
      * @brief Subscribes an observer to receive notifications about object operations.
@@ -48,26 +39,6 @@ public:
     void opUnsubscribe(ObjOpObserver *observer) {
         _opObservers.erase(std::find(_opObservers.begin(), _opObservers.end(), observer));
     }
-
-    /**
-     * @brief Subscribes an observer to receive notifications about required restore actions for objects.
-     * 
-     * @param observer A pointer to the ObjActObserver object to be subscribed.
-     */
-    void actSubscribe(ObjActObserver *observer) {
-        if (!observer) return;
-        if (std::find(_actObservers.begin(), _actObservers.end(), observer) == _actObservers.end()) 
-            _actObservers.push_back(observer);
-    }
-
-    /**
-     * @brief Unsubscribes an observer from receiving notifications about required restore actions for objects.
-     * 
-     * @param observer A pointer to the ObjActObserver object to be unsubscribed.
-     */
-    void actUnsubscribe(ObjActObserver *observer) {
-        _actObservers.erase(std::find(_actObservers.begin(), _actObservers.end(), observer));
-    }
     
 protected:
     /**
@@ -79,35 +50,18 @@ protected:
      * @param instanceId The ID of the object instance.
      * @param type The type of operation (CREATE or DELETE).
      */
-    void operationNotify(Object &obj, ID_T instanceId, InstOp::TYPE type) {
+    void operationNotify(Object &obj, ID_T instanceId, ItemOp::TYPE type) {
         for(ObjOpObserver* observer : _opObservers) {
-            if (type == InstOp::CREATE) {
+            if (type == ItemOp::CREATE) {
                 observer->instanceCreated(obj, instanceId);
-            } else if (type == InstOp::DELETE) {
+            } else if (type == ItemOp::DELETE) {
                 observer->instanceDeleting(obj, instanceId);
-            }
-        }
-    }
-
-    /**
-     * @brief Requests observers to perform an action on an object.
-     * 
-     * This function is called to request the subscribed observers to perform a specific action on the object.
-     * 
-     * @param obj The Object instance that the action is requested for.
-     * @param action The action to be performed on the object.
-     */
-    void observerDoAction(Object &obj, Action action) {
-        for(ObjActObserver* observer : _actObservers) {
-            if (action == Action::RESTORE) {
-                observer->objectRestore(obj);
             }
         }
     }
 
 private:
     std::vector<ObjOpObserver *> _opObservers;
-    std::vector<ObjActObserver *> _actObservers;
 };
 
 }

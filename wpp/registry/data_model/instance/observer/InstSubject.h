@@ -1,11 +1,8 @@
 #ifndef WPP_INST_SUBJECT_H_
 #define WPP_INST_SUBJECT_H_
 
-#include "ResOp.h"
+#include "ItemOp.h"
 #include "InstOpObserver.h"
-#ifdef LWM2M_RAW_BLOCK1_REQUESTS
-#include "InstBlockOpObserver.h"
-#endif
 #include "InstEventObserver.h"
 
 namespace wpp {
@@ -17,7 +14,6 @@ class Instance;
  * 
  * This class provides functionality for subscribing and unsubscribing observers to receive notifications about operations, block operations, and custom events.
  * The observers will be notified when there are write, delete, replace, and execute operations on instance resources initiated by the server.
- * Additionally, if the LWM2M_RAW_BLOCK1_REQUESTS macro is defined, the observers will also be notified about block write and block execute operations.
  * Custom instance events can also be subscribed to and unsubscribed from.
  * 
  * The InstSubject class is designed to be inherited by other classes that need to provide observer functionality for instance resources.
@@ -45,30 +41,6 @@ public:
     void opUnsubscribe(InstOpObserver *observer) {
         _opObservers.erase(std::find(_opObservers.begin(), _opObservers.end(), observer));
     }
-
-    #ifdef LWM2M_RAW_BLOCK1_REQUESTS
-    /**
-     * @brief Subscribes an observer to receive notifications about block operations on instance resources.
-     * 
-     * The observer will be notified when there are block write and block execute operations on instance resources initiated by the server.
-     * 
-     * @param observer A pointer to the observer object.
-     */
-    void blockOpSubscribe(InstBlockOpObserver *observer) {
-        if (!observer) return;
-        if (std::find(_blockOpObservers.begin(), _blockOpObservers.end(), observer) == _blockOpObservers.end()) 
-            _blockOpObservers.push_back(observer);
-    }
-
-    /**
-     * @brief Unsubscribes an observer from receiving notifications about block operations on instance resources.
-     * 
-     * @param observer A pointer to the observer object.
-     */
-    void blockOpUnsubscribe(InstBlockOpObserver *observer) {
-        _blockOpObservers.erase(std::find(_blockOpObservers.begin(), _blockOpObservers.end(), observer));
-    }
-    #endif
 
     /**
      * @brief Subscribes an observer to receive notifications about custom instance events.
@@ -103,55 +75,19 @@ protected:
      * @param resId The resource link of the instance resource.
      * @param type The type of operation.
      */
-    void operationNotify(Instance &inst, const ResLink &resId, ResOp::TYPE type) {
+    void operationNotify(Instance &inst, const ResLink &resLink, ItemOp::TYPE type) {
         for(InstOpObserver *observer : _opObservers) {
             switch (type) {
-            case ResOp::READ: 
-                observer->resourceRead(inst, resId);
+            case ItemOp::WRITE:
+                observer->resourceWrite(inst, resLink);
                 break;
-            case ResOp::WRITE_UPD:
-            case ResOp::WRITE_REPLACE_RES:
-                observer->resourceWrite(inst, resId);
-                break;
-            case ResOp::WRITE_REPLACE_INST:
-                observer->resourcesReplaced(inst);
-                break;
-            case ResOp::EXECUTE:
-                 observer->resourceExecute(inst, resId);
+            case ItemOp::EXECUTE:
+                 observer->resourceExecute(inst, resLink);
                 break;
             default: break;
             }
         }
     }
-
-    #ifdef LWM2M_RAW_BLOCK1_REQUESTS
-    /**
-     * @brief Notifies the observers about a block operation on an instance resource.
-     * 
-     * This function is called internally to notify the subscribed observers about a block operation on an instance resource.
-     * The type of block operation (block write, block execute) is specified by the 'type' parameter.
-     * 
-     * @param inst The instance object on which the block operation is performed.
-     * @param resId The resource link of the instance resource.
-     * @param type The type of block operation.
-     * @param buff The opaque buffer containing the block data.
-     * @param blockNum The block number.
-     * @param isLastBlock Indicates whether this is the last block of the operation.
-     */
-    void blockOperationNotify(Instance &inst, const ResLink &resId, ResOp::TYPE type, const OPAQUE_T &buff, size_t blockNum, bool isLastBlock) {
-        for(InstBlockOpObserver *observer : _blockOpObservers) {
-            switch (type) {
-            case ResOp::BLOCK_WRITE: 
-                observer->resourceBlockWrite(inst, resId, buff, blockNum, isLastBlock);
-                break;
-            case ResOp::BLOCK_EXECUTE:
-                observer->resourceBlockExecute(inst, resId, buff, blockNum, isLastBlock);
-                break;
-            default: break;
-            }
-        }
-    }
-    #endif
 
     /**
      * @brief Notifies the observers about a custom instance event.
@@ -167,9 +103,6 @@ protected:
 
 private:
     std::vector<InstOpObserver*> _opObservers;
-    #ifdef LWM2M_RAW_BLOCK1_REQUESTS
-    std::vector<InstBlockOpObserver*> _blockOpObservers;
-    #endif
     std::vector<InstEventObserver*> _eventObservers;
 };
 

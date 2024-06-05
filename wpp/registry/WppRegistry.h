@@ -9,29 +9,32 @@
 #define WPP_REGISTRY_H_
 
 #include <vector>
-#include "ObjectSpec.h"
+#include "ObjectImpl.h"
 
 /* ---------- Mandatory objects include block begin ---------- */
-#ifdef OBJ_M_3_DEVICE_V12
-#include "m_3_device_v12/Device.h"
+#ifdef OBJ_M_3_DEVICE
+#include "m_3_device/Device.h"
 #endif
-#ifdef OBJ_M_1_LWM2M_SERVER_V11
-#include "m_1_lwm2m_server_v11/Lwm2mServer.h"
+#ifdef OBJ_M_1_LWM2M_SERVER
+#include "m_1_lwm2m_server/Lwm2mServer.h"
 #endif
-#ifdef OBJ_M_0_LWM2M_SECURITY_V11
-#include "m_0_lwm2m_security_v11/Lwm2mSecurity.h"
+#ifdef OBJ_M_0_LWM2M_SECURITY
+#include "m_0_lwm2m_security/Lwm2mSecurity.h"
 #endif
 /* ---------- Mandatory objects include block end ---------- */
 
 /* ---------- Optional objects include block begin ---------- */
-#ifdef OBJ_O_4_CONNECTIVITY_MONITORING_V13
-#include "o_4_connectivity_monitoring_v13/ConnectivityMonitoring.h"
+#ifdef OBJ_O_4_CONNECTIVITY_MONITORING
+#include "o_4_connectivity_monitoring/ConnectivityMonitoring.h"
 #endif
-#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
-#include "o_2_lwm2m_access_control_v11/Lwm2mAccessControl.h"
+#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL
+#include "o_2_lwm2m_access_control/Lwm2mAccessControl.h"
 #endif
-#ifdef OBJ_O_5_FIRMWARE_UPDATE_V11
-#include "o_5_firmware_update_v11/FirmwareUpdate.h"
+#ifdef OBJ_O_3339_AUDIO_CLIP
+#include "o_3339_audio_clip/AudioClip.h"
+#endif
+#ifdef OBJ_O_5_FIRMWARE_UPDATE
+#include "o_5_firmware_update/FirmwareUpdate.h"
 #endif
 /* ---------- Optional objects include block end ---------- */
 
@@ -87,7 +90,7 @@ public:
 	 * @param objId The ID of the Object to check.
 	 * @return True if the Object exists, false otherwise.
 	 */
-	bool isObjExist(OBJ_ID objId);
+	bool isExist(OBJ_ID objId);
 
 	/**
 	 * @brief Retrieves a pointer to the Object with the given objId.
@@ -95,29 +98,39 @@ public:
 	 * @param objId The ID of the Object to retrieve.
 	 * @return A pointer to the Object if found, nullptr otherwise.
 	 */
-	Object *object(OBJ_ID objId);
+	Object * object(OBJ_ID objId);
+
+	/**
+	 * @brief Gets all registered objects.
+	 *
+	 * @return A vector of pointers to the registered objects.
+	 */
+	std::vector<Object *> & objects();
 
 	/* ---------- Mandatory objects prototype block begin ---------- */
-	#ifdef OBJ_M_3_DEVICE_V12
-	ObjectSpec<Device> & device();
+	#ifdef OBJ_M_3_DEVICE
+	Object & device();
 	#endif
-	#ifdef OBJ_M_1_LWM2M_SERVER_V11
-	ObjectSpec<Lwm2mServer> & lwm2mServer();
+	#ifdef OBJ_M_1_LWM2M_SERVER
+	Object & lwm2mServer();
 	#endif
-	#ifdef OBJ_M_0_LWM2M_SECURITY_V11
-	ObjectSpec<Lwm2mSecurity> & lwm2mSecurity();
+	#ifdef OBJ_M_0_LWM2M_SECURITY
+	Object & lwm2mSecurity();
 	#endif
 	/* ---------- Mandatory objects prototype block end ---------- */
 
 	/* ---------- Optional objects prototype block begin ---------- */
-	#ifdef OBJ_O_4_CONNECTIVITY_MONITORING_V13
-	ObjectSpec<ConnectivityMonitoring> & connectivityMonitoring();
+	#ifdef OBJ_O_4_CONNECTIVITY_MONITORING
+	Object & connectivityMonitoring();
 	#endif
-	#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
-	ObjectSpec<Lwm2mAccessControl> & lwm2mAccessControl();
+	#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL
+	Object & lwm2mAccessControl();
 	#endif
-	#ifdef OBJ_O_5_FIRMWARE_UPDATE_V11
-	ObjectSpec<FirmwareUpdate> & firmwareUpdate();
+	#ifdef OBJ_O_3339_AUDIO_CLIP
+	Object & audioClip();
+	#endif
+	#ifdef OBJ_O_5_FIRMWARE_UPDATE
+	Object & firmwareUpdate();
 	#endif
 	/* ---------- Optional objects prototype block end ---------- */
 

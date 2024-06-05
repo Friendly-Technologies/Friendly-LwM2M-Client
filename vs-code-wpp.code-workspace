@@ -1,0 +1,56 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "2305-Wakaama"
+		}
+	],
+	"settings": {
+		"C_Cpp.autoAddFileAssociations": false,
+		"cmake.generator": "Unix Makefiles",
+		"cmake.defaultVariants": {
+
+			"buildType": {
+				"default": "debug",
+				"description": "The build type.",
+				"choices": {
+					"debug": {
+						"short": "Debug",
+						"long": "Disable optimizations - include debug information.",
+						"buildType": "Debug"
+					},
+					"release": {
+						"short": "Release",
+						"long": "Optimize for speed - exclude debug information.",
+						"buildType": "Release"
+					},
+					"minsize": {
+						"short": "MinSizeRel",
+						"long": "Optimize for smallest binary size - exclude debug information.",
+						"buildType": "MinSizeRel"
+					},
+					"reldeb": {
+						"short": "RelWithDebInfo",
+						"long": "Optimize for speed - include debug information.",
+						"buildType": "RelWithDebInfo"
+					}
+				}
+			}
+		},
+		"cmake.showSystemKits": true,
+		"cmake.additionalKits": [
+			"${workspaceFolder}/.vscode/cmake-kits.json"
+		],
+		"cmake.buildDirectory": "${workspaceFolder}/_build",
+		"cmake.touchbar.advanced": {},
+		"cmake.configureOnOpen": true,
+		"cmake.useProjectStatusView": true,
+		"cmake.cmakeCommunicationMode": "automatic",
+		"cmake.cmakePath": "cmake"
+	},
+	"extensions": {
+		"recommendations": ["ms-vscode.cpptools-extension-pack", "vadimcn.vscode-lldb"]
+	}
+}

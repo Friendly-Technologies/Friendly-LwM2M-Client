@@ -18,6 +18,8 @@ CLANGPP_KIT_PATH="/usr/bin/clang++"
 
 tools="\
 autoconf \
+automake \
+libtool \
 pkg-config \
 default-jre \
 libcunit1 \
@@ -36,7 +38,8 @@ $CLANG \
 cppcheck \
 llvm \
 libcurl4-openssl-dev \
-cmake"
+cmake
+g++-12"
 
 ptools="\
 cmake-format \
@@ -125,9 +128,9 @@ echo -e "\nSetup environment DONE"
 # sudo rm -r cmake-3.26.4.tar.gz
 
 #
-# Repo for Wakaama++
+# Repo for Wpp
 # cd ${HOME}/Desktop
-# git clone --recurse-submodules git@github.com:sinai-io/2305-WakaamaPlus.git
+# git clone --recurse-submodules git@github.com:<repo>
 #
 # Install Eclipse IDE:
 # https://www.eclipse.org/downloads/packages/installer

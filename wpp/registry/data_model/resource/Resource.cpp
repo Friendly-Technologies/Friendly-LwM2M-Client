@@ -7,20 +7,6 @@
 
 #include "Resource.h"
 
-#define RES_METHODS_IMPL_SET_FOR(_TYPE_)									\
-bool Resource::set(const _TYPE_ &value, ID_T resInstId) {					\
-	return _set(value, resInstId);											\
-}																			\
-bool Resource::setMove(_TYPE_ &value, ID_T resInstId) {				\
-	return _setMove(value, resInstId);										\
-}																			\
-bool Resource::get(_TYPE_ &value, ID_T resInstId) const {					\
-	return _get(value, resInstId);											\
-}																			\
-bool Resource::ptr(_TYPE_ **value, ID_T resInstId) {						\
-	return _ptr(value, resInstId);											\
-}																			\
-
 namespace wpp {
 
 /* ---------- Public methods for common usage ----------*/
@@ -29,7 +15,7 @@ Resource::Resource():
 	_id(ID_T_MAX_VAL), _operation(), _isSingle(IS_SINGLE::MULTIPLE), _isMandatory(IS_MANDATORY::OPTIONAL), _typeID(TYPE_ID::UNDEFINED) {
 }
 
-Resource::Resource(ID_T id, const ResOp &operation, IS_SINGLE isSingle, IS_MANDATORY isMandatory, TYPE_ID dataType):
+Resource::Resource(ID_T id, const ItemOp &operation, IS_SINGLE isSingle, IS_MANDATORY isMandatory, TYPE_ID dataType):
 	_id(id), _operation(operation), _isSingle(isSingle), _isMandatory(isMandatory), _typeID(dataType) {
 }
 
@@ -50,6 +36,7 @@ Resource::Resource(Resource&& resource) {
 	_isMandatory = resource._isMandatory;
 	_typeID = resource._typeID;
 	_instances = std::move(resource._instances);
+	resource._instances.clear();
 	_dataVerifier = resource._dataVerifier;
 }
 
@@ -75,10 +62,9 @@ Resource& Resource::operator=(Resource&& resource) {
     _isSingle = resource._isSingle;
     _isMandatory = resource._isMandatory;
     _typeID = resource._typeID;
-    _instances.clear();
 	_instances = std::move(resource._instances);
+	resource._instances.clear();
     _dataVerifier = resource._dataVerifier;
-	resource.clear();
 
     return *this;
 }
@@ -91,7 +77,7 @@ TYPE_ID Resource::getTypeId() const {
 	return _typeID;
 }
 
-const ResOp& Resource::getOperation() const {
+const ItemOp& Resource::getOperation() const {
 	return _operation;
 }
 
@@ -111,16 +97,12 @@ bool Resource::isMultiple() const {
 	return _isSingle == IS_SINGLE::MULTIPLE;
 }
 
-bool Resource::isOperationValid(ResOp::TYPE type) const {
-	return _operation.isSupported(type);
-}
-
 bool Resource::isInstanceIdPossible(ID_T resInstId) const {
 	return isMultiple() || resInstId == SINGLE_INSTANCE_ID;
 }
 
-bool Resource::isInstanceExist(ID_T resInstId) const {
-	return getResInstIter(resInstId) != _instances.end();
+bool Resource::isExist(ID_T resInstId) const {
+	return getInstIter(resInstId) != _instances.end();
 }
 
 bool Resource::isTypeIdCompatible(TYPE_ID type) const {
@@ -138,46 +120,52 @@ bool Resource::isTypeIdCompatible(TYPE_ID type) const {
 	return _typeID == type;
 }
 
-bool Resource::isEmpty() const {
-	return _instances.size() == 0;
-}
-
-size_t Resource::instanceCnt() const {
+size_t Resource::instCount() const {
 	return _instances.size();
 }
 
-const std::vector<ID_T> Resource::getInstIds() const {
+std::vector<ID_T> Resource::instIds() const {
 	std::vector<ID_T> ids;
 	ids.reserve(_instances.size());
 	std::transform(_instances.begin(), _instances.end(), std::back_inserter(ids), [](const auto& inst) { return inst.id; });
 	return ids;
 }
 
-/* ---------- Methods for get and set resource value ----------*/
-RES_METHODS_IMPL_SET_FOR(BOOL_T);
-RES_METHODS_IMPL_SET_FOR(INT_T);
-RES_METHODS_IMPL_SET_FOR(UINT_T);
-RES_METHODS_IMPL_SET_FOR(FLOAT_T);
-RES_METHODS_IMPL_SET_FOR(OPAQUE_T);
-RES_METHODS_IMPL_SET_FOR(OBJ_LINK_T);
-RES_METHODS_IMPL_SET_FOR(STRING_T);
-RES_METHODS_IMPL_SET_FOR(EXECUTE_T);
+ID_T Resource::newInstId() const {
+	// Usually, each subsequent free index will be equal to the number of created instances
+	if (!isExist(_instances.size())) return _instances.size();
+	// If there are no free indexes, we will search for the first free index
+	ID_T id = 0;
+	while (isExist(id) && id != ID_T_MAX_VAL) id++;
+	return id;
+}
 
+/* ---------- Methods for get and set resource value ----------*/
 bool Resource::remove(ID_T resInstId) {
-	if (!isInstanceExist(resInstId) || isSingle() || instanceCnt() == 1) return false;
-	auto instForRemove = getResInstIter(resInstId);
+	if (isSingle() || !isExist(resInstId)) {
+		WPP_LOGW(TAG_WPP_RES, "Resource[%d], instance with ID %d not found or resource is SINGLE", _id, resInstId);
+		return false;
+	}
+	auto instForRemove = getInstIter(resInstId);
 	_instances.erase(instForRemove);
 
 	return true;
 }
 
 bool Resource::clear() {
+	if (isSingle()) {
+		WPP_LOGW(TAG_WPP_RES, "Resource[%d] is SINGLE", _id);
+		return false;
+	}
 	_instances.clear();
 	return true;
 }
 
 bool Resource::setDataVerifier(const DATA_VERIFIER_T &verifier) {
-	if (!isDataVerifierValid(verifier)) return false;
+	if (!isDataVerifierValid(verifier)) {
+		WPP_LOGW(TAG_WPP_RES, "Resource[%d] verifier is not valid", _id);
+		return false;
+	}
 	_dataVerifier = verifier;
 	return true;
 }
@@ -195,7 +183,7 @@ bool Resource::isDataVerifierValid(const DATA_VERIFIER_T &verifier) const {
 	else return false;
 }
 
-std::vector<Resource::ResInst>::iterator Resource::getResInstIter(ID_T resInstId) const {
+std::vector<Resource::ResInst>::iterator Resource::getInstIter(ID_T resInstId) const {
 	auto finder = [&resInstId](const ResInst &inst) -> bool { return inst.id == resInstId; };
 	return std::find_if(_instances.begin(), _instances.end(), finder);
 }

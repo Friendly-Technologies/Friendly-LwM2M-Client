@@ -8,26 +8,29 @@ WppRegistry::WppRegistry(lwm2m_context_t &context): _context(context) {
     WPP_LOGD(TAG_WPP_REG, "Creating registry instance");
 	
 	/* ---------- Mandatory objects init block begin ---------- */
-	#ifdef OBJ_M_3_DEVICE_V12
-	_objects.push_back(new ObjectSpec<Device>(_context, DEVICE_OBJ_INFO));
+	#ifdef OBJ_M_3_DEVICE
+	_objects.push_back(new ObjectImpl<Device>(_context, DEVICE_OBJ_INFO));
 	#endif
-	#ifdef OBJ_M_1_LWM2M_SERVER_V11
-	_objects.push_back(new ObjectSpec<Lwm2mServer>(_context, LWM2M_SERVER_OBJ_INFO));
+	#ifdef OBJ_M_1_LWM2M_SERVER
+	_objects.push_back(new ObjectImpl<Lwm2mServer>(_context, LWM2M_SERVER_OBJ_INFO));
 	#endif
-	#ifdef OBJ_M_0_LWM2M_SECURITY_V11
-	_objects.push_back(new ObjectSpec<Lwm2mSecurity>(_context, LWM2M_SECURITY_OBJ_INFO));
+	#ifdef OBJ_M_0_LWM2M_SECURITY
+	_objects.push_back(new ObjectImpl<Lwm2mSecurity>(_context, LWM2M_SECURITY_OBJ_INFO));
 	#endif
 	/* ---------- Mandatory objects init block end ---------- */
 
 	/* ---------- Optional objects init block begin ---------- */
-	#ifdef OBJ_O_4_CONNECTIVITY_MONITORING_V13
-	_objects.push_back(new ObjectSpec<ConnectivityMonitoring>(_context, CONNECTIVITY_MONITORING_OBJ_INFO));
+	#ifdef OBJ_O_4_CONNECTIVITY_MONITORING
+	_objects.push_back(new ObjectImpl<ConnectivityMonitoring>(_context, CONNECTIVITY_MONITORING_OBJ_INFO));
 	#endif
-	#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
-	_objects.push_back(new ObjectSpec<Lwm2mAccessControl>(_context, LWM2M_ACCESS_CONTROL_OBJ_INFO));
+	#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL
+	_objects.push_back(new ObjectImpl<Lwm2mAccessControl>(_context, LWM2M_ACCESS_CONTROL_OBJ_INFO));
 	#endif
-	#ifdef OBJ_O_5_FIRMWARE_UPDATE_V11
-	_objects.push_back(new ObjectSpec<FirmwareUpdate>(_context, FIRMWARE_UPDATE_OBJ_INFO));
+	#if OBJ_O_3339_AUDIO_CLIP
+	_objects.push_back(new ObjectImpl<AudioClip>(_context, AUDIO_CLIP_OBJ_INFO));
+	#endif
+	#if OBJ_O_5_FIRMWARE_UPDATE
+	_objects.push_back(new ObjectImpl<FirmwareUpdate>(_context, FIRMWARE_UPDATE_OBJ_INFO));
 	#endif
 	/* ---------- Optional objects init block end ---------- */
 }
@@ -54,7 +57,7 @@ bool WppRegistry::isObjRegistered(Object &object) {
 	return lwm2m_object != NULL;
 }
 
-bool WppRegistry::isObjExist(OBJ_ID objId) {
+bool WppRegistry::isExist(OBJ_ID objId) {
 	return object(objId) != NULL;
 }
 
@@ -64,41 +67,49 @@ Object * WppRegistry::object(OBJ_ID objId) {
 	return objIter != _objects.end()? *objIter : NULL;
 }
 
+std::vector<Object *> & WppRegistry::objects() {
+	return _objects;
+}
+
 /* ---------- Mandatory objects method block begin ---------- */
-#ifdef OBJ_M_3_DEVICE_V12
-ObjectSpec<Device> & WppRegistry::device() {
-	return *static_cast<ObjectSpec<Device>*>(object(OBJ_ID::DEVICE));
+#ifdef OBJ_M_3_DEVICE
+Object & WppRegistry::device() {
+	return *object(OBJ_ID::DEVICE);
 }
 #endif
-#ifdef OBJ_M_1_LWM2M_SERVER_V11
-ObjectSpec<Lwm2mServer> & WppRegistry::lwm2mServer() {
-	return *static_cast<ObjectSpec<Lwm2mServer>*>(object(OBJ_ID::LWM2M_SERVER));
+#ifdef OBJ_M_1_LWM2M_SERVER
+Object & WppRegistry::lwm2mServer() {
+	return *object(OBJ_ID::LWM2M_SERVER);
 }
 #endif
-#ifdef OBJ_M_0_LWM2M_SECURITY_V11
-ObjectSpec<Lwm2mSecurity> & WppRegistry::lwm2mSecurity() {
-	return *static_cast<ObjectSpec<Lwm2mSecurity>*>(object(OBJ_ID::LWM2M_SECURITY));
+#ifdef OBJ_M_0_LWM2M_SECURITY
+Object & WppRegistry::lwm2mSecurity() {
+	return *object(OBJ_ID::LWM2M_SECURITY);
 }
 #endif
 /* ---------- Mandatory objects method block end ---------- */
 
 /* ---------- Optional objects method block begin ---------- */
-#ifdef OBJ_O_4_CONNECTIVITY_MONITORING_V13
-ObjectSpec<ConnectivityMonitoring> & WppRegistry::connectivityMonitoring() {
-	return *static_cast<ObjectSpec<ConnectivityMonitoring>*>(object(OBJ_ID::CONNECTIVITY_MONITORING));
+#ifdef OBJ_O_4_CONNECTIVITY_MONITORING
+Object & WppRegistry::connectivityMonitoring() {
+	return *object(OBJ_ID::CONNECTIVITY_MONITORING);
 }
 #endif
-#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL_V11
-ObjectSpec<Lwm2mAccessControl> & WppRegistry::lwm2mAccessControl() {
-	return *static_cast<ObjectSpec<Lwm2mAccessControl>*>(object(OBJ_ID::LWM2M_ACCESS_CONTROL));
+#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL
+Object & WppRegistry::lwm2mAccessControl() {
+	return *object(OBJ_ID::LWM2M_ACCESS_CONTROL);
 }
 #endif
-#ifdef OBJ_O_5_FIRMWARE_UPDATE_V11
-ObjectSpec<FirmwareUpdate> & WppRegistry::firmwareUpdate() {
-	return *static_cast<ObjectSpec<FirmwareUpdate>*>(object(OBJ_ID::FIRMWARE_UPDATE));
+#if OBJ_O_3339_AUDIO_CLIP
+Object & WppRegistry::audioClip() {
+	return *object(OBJ_ID::AUDIO_CLIP);
+}
+#endif
+#if OBJ_O_5_FIRMWARE_UPDATE
+Object & WppRegistry::firmwareUpdate() {
+	return *object(OBJ_ID::FIRMWARE_UPDATE);
 }
 #endif
 /* ---------- Optional objects method block end ---------- */
-
 
 } //wpp

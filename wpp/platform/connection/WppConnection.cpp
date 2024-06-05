@@ -24,7 +24,7 @@ WppConnection::~WppConnection() {
 bool WppConnection::addPacketToQueue(const Packet &packet) {
 	Packet tmpPkt = packet;
 
-	WPP_LOGD(TAG_WPP_CONN, "Retrieved new packet from server: session->0x%x, length->%d", packet.session, packet.length);
+	WPP_LOGD(TAG_WPP_CONN, "Retrieved new packet from server: session-> %p, length->%d", packet.session, packet.length);
 	tmpPkt.buffer = new uint8_t[packet.length];
 	memcpy(tmpPkt.buffer, packet.buffer, packet.length);
 
@@ -84,7 +84,7 @@ extern "C" {
 
 		wpp::WppClient *client = (wpp::WppClient *)userData;
 		WPP_LOGD(TAG_WPP_CONN, "Connecting to server: security obj ID -> %d", secObjInstID);
-		wpp::Lwm2mSecurity *security = client->registry().lwm2mSecurity().instanceSpec(secObjInstID);
+		wpp::Lwm2mSecurity *security = Lwm2mSecurity::instance(*client, secObjInstID);
 		if (!security) {
 			WPP_LOGE(TAG_WPP_CONN, "Lwm2mSecurity obj with ID -> %d not found", secObjInstID);
 			return NULL;
@@ -92,9 +92,9 @@ extern "C" {
 
 		wpp::WppConnection::SESSION_T session = client->connection().connect(*security);
 		if (!session) {
-			WPP_LOGE(TAG_WPP_CONN, "Not posible connect to server: security obj ID-> %d, session -> 0x%x", secObjInstID, session);
+			WPP_LOGE(TAG_WPP_CONN, "Not posible connect to server: security obj ID-> %d, session -> %p", secObjInstID, session);
 		} else {
-			WPP_LOGI(TAG_WPP_CONN, "Connected to server: security obj ID-> %d, session -> 0x%x", secObjInstID, session);
+			WPP_LOGI(TAG_WPP_CONN, "Connected to server: security obj ID-> %d, session -> %p", secObjInstID, session);
 		}
 
 		return session;
@@ -107,7 +107,7 @@ extern "C" {
 		}
 
 		wpp::WppClient *client = (wpp::WppClient *)userData;
-		WPP_LOGI(TAG_WPP_CONN, "Close connection: session ID -> 0x%x", sessionH);
+		WPP_LOGI(TAG_WPP_CONN, "Close connection: session -> %p", sessionH);
 		client->connection().disconnect(sessionH);
 	}
 
@@ -118,9 +118,9 @@ extern "C" {
 		}
 
 		wpp::WppClient *client = (wpp::WppClient *)userData;
-		WPP_LOGD(TAG_WPP_CONN, "Sending buffer to server: session -> 0x%x, size -> %d", sessionH, length);
+		WPP_LOGD(TAG_WPP_CONN, "Sending buffer to server: session -> %p, size -> %d", sessionH, length);
 		bool result = client->connection().sendPacket({sessionH, length, buffer});
-		WPP_LOGD(TAG_WPP_CONN, "Sending buffer to server: session -> 0x%x, result -> %d", sessionH, result);
+		WPP_LOGD(TAG_WPP_CONN, "Sending buffer to server: session -> %p, result -> %d", sessionH, result);
 		return result? COAP_NO_ERROR : COAP_500_INTERNAL_SERVER_ERROR;
 	}
 

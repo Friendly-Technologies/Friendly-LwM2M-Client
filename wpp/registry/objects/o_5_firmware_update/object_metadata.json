@@ -1,0 +1,23 @@
+{
+    "object_data": {
+        "name": "Firmware Update",
+        "id": "5",
+        "version": "1.1",
+        "lwm2m_version": "1.1",
+        "is_mandatory": false,
+        "is_multiple": false
+    },
+    "object_names": {
+        "class": "FirmwareUpdate",
+        "camelcase": "firmwareUpdate",
+        "define": "OBJ_O_5_FIRMWARE_UPDATE",
+        "up_underline": "FIRMWARE_UPDATE"
+    },
+    "object_files": {
+        "impl_h": "FirmwareUpdate.h",
+        "impl_cpp": "FirmwareUpdate.cpp",
+        "config": "FirmwareUpdateConfig.h",
+        "info": "FirmwareUpdateInfo.h",
+        "cmake": "CMakeLists.txt"
+    }
+}

@@ -6,13 +6,9 @@
 #include <variant>
 
 #include "ObjectInfo.h"
-#include "ResOp.h"
-#include "types.h"
-
-#define RES_METHODS_PROT_SET_FOR(_TYPE_) bool set(const _TYPE_ &value, ID_T resInstId = SINGLE_INSTANCE_ID); \
-										 bool setMove(_TYPE_ &value, ID_T resInstId = SINGLE_INSTANCE_ID); \
-								   		 bool get(_TYPE_ &value, ID_T resInstId = SINGLE_INSTANCE_ID) const; \
-								   		 bool ptr(_TYPE_ **value, ID_T resInstId = SINGLE_INSTANCE_ID)
+#include "ItemOp.h"
+#include "WppTypes.h"
+#include "WppLogs.h"
 
 namespace wpp {
 
@@ -73,7 +69,7 @@ public: /* ---------- Public subtypes ----------*/
 
 public: /* ---------- Public methods for common usage ----------*/
     Resource();
-    Resource(ID_T id, const ResOp &operation, IS_SINGLE isSingle, IS_MANDATORY isMandatory, TYPE_ID dataType);
+    Resource(ID_T id, const ItemOp &operation, IS_SINGLE isSingle, IS_MANDATORY isMandatory, TYPE_ID dataType);
     Resource(const Resource& resource);
     Resource(Resource&& resource);
 	Resource& operator=(const Resource& other);
@@ -82,89 +78,162 @@ public: /* ---------- Public methods for common usage ----------*/
 	/* ---------- Methods for get resource metadata ----------*/
     ID_T getId() const;
     TYPE_ID getTypeId() const;
-    const ResOp& getOperation() const;
+    const ItemOp& getOperation() const;
     bool isMandatory() const;
     bool isOptional() const;
     bool isSingle() const;
     bool isMultiple() const;
 
     /* ---------- Helpful methods for check resource parameters ----------*/
-	template<typename T>
-	bool isDataTypeValid() const;
+	/**
+	 * @brief Check if the data type and value are valid
+	 * @param data The data value to check
+	 * @note Type of data verifies according to the type of the resource,
+	 * 		 value verifies according to the verifier of the resource that
+	 *  	 can be set through the setDataVerifier method
+	 * @return True if the data type and value are valid, false otherwise
+	 */
 	template<typename T>
 	bool isDataValueValid(const T &data) const;
-	bool isDataVerifierValid(const DATA_VERIFIER_T &verifier) const;
-	bool isOperationValid(ResOp::TYPE type) const;
-	bool isInstanceIdPossible(ID_T resInstId) const;
-	bool isInstanceExist(ID_T resInstId) const;
-	bool isTypeIdCompatible(TYPE_ID type) const;
-	bool isEmpty() const;
-	size_t instanceCnt() const;
+
 	/**
- 	 * @brief Returns vector with available ids of resource instances 
+	 * @brief Check if the instance ID is exist
+	 * @param resInstId The instance ID to check
+	 * @note If the resource is SINGLE, the instance ID always SINGLE_INSTANCE_ID
+	 * @return True if the instance ID is exist, false otherwise
 	 */
-	const std::vector<ID_T> getInstIds() const;
+	bool isExist(ID_T resInstId) const;
+
+	/**
+	 * @brief Get the number of resource instances
+	 * @note If the resource is SINGLE, the number of instances is always 1
+	 * @return The number of resource instances
+	 */
+	size_t instCount() const;
+
+	/**
+ 	 * @brief Returns vector with available ids of resource instances
+	 * @note If the resource is SINGLE, the vector will be contain only one
+	 * 		 element with value SINGLE_INSTANCE_ID
+	 */
+	std::vector<ID_T> instIds() const;
+
+	/**
+	 * @brief Find first available instance ID that is not used
+	 * @note If the resource is SINGLE, the method will return ID_T_MAX_VAL
+	 * @return The first available instance ID else ID_T_MAX_VAL
+	 */
+	ID_T newInstId() const;
+
+	/* ---------- Methods for manage verifier ----------*/
+	/**
+	 * @brief Set data verifier for the resource
+	 * @param verifier Function that verifies the data value it will be
+	 * 				   called each time when the method set is called
+	 * @return True if the verifier is valid and set, false otherwise
+	 */
+	bool setDataVerifier(const DATA_VERIFIER_T &verifier);
 
 	/* ---------- Methods for manage resource data ----------*/
 	/**
- 	 * @brief Generating prototypes of get/set/ptr for each supported type
-	 * The data that will be set through returned ptr() must be manualy
-	 * validated with using isDataValueValid()
+	 * @brief Set data value by copy for the resource (instance)
+	 * @param value The data value to set 
+	 * @param resInstId The instance ID to set the value, used only for multiple resources
+	 * @note If set the verifier then the value will be checked, also before set new value 
+	 * 		 its type will be checked. If resource is SINGLE then resInstId should be set
+	 * 		 to SINGLE_INSTANCE_ID.
+	 * @return True if the value is set, false otherwise
 	 */
-	RES_METHODS_PROT_SET_FOR(BOOL_T);
-	RES_METHODS_PROT_SET_FOR(INT_T);
-	RES_METHODS_PROT_SET_FOR(UINT_T);
-	RES_METHODS_PROT_SET_FOR(FLOAT_T);
-	RES_METHODS_PROT_SET_FOR(OPAQUE_T);
-	RES_METHODS_PROT_SET_FOR(OBJ_LINK_T);
-	RES_METHODS_PROT_SET_FOR(STRING_T);
-	RES_METHODS_PROT_SET_FOR(EXECUTE_T);
-
-    /**
- 	 * @brief Disabling implicit conversions
-     */
     template<typename T>
-    bool set(const T &value, ID_T resInstId = SINGLE_INSTANCE_ID) = delete;
-	template<typename T>
-	bool setMove(T &value, ID_T resInstId = SINGLE_INSTANCE_ID) = delete;
-	template<typename T>
-	bool get(T &value, ID_T resInstId = SINGLE_INSTANCE_ID) const  = delete;
-	template<typename T>
-	bool ptr(T **value, ID_T resInstId = SINGLE_INSTANCE_ID)  = delete;
+    bool set(const T &value, ID_T resInstId = SINGLE_INSTANCE_ID);
 
 	/**
- 	 * @brief Remove resource instance if resource is multiple and instance exists,
-	 * if the resource is SINGLE or it has the last instance remove is not
-	 * possible. Because instantiated resources must have at least one instance.
+	 * @brief Set data value by move for the resource (instance)
+	 * @param value The data value to set 
+	 * @param resInstId The instance ID to set the value, used only for multiple resources
+	 * @note If set the verifier then the value will be checked, also before set new value 
+	 * 		 its type will be checked. If resource is SINGLE then resInstId should be set
+	 * 		 to SINGLE_INSTANCE_ID.
+	 * @return True if the value is set, false otherwise
+	 */
+	template<typename T>
+	bool set(T &&value, ID_T resInstId = SINGLE_INSTANCE_ID);
+
+	/**
+	 * @brief Get data value by reference for the resource (instance)
+	 * @param resInstId The instance ID to get the value
+	 * @example For example, if the resource is of type INT_T and SINGLE, the value can be retrieved as follows:
+	 * @code INT_T value = resource.get<INT_T>(); @endcode
+	 * @example For example, if the resource is of type STRING_T and MULTIPLE, the value can be retrieved as follows:
+	 * @code STRING_T value = resource.get<STRING_T>(2); @endcode
+	 * @note If resource is SINGLE then resInstId should be set to SINGLE_INSTANCE_ID.
+	 * 		 If the data type is not valid or the instance does not exist,
+	 *  	 the method will return an empty stub value. So before using this
+	 * 		 method, you should check if the data type is valid and the
+	 * 		 instance exists.
+	 * @return The data value
+	 */
+	template<typename T>
+	const T& get(ID_T resInstId = SINGLE_INSTANCE_ID);
+
+	/**
+	 * @brief Add new instance with data value by copy for the MULTIPLE resource
+	 * @param value The data value to add
+	 * @note If the resource is SINGLE, the method will return false.
+	 * 		 If the verifier is set, the value will be checked.
+	 * 		 If the data type is not valid, the method will return false.
+	 * 		 Instance ID will be generated automatically.The ID is determined 
+	 * 		 according to the following algorithm: if the ID is equal to the
+	 * 		 number of free instances, then we return it, otherwise, starting
+	 * 		 with ID 0, we search for the first free index, if no free indexes
+	 * 		 are found, then method returns false.
+	 * @return True if the instance is added, false otherwise
+	 */
+	template<typename T>
+	bool add(const T &value);
+
+	/**
+	 * @brief Add new instance with data value by move for the MULTIPLE resource
+	 * @param value The data value to add
+	 * @note If the resource is SINGLE, the method will return false.
+	 * 		 If the verifier is set, the value will be checked.
+	 * 		 If the data type is not valid, the method will return false.
+	 * 		 Instance ID will be generated automatically.The ID is determined 
+	 * 		 according to the following algorithm: if the ID is equal to the
+	 * 		 number of free instances, then we return it, otherwise, starting
+	 * 		 with ID 0, we search for the first free index, if no free indexes
+	 * 		 are found, then method returns false.
+	 * @return True if the instance is added, false otherwise
+	 */
+	template<typename T>
+	bool add(T &&value);
+
+	/**
+ 	 * @brief Remove resource instance if resource is MULTIPLE and instance exists,
+	 * 		  if the resource is SINGLE remove is not possible.
+	 * @param resInstId The instance ID to remove
+	 * @return True if the instance is removed, false otherwise.
 	 */
 	bool remove(ID_T resInstId);
 
 	/**
  	 * @brief Remove all instances.
+	 * @note If the resource is SINGLE, the method will return false.
+	 * @return True if all instances are removed, false otherwise.
 	 */
 	bool clear();
 
-	/* ---------- Methods for manage verifier ----------*/
-	bool setDataVerifier(const DATA_VERIFIER_T &verifier);
-
 private:
-	std::vector<ResInst>::iterator getResInstIter(ID_T resInstId) const;
-
-    template<typename T>
-	bool _set(const T &value, ID_T resInstId);
-
 	template<typename T>
-	bool _setMove(T &value, ID_T resInstId);
-	
-	template<typename T>
-	bool _get(T &value, ID_T resInstId) const;
-
-	template<typename T>
-	bool _ptr(T **value, ID_T resInstId);
+	bool isDataTypeValid() const;
+	bool isDataVerifierValid(const DATA_VERIFIER_T &verifier) const;
+	bool isInstanceIdPossible(ID_T resInstId) const;
+	bool isTypeIdCompatible(TYPE_ID type) const;
+	std::vector<ResInst>::iterator getInstIter(ID_T resInstId) const;
 
 private: /* ---------- Private properties ----------*/
     ID_T _id;
-    ResOp _operation;
+    ItemOp _operation;
     IS_SINGLE _isSingle;
     IS_MANDATORY _isMandatory;
     TYPE_ID _typeID;
@@ -181,12 +250,15 @@ bool Resource::isDataTypeValid() const {
 }
 
 template<typename T>
-bool Resource::_set(const T &value, ID_T resInstId) {
-	if (!isInstanceIdPossible(resInstId)) return false;
-	if (!isDataValueValid(value)) return false;
+bool Resource::set(const T &value, ID_T resInstId) {
+	if(isSingle()) resInstId = SINGLE_INSTANCE_ID;
+	if (!isInstanceIdPossible(resInstId) || !isDataValueValid(value)) {
+		WPP_LOGW(TAG_WPP_RES, "Resource[%d], invalid data value or instance id is not possible", _id);
+		return false;
+	}
 
-	if (isInstanceExist(resInstId)) {
-		auto instIter = getResInstIter(resInstId);
+	if (isExist(resInstId)) {
+		auto instIter = getInstIter(resInstId);
 		instIter->data = value;
 	} else {
 		_instances.push_back({resInstId, value});
@@ -196,12 +268,15 @@ bool Resource::_set(const T &value, ID_T resInstId) {
 }
 
 template<typename T>
-bool Resource::_setMove(T &value, ID_T resInstId) {
-	if (!isInstanceIdPossible(resInstId)) return false;
-	if (!isDataValueValid(value)) return false;
+bool Resource::set(T &&value, ID_T resInstId) {
+	if(isSingle()) resInstId = SINGLE_INSTANCE_ID;
+	if (!isInstanceIdPossible(resInstId) || !isDataValueValid(value)) {
+		WPP_LOGW(TAG_WPP_RES, "Resource[%d], invalid data value or instance id is not possible", _id);
+		return false;
+	}
 
-	if (isInstanceExist(resInstId)) {
-		auto instIter = getResInstIter(resInstId);
+	if (isExist(resInstId)) {
+		auto instIter = getInstIter(resInstId);
 		instIter->data = std::move(value);
 	} else {
 		ResInst newInst = {resInstId, std::move(value)};
@@ -212,25 +287,61 @@ bool Resource::_setMove(T &value, ID_T resInstId) {
 }
 
 template<typename T>
-bool Resource::_get(T &value, ID_T resInstId) const {
-	if (!isDataTypeValid<T>()) return false;
-	if (!isInstanceExist(resInstId)) return false;
+const T& Resource::get(ID_T resInstId) {
+	if(isSingle()) resInstId = SINGLE_INSTANCE_ID;
+	if (!isDataTypeValid<T>() || !isExist(resInstId)) {
+		WPP_LOGE(TAG_WPP_RES, "Resource[%d], invalid data type or instance does not exist", _id);
+		// TODO: It is workaround for the case when resource is not found
+		// This behavior is better than returning NULL, but it is not the best solution
+		// Return empty value if the data type is not valid or the instance does not exist
+		static T empty;
+		return empty;
+	}
 
-	auto instIter = getResInstIter(resInstId);
-	value = std::get<T>(instIter->data);
+	auto instIter = getInstIter(resInstId);
+	return std::get<T>(instIter->data);
+}
 
+template<typename T>
+bool Resource::add(const T &value) {
+	if (isSingle()) {
+		WPP_LOGW(TAG_WPP_RES, "Resource[%d] is SINGLE", _id);
+		return false;
+	}
+	if (!isDataValueValid(value)) {
+		WPP_LOGW(TAG_WPP_RES, "Resource[%d] invalid data value", _id);
+		return false;
+	}
+
+	ID_T resInstId = newInstId();
+	if (resInstId == ID_T_MAX_VAL) {
+		WPP_LOGE(TAG_WPP_RES, "Resource[%d], no available instance ID", _id);
+		return false;
+	}
+	_instances.push_back({resInstId, value});
+	
 	return true;
 }
 
 template<typename T>
-bool Resource::_ptr(T **value, ID_T resInstId) {
-	if (value == NULL) return false;
-	if (!isDataTypeValid<T>()) return false;
-	if (!isInstanceExist(resInstId)) return false;
+bool Resource::add(T &&value) {
+	if (isSingle()) {
+		WPP_LOGW(TAG_WPP_RES, "Resource[%d] is SINGLE", _id);
+		return false;
+	}
+	if (!isDataValueValid(value)) {
+		WPP_LOGW(TAG_WPP_RES, "Resource[%d] invalid data value", _id);
+		return false;
+	}
 
-	auto instIter = getResInstIter(resInstId);
-	*value = &std::get<T>(instIter->data);
-
+	ID_T resInstId = newInstId();
+	if (resInstId == ID_T_MAX_VAL) {
+		WPP_LOGE(TAG_WPP_RES, "Resource[%d], no available instance ID", _id);
+		return false;
+	}
+	ResInst newInst = {resInstId, std::move(value)};
+	_instances.push_back(std::move(newInst));
+	
 	return true;
 }
 

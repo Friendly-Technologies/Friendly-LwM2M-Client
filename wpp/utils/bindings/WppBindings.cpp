@@ -1,13 +1,14 @@
 #include "WppBindings.h"
+#include <vector>
 
 namespace wpp {
 
 bool wppBindingValidate(const STRING_T& binding) {
-	if(binding == WPP_BINDING_UDP) return true;
-	if(binding == WPP_BINDING_TCP) return true;
-	if(binding == WPP_BINDING_SMS) return true;
-	if(binding == WPP_BINDING_NON_IP) return true;
-	return false;
+	 std::vector<STRING_T> supportedBuindings = {WPP_BINDING_UDP, WPP_BINDING_TCP, WPP_BINDING_SMS, WPP_BINDING_NON_IP};
+	for (auto &item : binding) {
+		if (std::find(supportedBuindings.begin(), supportedBuindings.end(), STRING_T(1, item)) == supportedBuindings.end()) return false;
+	}
+	return true;
 }
 
 } // wpp

@@ -1,0 +1,23 @@
+{
+    "object_data": {
+        "name": "LWM2M Security",
+        "id": "0",
+        "version": "1.1",
+        "lwm2m_version": "1.1",
+        "is_mandatory": true,
+        "is_multiple": true
+    },
+    "object_names": {
+        "class": "Lwm2mSecurity",
+        "camelcase": "lwm2mSecurity",
+        "define": "OBJ_M_0_LWM2M_SECURITY",
+        "up_underline": "LWM2M_SECURITY"
+    },
+    "object_files": {
+        "impl_h": "Lwm2mSecurity.h",
+        "impl_cpp": "Lwm2mSecurity.cpp",
+        "config": "Lwm2mSecurityConfig.h",
+        "info": "Lwm2mSecurityInfo.h",
+        "cmake": "CMakeLists.txt"
+    }
+}

@@ -1,6 +1,6 @@
 \page architecture_tag Architecture
 
-This section describes the general structure of **WakaamaPlus**, the structure and purpose of its components, user interfaces and features of use.
+This section describes the general structure of **Friendly LWM2M client**, the structure and purpose of its components, user interfaces and features of use.
 
 - [Overview](@ref arch_overview)
 - [Components](@ref arch_components)
@@ -15,7 +15,7 @@ This section describes the general structure of **WakaamaPlus**, the structure a
 - [Sumary](@ref arch_summary)
 
 ### Overview {#arch_overview}
-**WakaamaPlus**, also known as **Wpp**, is a project built upon the [**Wakaama**](https://github.com/eclipse/wakaama) project, which implements the **Lightweight Machine to Machine (LwM2M)** protocol. The architecture of **Wpp** is carefully designed to provide a high-level presentation of [**Wakaama**](https://github.com/eclipse/wakaama) functionalities while retaining control and flexibility.
+**Friendly LWM2M client**, also known as **Wpp**, is a project built upon the [**Wakaama**](https://github.com/eclipse/wakaama) project, which implements the **Lightweight Machine to Machine (LwM2M)** protocol. The architecture of **Wpp** is carefully designed to provide a high-level presentation of [**Wakaama**](https://github.com/eclipse/wakaama) functionalities while retaining control and flexibility.
 
 ### Components {#arch_components}
 Since **Wpp** is built upon the [**Wakaama**](https://github.com/eclipse/wakaama), the existing interfaces and capabilities of [**Wakaama**](https://github.com/eclipse/wakaama) affect the internal structure of **Wpp**. For a better understanding of what components should be present in **Wpp**, the [**Wakaama**](https://github.com/eclipse/wakaama) interface was segregated, based on it, the necessary components for **Wpp** were created.
@@ -101,7 +101,7 @@ As mentioned in the section [Registry Management](@ref arch_registry_management)
 4. Updating the object. To update the utility must receive two parameters: the path to the **.xml** file with the updated description of the object and the path to the folder of the corresponding object in [**objects**](../../wpp/registry/objects). The main task of this utility is to transfer the implementation from the old version of the object to the new one. It is not recommended to be used without a critical need and understanding of the consequences.
 
 ### Summary {#arch_summary}
-The architecture of **WakaamaPlus (Wpp)** is a well-structured framework that provides a robust platform for the development and implementation of LwM2M client applications. It maintains a balance between high-level functionality and control, and is designed to be flexible and adaptable to various user and environmental needs.
+The architecture of **Friendly LWM2M client (Wpp)** is a well-structured framework that provides a robust platform for the development and implementation of LwM2M client applications. It maintains a balance between high-level functionality and control, and is designed to be flexible and adaptable to various user and environmental needs.
 
 
 

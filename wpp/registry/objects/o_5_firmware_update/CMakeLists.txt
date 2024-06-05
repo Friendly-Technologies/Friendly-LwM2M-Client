@@ -1,5 +1,5 @@
 # Generated on: 2024-04-03 15:26:42
-# Created by: SinaiR&D
+# Created by: Sinai RnD
 
 wpp_check_definition("OBJ_O_5_FIRMWARE_UPDATE" is_defined)
 if(is_defined)

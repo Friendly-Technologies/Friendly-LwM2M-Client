@@ -1,5 +1,5 @@
 # Generated on: __DATETIME__
-# Created by: SinaiR&D
+# Created by: Sinai RnD
 
 wpp_check_definition("__OBJ_DEFINE__" is_defined)
 if(is_defined)

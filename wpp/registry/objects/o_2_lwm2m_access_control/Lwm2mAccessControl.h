@@ -1,7 +1,7 @@
 /*
  * Lwm2mAccessControl
  * Generated on: 2023-11-03 15:05:47
- * Created by: SinaiR&D
+ * Created by: Sinai RnD
  */
 
 #ifndef WPP_O_2_LWM2M_ACCESS_CONTROL_H

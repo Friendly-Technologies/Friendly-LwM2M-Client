@@ -1,7 +1,7 @@
-\page build_tag Build Instructions for WakaamaPlus
+\page build_tag Build Instructions for Friendly LWM2M client
 
 
-This document provides detailed instructions on how to build the WakaamaPlus project. It covers requirements, setup steps, and common issues.
+This document provides detailed instructions on how to build the Friendly LWM2M client project. It covers requirements, setup steps, and common issues.
 - [Setup build environment](@ref b_setupbenv)
   - [Repos Structure](@ref b_repostruct)
   - [Environment Setup](@ref b_envsetup)
@@ -10,8 +10,8 @@ This document provides detailed instructions on how to build the WakaamaPlus pro
 ***
 - [Implementation and customisation](@ref b_implandcustmn)
   - [Definitions and configurations](@ref b_defandconf)
-  - [Static WPP library](@ref b_staticvar)
-  - [Source WPP library](@ref b_sourcevar)
+  - [Static Wpp library](@ref b_staticvar)
+  - [Source Wpp library](@ref b_sourcevar)
 
 
 # Setup build environment {#b_setupbenv}
@@ -32,9 +32,8 @@ Ways of future work and improvements:
 The current \[07.06.2023\] structure contains only 3 repos (other will be created on ad-hoc basis):
 
 
-* _WakaamaPlus_ Main Development Repo: [https://github.com/sinai-io/2305-WakaamaPlus](https://github.com/sinai-io/2305-WakaamaPlus)
-* _Wakaama Upstream_ repo [https://github.com/eclipse/wakaama](https://github.com/eclipse/wakaama)
-* _Wakaama Copy_ \[as on 07.06.2023\]: [https://github.com/sinai-io/2305-Wakaama](https://github.com/sinai-io/2305-Wakaama)
+* _Friendly LWM2M client_ Main Development Repo
+* _Wakaama Copy_ \[as on 07.06.2023\]: [https://github.com/eclipse/wakaama](https://github.com/eclipse/wakaama)
 
 \image html build_1.png width=800
 
@@ -54,11 +53,11 @@ We also install Python tools for building and testing, such as `cmake`, `pylint`
 ## Source code {#b_sourcecode}
 
 
-### WakaamaPlus source code
+### Wpp source code
 
-To work with our implementation of the LWM2M library, clone the [repository](https://github.com/sinai-io/2305-WakaamaPlus) with the submodules using the command below. Our library uses the original Wakaama as a submodule.
+To work with our implementation of the LWM2M library, clone the *repository* with the submodules using the command below. Our library uses the original Wakaama as a submodule.
 ```
-git clone --recurse-submodules git@github.com:sinai-io/2305-WakaamaPlus.git
+git clone --recurse-submodules git@github.com:<repo>
 ```
 
 
@@ -94,14 +93,14 @@ Ubuntu: 18.04.6 / **22.04**
 * Download [Visual Studio Code](https://code.visualstudio.com/download).<br />
   You can use other IDE or use CLI for building and running.
 * Download the repository.<br />
-  `git clone --recurse-submodules git@github.com:sinai-io/2305-WakaamaPlus.git`
+  `git clone --recurse-submodules git@github.com:<repo>`
   
-* Go to the **2305-WakaamaPlus** folder.<br />
-  `cd ./2305-WakaamaPlus`
+* Go to the *root* folder.<br />
+  `cd ./<repo root>`
 * Run the `wpp_env_setup.sh` script to install the necessary utilities. Use sudo permission to run the script. After successfully downloading, installing, and completing the installation process, the script generates documentation about the WPP library using Doxygen and automatically opens a web page to view the documentation.<br />
   `sudo bash wpp_env_setup.sh`
 * Start **VSCode** and go to the open workspace which set up for this project **File → Open Workspace from File**.<br />
-* In the opened window, specify the path to the file `vs-code-wakaamaplus.code-workspace` located in the **2305-WakaamaPlus** repository.
+* In the opened window, specify the path to the file `vs-code-wpp.code-workspace` located in the root of the repository.
 * After the workspace has loaded, go to **Extensions** `(Ctrl+Shift+x)`, set **Recommended** `(Text field: @recommended)` in the extensions filter, and then install all recommended extensions.
 
 \image html build_2.png
@@ -231,15 +230,15 @@ Define your own endian if the endian is different from the platform default.<br 
 `set(WPP_DEFINITIONS ${WPP_DEFINITIONS} LWM2M_BIG_ENDIAN)` - big-endian format<br />
 `set(WPP_DEFINITIONS ${WPP_DEFINITIONS} LWM2M_LITTLE_ENDIAN)` - little-endian format
 
-### WPP configuration {#b_wppconf}
+### Wpp configuration {#b_wppconf}
 
 PATH - `wpp/configs/wpp_config.cmake`
 
-**WPP_ENABLE_LOGS** - enable logs for WakaamaPlus (default: **ON**)<br />
+**WPP_ENABLE_LOGS** - enable logs for Wpp (default: **ON**)<br />
 **WPP_LOGS_LEVEL** - set logs detalization for `WPP_ENABLE_LOGS ON` (default: **0**)
 
 ***
-## Static WPP library {#b_staticvar}
+## Static Wpp library {#b_staticvar}
 
 **Definition:** The static build option in LwM2M indicates the process of compiling and assembling protocol code that includes all necessary libraries and dependencies, creating a single executable file with closed dependencies.<br />
 **Advantages:** Ease of installation and deployment, as all dependencies are included in one file.<br />

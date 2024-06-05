@@ -1,5 +1,5 @@
 # Generated on: 2023-11-02 16:43:32
-# Created by: SinaiR&D
+# Created by: Sinai RnD
 
 wpp_check_definition("OBJ_M_0_LWM2M_SECURITY" is_defined)
 if(is_defined)

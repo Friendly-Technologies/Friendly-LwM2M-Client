@@ -38,7 +38,8 @@ $CLANG \
 cppcheck \
 llvm \
 libcurl4-openssl-dev \
-cmake"
+cmake
+g++-12"
 
 ptools="\
 cmake-format \
@@ -129,7 +130,7 @@ echo -e "\nSetup environment DONE"
 #
 # Repo for Wakaama++
 # cd ${HOME}/Desktop
-# git clone --recurse-submodules git@github.com:sinai-io/2305-WakaamaPlus.git
+# git clone --recurse-submodules git@github.com:<repo>
 #
 # Install Eclipse IDE:
 # https://www.eclipse.org/downloads/packages/installer

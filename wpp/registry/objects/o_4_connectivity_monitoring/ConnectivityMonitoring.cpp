@@ -1,7 +1,7 @@
 /*
  * ConnectivityMonitoring
  * Generated on: 2023-11-02 16:57:15
- * Created by: SinaiR&D
+ * Created by: Sinai RnD
  */
 
 #include "o_4_connectivity_monitoring/ConnectivityMonitoring.h"

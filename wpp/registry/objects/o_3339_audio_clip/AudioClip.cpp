@@ -1,7 +1,7 @@
 /*
  * AudioClip
  * Generated on: 2024-03-11 13:52:27
- * Created by: SinaiR&D
+ * Created by: Sinai RnD
  */
 
 #include "o_3339_audio_clip/AudioClip.h"

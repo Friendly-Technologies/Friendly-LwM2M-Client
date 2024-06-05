@@ -49,23 +49,25 @@ void serverInit(WppClient &client) {
 void securityInit(WppClient &client) {
     client.registry().registerObj(Lwm2mSecurity::object(client));
     wpp::Instance *security = Lwm2mSecurity::createInst(client);
+    string url;
 
 	#ifdef LWM2M_BOOTSTRAP
-        string url = "coap://demodm.friendly-tech.com:5680";
         security->set<BOOL_T>(Lwm2mSecurity::BOOTSTRAP_SERVER_1, true);
         security->set<INT_T>(Lwm2mSecurity::CLIENT_HOLD_OFF_TIME_11, 10);
         #if DTLS_WITH_PSK
-        string pskId = "SINAI_TEST_DEV_ID";
-        url = "coap://demodm.friendly-tech.com:5681";
+        string pskId = "FRIENDLY_TEST_DEV_ID";
         security->set<INT_T>(Lwm2mSecurity::SECURITY_MODE_2, LWM2M_SECURITY_MODE_PRE_SHARED_KEY);
         security->set(Lwm2mSecurity::PUBLIC_KEY_OR_IDENTITY_3, OPAQUE_T(pskId.begin(), pskId.end()));
         security->set(Lwm2mSecurity::SECRET_KEY_5, OPAQUE_T {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0x99, 0x88, 0x77, 0x66, 0x55, 0x44});
+        url = "coap://demodm.friendly-tech.com:5681";
+        #else
+        url = "coap://demodm.friendly-tech.com:5680";
         #endif
     #else
-        string url = "coaps://demodm.friendly-tech.com:";//"coap://eu.iot.avsystem.cloud:"; //"coaps://leshan.eclipseprojects.io:";
+        url = "coaps://demodm.friendly-tech.com:"; //"coaps://leshan.eclipseprojects.io:";
         #if DTLS_WITH_PSK
             url += "5684";
-            string pskId = "SINAI_TEST_DEV_ID";
+            string pskId = "FRIENDLY_TEST_DEV_ID";
             security->set<INT_T>(Lwm2mSecurity::SECURITY_MODE_2, LWM2M_SECURITY_MODE_PRE_SHARED_KEY);
             security->set(Lwm2mSecurity::PUBLIC_KEY_OR_IDENTITY_3, OPAQUE_T(pskId.begin(), pskId.end()));
             //00112233445566778899998877665544
@@ -97,7 +99,7 @@ void deviceInit(WppClient &client) {
     });
     device->set<INT_T>(Device::ERROR_CODE_11, 0, Device::NO_ERROR);
     device->set<STRING_T>(Device::SUPPORTED_BINDING_AND_MODES_16, WPP_BINDING_UDP);
-    device->set<STRING_T>(Device::MANUFACTURER_0, "Wakaama Plus");
+    device->set<STRING_T>(Device::MANUFACTURER_0, "Friendly");
     device->set<STRING_T>(Device::MODEL_NUMBER_1, "Lightweight M2M Client");
     device->set<STRING_T>(Device::SERIAL_NUMBER_2, "0123456789");
 

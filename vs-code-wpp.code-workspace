@@ -41,7 +41,7 @@
 		},
 		"cmake.showSystemKits": true,
 		"cmake.additionalKits": [
-			"${workspaceFolder:2305-WakaamaPlus}/.vscode/cmake-kits.json"
+			"${workspaceFolder}/.vscode/cmake-kits.json"
 		],
 		"cmake.buildDirectory": "${workspaceFolder}/_build",
 		"cmake.touchbar.advanced": {},

@@ -1,5 +1,5 @@
 # Generated on: 2023-11-03 15:05:47
-# Created by: SinaiR&D
+# Created by: Sinai RnD
 
 wpp_check_definition("OBJ_O_2_LWM2M_ACCESS_CONTROL" is_defined)
 if(is_defined)

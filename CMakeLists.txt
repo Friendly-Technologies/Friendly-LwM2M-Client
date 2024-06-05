@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.13)
 
 # Project's name
-project(WakaamaPlus)
+project(WppClient)
 
 # Add subdirectory with docs target
 add_subdirectory(docs)

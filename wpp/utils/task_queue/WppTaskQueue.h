@@ -27,7 +27,7 @@ class WppClient;
 
 /**
  * @class WppTaskQueue
- * @brief Represents a task queue for Wakaama Plus.
+ * @brief Represents a task queue.
  * 
  * The queue of tasks does not guarantee timely calling of a task
  * with a fixed delay, all tasks in the queue are processed sequentially,

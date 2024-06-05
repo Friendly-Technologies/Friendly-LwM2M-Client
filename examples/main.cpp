@@ -44,7 +44,7 @@ int main() {
 
 	// Client initialization
 	cout << endl << "---- Creating WppClient ----" << endl;
-	string clientName = "sinaiVs";
+	string clientName = "Lwm2mClient";
 	#if DTLS_WITH_PSK
 	clientName += "PSK";
 	#elif DTLS_WITH_RPK

@@ -1,7 +1,7 @@
 /*
  * Lwm2mServer
  * Generated on: 2023-11-02 16:41:01
- * Created by: SinaiR&D
+ * Created by: Sinai RnD
  */
 
 #include "m_1_lwm2m_server/Lwm2mServer.h"

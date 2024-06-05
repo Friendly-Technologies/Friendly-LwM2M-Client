@@ -1,6 +1,6 @@
 /*
  * Generated on: 2023-11-02 16:57:15
- * Created by: SinaiR&D
+ * Created by: Sinai RnD
  */
 
 #ifndef WPP_CONNECTIVITY_MONITORING_CONFIG_H

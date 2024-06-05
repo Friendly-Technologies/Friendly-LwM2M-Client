@@ -1,6 +1,6 @@
 /*
  * Generated on: 2024-03-11 13:52:27
- * Created by: SinaiR&D
+ * Created by: Sinai RnD
  */
 
 #ifndef WPP_AUDIO_CLIP_INFO_H

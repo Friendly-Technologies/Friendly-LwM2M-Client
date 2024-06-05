@@ -1,7 +1,7 @@
 /*
  * __CLASS_NAME__
  * Generated on: __DATETIME__
- * Created by: SinaiR&D
+ * Created by: Sinai RnD
  */
 
 #ifndef WPP_<<IF_DEF_DIRECTIVE>>_H

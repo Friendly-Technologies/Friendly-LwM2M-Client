@@ -32,9 +32,8 @@ Ways of future work and improvements:
 The current \[07.06.2023\] structure contains only 3 repos (other will be created on ad-hoc basis):
 
 
-* _WakaamaPlus_ Main Development Repo: [https://github.com/sinai-io/2305-WakaamaPlus](https://github.com/sinai-io/2305-WakaamaPlus)
-* _Wakaama Upstream_ repo [https://github.com/eclipse/wakaama](https://github.com/eclipse/wakaama)
-* _Wakaama Copy_ \[as on 07.06.2023\]: [https://github.com/sinai-io/2305-Wakaama](https://github.com/sinai-io/2305-Wakaama)
+* _Friendly LWM2M client_ Main Development Repo
+* _Wakaama Copy_ \[as on 07.06.2023\]: [https://github.com/eclipse/wakaama](https://github.com/eclipse/wakaama)
 
 \image html build_1.png width=800
 
@@ -56,9 +55,9 @@ We also install Python tools for building and testing, such as `cmake`, `pylint`
 
 ### Wpp source code
 
-To work with our implementation of the LWM2M library, clone the [repository](https://github.com/sinai-io/2305-WakaamaPlus) with the submodules using the command below. Our library uses the original Wakaama as a submodule.
+To work with our implementation of the LWM2M library, clone the *repository* with the submodules using the command below. Our library uses the original Wakaama as a submodule.
 ```
-git clone --recurse-submodules git@github.com:sinai-io/2305-WakaamaPlus.git
+git clone --recurse-submodules git@github.com:<repo>
 ```
 
 
@@ -94,14 +93,14 @@ Ubuntu: 18.04.6 / **22.04**
 * Download [Visual Studio Code](https://code.visualstudio.com/download).<br />
   You can use other IDE or use CLI for building and running.
 * Download the repository.<br />
-  `git clone --recurse-submodules git@github.com:sinai-io/2305-WakaamaPlus.git`
+  `git clone --recurse-submodules git@github.com:<repo>`
   
-* Go to the **2305-WakaamaPlus** folder.<br />
-  `cd ./2305-WakaamaPlus`
+* Go to the *root* folder.<br />
+  `cd ./<repo root>`
 * Run the `wpp_env_setup.sh` script to install the necessary utilities. Use sudo permission to run the script. After successfully downloading, installing, and completing the installation process, the script generates documentation about the WPP library using Doxygen and automatically opens a web page to view the documentation.<br />
   `sudo bash wpp_env_setup.sh`
 * Start **VSCode** and go to the open workspace which set up for this project **File → Open Workspace from File**.<br />
-* In the opened window, specify the path to the file `vs-code-wpp.code-workspace` located in the **2305-WakaamaPlus** repository.
+* In the opened window, specify the path to the file `vs-code-wpp.code-workspace` located in the root of the repository.
 * After the workspace has loaded, go to **Extensions** `(Ctrl+Shift+x)`, set **Recommended** `(Text field: @recommended)` in the extensions filter, and then install all recommended extensions.
 
 \image html build_2.png

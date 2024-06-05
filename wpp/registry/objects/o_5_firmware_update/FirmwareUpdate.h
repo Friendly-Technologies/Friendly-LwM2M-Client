@@ -1,7 +1,7 @@
 /*
  * FirmwareUpdate
  * Generated on: 2024-04-03 15:26:42
- * Created by: SinaiR&D
+ * Created by: Sinai RnD
  */
 
 #ifndef WPP_O_5_FIRMWARE_UPDATE_H

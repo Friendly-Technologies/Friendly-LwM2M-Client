@@ -1,7 +1,7 @@
 /*
  * Lwm2mSecurity
  * Generated on: 2023-11-02 16:43:32
- * Created by: SinaiR&D
+ * Created by: Sinai RnD
  */
 
 #ifndef WPP_M_0_LWM2M_SECURITY_H

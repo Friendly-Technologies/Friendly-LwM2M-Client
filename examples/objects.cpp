@@ -55,7 +55,7 @@ void securityInit(WppClient &client) {
         security->set<BOOL_T>(Lwm2mSecurity::BOOTSTRAP_SERVER_1, true);
         security->set<INT_T>(Lwm2mSecurity::CLIENT_HOLD_OFF_TIME_11, 10);
         #if DTLS_WITH_PSK
-        string pskId = "SINAI_TEST_DEV_ID";
+        string pskId = "FRIENDLY_TEST_DEV_ID";
         security->set<INT_T>(Lwm2mSecurity::SECURITY_MODE_2, LWM2M_SECURITY_MODE_PRE_SHARED_KEY);
         security->set(Lwm2mSecurity::PUBLIC_KEY_OR_IDENTITY_3, OPAQUE_T(pskId.begin(), pskId.end()));
         security->set(Lwm2mSecurity::SECRET_KEY_5, OPAQUE_T {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0x99, 0x88, 0x77, 0x66, 0x55, 0x44});
@@ -67,7 +67,7 @@ void securityInit(WppClient &client) {
         url = "coaps://demodm.friendly-tech.com:"; //"coaps://leshan.eclipseprojects.io:";
         #if DTLS_WITH_PSK
             url += "5684";
-            string pskId = "SINAI_TEST_DEV_ID";
+            string pskId = "FRIENDLY_TEST_DEV_ID";
             security->set<INT_T>(Lwm2mSecurity::SECURITY_MODE_2, LWM2M_SECURITY_MODE_PRE_SHARED_KEY);
             security->set(Lwm2mSecurity::PUBLIC_KEY_OR_IDENTITY_3, OPAQUE_T(pskId.begin(), pskId.end()));
             //00112233445566778899998877665544

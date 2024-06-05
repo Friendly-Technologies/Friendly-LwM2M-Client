@@ -1,7 +1,7 @@
 /*
  * __CLASS_NAME__
  * Generated on: __DATETIME__
- * Created by: SinaiR&D
+ * Created by: Sinai RnD
  */
 
 #include "__OBJ_FOLDER__/__CLASS_NAME__.h"

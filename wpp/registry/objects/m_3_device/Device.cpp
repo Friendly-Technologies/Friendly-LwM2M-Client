@@ -1,7 +1,7 @@
 /*
  * Device
  * Generated on: 2023-11-02 16:38:01
- * Created by: SinaiR&D
+ * Created by: Sinai RnD
  */
 
 #include "m_3_device/Device.h"

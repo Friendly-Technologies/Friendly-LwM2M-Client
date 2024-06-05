@@ -1,6 +1,6 @@
 /*
  * Generated on: 2023-11-02 16:38:01
- * Created by: SinaiR&D
+ * Created by: Sinai RnD
  */
 
 #ifndef WPP_DEVICE_CONFIG_H

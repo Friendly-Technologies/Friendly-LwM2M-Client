@@ -27,9 +27,9 @@ We create an instance of the class that implements the **wpp::WppConnection** in
 Connection connection("56830", AF_INET);
 \endcode
 
-We create the WppClient object and pass the structure with the client name "SinaiRnDTestLwm2m" and the connection object that will allow receiving and sending messages.
+We create the WppClient object and pass the structure with the client name "TestLwm2mClient" and the connection object that will allow receiving and sending messages.
 \code{.cpp}
-WppClient::create({"SinaiRnDTestLwm2m", "", ""}, connection);
+WppClient::create({"TestLwm2mClient", "", ""}, connection);
 \endcode
 
 At this stage, the client is created and ready to work, in order to make sure that the client has been initialized, we can use the **wpp::WppClient::isCreated()** method.
@@ -88,7 +88,7 @@ using namespace wpp;
 int main() {
     Connection connection("56830", AF_INET);
     
-    WppClient::create({"SinaiRnDTestLwm2m", "", ""}, connection);
+    WppClient::create({"TestLwm2mClient", "", ""}, connection);
     if (WppClient::isCreated() == false) return -1;
     
     WppClient *client = WppClient::takeOwnershipBlocking();
@@ -117,7 +117,7 @@ using namespace wpp;
 int main() {
     Connection connection("56830", AF_INET);
     
-    WppClient::create({"SinaiRnDTestLwm2m", "", ""}, connection);
+    WppClient::create({"TestLwm2mClient", "", ""}, connection);
     if (WppClient::isCreated() == false) return -1;
     
     WppClient *client = WppClient::takeOwnershipBlocking();
@@ -148,7 +148,7 @@ using namespace wpp;
 int main() {
     Connection connection("56830", AF_INET);
     
-    WppClient::create({"SinaiRnDTestLwm2m", "", ""}, connection);
+    WppClient::create({"TestLwm2mClient", "", ""}, connection);
     if (WppClient::isCreated() == false) return -1;
     WppClient *client = WppClient::takeOwnershipBlocking();
 
@@ -178,7 +178,7 @@ bool objects_registering(WppClient &client) {
 int main() {
     Connection connection("56830", AF_INET);
     
-    WppClient::create({"SinaiRnDTestLwm2m", "", ""}, connection);
+    WppClient::create({"TestLwm2mClient", "", ""}, connection);
     if (WppClient::isCreated() == false) return -1;
     WppClient *client = WppClient::takeOwnershipBlocking();
 
@@ -260,7 +260,7 @@ bool objects_registering(WppClient &client) {
 int main() {
     Connection connection("56830", AF_INET);
     
-    WppClient::create({"SinaiRnDTestLwm2m", "", ""}, connection);
+    WppClient::create({"TestLwm2mClient", "", ""}, connection);
     if (WppClient::isCreated() == false) return -1;
     WppClient *client = WppClient::takeOwnershipBlocking();
 
@@ -294,7 +294,7 @@ void read_device_data(WppClient &client) {}
 int main() {
     Connection connection("56830", AF_INET);
     
-    WppClient::create({"SinaiRnDTestLwm2m", "", ""}, connection);
+    WppClient::create({"TestLwm2mClient", "", ""}, connection);
     if (WppClient::isCreated() == false) return -1;
     WppClient *client = WppClient::takeOwnershipBlocking();
 
@@ -543,7 +543,7 @@ void read_device_data(WppClient &client) {
 int main() {
     Connection connection("56830", AF_INET);
     
-    WppClient::create({"SinaiRnDTestLwm2m", "", ""}, connection);
+    WppClient::create({"TestLwm2mClient", "", ""}, connection);
     if (WppClient::isCreated() == false) return -1;
     WppClient *client = WppClient::takeOwnershipBlocking();
 
@@ -574,7 +574,7 @@ or disable the use of the **SEND** operation.
 \code{.cpp}
 Connection connection("56830", AF_INET);
 
-WppClient::create({"SinaiRnDTestLwm2m", "", ""}, connection);
+WppClient::create({"TestLwm2mClient", "", ""}, connection);
 if (WppClient::isCreated() == false) return -1;
 WppClient *client = WppClient::takeOwnershipBlocking();
 
@@ -589,7 +589,7 @@ An example of creating access rules for the **Device** object and its instance w
 \code{.cpp}
 Connection connection("56830", AF_INET);
 
-WppClient::create({"SinaiRnDTestLwm2m", "", ""}, connection);
+WppClient::create({"TestLwm2mClient", "", ""}, connection);
 if (WppClient::isCreated() == false) return -1;
 WppClient *client = WppClient::takeOwnershipBlocking();
 
@@ -666,7 +666,7 @@ using namespace wpp;
 int main() {
     Connection connection("56830", AF_INET);
     
-    WppClient::create({"SinaiRnDTestLwm2m", "", ""}, connection);
+    WppClient::create({"TestLwm2mClient", "", ""}, connection);
     if (WppClient::isCreated() == false) return -1;
     WppClient *client = WppClient::takeOwnershipBlocking();
 

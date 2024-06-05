@@ -1,7 +1,7 @@
 /*
  * Lwm2mAccessControl
  * Generated on: 2023-11-03 15:05:47
- * Created by: SinaiR&D
+ * Created by: Sinai RnD
  */
 
 #include "o_2_lwm2m_access_control/Lwm2mAccessControl.h"

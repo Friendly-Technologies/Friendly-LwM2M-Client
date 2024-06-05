@@ -1,7 +1,7 @@
 /*
  * AudioClip
  * Generated on: 2024-03-11 13:52:27
- * Created by: SinaiR&D
+ * Created by: Sinai RnD
  */
 
 #ifndef WPP_O_3339_AUDIO_CLIP_H

@@ -77,7 +77,7 @@ class ObjectGenerator:
         operation += "),"
         return operation
 
-    def parse_resource_data_type(self, xml_type):
+    def parse_resource_data_type_id(self, xml_type):
         resource_type = f"{const.TYPE_ID}::"
         match xml_type:
             case "NONE":
@@ -101,8 +101,35 @@ class ObjectGenerator:
             case "CORELNK":
                 resource_type += "CORE_LINK"
             case default:
-                raise Exception(f"Undefined type of the resource ({xml_type})")
+                raise Exception(f"parse_resource_data_type_id(): Undefined type of the resource ({xml_type})")
         resource_type += " },"
+        return resource_type
+
+    def parse_resource_data_type(self, xml_type):
+        resource_type = ""
+        match xml_type:
+            case "NONE":
+                resource_type += "EXECUTE_T"
+            case "INTEGER":
+                resource_type += "INT_T"
+            case "UNSIGNED_INTEGER":
+                resource_type += "UINT_T"
+            case "BOOLEAN":
+                resource_type += "BOOL_T"
+            case "STRING":
+                resource_type += "STRING_T"
+            case "OPAQUE":
+                resource_type += "OPAQUE_T"
+            case "FLOAT":
+                resource_type += "FLOAT_T"
+            case "TIME":
+                resource_type += "TIME_T"
+            case "OBJLNK":
+                resource_type += "OBJ_LINK_T"
+            case "CORELNK":
+                resource_type += "CORE_LINK_T"
+            case default:
+                raise Exception(f"parse_resource_data_type(): Undefined type of the resource ({xml_type})")
         return resource_type
 
     def get_map_of_resources(self, resources_list_xml):
@@ -126,7 +153,7 @@ class ObjectGenerator:
                             self.parse_operation(resource_xml[const.DATA_KEYS[const.KEY_OPERATIONS]]),
                             f"IS_SINGLE::{resource_xml[const.DATA_KEYS[const.KEY_IS_MULTIPLE]]},",
                             f"IS_MANDATORY::{resource_xml[const.DATA_KEYS[const.KEY_IS_MANDATORY]]},",
-                            self.parse_resource_data_type(resource_xml[const.DATA_KEYS[const.KEY_TYPE]])]
+                            self.parse_resource_data_type_id(resource_xml[const.DATA_KEYS[const.KEY_TYPE]])]
 
             # wrap into "#if-directive" if the resource is not mandatory:
             if resource_xml[const.DATA_KEYS[const.KEY_IS_MANDATORY]] != "MANDATORY":
@@ -146,23 +173,24 @@ class ObjectGenerator:
 
     def get_content_resourcesInit_f(self):
         content = f"""void __CLASS_NAME__::resourcesInit() {{\n""" \
-                  f"""\t/* --------------- Code_cpp block 10 start --------------- */\n"""
+                  f"""\t/* --------------- Code_cpp block 7 start --------------- */\n"""
         for resource in self.resources_data:
+            resource_type = self.parse_resource_data_type(resource[const.DATA_KEYS[const.KEY_TYPE]])
             if resource[ "Mandatory"] == "MANDATORY":
                 # content += f"""\t\t#if {resource["Name"]}_{resource["Mandatory"]}\n\t"""
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].set( /* TODO */ );\n"
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n\n"
-                content += f"\tresource({resource['Name']}_{resource['ID']})->set( /* TODO */ );\n"
+                content += f"\tresource({resource['Name']}_{resource['ID']})->set<{resource_type}>( /* TODO */ );\n"
                 content += f"\tresource({resource['Name']}_{resource['ID']})->setDataVerifier( /* TODO */ );\n"
                 # content += f"\t\t#endif\n\n"
             if resource["Mandatory"] == "OPTIONAL":
                 content += f"""\t#if {resource["Define"]}\n"""
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].set( /* TODO */ );\n"
                 # content += f"\t_resources[{resource['Name']}_{resource['ID']}].setDataVerifier( /* TODO */ );\n"
-                content += f"\tresource({resource['Name']}_{resource['ID']})->set( /* TODO */ );\n"
+                content += f"\tresource({resource['Name']}_{resource['ID']})->set<{resource_type}>( /* TODO */ );\n"
                 content += f"\tresource({resource['Name']}_{resource['ID']})->setDataVerifier( /* TODO */ );\n"
                 content += f"\t#endif\n"
-        content += f"""\t/* --------------- Code_cpp block 10 end --------------- */\n}}"""
+        content += f"""\t/* --------------- Code_cpp block 7 end --------------- */\n}}"""
 
         return content
 
@@ -185,13 +213,13 @@ class ObjectGenerator:
             return f"""WPP_LOGD(TAG, {text});"""
 
     def get_content_serverOperationNotifier(self):
-        cases = ["READ", "WRITE", "EXECUTE"]
+        cases = ["WRITE", "EXECUTE"]
         base = \
             f"""void __CLASS_NAME__::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resLink) {{\n""" \
-            f"""\t/* --------------- Code_cpp block 6 start --------------- */\n""" \
-            f"""\t/* --------------- Code_cpp block 6 end --------------- */\n""" \
+            f"""\t/* --------------- Code_cpp block 4 start --------------- */\n""" \
+            f"""\t/* --------------- Code_cpp block 4 end --------------- */\n""" \
             f"""\n\toperationNotify(*this, resLink, type);\n\n""" \
-            f"""\t/* --------------- Code_cpp block 7 start --------------- */\n""" \
+            f"""\t/* --------------- Code_cpp block 5 start --------------- */\n""" \
             f"""\tswitch (type) {{\n\t"""
         for case in cases:
             base += f"""case {const.TYPE_OPERATION}::{case}:\n\t\t{self.create_log_string(
@@ -200,13 +228,14 @@ class ObjectGenerator:
                 False
             )}\n\t\tbreak;\n\t"""
         return f"""{base}default: break;\n\t}}\n\t""" \
-               f"""/* --------------- Code_cpp block 7 end --------------- */\n}}"""
+               f"""/* --------------- Code_cpp block 5 end --------------- */\n}}"""
 
     def get_content_userOperationNotifier(self):
-        cases = ["READ", "WRITE", "DELETE"]
+        cases = ["WRITE", "DELETE"]
         prefix = \
             f"""void __CLASS_NAME__::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) {{\n""" \
-            f"""\t/* --------------- Code_cpp block 8 start --------------- */\n""" \
+            f"""\tif (type == ItemOp::WRITE || type == ItemOp::DELETE) notifyResChanged(resLink.resId, resLink.resInstId);\n\n""" \
+            f"""\t/* --------------- Code_cpp block 6 start --------------- */\n""" \
             f"""\tswitch (type) {{\n\t"""
         for case in cases:
             prefix += f"""case {const.TYPE_OPERATION}::{case}:\n\t\t{self.create_log_string(
@@ -215,7 +244,7 @@ class ObjectGenerator:
                 False
             )}\n\t\tbreak;\n\t"""
         postfix = f"""default: break;\n\t}}\n""" \
-                  f"""\t/* --------------- Code_cpp block 8 end --------------- */\n}}"""
+                  f"""\t/* --------------- Code_cpp block 6 end --------------- */\n}}"""
         return prefix + postfix
 
     def generate_content_header(self, resources_enum):
@@ -239,6 +268,7 @@ class ObjectGenerator:
         data_str_cpp = data_str_cpp.replace("__F_RESOURCE_INIT__",
                                             self.get_content_resourcesInit_f())
         data_str_cpp = data_str_cpp.replace("__CLASS_NAME__", self.object_names[const.KEY_NAME_CLASS])
+        data_str_cpp = data_str_cpp.replace("__CLASS_NAME_CAMELCASE__", self.object_names[const.KEY_NAME_CAMELCASE])
         data_str_cpp = data_str_cpp.replace("__RESOURCES_TABLE__", resources_map)
 
         return data_str_cpp

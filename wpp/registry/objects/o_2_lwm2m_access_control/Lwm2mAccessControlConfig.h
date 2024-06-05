@@ -1,6 +1,6 @@
 /*
  * Generated on: 2023-11-03 15:05:47
- * Created by: SinaiR&D
+ * Created by: Sinai RnD
  */
 
 #ifndef WPP_LWM2M_ACCESS_CONTROL_CONFIG_H

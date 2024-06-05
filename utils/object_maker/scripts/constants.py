@@ -11,7 +11,7 @@ FILE_CMAKE_LISTS = "CMakeLists.txt"
 FILE_OBJECT_ID = f"{FOLDER_REGISTRY}/ObjectID.h"
 FILE_REGISTRY_H = f"{FOLDER_REGISTRY}/WppRegistry.h"
 FILE_REGISTRY_CPP = f"{FOLDER_REGISTRY}/WppRegistry.cpp"
-FILE_CONFIG_CMAKE = f"{FOLDER_CONFIG}/objects_config.cmake"
+FILE_CONFIG_CMAKE = f"{FOLDER_CONFIG}/wpp_config.cmake"
 
 FILE_TMPLT_IMPL_H = f"{FOLDER_TEMPLATES}/FILE_OBJ_IMPL_H.txt"
 FILE_TMPLT_IMPL_CPP = f"{FOLDER_TEMPLATES}/FILE_OBJ_IMPL_CPP.txt"
@@ -70,7 +70,8 @@ KEY_OPERATIONS = "operations"
 KEY_DEFINE_RES = "res_define"
 
 TYPE_OPERATION = "ItemOp"
-TYPE_OBJECT = "ObjectSpec"
+TYPE_OBJECT = "Object"
+TYPE_OBJECT_IMPL = "ObjectImpl"
 TYPE_ID = "TYPE_ID"
 
 # there is a map between terms used in program, and terms used in LwM2M below:

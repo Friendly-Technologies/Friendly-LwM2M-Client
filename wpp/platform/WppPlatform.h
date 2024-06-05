@@ -13,7 +13,7 @@
 namespace wpp {
 
 /**
- * @brief The WppPlatform class provides a platform-specific implementation for the Wakaama Plus library.
+ * @brief The WppPlatform class provides a platform-specific implementation for the Wpp library.
  * 
  * This class uses the Linker Callback pattern, where the implementation of methods is carried out on the user side.
  * It provides functions for retrieving the elapsed time, printing messages, and simplifying the usage of the print function.

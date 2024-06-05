@@ -1,6 +1,6 @@
 /*
  * Generated on: 2024-04-03 15:26:42
- * Created by: SinaiR&D
+ * Created by: Sinai RnD
  */
 
 #ifndef WPP_FIRMWARE_UPDATE_INFO_H

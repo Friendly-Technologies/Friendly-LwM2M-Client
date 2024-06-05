@@ -46,7 +46,8 @@ class ObjectIntegrator:
             func.LOG(self.log_tag, self.insert_additional_data.__name__, f'the "{file_path}" file not found.')
             return False
         
-        type_obj = const.TYPE_OBJECT        
+        type_obj = const.TYPE_OBJECT
+        type_obj_impl = const.TYPE_OBJECT_IMPL        
 
         dict_obj_meta = data_dict[const.KEY_DICT_OBJ_META]
         dict_obj_names = data_dict[const.KEY_DICT_OBJ_NAMES]
@@ -72,11 +73,9 @@ class ObjectIntegrator:
             f"\t#endif\n"
 
         content_cfg_cmake = \
-            f"""option({obj_name_define} """ \
-            f""""Include {"mandatory" if obj_is_mandatory else "optional"} """ \
-            f"""{obj_name_class} object in the build" {"ON" if obj_is_mandatory else "OFF"})\n""" \
-            f"""if ({obj_name_define})\n\tset(WPP_DEFINITIONS ${{WPP_DEFINITIONS}} {obj_name_define})""" \
-            f"""\nendif()\n"""
+            f"""# Include {"mandatory" if obj_is_mandatory else "optional"} """ \
+            f"""{obj_name_class} object in the build"\n""" \
+            f"""set(WPP_DEFINITIONS ${{WPP_DEFINITIONS}} {obj_name_define})\n"""
 
         content_reg_h_include = \
             f"""#ifdef {obj_name_define}\n""" \
@@ -85,18 +84,18 @@ class ObjectIntegrator:
 
         content_reg_h_prototype = \
             f"""\t#ifdef {obj_name_define}\n\t""" \
-            f"""{type_obj}<{obj_name_class}> & {obj_name_camelcase}();\n\t""" \
+            f"""{type_obj} & {obj_name_camelcase}();\n\t""" \
             f"""#endif\n"""
 
         content_reg_cpp_init = \
             f"""\t#if {obj_name_define}\n""" \
-            f"""\t_objects.push_back(new {type_obj}<{obj_name_class}>(_context, {obj_name_underline}_OBJ_INFO));\n""" \
+            f"""\t_objects.push_back(new {type_obj_impl}<{obj_name_class}>(_context, {obj_name_underline}_OBJ_INFO));\n""" \
             f"""\t#endif\n"""
 
         content_reg_cpp_method = \
             f"""#if {obj_name_define}\n""" \
-            f"""{type_obj}<{obj_name_class}> & WppRegistry::{obj_name_camelcase}() {{\n\t""" \
-            f"""return *static_cast<{type_obj}<{obj_name_class}>*>(object(OBJ_ID::{obj_name_underline}));\n}}\n#endif\n"""
+            f"""{type_obj} & WppRegistry::{obj_name_camelcase}() {{\n\t""" \
+            f"""return *object(OBJ_ID::{obj_name_underline});\n}}\n#endif\n"""
 
         self.update_file(stop_string_obj_id, content_obj_id, const.FILE_OBJECT_ID)
         self.update_file(stop_string_cfg_cmk, content_cfg_cmake, const.FILE_CONFIG_CMAKE)

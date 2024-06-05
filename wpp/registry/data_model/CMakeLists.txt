@@ -2,6 +2,7 @@
 set(WPP_SOURCES ${WPP_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/object/Object.cpp)
 set(WPP_SOURCES ${WPP_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/instance/Instance.cpp)
 set(WPP_SOURCES ${WPP_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/resource/Resource.cpp)
+set(WPP_SOURCES ${WPP_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/resource/ResourceContainer.cpp)
 set(WPP_SOURCES ${WPP_SOURCES} PARENT_SCOPE)
 # Update WPP_INCLUDES variable from parent scope.
 set(WPP_INCLUDES ${WPP_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/instance/)

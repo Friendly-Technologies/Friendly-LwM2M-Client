@@ -17,15 +17,15 @@
 #include "WppConnection.h"
 #include "WppGuard.h"
 
-#define WPP_CLIENT_MAX_SLEEP_TIME_S	30
+#define WPP_CLIENT_MAX_SLEEP_TIME_S	60
 
 namespace wpp {
 
 /**
  * @class WppClient
- * @brief Represents a client interface for Wakaama Plus.
+ * @brief Represents a client interface for Wpp library.
  *
- * The WppClient class provides methods for managing the Wakaama Plus, accessing its components,
+ * The WppClient class provides methods for managing the Wpp library, accessing its components,
  * and processing the state of the Wakaama core. It allows users to create, remove, and check
  * if the WppClient is created. Users can also take ownership of the client, interact with its
  * connection and registry, and perform server registration and deregistration.
@@ -46,13 +46,14 @@ public:
 		std::string altPath; /**< The alternative path of the client. */
 	};
 
+	using WppErrHandler = std::function<void(WppClient &client, int errCode)>;
+
 private:
 	/**
 	 * @brief Constructs a WppClient object with the given connection and maximum sleep time.
 	 * @param connection The WppConnection object to be associated with the client.
-	 * @param maxSleepTime The maximum sleep time in seconds.
 	 */
-	WppClient(WppConnection &connection, time_t maxSleepTime);
+	WppClient(WppConnection &connection, WppErrHandler errHandler = NULL);
 	
 	/**
 	 * @brief Unused constructors of WppClient.
@@ -71,10 +72,9 @@ public:
 	 * @brief Creates a WppClient with the specified client information, connection, and maximum sleep time.
 	 * @param info The client information required to create the WppClient.
 	 * @param connection The WppConnection object to be associated with the client.
-	 * @param maxSleepTimeSec The maximum sleep time in seconds (default: WPP_CLIENT_MAX_SLEEP_TIME_S).
 	 * @return True if the WppClient is created successfully, false otherwise.
 	 */
-	static bool create(const ClientInfo &info, WppConnection &connection, time_t maxSleepTimeSec = WPP_CLIENT_MAX_SLEEP_TIME_S);
+	static bool create(const ClientInfo &info, WppConnection &connection, WppErrHandler errHandler = NULL);
 
 	/**
 	 * @brief Removes the WppClient.
@@ -188,9 +188,7 @@ private:
 
 	WppConnection &_connection;
 	WppRegistry *_registry;
-
-	time_t _maxSleepTimeSec;
-
+	WppErrHandler _errHandler;
 	lwm2m_context_t *_lwm2m_context;
 };
 

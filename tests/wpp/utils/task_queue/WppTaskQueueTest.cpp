@@ -2,8 +2,10 @@
 #include "WppTaskQueue.h"
 #include <thread>
 
-namespace wpp {
-    class WppClient {
+namespace wpp
+{
+    class WppClient
+    {
     public:
         WppClient() {}
         ~WppClient() {}
@@ -12,27 +14,37 @@ namespace wpp {
 
 using namespace wpp;
 
-static time_t handleTasks() {
+static time_t handleTasks()
+{
     WppClient client;
     time_t next_call = WppTaskQueue::handleEachTask(client);
     return next_call;
 }
 
-static void clearWppTaskQueue() {
+static void clearWppTaskQueue()
+{
     WppTaskQueue::requestToRemoveEachTask();
     handleTasks();
 }
 
-static WppTaskQueue::task_t createDummyTask() {
-    return [](WppClient&, void *) { return true; };
+static WppTaskQueue::task_t createDummyTask()
+{
+    return [](WppClient &, void *)
+    { return true; };
 }
 
-TEST_CASE("WppTaskQueue: Task creating", "[addTask][addTaskWithCopy]") {
+TEST_CASE("WppTaskQueue: Task creating", "[addTask][addTaskWithCopy]")
+{
     char str[] = "Hello, world!";
+
+    clearWppTaskQueue();
+
     REQUIRE(WppTaskQueue::getTaskCnt() == 0);
 
-    SECTION("Add Task without context") {
-        for (size_t i = 0; i < 100; i++) {
+    SECTION("Add Task without context")
+    {
+        for (size_t i = 0; i < 100; i++)
+        {
             WppTaskQueue::task_id_t taskId = WppTaskQueue::addTask(WPP_TASK_DEF_DELAY_S, createDummyTask());
             REQUIRE(taskId != WPP_ERR_TASK_ID);
             REQUIRE(WppTaskQueue::getTaskCnt() == i + 1);
@@ -45,8 +57,10 @@ TEST_CASE("WppTaskQueue: Task creating", "[addTask][addTaskWithCopy]") {
         clearWppTaskQueue();
     }
 
-    SECTION("Add Task with context") {
-        for (size_t i = 0; i < 100; i++) {
+    SECTION("Add Task with context")
+    {
+        for (size_t i = 0; i < 100; i++)
+        {
             WppTaskQueue::task_id_t taskId = WppTaskQueue::addTask(str, WPP_TASK_DEF_DELAY_S, createDummyTask());
             REQUIRE(taskId != WPP_ERR_TASK_ID);
             REQUIRE(WppTaskQueue::getTaskCnt() == i + 1);
@@ -59,8 +73,10 @@ TEST_CASE("WppTaskQueue: Task creating", "[addTask][addTaskWithCopy]") {
         clearWppTaskQueue();
     }
 
-    SECTION("Add Task with copied context") {
-        for (size_t i = 0; i < 100; i++) {
+    SECTION("Add Task with copied context")
+    {
+        for (size_t i = 0; i < 100; i++)
+        {
             WppTaskQueue::task_id_t taskId = WppTaskQueue::addTaskWithCopy(str, sizeof(str), WPP_TASK_DEF_DELAY_S, createDummyTask());
             REQUIRE(taskId != WPP_ERR_TASK_ID);
             REQUIRE(WppTaskQueue::getTaskCnt() == i + 1);
@@ -74,10 +90,12 @@ TEST_CASE("WppTaskQueue: Task creating", "[addTask][addTaskWithCopy]") {
     }
 }
 
-TEST_CASE("WppTaskQueue: Task removing", "[requestToRemoveTask][requestToRemoveEachTask][hardReset]") {
+TEST_CASE("WppTaskQueue: Task removing", "[requestToRemoveTask][requestToRemoveEachTask][hardReset]")
+{
     REQUIRE(WppTaskQueue::getTaskCnt() == 0);
 
-    SECTION("Remove Task") {
+    SECTION("Remove Task")
+    {
         WppTaskQueue::task_id_t taskId = WppTaskQueue::addTask(10, createDummyTask());
         REQUIRE(taskId != WPP_ERR_TASK_ID);
         REQUIRE(WppTaskQueue::getTaskCnt() == 1);
@@ -91,7 +109,8 @@ TEST_CASE("WppTaskQueue: Task removing", "[requestToRemoveTask][requestToRemoveE
         clearWppTaskQueue();
     }
 
-    SECTION("Remove each task") {
+    SECTION("Remove each task")
+    {
         WppTaskQueue::task_id_t taskId1 = WppTaskQueue::addTask(10, createDummyTask());
         WppTaskQueue::task_id_t taskId2 = WppTaskQueue::addTask(10, createDummyTask());
         REQUIRE(taskId1 != WPP_ERR_TASK_ID);
@@ -110,7 +129,8 @@ TEST_CASE("WppTaskQueue: Task removing", "[requestToRemoveTask][requestToRemoveE
         clearWppTaskQueue();
     }
 
-    SECTION("Hard reset") {
+    SECTION("Hard reset")
+    {
         char str[] = "Hello, world!";
         WppTaskQueue::task_id_t taskId1 = WppTaskQueue::addTask(10, createDummyTask());
         WppTaskQueue::task_id_t taskId2 = WppTaskQueue::addTaskWithCopy(str, sizeof(str), 10, createDummyTask());
@@ -129,10 +149,12 @@ TEST_CASE("WppTaskQueue: Task removing", "[requestToRemoveTask][requestToRemoveE
     }
 }
 
-TEST_CASE("WppTaskQueue: Task state checking", "[isTaskExist][isTaskIdle][isTaskExecuting][isTaskShouldBeDeleted]") {
+TEST_CASE("WppTaskQueue: Task state checking", "[isTaskExist][isTaskIdle][isTaskExecuting][isTaskShouldBeDeleted]")
+{
     REQUIRE(WppTaskQueue::getTaskCnt() == 0);
 
-    SECTION("Is task exist") {
+    SECTION("Is task exist")
+    {
         WppTaskQueue::task_id_t taskId = WppTaskQueue::addTask(WPP_TASK_DEF_DELAY_S, createDummyTask());
         REQUIRE(taskId != WPP_ERR_TASK_ID);
         REQUIRE(WppTaskQueue::isTaskExist(taskId));
@@ -140,7 +162,8 @@ TEST_CASE("WppTaskQueue: Task state checking", "[isTaskExist][isTaskIdle][isTask
         clearWppTaskQueue();
     }
 
-    SECTION("Is task idle") {
+    SECTION("Is task idle")
+    {
         WppTaskQueue::task_id_t taskId = WppTaskQueue::addTask(WPP_TASK_DEF_DELAY_S, createDummyTask());
         REQUIRE(taskId != WPP_ERR_TASK_ID);
         REQUIRE(WppTaskQueue::isTaskIdle(taskId));
@@ -148,8 +171,10 @@ TEST_CASE("WppTaskQueue: Task state checking", "[isTaskExist][isTaskIdle][isTask
         clearWppTaskQueue();
     }
 
-    SECTION("Is task executing") {
-        WppTaskQueue::task_t task = [](WppClient& client, void *ctx) {
+    SECTION("Is task executing")
+    {
+        WppTaskQueue::task_t task = [](WppClient &client, void *ctx)
+        {
             std::this_thread::sleep_for(std::chrono::seconds(2));
             return true;
         };
@@ -158,18 +183,20 @@ TEST_CASE("WppTaskQueue: Task state checking", "[isTaskExist][isTaskIdle][isTask
         REQUIRE(WppTaskQueue::isTaskExist(taskId));
 
         REQUIRE_FALSE(WppTaskQueue::isTaskExecuting(taskId));
-        std::thread my_thread([](){ handleTasks(); });
+        std::thread my_thread([]()
+                              { handleTasks(); });
 
         std::this_thread::sleep_for(std::chrono::seconds(1));
         REQUIRE(WppTaskQueue::isTaskExecuting(taskId));
-        
+
         my_thread.join();
         REQUIRE_FALSE(WppTaskQueue::isTaskExecuting(taskId));
 
         clearWppTaskQueue();
     }
 
-    SECTION("Is task should be deleted") {
+    SECTION("Is task should be deleted")
+    {
         WppTaskQueue::task_id_t taskId = WppTaskQueue::addTask(WPP_TASK_DEF_DELAY_S, createDummyTask());
         REQUIRE(taskId != WPP_ERR_TASK_ID);
         REQUIRE_FALSE(WppTaskQueue::isTaskShouldBeDeleted(taskId));
@@ -180,11 +207,14 @@ TEST_CASE("WppTaskQueue: Task state checking", "[isTaskExist][isTaskIdle][isTask
     }
 }
 
-TEST_CASE("WppTaskQueue: Task executing") {
+TEST_CASE("WppTaskQueue: Task executing")
+{
     REQUIRE(WppTaskQueue::getTaskCnt() == 0);
 
-    SECTION("Task with null context") {
-        WppTaskQueue::task_t task = [](WppClient& client, void *ctx) {
+    SECTION("Task with null context")
+    {
+        WppTaskQueue::task_t task = [](WppClient &client, void *ctx)
+        {
             REQUIRE(ctx == NULL);
             return true;
         };
@@ -192,55 +222,65 @@ TEST_CASE("WppTaskQueue: Task executing") {
         REQUIRE(taskId != WPP_ERR_TASK_ID);
         REQUIRE(WppTaskQueue::isTaskExist(taskId));
 
-        std::thread my_thread([](){ handleTasks(); });
+        std::thread my_thread([]()
+                              { handleTasks(); });
         my_thread.join();
 
         clearWppTaskQueue();
     }
 
-    SECTION("Task with context") {
+    SECTION("Task with context")
+    {
         char str[] = "Hello, world!";
-        WppTaskQueue::task_t task = [](WppClient& client, void *ctx) {
+        WppTaskQueue::task_t task = [](WppClient &client, void *ctx)
+        {
             REQUIRE(ctx != NULL);
-            REQUIRE(strcmp((char*)ctx, "Hello, world!") == 0);
+            REQUIRE(strcmp((char *)ctx, "Hello, world!") == 0);
             return true;
         };
         WppTaskQueue::task_id_t taskId = WppTaskQueue::addTask(str, WPP_TASK_MIN_DELAY_S, task);
         REQUIRE(taskId != WPP_ERR_TASK_ID);
         REQUIRE(WppTaskQueue::isTaskExist(taskId));
 
-        std::thread my_thread([](){ handleTasks(); });
+        std::thread my_thread([]()
+                              { handleTasks(); });
         my_thread.join();
 
         clearWppTaskQueue();
     }
 
-    SECTION("Task with copied context") {
+    SECTION("Task with copied context")
+    {
         char str[] = "Hello, world!";
-        WppTaskQueue::task_t task = [](WppClient& client, void *ctx) {
+        WppTaskQueue::task_t task = [](WppClient &client, void *ctx)
+        {
             REQUIRE(ctx != NULL);
-            REQUIRE(strcmp((char*)ctx, "Hello, world!") == 0);
+            REQUIRE(strcmp((char *)ctx, "Hello, world!") == 0);
             return true;
         };
         WppTaskQueue::task_id_t taskId = WppTaskQueue::addTaskWithCopy(str, sizeof(str), 0, task);
         REQUIRE(taskId != WPP_ERR_TASK_ID);
         REQUIRE(WppTaskQueue::isTaskExist(taskId));
 
-        std::thread my_thread([](){ handleTasks(); });
+        std::thread my_thread([]()
+                              { handleTasks(); });
         my_thread.join();
 
         clearWppTaskQueue();
     }
 
-    SECTION("Task with delay call") {
-        WppTaskQueue::task_t task = [](WppClient& client, void *ctx) {
+    SECTION("Task with delay call")
+    {
+        WppTaskQueue::task_t task = [](WppClient &client, void *ctx)
+        {
             return true;
         };
         WppTaskQueue::task_id_t taskId = WppTaskQueue::addTask(2, task);
         REQUIRE(taskId != WPP_ERR_TASK_ID);
         REQUIRE(WppTaskQueue::isTaskExist(taskId));
 
-        std::thread my_thread([taskId](){ 
+        std::thread my_thread([taskId]()
+                              { 
             handleTasks();
             REQUIRE(WppTaskQueue::isTaskExist(taskId));
             std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -248,16 +288,17 @@ TEST_CASE("WppTaskQueue: Task executing") {
             REQUIRE(WppTaskQueue::isTaskExist(taskId));
             std::this_thread::sleep_for(std::chrono::seconds(2));
             handleTasks(); 
-            REQUIRE_FALSE(WppTaskQueue::isTaskExist(taskId));
-        });
+            REQUIRE_FALSE(WppTaskQueue::isTaskExist(taskId)); });
         my_thread.join();
 
         clearWppTaskQueue();
     }
 
-    SECTION("Task with double call") {
+    SECTION("Task with double call")
+    {
         int callCnt = 2;
-        WppTaskQueue::task_t task = [&callCnt](WppClient& client, void *ctx) {
+        WppTaskQueue::task_t task = [&callCnt](WppClient &client, void *ctx)
+        {
             return !callCnt--;
         };
         WppTaskQueue::task_id_t taskId = WppTaskQueue::addTask(WPP_TASK_MIN_DELAY_S, task);
@@ -266,23 +307,25 @@ TEST_CASE("WppTaskQueue: Task executing") {
 
         handleTasks();
         REQUIRE(WppTaskQueue::isTaskExist(taskId));
-        handleTasks(); 
+        handleTasks();
         REQUIRE(WppTaskQueue::isTaskExist(taskId));
-        handleTasks(); 
+        handleTasks();
         REQUIRE_FALSE(WppTaskQueue::isTaskExist(taskId));
 
         clearWppTaskQueue();
     }
 }
 
-TEST_CASE("WppTaskQueue: Error Handling and Edge Cases") {
+TEST_CASE("WppTaskQueue: Error Handling and Edge Cases")
+{
     char str[] = "Hello, world!";
     WppTaskQueue::task_id_t taskId;
     REQUIRE(WppTaskQueue::getTaskCnt() == 0);
     REQUIRE(WPP_TASK_DEF_CTX == NULL);
     REQUIRE(WPP_ERR_TASK_ID == 0);
 
-    SECTION("Task delay") {
+    SECTION("Task delay")
+    {
         REQUIRE(WPP_TASK_MIN_DELAY_S <= WPP_TASK_DEF_DELAY_S);
         REQUIRE(WPP_TASK_DEF_DELAY_S <= WPP_TASK_MAX_DELAY_S);
 
@@ -307,14 +350,16 @@ TEST_CASE("WppTaskQueue: Error Handling and Edge Cases") {
         clearWppTaskQueue();
     }
 
-    SECTION("Task with null context") {
+    SECTION("Task with null context")
+    {
         taskId = WppTaskQueue::addTask(NULL, WPP_TASK_DEF_DELAY_S, createDummyTask());
         REQUIRE(WppTaskQueue::isTaskExist(taskId));
 
         clearWppTaskQueue();
     }
 
-    SECTION("Copy task with null context") {
+    SECTION("Copy task with null context")
+    {
         taskId = WppTaskQueue::addTaskWithCopy(NULL, sizeof(str), WPP_TASK_DEF_DELAY_S, createDummyTask());
         REQUIRE(taskId == WPP_ERR_TASK_ID);
         REQUIRE_FALSE(WppTaskQueue::isTaskExist(taskId));
@@ -322,7 +367,8 @@ TEST_CASE("WppTaskQueue: Error Handling and Edge Cases") {
         clearWppTaskQueue();
     }
 
-    SECTION("Copy task with 0 size") {
+    SECTION("Copy task with 0 size")
+    {
         taskId = WppTaskQueue::addTaskWithCopy(str, 0, WPP_TASK_DEF_DELAY_S, createDummyTask());
         REQUIRE(taskId == WPP_ERR_TASK_ID);
         REQUIRE_FALSE(WppTaskQueue::isTaskExist(taskId));
@@ -330,7 +376,8 @@ TEST_CASE("WppTaskQueue: Error Handling and Edge Cases") {
         clearWppTaskQueue();
     }
 
-    SECTION("Check state with incorrect task id") {
+    SECTION("Check state with incorrect task id")
+    {
         REQUIRE_FALSE(WppTaskQueue::isTaskExist(WPP_ERR_TASK_ID));
         REQUIRE_FALSE(WppTaskQueue::isTaskIdle(WPP_ERR_TASK_ID));
         REQUIRE_FALSE(WppTaskQueue::isTaskExecuting(WPP_ERR_TASK_ID));
@@ -339,7 +386,8 @@ TEST_CASE("WppTaskQueue: Error Handling and Edge Cases") {
         clearWppTaskQueue();
     }
 
-    SECTION("Remove incorrect task id") {
+    SECTION("Remove incorrect task id")
+    {
         taskId = WppTaskQueue::addTask(WPP_TASK_DEF_DELAY_S, createDummyTask());
         WppTaskQueue::requestToRemoveTask(WPP_ERR_TASK_ID);
         REQUIRE_FALSE(WppTaskQueue::isTaskShouldBeDeleted(taskId));

@@ -1,7 +1,7 @@
 /*
  * Device
  * Generated on: 2023-11-02 16:38:01
- * Created by: SinaiR&D
+ * Created by: Sinai RnD
  */
 
 #include "m_3_device/Device.h"
@@ -10,6 +10,7 @@
 #include "ItemOp.h"
 #include "WppTypes.h"
 #include "WppLogs.h"
+#include "WppClient.h"
 
 /* --------------- Code_cpp block 0 start --------------- */
 #if RES_3_9
@@ -45,23 +46,42 @@ Device::~Device() {
 	/* --------------- Code_cpp block 3 end --------------- */
 }
 
+Object & Device::object(WppClient &ctx) {
+	return ctx.registry().device();
+}
+
+Device * Device::instance(WppClient &ctx, ID_T instId) {
+	Instance *inst = ctx.registry().device().instance(instId);
+	if (!inst) return NULL;
+	return static_cast<Device*>(inst);
+}
+
+Device * Device::createInst(WppClient &ctx, ID_T instId) {
+	Instance *inst = ctx.registry().device().createInstance(instId);
+	if (!inst) return NULL;
+	return static_cast<Device*>(inst);
+}
+
+bool Device::removeInst(WppClient &ctx, ID_T instId) {
+	return ctx.registry().device().remove(instId);
+}
+
 void Device::serverOperationNotifier(Instance *securityInst, ItemOp::TYPE type, const ResLink &resLink) {
-	/* --------------- Code_cpp block 6 start --------------- */
-	/* --------------- Code_cpp block 6 end --------------- */
+	/* --------------- Code_cpp block 4 start --------------- */
+	/* --------------- Code_cpp block 4 end --------------- */
 
 	operationNotify(*this, resLink, type);
 
-	/* --------------- Code_cpp block 7 start --------------- */
-	/* --------------- Code_cpp block 7 end --------------- */
+	/* --------------- Code_cpp block 5 start --------------- */
+	/* --------------- Code_cpp block 5 end --------------- */
 }
 
 void Device::userOperationNotifier(ItemOp::TYPE type, const ResLink &resLink) {
-	/* --------------- Code_cpp block 8 start --------------- */
-	/* --------------- Code_cpp block 8 end --------------- */
-}
+	if (type == ItemOp::WRITE || type == ItemOp::DELETE) notifyResChanged(resLink.resId, resLink.resInstId);
 
-/* --------------- Code_cpp block 9 start --------------- */
-/* --------------- Code_cpp block 9 end --------------- */
+	/* --------------- Code_cpp block 6 start --------------- */
+	/* --------------- Code_cpp block 6 end --------------- */
+}
 
 void Device::resourcesCreate() {
 	std::vector<Resource> resources = {
@@ -129,116 +149,102 @@ void Device::resourcesCreate() {
 		{EXTDEVINFO_22,                  ItemOp(ItemOp::READ),              IS_SINGLE::MULTIPLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::OBJ_LINK }, 
 		#endif                                                                                                                                                                  
 	};
-	_resources = std::move(resources);
+	setupResources(std::move(resources));
 }
 
 void Device::resourcesInit() {
-	/* --------------- Code_cpp block 10 start --------------- */
+	/* --------------- Code_cpp block 7 start --------------- */
 	#if RES_3_0                                                                                                                                                                                        
-	resource(MANUFACTURER_0)->set(STRING_T(""));
+	resource(MANUFACTURER_0)->set<STRING_T>("");
 	#endif          
 
 	#if RES_3_1  
-	resource(MODEL_NUMBER_1)->set(STRING_T(""));                                                                                                                                                                                        
+	resource(MODEL_NUMBER_1)->set<STRING_T>("");                                                                                                                                                                                        
 	#endif                                                                                                                                                                                                              
 	
 	#if RES_3_2                                                                                                                                                                                         
-	resource(SERIAL_NUMBER_2)->set(STRING_T("")); 
+	resource(SERIAL_NUMBER_2)->set<STRING_T>(""); 
 	#endif                                                                                                                                                                                                              
 	
 	#if RES_3_3                                                                                                                                                                                        
-	resource(FIRMWARE_VERSION_3)->set(STRING_T("")); 
+	resource(FIRMWARE_VERSION_3)->set<STRING_T>(""); 
 	#endif     
  
-	resource(REBOOT_4)->set((EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
+	resource(REBOOT_4)->set<EXECUTE_T>([](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
                                                                                                                                                                                                                             
 	#if RES_3_5
-	resource(FACTORY_RESET_5)->set((EXECUTE_T)[](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
+	resource(FACTORY_RESET_5)->set<EXECUTE_T>([](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
 	#endif
 
 	#if RES_3_6
-	resource(AVAILABLE_POWER_SOURCES_6)->set(INT_T(PWR_SRC_MAX));
 	resource(AVAILABLE_POWER_SOURCES_6)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return DC <= value && value < PWR_SRC_MAX; });
 	#endif
 
-	#if RES_3_7
-	resource(POWER_SOURCE_VOLTAGE_7)->set(INT_T(0));                                                                                                                                                                                 
-	#endif                                                                                                                                                                                                              
-	
-	#if RES_3_8
-	resource(POWER_SOURCE_CURRENT_8)->set(INT_T(0));                                                                                                                                                                                  
-	#endif 
-	
 	#if RES_3_9
-	resource(BATTERY_LEVEL_9)->set(INT_T(BAT_LVL_MIN));
+	resource(BATTERY_LEVEL_9)->set<INT_T>(BAT_LVL_MIN);
 	resource(BATTERY_LEVEL_9)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return BAT_LVL_MIN <= value && value <= BAT_LVL_MAX; });
 	#endif
 
 	#if RES_3_10
-	resource(MEMORY_FREE_10)->set(INT_T(0));                                                                                                                                                                                         
+	resource(MEMORY_FREE_10)->set<INT_T>(0);                                                                                                                                                                                         
 	#endif
 
-	resource(ERROR_CODE_11)->set((INT_T)NO_ERROR);
 	resource(ERROR_CODE_11)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return NO_ERROR <= value && value < ERR_CODE_MAX; });
 	
 	#if RES_3_12
-	resource(RESET_ERROR_CODE_12)->set((EXECUTE_T)[this](Instance& inst, ID_T resId, const OPAQUE_T& buff) { 
+	resource(RESET_ERROR_CODE_12)->set<EXECUTE_T>([this](Instance& inst, ID_T resId, const OPAQUE_T& buff) { 
 		resource(ERROR_CODE_11)->clear();
-		resource(ERROR_CODE_11)->set((INT_T)NO_ERROR);
-		notifyServerResChanged({ERROR_CODE_11,});
+		resource(ERROR_CODE_11)->set<INT_T>(NO_ERROR);
+		notifyResChanged(ERROR_CODE_11);
 		return true;
 	});
 	#endif
 
 	#if RES_3_13
-	resource(CURRENT_TIME_13)->set(TIME_T(WppPlatform::getTime()));
+	resource(CURRENT_TIME_13)->set<TIME_T>(WppPlatform::getTime());
 	_currentTimeTaskId = WppTaskQueue::addTask(1, [this](WppClient &client, void *ctx) -> bool {
 		TIME_T currentTime = WppPlatform::getTime();
-		this->resource(CURRENT_TIME_13)->set(currentTime);
-		this->notifyServerResChanged({CURRENT_TIME_13,});
+		resource(CURRENT_TIME_13)->set<TIME_T>(currentTime);
+		notifyResChanged(CURRENT_TIME_13);
 		return false;
 	});
 	#endif                                                                                                                                                                                                              
 	
 	#if RES_3_14
-	resource(UTC_OFFSET_14)->set(STRING_T(""));                                                                                                                                                                                             
+	resource(UTC_OFFSET_14)->set<STRING_T>("");                                                                                                                                                                                             
 	#endif                                                                                                                                                                                                              
 	
 	#if RES_3_15
-	resource(TIMEZONE_15)->set(STRING_T(""));                                                                                                                                                                                     
+	resource(TIMEZONE_15)->set<STRING_T>("");                                                                                                                                                                                     
 	#endif
 
-	resource(SUPPORTED_BINDING_AND_MODES_16)->set(STRING_T(""));
+	resource(SUPPORTED_BINDING_AND_MODES_16)->set<STRING_T>("");
 	resource(SUPPORTED_BINDING_AND_MODES_16)->setDataVerifier((VERIFY_STRING_T)([](const STRING_T& value) { return wppBindingValidate(value); }));
 
 	#if RES_3_17
-	resource(DEVICE_TYPE_17)->set(STRING_T(""));                                                                                                                                                                                           
+	resource(DEVICE_TYPE_17)->set<STRING_T>("");                                                                                                                                                                                           
 	#endif
 
 	#if RES_3_18
-	resource(HARDWARE_VERSION_18)->set(STRING_T(""));                                                                                                                                                                              
+	resource(HARDWARE_VERSION_18)->set<STRING_T>("");                                                                                                                                                                              
 	#endif                                                                                                                                                                                                              
 	
 	#if RES_3_19
-	resource(SOFTWARE_VERSION_19)->set(STRING_T(""));                                                                                                                                                                                    
+	resource(SOFTWARE_VERSION_19)->set<STRING_T>("");                                                                                                                                                                                    
 	#endif                 
 
 	#if RES_3_20
-	resource(BATTERY_STATUS_20)->set(INT_T(BAT_STATUS_MAX));
+	resource(BATTERY_STATUS_20)->set<INT_T>(BAT_STATUS_MAX);
 	resource(BATTERY_STATUS_20)->setDataVerifier((VERIFY_INT_T)[](const INT_T& value) { return NORMAL <= value && value < BAT_STATUS_MAX; });
 	#endif
 
 	#if RES_3_21                                                                                                                                                                                          
-	resource(MEMORY_TOTAL_21)->set((INT_T)NO_ERROR);
-	#endif                                                                                                                                                                                                              
-	
-	#if RES_3_22                                                                                                                                                                                       
-	resource(EXTDEVINFO_22)->set(OBJ_LINK_T());
-	#endif     
-	/* --------------- Code_cpp block 10 end --------------- */
+	resource(MEMORY_TOTAL_21)->set<INT_T>(NO_ERROR);
+	#endif                                                                                                                                                                                                                  
+	/* --------------- Code_cpp block 7 end --------------- */
 }
 
-/* --------------- Code_cpp block 11 start --------------- */
-/* --------------- Code_cpp block 11 end --------------- */
+/* --------------- Code_cpp block 8 start --------------- */
+/* --------------- Code_cpp block 8 end --------------- */
 
 } /* namespace wpp */

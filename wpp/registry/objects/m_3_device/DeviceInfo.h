@@ -1,6 +1,6 @@
 /*
  * Generated on: 2023-11-02 16:38:01
- * Created by: SinaiR&D
+ * Created by: Sinai RnD
  */
 
 #ifndef WPP_DEVICE_INFO_H
@@ -29,9 +29,7 @@ inline const ObjectInfo DEVICE_OBJ_INFO = {
 	IS_MANDATORY::MANDATORY,
 	/* Object supported operations */
 	/* --------------- Info block 0 start --------------- */
-	ItemOp(ItemOp::CREATE|
-		   ItemOp::DELETE|
-		   ItemOp::READ|
+	ItemOp(ItemOp::READ|
 		   ItemOp::WRITE|
 		   ItemOp::DISCOVER|
 		   ItemOp::EXECUTE),

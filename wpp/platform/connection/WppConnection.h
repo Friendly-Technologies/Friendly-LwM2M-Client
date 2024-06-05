@@ -16,9 +16,9 @@
 #define WPP_CONN_I_PACKETS_QUEUE_SIZE 10
 
 /**
- * @brief The WppConnection class represents a connection interface for the Wakaama Plus library.
+ * @brief The WppConnection class represents a connection interface for the Wpp library.
  * 
- * This class provides an abstract interface for establishing and managing connections in the Wakaama Plus library.
+ * This class provides an abstract interface for establishing and managing connections in the Wpp library.
  * It defines pure virtual methods that must be implemented by the user to establish a connection, disconnect from a connection,
  * compare session identifiers, and send packets over the connection.
  * 

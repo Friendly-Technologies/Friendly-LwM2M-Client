@@ -144,8 +144,7 @@ Connection::SESSION_T Connection::connect(Lwm2mSecurity& security) {
     socklen_t sl;
     dtls_connection_t * conn = NULL;
 
-    STRING_T uri;
-    security.get(Lwm2mSecurity::LWM2M_SERVER_URI_0, uri);
+    STRING_T uri = security.get<STRING_T>(Lwm2mSecurity::LWM2M_SERVER_URI_0);
     string host = uriToHost(uri);
     string port = uriToPort(uri);
     cout << "Connection: connect to host " << host << ", host len: " << strlen(host.c_str()) << ", port " << port << ", port len: " << strlen(port.c_str()) << endl;
@@ -181,8 +180,7 @@ Connection::SESSION_T Connection::connect(Lwm2mSecurity& security) {
         
         setupSecurityKeys(security, conn);
 
-        INT_T mode;
-        security.get(Lwm2mSecurity::SECURITY_MODE_2, mode);
+        INT_T mode = security.get<INT_T>(Lwm2mSecurity::SECURITY_MODE_2);
         if (mode != LWM2M_SECURITY_MODE_NONE) {
             conn->dtlsContext = _dtlsContext;
         } else if (conn->dtlsSession) {
@@ -241,6 +239,8 @@ bool Connection::sendPacket(const Packet &packet) {
         if (sendData(packet) ) return false;
     } else {
         if (DTLS_NAT_TIMEOUT > 0 && (time(NULL) - conn->lastSend) > DTLS_NAT_TIMEOUT) {
+            cout << "Connection: can't send due to NAT timeout" << endl;
+            cout << "Connection: rehandshake" << endl;
             // we need to rehandhake because our source IP/port probably changed for the server
             if (!rehandshake(conn, false)) {
                 cout << "Connection: can't send due to rehandshake error" << endl;
@@ -445,14 +445,12 @@ const OPAQUE_T &  Connection::getSecretKey(dtls_connection_t *conn) {
 
 bool Connection::setupSecurityKeys(Lwm2mSecurity& security, dtls_connection_t *conn) {
     #if DTLS_WITH_PSK
-    security.get(Lwm2mSecurity::PUBLIC_KEY_OR_IDENTITY_3, conn->pubKey);
-    security.get(Lwm2mSecurity::SECRET_KEY_5, conn->privKey);
+    conn->pubKey = security.get<OPAQUE_T>(Lwm2mSecurity::PUBLIC_KEY_OR_IDENTITY_3);
+    conn->privKey = security.get<OPAQUE_T>(Lwm2mSecurity::SECRET_KEY_5);
     #elif DTLS_WITH_RPK
-    OPAQUE_T pubKey;
-    OPAQUE_T privKey;
+    OPAQUE_T pubKey = security.get<OPAQUE_T>(Lwm2mSecurity::PUBLIC_KEY_OR_IDENTITY_3);
+    OPAQUE_T privKey = security.get<OPAQUE_T>(Lwm2mSecurity::SECRET_KEY_5);
 
-    security.get(Lwm2mSecurity::PUBLIC_KEY_OR_IDENTITY_3, pubKey);
-    security.get(Lwm2mSecurity::SECRET_KEY_5, privKey);
     if (privKey.size() != DTLS_EC_KEY_SIZE) {
         cout << "Connection: private key size is incorrect and equals: " << privKey.size() << endl;
         return false;

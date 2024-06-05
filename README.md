@@ -3,7 +3,7 @@ Friendly LwM2M Client  is Eclipse Wakaama-based integrated LWM2M solution
 
 For download repository with submodules:  `git clone --recurse-submodules git@github.com:Friendly-Technologies/Friendly-LwM2M-Client.git`
 
-For running auto setup environment:  `sh ./wakaama_env.sh`
+For running auto setup environment:  `sh ./wpp_env_setup.sh`
 
 For open projects with VS Code:
 1) Start VS Code and go to `File→Open Workspace` from File.

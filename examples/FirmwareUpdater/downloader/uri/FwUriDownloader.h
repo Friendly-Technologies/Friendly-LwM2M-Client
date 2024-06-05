@@ -6,11 +6,12 @@
 
 #include "FwDownloaderCoap.h"
 #include "FwDownloaderHttp.h"
-
 #include "FirmwareChecker.h"
 
 using namespace wpp;
 using namespace std;
+
+#if RES_5_8
 
 class FwUriDownloader : public FwExternalDl {
 public:
@@ -33,9 +34,8 @@ public:
         } else if (isCoapScheme(uri)) {
             _coapDownloader.startDownloading(uri, downloadedClb);
         } else if (isCoapsScheme(uri)) {
-            OPAQUE_T psk_id, psk_key;
-            security.get(Lwm2mSecurity::PUBLIC_KEY_OR_IDENTITY_3, psk_id);
-            security.get(Lwm2mSecurity::SECRET_KEY_5, psk_key);
+            OPAQUE_T psk_id = security.get<OPAQUE_T>(Lwm2mSecurity::PUBLIC_KEY_OR_IDENTITY_3);
+            OPAQUE_T psk_key = security.get<OPAQUE_T>(Lwm2mSecurity::SECRET_KEY_5);
             _coapDownloader.startDownloading(uri, string(psk_id.begin(), psk_id.end()), psk_key, downloadedClb);
         }
     }
@@ -83,5 +83,7 @@ private:
     FwDownloaderCoap _coapDownloader;
     FwDownloaderHttp _httpDownloader;
 };
+
+#endif // RES_5_8
 
 #endif // FW_URI_DOWNLOADER_H

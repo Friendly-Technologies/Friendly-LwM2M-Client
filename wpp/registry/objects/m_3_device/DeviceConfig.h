@@ -1,6 +1,6 @@
 /*
  * Generated on: 2023-11-02 16:38:01
- * Created by: SinaiR&D
+ * Created by: Sinai RnD
  */
 
 #ifndef WPP_DEVICE_CONFIG_H
@@ -13,7 +13,21 @@
 #define RES_3_1 1
 #define RES_3_2 1
 #define RES_3_3 1
+#define RES_3_5 0
+#define RES_3_6 0
+#define RES_3_7 0
+#define RES_3_8 0
+#define RES_3_9 0
+#define RES_3_10 0
+#define RES_3_12 0
 #define RES_3_13 1
+#define RES_3_14 0
+#define RES_3_15 0
+#define RES_3_17 0
+#define RES_3_19 0
+#define RES_3_20 0
+#define RES_3_21 0
+#define RES_3_22 0
 /* --------------- Config block 0 end --------------- */
 
 #endif // WPP_DEVICE_CONFIG_H

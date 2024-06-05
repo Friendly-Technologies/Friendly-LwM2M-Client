@@ -14,11 +14,7 @@ set(WPP_DEFINITIONS "")
 # Include file with compiler config
 include(configs/compiler_config.cmake)
 # Include file with Wakaama core config
-include(configs/wakaama_config.cmake)
-# Include file with wpp config
 include(configs/wpp_config.cmake)
-# Include file with wpp object configs
-include(configs/objects_config.cmake)
 # Include file with Wpp sources
 include(wpp.cmake)
 
@@ -27,7 +23,7 @@ add_library(Wpp STATIC)
 # Set wpp properties
 target_compile_definitions(Wpp PUBLIC ${WPP_DEFINITIONS})
 # Link Wpp sources
-target_link_wpp(Wpp)
+target_link_wpp(Wpp wpp)
 
 # Custom command to generate libWpp.zip
 add_custom_command(

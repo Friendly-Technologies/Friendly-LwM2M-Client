@@ -1,6 +1,6 @@
 /*
  * Generated on: 2023-11-02 16:41:01
- * Created by: SinaiR&D
+ * Created by: Sinai RnD
  */
 
 #ifndef WPP_LWM2M_SERVER_INFO_H

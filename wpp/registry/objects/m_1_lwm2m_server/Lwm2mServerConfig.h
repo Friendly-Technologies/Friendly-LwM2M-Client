@@ -1,6 +1,6 @@
 /*
  * Generated on: 2023-11-02 16:41:01
- * Created by: SinaiR&D
+ * Created by: Sinai RnD
  */
 
 #ifndef WPP_LWM2M_SERVER_CONFIG_H
@@ -12,7 +12,7 @@
 #define RES_1_2 0
 #define RES_1_3 0
 #define RES_1_4 1
-#define RES_1_5 0
+#define RES_1_5 1
 #define RES_1_9 1
 #define RES_1_10 0
 #define RES_1_11 0

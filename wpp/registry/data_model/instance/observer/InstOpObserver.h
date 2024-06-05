@@ -18,11 +18,6 @@ class InstOpObserver {
 public:
     virtual ~InstOpObserver() {};
     /**
-     * @brief Notifies observer immediately after read resource by server. 
-     * Resource is already readed during this call.
-     */
-    virtual void resourceRead(Instance &inst, const ResLink &resource) {};
-    /**
      * @brief Notifies observer immediately after write resource by server. 
      * Resource is already written during this call.
      */

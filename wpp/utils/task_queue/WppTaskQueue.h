@@ -27,7 +27,7 @@ class WppClient;
 
 /**
  * @class WppTaskQueue
- * @brief Represents a task queue for Wakaama Plus.
+ * @brief Represents a task queue.
  * 
  * The queue of tasks does not guarantee timely calling of a task
  * with a fixed delay, all tasks in the queue are processed sequentially,
@@ -199,7 +199,7 @@ public:
 	 * @return time in sec to next task execution, if tasks are not exist then returns
 	 *   	   WPP_TASK_MAX_DELAY_S.
 	 */
-	static time_t handleEachTask(WppClient& clien);
+	static time_t handleEachTask(WppClient& client);
 
 private:
 	/**

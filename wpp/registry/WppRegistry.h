@@ -9,7 +9,7 @@
 #define WPP_REGISTRY_H_
 
 #include <vector>
-#include "ObjectSpec.h"
+#include "ObjectImpl.h"
 
 /* ---------- Mandatory objects include block begin ---------- */
 #ifdef OBJ_M_3_DEVICE
@@ -90,7 +90,7 @@ public:
 	 * @param objId The ID of the Object to check.
 	 * @return True if the Object exists, false otherwise.
 	 */
-	bool isObjExist(OBJ_ID objId);
+	bool isExist(OBJ_ID objId);
 
 	/**
 	 * @brief Retrieves a pointer to the Object with the given objId.
@@ -98,32 +98,39 @@ public:
 	 * @param objId The ID of the Object to retrieve.
 	 * @return A pointer to the Object if found, nullptr otherwise.
 	 */
-	Object *object(OBJ_ID objId);
+	Object * object(OBJ_ID objId);
+
+	/**
+	 * @brief Gets all registered objects.
+	 *
+	 * @return A vector of pointers to the registered objects.
+	 */
+	std::vector<Object *> & objects();
 
 	/* ---------- Mandatory objects prototype block begin ---------- */
 	#ifdef OBJ_M_3_DEVICE
-	ObjectSpec<Device> & device();
+	Object & device();
 	#endif
 	#ifdef OBJ_M_1_LWM2M_SERVER
-	ObjectSpec<Lwm2mServer> & lwm2mServer();
+	Object & lwm2mServer();
 	#endif
 	#ifdef OBJ_M_0_LWM2M_SECURITY
-	ObjectSpec<Lwm2mSecurity> & lwm2mSecurity();
+	Object & lwm2mSecurity();
 	#endif
 	/* ---------- Mandatory objects prototype block end ---------- */
 
 	/* ---------- Optional objects prototype block begin ---------- */
 	#ifdef OBJ_O_4_CONNECTIVITY_MONITORING
-	ObjectSpec<ConnectivityMonitoring> & connectivityMonitoring();
+	Object & connectivityMonitoring();
 	#endif
 	#ifdef OBJ_O_2_LWM2M_ACCESS_CONTROL
-	ObjectSpec<Lwm2mAccessControl> & lwm2mAccessControl();
+	Object & lwm2mAccessControl();
 	#endif
 	#ifdef OBJ_O_3339_AUDIO_CLIP
-	ObjectSpec<AudioClip> & audioClip();
+	Object & audioClip();
 	#endif
 	#ifdef OBJ_O_5_FIRMWARE_UPDATE
-	ObjectSpec<FirmwareUpdate> & firmwareUpdate();
+	Object & firmwareUpdate();
 	#endif
 	/* ---------- Optional objects prototype block end ---------- */
 

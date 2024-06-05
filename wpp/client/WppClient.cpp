@@ -16,24 +16,31 @@ namespace wpp {
 WppGuard WppClient::_clientGuard;
 WppClient *WppClient::_client = NULL;
 
-WppClient::WppClient(WppConnection &connection, time_t maxSleepTimeSec): _connection(connection), _maxSleepTimeSec(maxSleepTimeSec) {
+WppClient::WppClient(WppConnection &connection, WppErrHandler errHandler): _connection(connection), _errHandler(errHandler) {
 	lwm2mContextOpen();
 	_registry = new WppRegistry(getContext());
 }
 
 WppClient::~WppClient() {
-	WPP_LOGE(TAG_WPP_CLIENT, "Destroying WppClient");
-	lwm2mContextClose();
+	WPP_LOGI(TAG_WPP_CLIENT, "Destroying WppClient");
+	WPP_LOGI(TAG_WPP_CLIENT, "Destroying WppRegistry");
 	delete _registry;
+	_registry = NULL;
+	WPP_LOGI(TAG_WPP_CLIENT, "Clearing wpp tasks");
+	WppTaskQueue::hardReset();
+	WPP_LOGI(TAG_WPP_CLIENT, "Clearing packet queue");
+	connection().clearPacketQueue();
+	WPP_LOGI(TAG_WPP_CLIENT, "Closing lwm2m context");
+	lwm2mContextClose();
 	_client = NULL;
 }
 
 /* ------------- WppClient management ------------- */
-bool WppClient::create(const ClientInfo &info, WppConnection &connection, time_t maxSleepTime) {
+bool WppClient::create(const ClientInfo &info, WppConnection &connection, WppErrHandler errHandler) {
 	if (isCreated()) return true;
 	
 	WPP_LOGD(TAG_WPP_CLIENT, "Creating WppClient instance with info: endpoint->%s, msisdn->%s, altPath->%s", info.endpointName.c_str(), info.msisdn.c_str(), info.altPath.c_str());
-	_client = new WppClient(connection, maxSleepTime);
+	_client = new WppClient(connection, errHandler);
 	bool result = _client->lwm2mConfigure(info.endpointName, info.msisdn, info.altPath);
 	if (!result) {
 		WPP_LOGE(TAG_WPP_CLIENT, "Error during client configuration");
@@ -98,7 +105,7 @@ lwm2m_context_t & WppClient::getContext() {
 
 time_t WppClient::loop() {
 	// Max sleep time
-	time_t sleepTimeSec = _maxSleepTimeSec;
+	time_t sleepTimeSec = WPP_CLIENT_MAX_SLEEP_TIME_S;
 
 	WPP_LOGD(TAG_WPP_CLIENT, "Handling server packets if they exists");
 	// Handles packets retreived from server
@@ -120,12 +127,9 @@ time_t WppClient::loop() {
 	WPP_LOGD(TAG_WPP_CLIENT, "Handling lwm2m internal state: result -> %d, state -> %d", result, getState());
 	if (result) {
 		WPP_LOGW(TAG_WPP_CLIENT, "LWM2M core step failed, error code: %d", result);
-		if (getState() == STATE_BOOTSTRAPPING || getState() == STATE_BOOTSTRAP_REQUIRED) {
-			WPP_LOGW(TAG_WPP_CLIENT, "Trying to restore security and server objects");
-			registry().object(OBJ_ID::LWM2M_SECURITY)->restore();
-			registry().object(OBJ_ID::LWM2M_SERVER)->restore();
-		}
+		if (_errHandler) _errHandler(*this, result);
 		_lwm2m_context->state = STATE_INITIAL;
+		sleepTimeSec = 0;
 	}
 
 	return sleepTimeSec;
@@ -158,9 +162,9 @@ void WppClient::lwm2mContextClose() {
 }
 
 bool WppClient::lwm2mConfigure(const std::string &endpointName, const std::string &msisdn, const std::string &altPath) {
-	lwm2m_object_t *lwm2m_major_objects[] = {&registry().object(OBJ_ID::LWM2M_SECURITY)->getLwm2mObject(),
-											&registry().object(OBJ_ID::LWM2M_SERVER)->getLwm2mObject(),
-										    &registry().object(OBJ_ID::DEVICE)->getLwm2mObject()};
+	lwm2m_object_t *lwm2m_major_objects[] = {&Lwm2mSecurity::object(*this).getLwm2mObject(),
+											 &Lwm2mServer::object(*this).getLwm2mObject(),
+										     &Device::object(*this).getLwm2mObject()};
 	uint16_t objectsCnt = sizeof(lwm2m_major_objects) / sizeof(lwm2m_object_t *);
 	const char *msisdn_c = msisdn.empty()? NULL : msisdn.c_str();
 	const char *altPath_c = altPath.empty()? NULL : altPath.c_str();

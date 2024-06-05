@@ -2,8 +2,8 @@
 #define FIRMWARE_CHECKER_H_
 
 #include <iostream>
+#include <fstream>
 
-using namespace wpp;
 using namespace std;
 
 class FirmwareChecker {

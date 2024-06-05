@@ -448,11 +448,9 @@ bool Connection::setupSecurityKeys(Lwm2mSecurity& security, dtls_connection_t *c
     conn->pubKey = security.get<OPAQUE_T>(Lwm2mSecurity::PUBLIC_KEY_OR_IDENTITY_3);
     conn->privKey = security.get<OPAQUE_T>(Lwm2mSecurity::SECRET_KEY_5);
     #elif DTLS_WITH_RPK
-    OPAQUE_T pubKey;
-    OPAQUE_T privKey;
+    OPAQUE_T pubKey = security.get<OPAQUE_T>(Lwm2mSecurity::PUBLIC_KEY_OR_IDENTITY_3);
+    OPAQUE_T privKey = security.get<OPAQUE_T>(Lwm2mSecurity::SECRET_KEY_5);
 
-    security.get(Lwm2mSecurity::PUBLIC_KEY_OR_IDENTITY_3, pubKey);
-    security.get(Lwm2mSecurity::SECRET_KEY_5, privKey);
     if (privKey.size() != DTLS_EC_KEY_SIZE) {
         cout << "Connection: private key size is incorrect and equals: " << privKey.size() << endl;
         return false;

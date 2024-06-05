@@ -49,7 +49,11 @@ void serverInit(WppClient &client) {
 void securityInit(WppClient &client) {
     client.registry().registerObj(Lwm2mSecurity::object(client));
     wpp::Instance *security = Lwm2mSecurity::createInst(client);
-    string url;
+    string url = "coaps://demodm.friendly-tech.com:"; //"coaps://leshan.eclipseprojects.io:"
+
+    // PSK key: 00112233445566778899998877665544
+    // RPK public.pem: 3059301306072a8648ce3d020106082a8648ce3d03010703420004bada5475344ba22961a7d965ac518e73481a5f77832bd996c2fa3527e8f3c4248dda621fa9c1348d1365c357357c54869477e387fd2c2675b1c6f28aa506677b
+    // RPK private.pem: 92045322a5b34562e1ffec4bcdcc257b9ecfc3478bfaea4b6b0731350202ef2d
 
 	#ifdef LWM2M_BOOTSTRAP
         security->set<BOOL_T>(Lwm2mSecurity::BOOTSTRAP_SERVER_1, true);
@@ -59,18 +63,21 @@ void securityInit(WppClient &client) {
         security->set<INT_T>(Lwm2mSecurity::SECURITY_MODE_2, LWM2M_SECURITY_MODE_PRE_SHARED_KEY);
         security->set(Lwm2mSecurity::PUBLIC_KEY_OR_IDENTITY_3, OPAQUE_T(pskId.begin(), pskId.end()));
         security->set(Lwm2mSecurity::SECRET_KEY_5, OPAQUE_T {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0x99, 0x88, 0x77, 0x66, 0x55, 0x44});
-        url = "coap://demodm.friendly-tech.com:5681";
+        url = "5681";
+        #elif DTLS_WITH_RPK
+        security->set<INT_T>(Lwm2mSecurity::SECURITY_MODE_2, LWM2M_SECURITY_MODE_RAW_PUBLIC_KEY);
+        security->set(Lwm2mSecurity::PUBLIC_KEY_OR_IDENTITY_3, OPAQUE_T {0x04, 0xba, 0xda, 0x54, 0x75, 0x34, 0x4b, 0xa2, 0x29, 0x61, 0xa7, 0xd9, 0x65, 0xac, 0x51, 0x8e, 0x73, 0x48, 0x1a, 0x5f, 0x77, 0x83, 0x2b, 0xd9, 0x96, 0xc2, 0xfa, 0x35, 0x27, 0xe8, 0xf3, 0xc4, 0x24, 0x8d, 0xda, 0x62, 0x1f, 0xa9, 0xc1, 0x34, 0x8d, 0x13, 0x65, 0xc3, 0x57, 0x35, 0x7c, 0x54, 0x86, 0x94, 0x77, 0xe3, 0x87, 0xfd, 0x2c, 0x26, 0x75, 0xb1, 0xc6, 0xf2, 0x8a, 0xa5, 0x06, 0x67, 0x7b});
+        security->set(Lwm2mSecurity::SECRET_KEY_5, OPAQUE_T {0x92, 0x04, 0x53, 0x22, 0xa5, 0xb3, 0x45, 0x62, 0xe1, 0xff, 0xec, 0x4b, 0xcd, 0xcc, 0x25, 0x7b, 0x9e, 0xcf, 0xc3, 0x47, 0x8b, 0xfa, 0xea, 0x4b, 0x6b, 0x07, 0x31, 0x35, 0x02, 0x02, 0xef, 0x2d});
+        url = "5682";
         #else
-        url = "coap://demodm.friendly-tech.com:5680";
+        url = "5680";
         #endif
     #else
-        url = "coaps://demodm.friendly-tech.com:"; //"coaps://leshan.eclipseprojects.io:";
         #if DTLS_WITH_PSK
             url += "5684";
             string pskId = "FRIENDLY_TEST_DEV_ID";
             security->set<INT_T>(Lwm2mSecurity::SECURITY_MODE_2, LWM2M_SECURITY_MODE_PRE_SHARED_KEY);
             security->set(Lwm2mSecurity::PUBLIC_KEY_OR_IDENTITY_3, OPAQUE_T(pskId.begin(), pskId.end()));
-            //00112233445566778899998877665544
             security->set(Lwm2mSecurity::SECRET_KEY_5, OPAQUE_T {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0x99, 0x88, 0x77, 0x66, 0x55, 0x44});
         #elif DTLS_WITH_RPK
             url += "5684";

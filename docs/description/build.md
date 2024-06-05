@@ -32,7 +32,7 @@ Ways of future work and improvements:
 The current \[07.06.2023\] structure contains only 3 repos (other will be created on ad-hoc basis):
 
 
-* _Friendly LWM2M client_ Main Development Repo
+* _Friendly LWM2M client_ Main Development Repo: [https://github.com/Friendly-Technologies/LWM2M](https://github.com/Friendly-Technologies/LWM2M)
 * _Wakaama Copy_ \[as on 07.06.2023\]: [https://github.com/eclipse/wakaama](https://github.com/eclipse/wakaama)
 
 \image html build_1.png width=800

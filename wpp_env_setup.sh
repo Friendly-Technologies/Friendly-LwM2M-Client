@@ -128,7 +128,7 @@ echo -e "\nSetup environment DONE"
 # sudo rm -r cmake-3.26.4.tar.gz
 
 #
-# Repo for Wakaama++
+# Repo for Wpp
 # cd ${HOME}/Desktop
 # git clone --recurse-submodules git@github.com:<repo>
 #

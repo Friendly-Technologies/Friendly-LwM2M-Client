@@ -1,7 +1,7 @@
-[submodule "2305-Wakaama.git"]
-	path = 2305-Wakaama
-	url = git@github.com:sinai-io/2305-Wakaama.git
 [submodule "examples/coap/libcoap"]
 	path = examples/coap/libcoap
 	url = git@github.com:obgm/libcoap.git
 	branch = release-4.3.4
+[submodule "Friendly-Wakaama.git"]
+	path = Friendly-Wakaama
+	url = git@github.com:Friendly-Technologies/Friendly-Wakaama.git

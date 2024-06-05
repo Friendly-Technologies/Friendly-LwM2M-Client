@@ -3,5 +3,5 @@
 	url = git@github.com:obgm/libcoap.git
 	branch = release-4.3.4
 [submodule "Friendly-Wakaama.git"]
-	path = Friendly-Wakaama
+	path = 2305-Wakaama
 	url = git@github.com:Friendly-Technologies/Friendly-Wakaama.git

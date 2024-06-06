@@ -1,0 +1,5 @@
+<map id="wpp::Instance::writeAsServer" name="wpp::Instance::writeAsServer">
+<area shape="rect" id="node1" title=" " alt="" coords="5,13,216,39"/>
+<area shape="rect" id="node2" href="$classwpp_1_1ResourceContainer.html#a2c8e73b4748aebf1ddfd322e609f7f2d" title="This method return resource ptr if it exists. If resources does not exist then return NULL." alt="" coords="264,5,444,47"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Resource.html#a5f09c63400dbf8e6e12be7be2af1633a" title=" " alt="" coords="492,13,651,39"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="wpp::AudioClip::removeInst" name="wpp::AudioClip::removeInst">
+<area shape="rect" id="node1" title="Removes an instance of the object." alt="" coords="5,5,207,32"/>
+<area shape="rect" id="node2" href="$classwpp_1_1WppClient.html#afb790e827cb2a731ec6be3a97ef1c98a" title="Gets the WppRegistry associated with the WppClient." alt="" coords="255,5,437,32"/>
+</map>

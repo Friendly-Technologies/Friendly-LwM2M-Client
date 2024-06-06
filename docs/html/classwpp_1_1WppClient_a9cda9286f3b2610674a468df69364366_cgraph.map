@@ -1,0 +1,7 @@
+<map id="wpp::WppClient::remove" name="wpp::WppClient::remove">
+<area shape="rect" id="node1" title="Removes the WppClient." alt="" coords="5,56,188,83"/>
+<area shape="rect" id="node2" href="$classwpp_1_1WppClient.html#a7fbfbadc32a19fb8b3df6370e73c854d" title="Gives up ownership of the WppClient." alt="" coords="236,31,465,57"/>
+<area shape="rect" id="node5" href="$classwpp_1_1WppClient.html#ac80c3ab6f50a522b72d7902e23b9b4b0" title="Checks if the WppClient is created." alt="" coords="253,81,448,108"/>
+<area shape="rect" id="node3" href="$classwpp_1_1WppGuard.html#a4911a2fab6c9da802c40156fcbe2a590" title="Tries to lock the guard object." alt="" coords="513,5,699,32"/>
+<area shape="rect" id="node4" href="$classwpp_1_1WppGuard.html#a598622f1457a846593740b32dba0cec4" title="Unlocks the guard object." alt="" coords="518,56,694,83"/>
+</map>

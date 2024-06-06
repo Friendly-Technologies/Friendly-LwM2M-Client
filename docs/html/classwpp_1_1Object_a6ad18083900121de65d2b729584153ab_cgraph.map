@@ -1,0 +1,8 @@
+<map id="wpp::Object::~Object" name="wpp::Object::~Object">
+<area shape="rect" id="node1" title="Destroys the Object instance." alt="" coords="5,81,165,108"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Object.html#a6bb15191844a2a5e0ff205e197e5e553" title="Clears the object." alt="" coords="213,81,352,108"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Object.html#a52d313d950e0e6d404ab87e463a61927" title="Return context that can be used by derived class." alt="" coords="403,5,581,32"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Object.html#aee04ebf1209edf84ca7c08c70bbcb879" title="Gets the iterator to the instance." alt="" coords="632,107,807,133"/>
+<area shape="rect" id="node5" href="$classwpp_1_1Object.html#a62b52b04e4aae34b0d04cbc26a5e9c69" title="Gets the object ID." alt="" coords="400,107,584,133"/>
+<area shape="rect" id="node6" href="$classwpp_1_1Object.html#a0367aab216c8d199790ceed0d33f8608" title="Gets an instance of the object." alt="" coords="411,157,573,184"/>
+</map>

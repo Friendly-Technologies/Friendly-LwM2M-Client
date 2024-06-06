@@ -1,0 +1,4 @@
+<map id="wpp::ItemOp::isRead" name="wpp::ItemOp::isRead">
+<area shape="rect" id="node1" title="Checks if the ItemOp object represents a read operation." alt="" coords="203,5,360,32"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Object.html#a54e0417f93a65854fb64da983e455367" title="Constructs an Object instance." alt="" coords="5,5,155,32"/>
+</map>

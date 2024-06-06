@@ -1,0 +1,4 @@
+<map id="wpp::WppClient::getState" name="wpp::WppClient::getState">
+<area shape="rect" id="node1" title="Gets the state of the Wakaama client." alt="" coords="213,5,400,32"/>
+<area shape="rect" id="node2" href="$classwpp_1_1WppClient.html#aafd44d1c81f8ee217675bcd27173b67f" title="Processes the state of the Wakaama core. This function performs the necessary work by the Wakaama cor..." alt="" coords="5,5,165,32"/>
+</map>

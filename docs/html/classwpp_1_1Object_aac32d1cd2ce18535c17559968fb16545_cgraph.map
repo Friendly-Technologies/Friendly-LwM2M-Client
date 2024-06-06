@@ -1,0 +1,9 @@
+<map id="wpp::Object::serverDelete_clb" name="wpp::Object::serverDelete_clb">
+<area shape="rect" id="node1" title="The delete callback function for the Lwm2m core." alt="" coords="5,81,223,108"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Object.html#a62b52b04e4aae34b0d04cbc26a5e9c69" title="Gets the object ID." alt="" coords="516,5,700,32"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Object.html#ae5179d81e6137761c9ed9b72b469d1ae" title="Checks if an instance exists." alt="" coords="294,107,445,133"/>
+<area shape="rect" id="node5" href="$classwpp_1_1ObjSubject.html#af24fa5ecda8bb2635bd6ba7c6fe3dcda" title="Notifies observers about object operations." alt="" coords="271,158,468,199"/>
+<area shape="rect" id="node6" href="$classwpp_1_1Object.html#a3e14100c612dfc5860793054b81a7f11" title="Removes an instance of the object." alt="" coords="291,56,448,83"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Object.html#aee04ebf1209edf84ca7c08c70bbcb879" title="Gets the iterator to the instance." alt="" coords="521,107,695,133"/>
+<area shape="rect" id="node7" href="$classwpp_1_1Object.html#a52d313d950e0e6d404ab87e463a61927" title="Return context that can be used by derived class." alt="" coords="519,56,697,83"/>
+</map>

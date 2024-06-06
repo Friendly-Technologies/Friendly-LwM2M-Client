@@ -1,0 +1,6 @@
+<map id="wpp::Instance::getInstantiatedResList" name="wpp::Instance::getInstantiatedResList">
+<area shape="rect" id="node1" title="This method return list with resources that has been instantiated. If resources does not exist then r..." alt="" coords="712,5,931,47"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Instance.html#a0cfa0b97042e6c3e72d8aacd2f4f72a7" title="This methods is called by the core when the server wants to read, write, discover,..." alt="" coords="457,13,664,39"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Object.html#a0546ac69cde57b2ec29e70a8962e933b" title="The read callback function for the Lwm2m core." alt="" coords="203,13,409,39"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Object.html#a54e0417f93a65854fb64da983e455367" title="Constructs an Object instance." alt="" coords="5,13,155,39"/>
+</map>

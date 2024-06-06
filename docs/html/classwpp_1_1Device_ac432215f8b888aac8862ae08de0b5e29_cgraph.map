@@ -1,0 +1,8 @@
+<map id="wpp::Device::createInst" name="wpp::Device::createInst">
+<area shape="rect" id="node1" title="Creates an instance of the object." alt="" coords="5,56,180,83"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Object.html#a2905bb68695e421c76ed3e0740bb4089" title="Creates an instance of the object." alt="" coords="228,5,431,32"/>
+<area shape="rect" id="node3" href="$classwpp_1_1WppRegistry.html#a45aacbf59a432300fc47b91705901b28" title=" " alt="" coords="234,56,425,83"/>
+<area shape="rect" id="node6" href="$classwpp_1_1WppClient.html#afb790e827cb2a731ec6be3a97ef1c98a" title="Gets the WppRegistry associated with the WppClient." alt="" coords="238,107,421,133"/>
+<area shape="rect" id="node4" href="$classwpp_1_1WppRegistry.html#ada21355749fd54b5bc6c4e7967d5899b" title="Retrieves a pointer to the Object with the given objId." alt="" coords="479,56,665,83"/>
+<area shape="rect" id="node5" href="$classwpp_1_1Object.html#a62b52b04e4aae34b0d04cbc26a5e9c69" title="Gets the object ID." alt="" coords="713,56,897,83"/>
+</map>

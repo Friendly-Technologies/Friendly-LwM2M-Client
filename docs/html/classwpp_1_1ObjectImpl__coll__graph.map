@@ -1,0 +1,8 @@
+<map id="wpp::ObjectImpl&lt; T &gt;" name="wpp::ObjectImpl&lt; T &gt;">
+<area shape="rect" id="node1" title="The ObjectImpl class is a template class that represents an implementation of an object in the Wakaam..." alt="" coords="35,999,201,1120"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Object.html" title="The Object class implements manipulation with Instance interface class and its inheritors." alt="" coords="5,505,231,949"/>
+<area shape="rect" id="node3" href="$classwpp_1_1ObjSubject.html" title="The ObjSubject class represents a subject that notifies observers about object operations and actions..." alt="" coords="23,321,171,428"/>
+<area shape="rect" id="node4" href="$structwpp_1_1ObjectInfo.html" title="The ObjectInfo struct represents information about an object in the Wakaama data model." alt="" coords="195,307,319,443"/>
+<area shape="rect" id="node5" href="$structwpp_1_1Version.html" title=" " alt="" coords="132,71,237,163"/>
+<area shape="rect" id="node6" href="$structwpp_1_1ItemOp.html" title="The ItemOp struct represents the operations that can be performed on a instance/resource." alt="" coords="262,5,395,229"/>
+</map>

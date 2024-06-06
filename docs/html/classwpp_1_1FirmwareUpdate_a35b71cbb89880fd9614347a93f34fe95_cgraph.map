@@ -1,0 +1,19 @@
+<map id="wpp::FirmwareUpdate::setFwInternalDownloader" name="wpp::FirmwareUpdate::setFwInternalDownloader">
+<area shape="rect" id="node1" title="Set the FwInternalDl object for auto downloading firmware." alt="" coords="5,235,203,276"/>
+<area shape="rect" id="node2" href="$classwpp_1_1FirmwareUpdate.html#a93f8ee24f8e02aca158895431dd8b8a7" title="Gets an instance of the object." alt="" coords="259,89,424,131"/>
+<area shape="rect" id="node9" href="$classwpp_1_1Instance.html#aac8e574cc418b111f1f937a7a865d7f0" title="Notify server about resource value change." alt="" coords="251,201,432,243"/>
+<area shape="rect" id="node12" href="$classwpp_1_1ResourceContainer.html#a2c8e73b4748aebf1ddfd322e609f7f2d" title="This method return resource ptr if it exists. If resources does not exist then return NULL." alt="" coords="251,267,431,308"/>
+<area shape="rect" id="node14" href="$classwpp_1_1Resource.html#a55e9226776ffe8ac59787f9802154b9b" title="Set data value by copy for the resource (instance)" alt="" coords="269,362,414,389"/>
+<area shape="rect" id="node3" href="$classwpp_1_1WppRegistry.html#a2c39415fc5ba4c5075dc0505dcf81dea" title=" " alt="" coords="483,5,688,47"/>
+<area shape="rect" id="node6" href="$classwpp_1_1Object.html#a0367aab216c8d199790ceed0d33f8608" title="Gets an instance of the object." alt="" coords="504,71,667,98"/>
+<area shape="rect" id="node8" href="$classwpp_1_1WppClient.html#afb790e827cb2a731ec6be3a97ef1c98a" title="Gets the WppRegistry associated with the WppClient." alt="" coords="494,122,677,149"/>
+<area shape="rect" id="node4" href="$classwpp_1_1WppRegistry.html#ada21355749fd54b5bc6c4e7967d5899b" title="Retrieves a pointer to the Object with the given objId." alt="" coords="739,13,925,39"/>
+<area shape="rect" id="node5" href="$classwpp_1_1Object.html#a62b52b04e4aae34b0d04cbc26a5e9c69" title="Gets the object ID." alt="" coords="973,13,1157,39"/>
+<area shape="rect" id="node7" href="$classwpp_1_1Object.html#aee04ebf1209edf84ca7c08c70bbcb879" title="Gets the iterator to the instance." alt="" coords="745,71,919,98"/>
+<area shape="rect" id="node10" href="$classwpp_1_1Instance.html#abe793eaf4ed798fd8c6462d97ba6823e" title=" " alt="" coords="480,173,691,199"/>
+<area shape="rect" id="node11" href="$classwpp_1_1Instance.html#a20fc277ffa400f5cd4d76cd0b97d4f7a" title=" " alt="" coords="487,223,684,250"/>
+<area shape="rect" id="node13" href="$classwpp_1_1Resource.html#a5f09c63400dbf8e6e12be7be2af1633a" title=" " alt="" coords="506,274,665,301"/>
+<area shape="rect" id="node15" href="$classwpp_1_1Resource.html#abc00188d42568241b6d077b52c57244a" title="Check if the data type and value are valid." alt="" coords="484,325,687,367"/>
+<area shape="rect" id="node16" href="$classwpp_1_1Resource.html#a0e54ded7223260452ceeac283cf99f8f" title="Check if the instance ID is exist." alt="" coords="501,391,669,418"/>
+<area shape="rect" id="node17" href="$classwpp_1_1Resource.html#a6c8c94cdd5cf3a10a05afc7c4338674f" title=" " alt="" coords="497,442,673,469"/>
+</map>

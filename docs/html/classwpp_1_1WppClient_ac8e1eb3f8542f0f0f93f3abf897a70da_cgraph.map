@@ -1,0 +1,5 @@
+<map id="wpp::WppClient::takeOwnershipBlocking" name="wpp::WppClient::takeOwnershipBlocking">
+<area shape="rect" id="node1" title="Takes ownership of the WppClient, blocking until it becomes available." alt="" coords="5,23,235,65"/>
+<area shape="rect" id="node2" href="$classwpp_1_1WppClient.html#ac80c3ab6f50a522b72d7902e23b9b4b0" title="Checks if the WppClient is created." alt="" coords="283,5,477,32"/>
+<area shape="rect" id="node3" href="$classwpp_1_1WppGuard.html#acc05cd420bfc4c650d20d3ef123ce366" title="Locks the guard object." alt="" coords="300,56,460,83"/>
+</map>

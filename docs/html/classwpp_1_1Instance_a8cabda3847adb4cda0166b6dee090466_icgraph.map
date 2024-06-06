@@ -1,0 +1,5 @@
+<map id="wpp::Instance::getRegistry" name="wpp::Instance::getRegistry">
+<area shape="rect" id="node1" title="Helpfull methods to get registry instances." alt="" coords="255,46,449,73"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Lwm2mAccessControl.html#aca8e8c6cc6e944f6e889141bccf2c203" title="Get Lwm2mAccessControl object instance for target object instance." alt="" coords="5,5,207,47"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Lwm2mAccessControl.html#a05f1c247cf8bf97ab426d96d41a36943" title="Delete Lwm2mAccessControl object instance for target object instance." alt="" coords="5,71,207,112"/>
+</map>

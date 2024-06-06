@@ -1,0 +1,5 @@
+<map id="wpp::lwm2m_close_connection" name="wpp::lwm2m_close_connection">
+<area shape="rect" id="node1" title=" " alt="" coords="5,35,231,61"/>
+<area shape="rect" id="node2" href="$classwpp_1_1WppClient.html#ab058f0a0d20678d37826c05155a80aad" title="Gets the WppConnection associated with the WppClient." alt="" coords="279,5,481,32"/>
+<area shape="rect" id="node3" href="$classwpp_1_1WppConnection.html#a2b4ddf8446cc24ac0a4178aaa0f12aea" title="Disconnects from the specified session." alt="" coords="301,57,459,98"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="wpp::ResourceContainer::resource" name="wpp::ResourceContainer::resource">
+<area shape="rect" id="node1" title="This method return resource ptr if it exists. If resources does not exist then return NULL." alt="" coords="5,5,185,47"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Resource.html#a5f09c63400dbf8e6e12be7be2af1633a" title=" " alt="" coords="233,13,392,39"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="wpp::WppClient::~WppClient" name="wpp::WppClient::~WppClient">
+<area shape="rect" id="node1" title=" " alt="" coords="5,71,216,98"/>
+<area shape="rect" id="node2" href="$classwpp_1_1WppConnection.html#a6a5d8654b15c05dc7c93b66e2071bfa0" title="Clears the packet queue." alt="" coords="286,5,445,47"/>
+<area shape="rect" id="node4" href="$classwpp_1_1WppClient.html#ab058f0a0d20678d37826c05155a80aad" title="Gets the WppConnection associated with the WppClient." alt="" coords="264,71,467,98"/>
+<area shape="rect" id="node5" href="$classwpp_1_1WppTaskQueue.html#afee00a2dab990091f296533cf572c28f" title="Blocks task handling, calls of other methods, and deletes all tasks from the queue,..." alt="" coords="283,123,448,164"/>
+<area shape="rect" id="node3" href="$classwpp_1_1WppConnection.html#aca2e643e1b5aae589568e6c8128fdabe" title="Retrieves the size of the packet queue." alt="" coords="515,5,677,47"/>
+</map>

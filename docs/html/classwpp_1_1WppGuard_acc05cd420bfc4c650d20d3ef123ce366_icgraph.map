@@ -1,0 +1,4 @@
+<map id="wpp::WppGuard::lock" name="wpp::WppGuard::lock">
+<area shape="rect" id="node1" title="Locks the guard object." alt="" coords="283,13,443,39"/>
+<area shape="rect" id="node2" href="$classwpp_1_1WppClient.html#ac8e1eb3f8542f0f0f93f3abf897a70da" title="Takes ownership of the WppClient, blocking until it becomes available." alt="" coords="5,5,235,47"/>
+</map>

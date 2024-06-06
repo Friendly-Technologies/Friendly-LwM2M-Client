@@ -1,0 +1,6 @@
+<map id="wpp::Device::userOperationNotifier" name="wpp::Device::userOperationNotifier">
+<area shape="rect" id="node1" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="5,23,208,65"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Instance.html#aac8e574cc418b111f1f937a7a865d7f0" title="Notify server about resource value change." alt="" coords="256,23,437,65"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Instance.html#abe793eaf4ed798fd8c6462d97ba6823e" title=" " alt="" coords="485,5,696,32"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Instance.html#a20fc277ffa400f5cd4d76cd0b97d4f7a" title=" " alt="" coords="492,56,689,83"/>
+</map>

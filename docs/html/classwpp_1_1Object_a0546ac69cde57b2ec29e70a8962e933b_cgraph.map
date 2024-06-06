@@ -1,0 +1,10 @@
+<map id="wpp::Object::serverRead_clb" name="wpp::Object::serverRead_clb">
+<area shape="rect" id="node1" title="The read callback function for the Lwm2m core." alt="" coords="5,81,212,108"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Object.html#a62b52b04e4aae34b0d04cbc26a5e9c69" title="Gets the object ID." alt="" coords="271,5,455,32"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Object.html#a0367aab216c8d199790ceed0d33f8608" title="Gets an instance of the object." alt="" coords="282,56,445,83"/>
+<area shape="rect" id="node5" href="$classwpp_1_1Object.html#ae5179d81e6137761c9ed9b72b469d1ae" title="Checks if an instance exists." alt="" coords="288,107,439,133"/>
+<area shape="rect" id="node6" href="$classwpp_1_1Instance.html#a0cfa0b97042e6c3e72d8aacd2f4f72a7" title="This methods is called by the core when the server wants to read, write, discover,..." alt="" coords="260,157,467,184"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Object.html#aee04ebf1209edf84ca7c08c70bbcb879" title="Gets the iterator to the instance." alt="" coords="537,77,711,104"/>
+<area shape="rect" id="node7" href="$classwpp_1_1Instance.html#a7873bcb3f20b4eae620f2531082d62e3" title="This method return list with resources that has been instantiated. If resources does not exist then r..." alt="" coords="515,150,733,191"/>
+<area shape="rect" id="node8" href="$classwpp_1_1ResourceContainer.html#a4bcc994c96fd2a253e2cdd7fbed8920c" title="This method return list with all resources that has been defined." alt="" coords="781,150,961,191"/>
+</map>

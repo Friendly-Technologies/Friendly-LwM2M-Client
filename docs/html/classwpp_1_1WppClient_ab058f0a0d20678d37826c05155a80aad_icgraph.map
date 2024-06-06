@@ -1,0 +1,10 @@
+<map id="wpp::WppClient::connection" name="wpp::WppClient::connection">
+<area shape="rect" id="node1" title="Gets the WppConnection associated with the WppClient." alt="" coords="279,157,481,184"/>
+<area shape="rect" id="node2" href="$classwpp_1_1WppClient.html#acbb496e6d1f834b441a8d4ff17b2166e" title="Creates a WppClient with the specified client information, connection, and maximum sleep time." alt="" coords="31,5,205,32"/>
+<area shape="rect" id="node3" href="$classwpp_1_1WppClient.html#aafd44d1c81f8ee217675bcd27173b67f" title="Processes the state of the Wakaama core. This function performs the necessary work by the Wakaama cor..." alt="" coords="38,56,198,83"/>
+<area shape="rect" id="node4" href="$namespacewpp.html#ad79d4bc51b76c86dc0906ca2e528fb33" title=" " alt="" coords="23,107,213,133"/>
+<area shape="rect" id="node5" href="$namespacewpp.html#a1828ec6ee0278e9b8ba83adc6a3da77b" title=" " alt="" coords="5,157,231,184"/>
+<area shape="rect" id="node6" href="$namespacewpp.html#ad31164c2f0355d8799f9c6745c1bec4c" title=" " alt="" coords="36,209,200,250"/>
+<area shape="rect" id="node7" href="$namespacewpp.html#a2eaa942d89434b423c34019025fdf0c1" title=" " alt="" coords="37,274,199,315"/>
+<area shape="rect" id="node8" href="$classwpp_1_1WppClient.html#accbdfdf6fd3202c646cc3f2cb9ef76a7" title=" " alt="" coords="13,340,223,367"/>
+</map>

@@ -1,0 +1,12 @@
+<map id="wpp::Lwm2mServer::userOperationNotifier" name="wpp::Lwm2mServer::userOperationNotifier">
+<area shape="rect" id="node1" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="5,121,256,162"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Resource.html#ad3971dfcfb747850eec0553913582c64" title=" " alt="" coords="327,48,473,75"/>
+<area shape="rect" id="node5" href="$classwpp_1_1Instance.html#a9c3b1da44787aeb86f6b21769ae39d5f" title="Return context that can be used by derived class." alt="" coords="304,99,496,125"/>
+<area shape="rect" id="node6" href="$classwpp_1_1Instance.html#aac8e574cc418b111f1f937a7a865d7f0" title="Notify server about resource value change." alt="" coords="309,150,491,191"/>
+<area shape="rect" id="node9" href="$classwpp_1_1ResourceContainer.html#a2c8e73b4748aebf1ddfd322e609f7f2d" title="This method return resource ptr if it exists. If resources does not exist then return NULL." alt="" coords="310,215,490,257"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Resource.html#a0e54ded7223260452ceeac283cf99f8f" title="Check if the instance ID is exist." alt="" coords="565,5,733,32"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Resource.html#a6c8c94cdd5cf3a10a05afc7c4338674f" title=" " alt="" coords="561,56,737,83"/>
+<area shape="rect" id="node7" href="$classwpp_1_1Instance.html#abe793eaf4ed798fd8c6462d97ba6823e" title=" " alt="" coords="544,115,755,141"/>
+<area shape="rect" id="node8" href="$classwpp_1_1Instance.html#a20fc277ffa400f5cd4d76cd0b97d4f7a" title=" " alt="" coords="551,165,748,192"/>
+<area shape="rect" id="node10" href="$classwpp_1_1Resource.html#a5f09c63400dbf8e6e12be7be2af1633a" title=" " alt="" coords="570,223,729,249"/>
+</map>

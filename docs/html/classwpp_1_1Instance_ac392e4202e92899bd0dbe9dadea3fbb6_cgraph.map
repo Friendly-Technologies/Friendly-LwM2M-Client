@@ -1,0 +1,4 @@
+<map id="wpp::Instance::getResList" name="wpp::Instance::getResList">
+<area shape="rect" id="node1" title="This method return list with all resources that has been defined. If resources does not exist then re..." alt="" coords="5,13,193,39"/>
+<area shape="rect" id="node2" href="$classwpp_1_1ResourceContainer.html#a4bcc994c96fd2a253e2cdd7fbed8920c" title="This method return list with all resources that has been defined." alt="" coords="241,5,421,47"/>
+</map>

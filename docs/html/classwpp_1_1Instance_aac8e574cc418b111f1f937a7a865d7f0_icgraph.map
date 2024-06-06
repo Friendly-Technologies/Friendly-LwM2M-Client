@@ -1,0 +1,12 @@
+<map id="wpp::Instance::notifyResChanged" name="wpp::Instance::notifyResChanged">
+<area shape="rect" id="node1" title="Notify server about resource value change." alt="" coords="304,267,485,308"/>
+<area shape="rect" id="node2" href="$classwpp_1_1FirmwareUpdate.html#a35b71cbb89880fd9614347a93f34fe95" title="Set the FwInternalDl object for auto downloading firmware." alt="" coords="32,5,229,47"/>
+<area shape="rect" id="node3" href="$classwpp_1_1FirmwareUpdate.html#a67face09853cff99df2af665ace989d4" title="Set the FwUpdater object for updating the firmware package." alt="" coords="48,71,213,112"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Lwm2mSecurity.html#aca707118701c04f92cd9864034596553" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="45,136,216,177"/>
+<area shape="rect" id="node5" href="$classwpp_1_1Lwm2mServer.html#a4ba2f59b41efa68e77bd492f085ec819" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="5,201,256,243"/>
+<area shape="rect" id="node6" href="$classwpp_1_1Device.html#a66d89fcb79d169018b9a4a274b7def7a" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="29,267,232,308"/>
+<area shape="rect" id="node7" href="$classwpp_1_1Lwm2mAccessControl.html#a92447af7e489f039bc5e7762e893a86c" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="30,332,231,373"/>
+<area shape="rect" id="node8" href="$classwpp_1_1AudioClip.html#a70342960901881c6ebb9d7b3ac33ece5" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="21,397,240,439"/>
+<area shape="rect" id="node9" href="$classwpp_1_1ConnectivityMonitoring.html#a4fc2bfe51ea9da639b6b6f06bc68d32c" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="26,463,235,504"/>
+<area shape="rect" id="node10" href="$classwpp_1_1FirmwareUpdate.html#a33cd6e0e76e247c2edc283a5c3fda4c3" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="45,528,216,569"/>
+</map>

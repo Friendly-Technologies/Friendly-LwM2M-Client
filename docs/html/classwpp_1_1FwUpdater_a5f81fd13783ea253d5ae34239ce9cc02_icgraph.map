@@ -1,0 +1,4 @@
+<map id="wpp::FwUpdater::lastUpdateResult" name="wpp::FwUpdater::lastUpdateResult">
+<area shape="rect" id="node1" title="Contains the result of the last update process. This method is called whenever the FwExternalDl is re..." alt="" coords="219,5,425,47"/>
+<area shape="rect" id="node2" href="$classwpp_1_1FirmwareUpdate.html#a67face09853cff99df2af665ace989d4" title="Set the FwUpdater object for updating the firmware package." alt="" coords="5,5,171,47"/>
+</map>

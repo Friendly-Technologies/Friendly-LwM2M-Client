@@ -1,0 +1,6 @@
+<map id="wpp::Instance::serverOperationNotifier" name="wpp::Instance::serverOperationNotifier">
+<area shape="rect" id="node1" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="711,5,936,47"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Instance.html#a97b0c9ccc79aae58a5ab14aa4e813f65" title=" " alt="" coords="476,5,663,47"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Object.html#a5e0297add680474f8db359a829793b78" title="The execute callback function for the Lwm2m core." alt="" coords="203,13,428,39"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Object.html#a54e0417f93a65854fb64da983e455367" title="Constructs an Object instance." alt="" coords="5,13,155,39"/>
+</map>

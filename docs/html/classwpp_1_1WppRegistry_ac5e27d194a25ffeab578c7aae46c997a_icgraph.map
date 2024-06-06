@@ -1,0 +1,7 @@
+<map id="wpp::WppRegistry::lwm2mServer" name="wpp::WppRegistry::lwm2mServer">
+<area shape="rect" id="node1" title=" " alt="" coords="287,81,525,108"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Lwm2mServer.html#af4a2084d9ae8fddf34f2d46b447cfe32" title="Creates an instance of the object." alt="" coords="10,5,234,32"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Lwm2mServer.html#a8455e03cde327c4a7ff9b082af0160af" title="Gets an instance of the object." alt="" coords="15,56,229,83"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Lwm2mServer.html#a6843da39d951494167724dffaac26644" title="Gets the Object reference." alt="" coords="23,107,221,133"/>
+<area shape="rect" id="node5" href="$classwpp_1_1Lwm2mServer.html#a17f03f07615d711c7d9659781b4fad18" title="Removes an instance of the object." alt="" coords="5,157,239,184"/>
+</map>

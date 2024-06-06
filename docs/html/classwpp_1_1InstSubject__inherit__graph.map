@@ -1,0 +1,11 @@
+<map id="wpp::InstSubject" name="wpp::InstSubject">
+<area shape="rect" id="node1" title="The InstSubject class represents a subject that allows subscribers to be notified about various event..." alt="" coords="715,5,879,156"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Instance.html" title="Instance is interface class that implements manipulation with derived class resources...." alt="" coords="690,204,905,604"/>
+<area shape="rect" id="node3" href="$classwpp_1_1AudioClip.html" title=" " alt="" coords="5,711,205,891"/>
+<area shape="rect" id="node4" href="$classwpp_1_1ConnectivityMonitoring.html" title=" " alt="" coords="229,696,440,905"/>
+<area shape="rect" id="node5" href="$classwpp_1_1Device.html" title=" " alt="" coords="464,711,664,891"/>
+<area shape="rect" id="node6" href="$classwpp_1_1FirmwareUpdate.html" title=" " alt="" coords="688,681,907,920"/>
+<area shape="rect" id="node7" href="$classwpp_1_1Lwm2mAccessControl.html" title=" " alt="" coords="931,652,1133,949"/>
+<area shape="rect" id="node8" href="$classwpp_1_1Lwm2mSecurity.html" title=" " alt="" coords="1157,711,1357,891"/>
+<area shape="rect" id="node9" href="$classwpp_1_1Lwm2mServer.html" title=" " alt="" coords="1381,711,1581,891"/>
+</map>

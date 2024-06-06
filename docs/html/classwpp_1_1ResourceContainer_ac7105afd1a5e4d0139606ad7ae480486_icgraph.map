@@ -1,0 +1,5 @@
+<map id="wpp::ResourceContainer::set" name="wpp::ResourceContainer::set">
+<area shape="rect" id="node1" title="Set data value by copy for the resource." alt="" coords="261,42,469,69"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Lwm2mAccessControl.html#ac561ffb5f51138338ccc78a0f2beb297" title="Create Lwm2mAccessControl object instance for target object." alt="" coords="9,5,210,47"/>
+<area shape="rect" id="node3" href="$classwpp_1_1ResourceContainer.html#a1e96a3664f4bfe428e63012859c5f4ee" title="Set data value by move for the resource." alt="" coords="5,71,213,98"/>
+</map>

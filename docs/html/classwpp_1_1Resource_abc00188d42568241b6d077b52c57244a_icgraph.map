@@ -1,0 +1,7 @@
+<map id="wpp::Resource::isDataValueValid" name="wpp::Resource::isDataValueValid">
+<area shape="rect" id="node1" title="Check if the data type and value are valid." alt="" coords="448,23,651,65"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Resource.html#a42835427e93c88187daf1571165ee93a" title="Add new instance with data value by copy for the MULTIPLE resource." alt="" coords="251,5,400,32"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Resource.html#a55e9226776ffe8ac59787f9802154b9b" title="Set data value by copy for the resource (instance)" alt="" coords="253,56,398,83"/>
+<area shape="rect" id="node4" href="$classwpp_1_1FirmwareUpdate.html#a35b71cbb89880fd9614347a93f34fe95" title="Set the FwInternalDl object for auto downloading firmware." alt="" coords="5,15,203,57"/>
+<area shape="rect" id="node5" href="$classwpp_1_1FirmwareUpdate.html#a67face09853cff99df2af665ace989d4" title="Set the FwUpdater object for updating the firmware package." alt="" coords="21,81,187,122"/>
+</map>

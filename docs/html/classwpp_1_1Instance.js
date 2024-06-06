@@ -1,0 +1,26 @@
+var classwpp_1_1Instance =
+[
+    [ "Instance", "classwpp_1_1Instance.html#ad8fe38ebc41b0e2e84f4a1ac96157b71", null ],
+    [ "~Instance", "classwpp_1_1Instance.html#a13476719f8a81594e9c72fb0fc12d4a3", null ],
+    [ "Instance", "classwpp_1_1Instance.html#a799a985c1f9221cb226816e2f0cd79c6", null ],
+    [ "Instance", "classwpp_1_1Instance.html#a33b2a9590709419a4ecec65d4777fa63", null ],
+    [ "discoverAsServer", "classwpp_1_1Instance.html#a57eb1b745b0ee7f7257cf7cbec37d0d8", null ],
+    [ "executeAsServer", "classwpp_1_1Instance.html#a97b0c9ccc79aae58a5ab14aa4e813f65", null ],
+    [ "getClient", "classwpp_1_1Instance.html#a94fab851e42fd9b6e83088a127d7bced", null ],
+    [ "getContext", "classwpp_1_1Instance.html#a9c3b1da44787aeb86f6b21769ae39d5f", null ],
+    [ "getInstanceID", "classwpp_1_1Instance.html#abe793eaf4ed798fd8c6462d97ba6823e", null ],
+    [ "getInstantiatedResList", "classwpp_1_1Instance.html#a7873bcb3f20b4eae620f2531082d62e3", null ],
+    [ "getInstantiatedResList", "classwpp_1_1Instance.html#a58e5d2b3a658b45c713fbfb43f4f419e", null ],
+    [ "getLink", "classwpp_1_1Instance.html#a6542c5101d4cce4a0e5c9bbe10325b7e", null ],
+    [ "getObjectID", "classwpp_1_1Instance.html#a20fc277ffa400f5cd4d76cd0b97d4f7a", null ],
+    [ "getRegistry", "classwpp_1_1Instance.html#a8cabda3847adb4cda0166b6dee090466", null ],
+    [ "getResList", "classwpp_1_1Instance.html#ac392e4202e92899bd0dbe9dadea3fbb6", null ],
+    [ "notifyResChanged", "classwpp_1_1Instance.html#aac8e574cc418b111f1f937a7a865d7f0", null ],
+    [ "operator=", "classwpp_1_1Instance.html#a995d30ef5d52e5359e5e8c1da9bcfc31", null ],
+    [ "operator=", "classwpp_1_1Instance.html#a0c55024cdf2b0119491f572df0238d96", null ],
+    [ "readAsServer", "classwpp_1_1Instance.html#a0cfa0b97042e6c3e72d8aacd2f4f72a7", null ],
+    [ "resourceOperationNotifier", "classwpp_1_1Instance.html#a09b0d98e9e1c811216dcf1932b35af83", null ],
+    [ "serverOperationNotifier", "classwpp_1_1Instance.html#a3a169556921be2b7abe4cc2b2103c58a", null ],
+    [ "userOperationNotifier", "classwpp_1_1Instance.html#a6f03622a6a4b6497fd3e68b9b01de347", null ],
+    [ "writeAsServer", "classwpp_1_1Instance.html#af584f19b68afa2f0e86100f9ba324271", null ]
+];

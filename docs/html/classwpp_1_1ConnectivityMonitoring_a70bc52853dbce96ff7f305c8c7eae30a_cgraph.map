@@ -1,0 +1,4 @@
+<map id="wpp::ConnectivityMonitoring::serverOperationNotifier" name="wpp::ConnectivityMonitoring::serverOperationNotifier">
+<area shape="rect" id="node1" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="5,5,215,47"/>
+<area shape="rect" id="node2" href="$classwpp_1_1InstSubject.html#ac3fd49984de9c26f8f91d3e91a6e4a00" title="Notifies the observers about an operation on an instance resource." alt="" coords="263,5,461,47"/>
+</map>

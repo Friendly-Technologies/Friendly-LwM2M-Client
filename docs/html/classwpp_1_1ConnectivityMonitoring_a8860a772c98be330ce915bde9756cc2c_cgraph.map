@@ -1,0 +1,9 @@
+<map id="wpp::ConnectivityMonitoring::instance" name="wpp::ConnectivityMonitoring::instance">
+<area shape="rect" id="node1" title="Gets an instance of the object." alt="" coords="5,64,215,105"/>
+<area shape="rect" id="node2" href="$classwpp_1_1WppRegistry.html#a5385a129b131f4ed62aa1df061166a7a" title=" " alt="" coords="263,5,489,47"/>
+<area shape="rect" id="node5" href="$classwpp_1_1Object.html#a0367aab216c8d199790ceed0d33f8608" title="Gets an instance of the object." alt="" coords="295,71,457,98"/>
+<area shape="rect" id="node7" href="$classwpp_1_1WppClient.html#afb790e827cb2a731ec6be3a97ef1c98a" title="Gets the WppRegistry associated with the WppClient." alt="" coords="285,122,467,149"/>
+<area shape="rect" id="node3" href="$classwpp_1_1WppRegistry.html#ada21355749fd54b5bc6c4e7967d5899b" title="Retrieves a pointer to the Object with the given objId." alt="" coords="537,13,724,39"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Object.html#a62b52b04e4aae34b0d04cbc26a5e9c69" title="Gets the object ID." alt="" coords="772,13,956,39"/>
+<area shape="rect" id="node6" href="$classwpp_1_1Object.html#aee04ebf1209edf84ca7c08c70bbcb879" title="Gets the iterator to the instance." alt="" coords="543,71,718,98"/>
+</map>

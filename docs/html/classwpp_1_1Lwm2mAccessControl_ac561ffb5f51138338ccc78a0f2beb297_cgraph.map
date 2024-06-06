@@ -1,0 +1,9 @@
+<map id="wpp::Lwm2mAccessControl::create" name="wpp::Lwm2mAccessControl::create">
+<area shape="rect" id="node1" title="Create Lwm2mAccessControl object instance for target object." alt="" coords="5,63,207,104"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Object.html#a62b52b04e4aae34b0d04cbc26a5e9c69" title="Gets the object ID." alt="" coords="779,45,963,71"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Object.html#a3c892fea82f66e3f344bd112eafef49d" title="Helpfull methods to get registry instances." alt="" coords="284,41,467,67"/>
+<area shape="rect" id="node5" href="$classwpp_1_1WppRegistry.html#a834edae1c3b0b8c4c0bb00347a0d2111" title=" " alt="" coords="255,92,496,133"/>
+<area shape="rect" id="node7" href="$classwpp_1_1ResourceContainer.html#ac7105afd1a5e4d0139606ad7ae480486" title="Set data value by copy for the resource." alt="" coords="271,158,479,185"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Object.html#a52d313d950e0e6d404ab87e463a61927" title="Return context that can be used by derived class." alt="" coords="548,41,727,67"/>
+<area shape="rect" id="node6" href="$classwpp_1_1WppRegistry.html#ada21355749fd54b5bc6c4e7967d5899b" title="Retrieves a pointer to the Object with the given objId." alt="" coords="544,95,731,122"/>
+</map>

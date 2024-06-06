@@ -1,0 +1,7 @@
+<map id="wpp::Lwm2mServer::object" name="wpp::Lwm2mServer::object">
+<area shape="rect" id="node1" title="Gets the Object reference." alt="" coords="5,31,204,57"/>
+<area shape="rect" id="node2" href="$classwpp_1_1WppRegistry.html#ac5e27d194a25ffeab578c7aae46c997a" title=" " alt="" coords="252,5,491,32"/>
+<area shape="rect" id="node5" href="$classwpp_1_1WppClient.html#afb790e827cb2a731ec6be3a97ef1c98a" title="Gets the WppRegistry associated with the WppClient." alt="" coords="280,56,463,83"/>
+<area shape="rect" id="node3" href="$classwpp_1_1WppRegistry.html#ada21355749fd54b5bc6c4e7967d5899b" title="Retrieves a pointer to the Object with the given objId." alt="" coords="539,5,725,32"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Object.html#a62b52b04e4aae34b0d04cbc26a5e9c69" title="Gets the object ID." alt="" coords="773,5,957,32"/>
+</map>

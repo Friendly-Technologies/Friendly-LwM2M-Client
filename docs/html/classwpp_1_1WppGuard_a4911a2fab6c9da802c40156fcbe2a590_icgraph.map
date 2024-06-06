@@ -1,0 +1,6 @@
+<map id="wpp::WppGuard::try_lock" name="wpp::WppGuard::try_lock">
+<area shape="rect" id="node1" title="Tries to lock the guard object." alt="" coords="513,31,699,57"/>
+<area shape="rect" id="node2" href="$classwpp_1_1WppClient.html#a7fbfbadc32a19fb8b3df6370e73c854d" title="Gives up ownership of the WppClient." alt="" coords="236,5,465,32"/>
+<area shape="rect" id="node4" href="$classwpp_1_1WppClient.html#a071dd1e9ef32a11a5e1c532e6af0ec06" title="Takes ownership of the WppClient." alt="" coords="236,56,465,83"/>
+<area shape="rect" id="node3" href="$classwpp_1_1WppClient.html#a9cda9286f3b2610674a468df69364366" title="Removes the WppClient." alt="" coords="5,5,188,32"/>
+</map>

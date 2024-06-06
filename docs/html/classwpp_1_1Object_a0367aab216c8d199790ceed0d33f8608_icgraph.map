@@ -1,0 +1,20 @@
+<map id="wpp::Object::instance" name="wpp::Object::instance">
+<area shape="rect" id="node1" title="Gets an instance of the object." alt="" coords="744,297,907,324"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Object.html#a6bb15191844a2a5e0ff205e197e5e553" title="Clears the object." alt="" coords="519,5,658,32"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Lwm2mSecurity.html#a6a796e0e2b5aa6bdb2d66360e49929d6" title="Gets an instance of the object." alt="" coords="507,57,670,98"/>
+<area shape="rect" id="node6" href="$classwpp_1_1Lwm2mServer.html#a8455e03cde327c4a7ff9b082af0160af" title="Gets an instance of the object." alt="" coords="481,123,696,149"/>
+<area shape="rect" id="node7" href="$classwpp_1_1Device.html#a032e329845b04a155b87eee04d479abd" title="Gets an instance of the object." alt="" coords="506,173,671,200"/>
+<area shape="rect" id="node8" href="$classwpp_1_1Lwm2mAccessControl.html#ac6b65eac9c4d1c278abd24be967d9bab" title="Gets an instance of the object." alt="" coords="488,225,689,266"/>
+<area shape="rect" id="node9" href="$classwpp_1_1ConnectivityMonitoring.html#a8860a772c98be330ce915bde9756cc2c" title="Gets an instance of the object." alt="" coords="484,290,693,331"/>
+<area shape="rect" id="node10" href="$classwpp_1_1FirmwareUpdate.html#a93f8ee24f8e02aca158895431dd8b8a7" title="Gets an instance of the object." alt="" coords="506,355,671,397"/>
+<area shape="rect" id="node13" href="$classwpp_1_1Object.html#a735c0338b911c6339c625bbf54db06c9" title="The discover callback function for the Lwm2m core." alt="" coords="203,421,433,448"/>
+<area shape="rect" id="node15" href="$classwpp_1_1Object.html#a5e0297add680474f8db359a829793b78" title="The execute callback function for the Lwm2m core." alt="" coords="205,472,431,499"/>
+<area shape="rect" id="node16" href="$classwpp_1_1Object.html#a0546ac69cde57b2ec29e70a8962e933b" title="The read callback function for the Lwm2m core." alt="" coords="215,523,421,549"/>
+<area shape="rect" id="node17" href="$classwpp_1_1Object.html#a68757ebf824fb9b60df1912a8ec1b1c3" title="The write callback function for the Lwm2m core." alt="" coords="484,573,693,600"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Object.html#a6ad18083900121de65d2b729584153ab" title="Destroys the Object instance." alt="" coords="238,5,398,32"/>
+<area shape="rect" id="node5" href="$namespacewpp.html#ad31164c2f0355d8799f9c6745c1bec4c" title=" " alt="" coords="236,57,400,98"/>
+<area shape="rect" id="node11" href="$classwpp_1_1FirmwareUpdate.html#a35b71cbb89880fd9614347a93f34fe95" title="Set the FwInternalDl object for auto downloading firmware." alt="" coords="219,290,417,331"/>
+<area shape="rect" id="node12" href="$classwpp_1_1FirmwareUpdate.html#a67face09853cff99df2af665ace989d4" title="Set the FwUpdater object for updating the firmware package." alt="" coords="235,355,401,397"/>
+<area shape="rect" id="node14" href="$classwpp_1_1Object.html#a54e0417f93a65854fb64da983e455367" title="Constructs an Object instance." alt="" coords="5,523,155,549"/>
+<area shape="rect" id="node18" href="$classwpp_1_1Object.html#a7801b78179cd4fa15a6c7d008c64509b" title="The create callback function for the Lwm2m core." alt="" coords="209,624,427,651"/>
+</map>

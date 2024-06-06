@@ -1,0 +1,12 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classwpp_1_1InstSubject.html" title="The InstSubject class represents a subject that allows subscribers to be notified about various event..." alt="" coords="31,132,160,159"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Instance.html" title="Instance is interface class that implements manipulation with derived class resources...." alt="" coords="233,157,345,184"/>
+<area shape="rect" id="node3" href="$classwpp_1_1AudioClip.html" title=" " alt="" coords="439,5,557,32"/>
+<area shape="rect" id="node4" href="$classwpp_1_1ConnectivityMonitoring.html" title=" " alt="" coords="393,56,603,83"/>
+<area shape="rect" id="node5" href="$classwpp_1_1Device.html" title=" " alt="" coords="447,107,549,133"/>
+<area shape="rect" id="node6" href="$classwpp_1_1FirmwareUpdate.html" title=" " alt="" coords="415,157,581,184"/>
+<area shape="rect" id="node7" href="$classwpp_1_1Lwm2mAccessControl.html" title=" " alt="" coords="397,208,599,235"/>
+<area shape="rect" id="node8" href="$classwpp_1_1Lwm2mSecurity.html" title=" " alt="" coords="417,259,579,285"/>
+<area shape="rect" id="node9" href="$classwpp_1_1Lwm2mServer.html" title=" " alt="" coords="423,309,573,336"/>
+<area shape="rect" id="node10" href="$classwpp_1_1ResourceContainer.html" title=" " alt="" coords="5,183,185,209"/>
+</map>

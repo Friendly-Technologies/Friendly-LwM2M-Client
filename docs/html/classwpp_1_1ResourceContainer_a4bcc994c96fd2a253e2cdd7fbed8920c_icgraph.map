@@ -1,0 +1,11 @@
+<map id="wpp::ResourceContainer::resources" name="wpp::ResourceContainer::resources">
+<area shape="rect" id="node1" title="This method return list with all resources that has been defined." alt="" coords="1003,49,1183,90"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Instance.html#a57eb1b745b0ee7f7257cf7cbec37d0d8" title=" " alt="" coords="489,20,680,61"/>
+<area shape="rect" id="node5" href="$classwpp_1_1Instance.html#a7873bcb3f20b4eae620f2531082d62e3" title="This method return list with resources that has been instantiated. If resources does not exist then r..." alt="" coords="736,78,955,120"/>
+<area shape="rect" id="node8" href="$classwpp_1_1Instance.html#ac392e4202e92899bd0dbe9dadea3fbb6" title="This method return list with all resources that has been defined. If resources does not exist then re..." alt="" coords="751,27,939,54"/>
+<area shape="rect" id="node9" href="$classwpp_1_1ResourceContainer.html#a090d5bc56a040a2bdde1c37151668d8e" title="This methods setup resources list." alt="" coords="755,144,935,185"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Object.html#a735c0338b911c6339c625bbf54db06c9" title="The discover callback function for the Lwm2m core." alt="" coords="203,30,433,56"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Object.html#a54e0417f93a65854fb64da983e455367" title="Constructs an Object instance." alt="" coords="5,56,155,83"/>
+<area shape="rect" id="node6" href="$classwpp_1_1Instance.html#a0cfa0b97042e6c3e72d8aacd2f4f72a7" title="This methods is called by the core when the server wants to read, write, discover,..." alt="" coords="481,86,688,112"/>
+<area shape="rect" id="node7" href="$classwpp_1_1Object.html#a0546ac69cde57b2ec29e70a8962e933b" title="The read callback function for the Lwm2m core." alt="" coords="215,82,421,108"/>
+</map>

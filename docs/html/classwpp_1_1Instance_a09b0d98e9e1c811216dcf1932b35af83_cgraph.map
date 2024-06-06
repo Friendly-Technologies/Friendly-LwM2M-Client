@@ -1,0 +1,4 @@
+<map id="wpp::Instance::resourceOperationNotifier" name="wpp::Instance::resourceOperationNotifier">
+<area shape="rect" id="node1" title="Handle information about resource operation (WRITE, DELETE). Called by ResourceContainer after resour..." alt="" coords="5,5,245,47"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Instance.html#a6f03622a6a4b6497fd3e68b9b01de347" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="293,5,505,47"/>
+</map>

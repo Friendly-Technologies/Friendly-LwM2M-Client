@@ -1,0 +1,7 @@
+<map id="wpp::WppClient::isCreated" name="wpp::WppClient::isCreated">
+<area shape="rect" id="node1" title="Checks if the WppClient is created." alt="" coords="283,81,477,108"/>
+<area shape="rect" id="node2" href="$classwpp_1_1WppClient.html#acbb496e6d1f834b441a8d4ff17b2166e" title="Creates a WppClient with the specified client information, connection, and maximum sleep time." alt="" coords="33,5,207,32"/>
+<area shape="rect" id="node3" href="$classwpp_1_1WppClient.html#a9cda9286f3b2610674a468df69364366" title="Removes the WppClient." alt="" coords="29,56,211,83"/>
+<area shape="rect" id="node4" href="$classwpp_1_1WppClient.html#a071dd1e9ef32a11a5e1c532e6af0ec06" title="Takes ownership of the WppClient." alt="" coords="5,107,235,133"/>
+<area shape="rect" id="node5" href="$classwpp_1_1WppClient.html#ac8e1eb3f8542f0f0f93f3abf897a70da" title="Takes ownership of the WppClient, blocking until it becomes available." alt="" coords="5,158,235,199"/>
+</map>

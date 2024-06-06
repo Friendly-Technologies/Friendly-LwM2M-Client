@@ -1,0 +1,5 @@
+<map id="wpp::Instance" name="wpp::Instance">
+<area shape="rect" id="node1" title="Instance is interface class that implements manipulation with derived class resources...." alt="" coords="87,453,301,853"/>
+<area shape="rect" id="node2" href="$classwpp_1_1InstSubject.html" title="The InstSubject class represents a subject that allows subscribers to be notified about various event..." alt="" coords="5,130,169,281"/>
+<area shape="rect" id="node3" href="$classwpp_1_1ResourceContainer.html" title=" " alt="" coords="193,5,408,405"/>
+</map>

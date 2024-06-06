@@ -1,0 +1,7 @@
+<map id="wpp::Lwm2mAccessControl::userOperationNotifier" name="wpp::Lwm2mAccessControl::userOperationNotifier">
+<area shape="rect" id="node1" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="5,27,207,69"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Instance.html#a9c3b1da44787aeb86f6b21769ae39d5f" title="Return context that can be used by derived class." alt="" coords="255,5,447,32"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Instance.html#aac8e574cc418b111f1f937a7a865d7f0" title="Notify server about resource value change." alt="" coords="260,57,441,98"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Instance.html#abe793eaf4ed798fd8c6462d97ba6823e" title=" " alt="" coords="495,39,705,65"/>
+<area shape="rect" id="node5" href="$classwpp_1_1Instance.html#a20fc277ffa400f5cd4d76cd0b97d4f7a" title=" " alt="" coords="501,89,699,116"/>
+</map>

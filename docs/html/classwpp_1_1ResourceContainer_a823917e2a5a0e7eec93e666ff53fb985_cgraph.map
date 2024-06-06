@@ -1,0 +1,6 @@
+<map id="wpp::ResourceContainer::add" name="wpp::ResourceContainer::add">
+<area shape="rect" id="node1" title="Add new instance with data value by copy for the MULTIPLE resource." alt="" coords="5,46,217,73"/>
+<area shape="rect" id="node2" href="$classwpp_1_1ResourceContainer.html#a2c8e73b4748aebf1ddfd322e609f7f2d" title="This method return resource ptr if it exists. If resources does not exist then return NULL." alt="" coords="275,5,455,47"/>
+<area shape="rect" id="node4" href="$classwpp_1_1ResourceContainer.html#a5f9c8a340d684c31b81bba1fa404b493" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="265,71,464,112"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Resource.html#a5f09c63400dbf8e6e12be7be2af1633a" title=" " alt="" coords="512,13,671,39"/>
+</map>

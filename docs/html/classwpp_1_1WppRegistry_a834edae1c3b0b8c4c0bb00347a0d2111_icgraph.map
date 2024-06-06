@@ -1,0 +1,9 @@
+<map id="wpp::WppRegistry::lwm2mAccessControl" name="wpp::WppRegistry::lwm2mAccessControl">
+<area shape="rect" id="node1" title=" " alt="" coords="255,169,496,211"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Lwm2mAccessControl.html#ac561ffb5f51138338ccc78a0f2beb297" title="Create Lwm2mAccessControl object instance for target object." alt="" coords="5,5,207,47"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Lwm2mAccessControl.html#a5b527f41b27dbe052a80420f8174bd43" title="Creates an instance of the object." alt="" coords="5,71,207,112"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Lwm2mAccessControl.html#ac6b65eac9c4d1c278abd24be967d9bab" title="Gets an instance of the object." alt="" coords="5,136,207,177"/>
+<area shape="rect" id="node5" href="$classwpp_1_1Lwm2mAccessControl.html#a86013a9804f755953970b6a032ca0ced" title="Gets the Object reference." alt="" coords="5,201,207,243"/>
+<area shape="rect" id="node6" href="$classwpp_1_1Lwm2mAccessControl.html#aac4c06ca9c1883098b87795abd515c5a" title="Delete Lwm2mAccessControl object instance for target object." alt="" coords="5,267,207,308"/>
+<area shape="rect" id="node7" href="$classwpp_1_1Lwm2mAccessControl.html#a502e8dd8c2afb03cb7a9692dca55c6d4" title="Removes an instance of the object." alt="" coords="5,332,207,373"/>
+</map>

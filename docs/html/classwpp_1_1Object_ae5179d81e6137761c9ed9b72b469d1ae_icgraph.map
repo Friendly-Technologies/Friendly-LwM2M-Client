@@ -1,0 +1,11 @@
+<map id="wpp::Object::isExist" name="wpp::Object::isExist">
+<area shape="rect" id="node1" title="Checks if an instance exists." alt="" coords="747,147,897,174"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Object.html#a347161531bf74e02095f6971bbe97dc4" title="Gets the first available instance ID." alt="" coords="482,5,698,47"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Object.html#aac32d1cd2ce18535c17559968fb16545" title="The delete callback function for the Lwm2m core." alt="" coords="481,173,699,199"/>
+<area shape="rect" id="node6" href="$classwpp_1_1Object.html#a735c0338b911c6339c625bbf54db06c9" title="The discover callback function for the Lwm2m core." alt="" coords="203,71,433,98"/>
+<area shape="rect" id="node7" href="$classwpp_1_1Object.html#a5e0297add680474f8db359a829793b78" title="The execute callback function for the Lwm2m core." alt="" coords="205,122,431,149"/>
+<area shape="rect" id="node8" href="$classwpp_1_1Object.html#a0546ac69cde57b2ec29e70a8962e933b" title="The read callback function for the Lwm2m core." alt="" coords="215,325,421,351"/>
+<area shape="rect" id="node9" href="$classwpp_1_1Object.html#a68757ebf824fb9b60df1912a8ec1b1c3" title="The write callback function for the Lwm2m core." alt="" coords="485,223,695,250"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Object.html#a54e0417f93a65854fb64da983e455367" title="Constructs an Object instance." alt="" coords="5,198,155,225"/>
+<area shape="rect" id="node5" href="$classwpp_1_1Object.html#a7801b78179cd4fa15a6c7d008c64509b" title="The create callback function for the Lwm2m core." alt="" coords="209,223,427,250"/>
+</map>

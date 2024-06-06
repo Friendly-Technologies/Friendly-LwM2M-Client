@@ -1,0 +1,4 @@
+<map id="wpp::Resource::newInstId" name="wpp::Resource::newInstId">
+<area shape="rect" id="node1" title="Find first available instance ID that is not used." alt="" coords="203,5,391,32"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Resource.html#a42835427e93c88187daf1571165ee93a" title="Add new instance with data value by copy for the MULTIPLE resource." alt="" coords="5,5,155,32"/>
+</map>

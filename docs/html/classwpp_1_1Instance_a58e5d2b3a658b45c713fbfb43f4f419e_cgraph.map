@@ -1,0 +1,5 @@
+<map id="wpp::Instance::getInstantiatedResList" name="wpp::Instance::getInstantiatedResList">
+<area shape="rect" id="node1" title=" " alt="" coords="5,27,224,69"/>
+<area shape="rect" id="node2" href="$structwpp_1_1ItemOp.html#a3743dc2af8cab36a84fe2feb9904428f" title="Checks if the ItemOp object is compatible with another ItemOp object." alt="" coords="272,5,471,32"/>
+<area shape="rect" id="node3" href="$classwpp_1_1ResourceContainer.html#a4bcc994c96fd2a253e2cdd7fbed8920c" title="This method return list with all resources that has been defined." alt="" coords="281,57,461,98"/>
+</map>

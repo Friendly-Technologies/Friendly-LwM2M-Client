@@ -1,0 +1,6 @@
+<map id="wpp::ResourceContainer::removeRes" name="wpp::ResourceContainer::removeRes">
+<area shape="rect" id="node1" title="Remove resource instance if resource is MULTIPLE and instance exists, if the resource is SINGLE remov..." alt="" coords="5,39,185,80"/>
+<area shape="rect" id="node2" href="$classwpp_1_1ResourceContainer.html#a2c8e73b4748aebf1ddfd322e609f7f2d" title="This method return resource ptr if it exists. If resources does not exist then return NULL." alt="" coords="243,5,423,47"/>
+<area shape="rect" id="node4" href="$classwpp_1_1ResourceContainer.html#a5f9c8a340d684c31b81bba1fa404b493" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="233,71,432,112"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Resource.html#a5f09c63400dbf8e6e12be7be2af1633a" title=" " alt="" coords="480,13,639,39"/>
+</map>

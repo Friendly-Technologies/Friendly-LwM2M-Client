@@ -1,0 +1,5 @@
+<map id="wpp::Object::getFirstAvailableInstanceID" name="wpp::Object::getFirstAvailableInstanceID">
+<area shape="rect" id="node1" title="Gets the first available instance ID." alt="" coords="5,5,221,47"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Object.html#ae5179d81e6137761c9ed9b72b469d1ae" title="Checks if an instance exists." alt="" coords="269,13,420,39"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Object.html#aee04ebf1209edf84ca7c08c70bbcb879" title="Gets the iterator to the instance." alt="" coords="468,13,643,39"/>
+</map>

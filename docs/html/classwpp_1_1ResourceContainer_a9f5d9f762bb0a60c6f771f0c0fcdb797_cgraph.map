@@ -1,0 +1,5 @@
+<map id="wpp::ResourceContainer::isSingle" name="wpp::ResourceContainer::isSingle">
+<area shape="rect" id="node1" title="Check if the resource is SINGLE." alt="" coords="5,5,185,47"/>
+<area shape="rect" id="node2" href="$classwpp_1_1ResourceContainer.html#a2c8e73b4748aebf1ddfd322e609f7f2d" title="This method return resource ptr if it exists. If resources does not exist then return NULL." alt="" coords="233,5,413,47"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Resource.html#a5f09c63400dbf8e6e12be7be2af1633a" title=" " alt="" coords="461,13,620,39"/>
+</map>

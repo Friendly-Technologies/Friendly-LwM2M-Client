@@ -1,0 +1,5 @@
+<map id="wpp::ObjSubject" name="wpp::ObjSubject">
+<area shape="rect" id="node1" title="The ObjSubject class represents a subject that notifies observers about object operations and actions..." alt="" coords="44,5,192,112"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Object.html" title="The Object class implements manipulation with Instance interface class and its inheritors." alt="" coords="5,160,231,619"/>
+<area shape="rect" id="node3" href="$classwpp_1_1ObjectImpl.html" title="The ObjectImpl class is a template class that represents an implementation of an object in the Wakaam..." alt="" coords="35,667,201,788"/>
+</map>

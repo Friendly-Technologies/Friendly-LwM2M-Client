@@ -1,0 +1,7 @@
+<map id="wpp::Instance::discoverAsServer" name="wpp::Instance::discoverAsServer">
+<area shape="rect" id="node1" title=" " alt="" coords="5,49,196,90"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Instance.html#ac392e4202e92899bd0dbe9dadea3fbb6" title="This method return list with all resources that has been defined. If resources does not exist then re..." alt="" coords="244,5,432,32"/>
+<area shape="rect" id="node3" href="$classwpp_1_1ResourceContainer.html#a4bcc994c96fd2a253e2cdd7fbed8920c" title="This method return list with all resources that has been defined." alt="" coords="480,23,660,65"/>
+<area shape="rect" id="node4" href="$classwpp_1_1ResourceContainer.html#a2c8e73b4748aebf1ddfd322e609f7f2d" title="This method return resource ptr if it exists. If resources does not exist then return NULL." alt="" coords="248,107,428,149"/>
+<area shape="rect" id="node5" href="$classwpp_1_1Resource.html#a5f09c63400dbf8e6e12be7be2af1633a" title=" " alt="" coords="491,115,649,141"/>
+</map>

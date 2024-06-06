@@ -1,0 +1,32 @@
+<map id="wpp::Object::getObjectID" name="wpp::Object::getObjectID">
+<area shape="rect" id="node1" title="Gets the object ID." alt="" coords="1060,864,1244,891"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Object.html#a6bb15191844a2a5e0ff205e197e5e553" title="Clears the object." alt="" coords="827,5,966,32"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Lwm2mAccessControl.html#ac561ffb5f51138338ccc78a0f2beb297" title="Create Lwm2mAccessControl object instance for target object." alt="" coords="219,35,420,77"/>
+<area shape="rect" id="node5" href="$classwpp_1_1WppRegistry.html#ada21355749fd54b5bc6c4e7967d5899b" title="Retrieves a pointer to the Object with the given objId." alt="" coords="803,493,990,520"/>
+<area shape="rect" id="node17" href="$classwpp_1_1Lwm2mAccessControl.html#aac4c06ca9c1883098b87795abd515c5a" title="Delete Lwm2mAccessControl object instance for target object." alt="" coords="219,101,420,142"/>
+<area shape="rect" id="node23" href="$classwpp_1_1Object.html#a3e14100c612dfc5860793054b81a7f11" title="Removes an instance of the object." alt="" coords="818,653,975,680"/>
+<area shape="rect" id="node24" href="$classwpp_1_1Object.html#aac32d1cd2ce18535c17559968fb16545" title="The delete callback function for the Lwm2m core." alt="" coords="500,864,717,891"/>
+<area shape="rect" id="node26" href="$classwpp_1_1Object.html#a7801b78179cd4fa15a6c7d008c64509b" title="The create callback function for the Lwm2m core." alt="" coords="211,915,428,941"/>
+<area shape="rect" id="node27" href="$classwpp_1_1Object.html#a735c0338b911c6339c625bbf54db06c9" title="The discover callback function for the Lwm2m core." alt="" coords="781,1117,1012,1144"/>
+<area shape="rect" id="node28" href="$classwpp_1_1Object.html#a5e0297add680474f8db359a829793b78" title="The execute callback function for the Lwm2m core." alt="" coords="784,1016,1009,1043"/>
+<area shape="rect" id="node29" href="$classwpp_1_1Object.html#a0546ac69cde57b2ec29e70a8962e933b" title="The read callback function for the Lwm2m core." alt="" coords="793,1067,1000,1093"/>
+<area shape="rect" id="node30" href="$classwpp_1_1Object.html#a68757ebf824fb9b60df1912a8ec1b1c3" title="The write callback function for the Lwm2m core." alt="" coords="504,965,713,992"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Object.html#a6ad18083900121de65d2b729584153ab" title="Destroys the Object instance." alt="" coords="529,5,689,32"/>
+<area shape="rect" id="node6" href="$classwpp_1_1WppRegistry.html#a5385a129b131f4ed62aa1df061166a7a" title=" " alt="" coords="495,326,722,367"/>
+<area shape="rect" id="node11" href="$classwpp_1_1WppRegistry.html#a45aacbf59a432300fc47b91705901b28" title=" " alt="" coords="513,443,704,469"/>
+<area shape="rect" id="node13" href="$classwpp_1_1WppRegistry.html#a2c39415fc5ba4c5075dc0505dcf81dea" title=" " alt="" coords="506,646,711,687"/>
+<area shape="rect" id="node15" href="$classwpp_1_1WppRegistry.html#a4ecc9f9b2986231466efe44c8859ce90" title="Checks if an Object with the given objId exists in the registry." alt="" coords="513,224,704,251"/>
+<area shape="rect" id="node16" href="$classwpp_1_1WppRegistry.html#a834edae1c3b0b8c4c0bb00347a0d2111" title=" " alt="" coords="488,158,729,199"/>
+<area shape="rect" id="node19" href="$classwpp_1_1WppRegistry.html#a73d7afb853a840de6816fac51b07a1e5" title=" " alt="" coords="484,763,733,789"/>
+<area shape="rect" id="node21" href="$classwpp_1_1WppRegistry.html#ac5e27d194a25ffeab578c7aae46c997a" title=" " alt="" coords="489,544,728,571"/>
+<area shape="rect" id="node7" href="$classwpp_1_1ConnectivityMonitoring.html#a035316c1d1d0d1f649f0c798262f76be" title="Creates an instance of the object." alt="" coords="215,362,424,403"/>
+<area shape="rect" id="node8" href="$classwpp_1_1ConnectivityMonitoring.html#a8860a772c98be330ce915bde9756cc2c" title="Gets an instance of the object." alt="" coords="215,231,424,273"/>
+<area shape="rect" id="node9" href="$classwpp_1_1ConnectivityMonitoring.html#aac66cebb0cd894def37d9148d2b7c0bf" title="Gets the Object reference." alt="" coords="215,297,424,338"/>
+<area shape="rect" id="node10" href="$classwpp_1_1ConnectivityMonitoring.html#a9b3c5b60b8d1c02781ebb40b697fd672" title="Removes an instance of the object." alt="" coords="215,427,424,469"/>
+<area shape="rect" id="node12" href="$classwpp_1_1Device.html#a1c6b74844f7089c2ca5dcee7f832f2f6" title="Removes an instance of the object." alt="" coords="227,493,411,520"/>
+<area shape="rect" id="node14" href="$classwpp_1_1FirmwareUpdate.html#aaa6858be93a76190785e0b6e3892efc3" title="Removes an instance of the object." alt="" coords="237,691,402,733"/>
+<area shape="rect" id="node18" href="$classwpp_1_1Lwm2mAccessControl.html#a502e8dd8c2afb03cb7a9692dca55c6d4" title="Removes an instance of the object." alt="" coords="219,166,420,207"/>
+<area shape="rect" id="node20" href="$classwpp_1_1Lwm2mSecurity.html#ab3f14c26f6e55aee46e6d3da1e639161" title="Removes an instance of the object." alt="" coords="238,770,401,811"/>
+<area shape="rect" id="node22" href="$classwpp_1_1Lwm2mServer.html#a17f03f07615d711c7d9659781b4fad18" title="Removes an instance of the object." alt="" coords="203,569,436,596"/>
+<area shape="rect" id="node25" href="$classwpp_1_1Object.html#a54e0417f93a65854fb64da983e455367" title="Constructs an Object instance." alt="" coords="5,991,155,1017"/>
+</map>

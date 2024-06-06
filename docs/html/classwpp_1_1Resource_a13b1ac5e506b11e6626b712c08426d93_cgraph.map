@@ -1,0 +1,6 @@
+<map id="wpp::Resource::set" name="wpp::Resource::set">
+<area shape="rect" id="node1" title="Set data value by move for the resource (instance)" alt="" coords="5,71,151,98"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Resource.html#abc00188d42568241b6d077b52c57244a" title="Check if the data type and value are valid." alt="" coords="199,5,401,47"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Resource.html#a0e54ded7223260452ceeac283cf99f8f" title="Check if the instance ID is exist." alt="" coords="216,71,384,98"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Resource.html#a6c8c94cdd5cf3a10a05afc7c4338674f" title=" " alt="" coords="212,122,388,149"/>
+</map>

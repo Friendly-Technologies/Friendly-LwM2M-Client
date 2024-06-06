@@ -1,0 +1,4 @@
+<map id="wpp::Object::clear" name="wpp::Object::clear">
+<area shape="rect" id="node1" title="Clears the object." alt="" coords="213,5,352,32"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Object.html#a6ad18083900121de65d2b729584153ab" title="Destroys the Object instance." alt="" coords="5,5,165,32"/>
+</map>

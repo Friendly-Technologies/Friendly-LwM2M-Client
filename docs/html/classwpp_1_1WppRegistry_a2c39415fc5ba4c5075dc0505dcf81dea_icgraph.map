@@ -1,0 +1,9 @@
+<map id="wpp::WppRegistry::firmwareUpdate" name="wpp::WppRegistry::firmwareUpdate">
+<area shape="rect" id="node1" title=" " alt="" coords="464,104,669,145"/>
+<area shape="rect" id="node2" href="$classwpp_1_1FirmwareUpdate.html#abb84d62697b47b093af39342bf2cb7d5" title="Creates an instance of the object." alt="" coords="251,5,416,47"/>
+<area shape="rect" id="node3" href="$classwpp_1_1FirmwareUpdate.html#a93f8ee24f8e02aca158895431dd8b8a7" title="Gets an instance of the object." alt="" coords="251,71,416,112"/>
+<area shape="rect" id="node6" href="$classwpp_1_1FirmwareUpdate.html#aacfc7e16e102fe2b5ee6e3c84909bb6a" title="Gets the Object reference." alt="" coords="251,136,416,177"/>
+<area shape="rect" id="node7" href="$classwpp_1_1FirmwareUpdate.html#aaa6858be93a76190785e0b6e3892efc3" title="Removes an instance of the object." alt="" coords="251,201,416,243"/>
+<area shape="rect" id="node4" href="$classwpp_1_1FirmwareUpdate.html#a35b71cbb89880fd9614347a93f34fe95" title="Set the FwInternalDl object for auto downloading firmware." alt="" coords="5,39,203,80"/>
+<area shape="rect" id="node5" href="$classwpp_1_1FirmwareUpdate.html#a67face09853cff99df2af665ace989d4" title="Set the FwUpdater object for updating the firmware package." alt="" coords="21,104,187,145"/>
+</map>

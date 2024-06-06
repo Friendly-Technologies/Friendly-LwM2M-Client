@@ -1,0 +1,12 @@
+<map id="wpp::Object::remove" name="wpp::Object::remove">
+<area shape="rect" id="node1" title="Removes an instance of the object." alt="" coords="749,181,907,207"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Lwm2mSecurity.html#ab3f14c26f6e55aee46e6d3da1e639161" title="Removes an instance of the object." alt="" coords="503,5,666,47"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Lwm2mServer.html#a17f03f07615d711c7d9659781b4fad18" title="Removes an instance of the object." alt="" coords="468,71,701,98"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Device.html#a1c6b74844f7089c2ca5dcee7f832f2f6" title="Removes an instance of the object." alt="" coords="493,122,677,149"/>
+<area shape="rect" id="node5" href="$classwpp_1_1Lwm2mAccessControl.html#a502e8dd8c2afb03cb7a9692dca55c6d4" title="Removes an instance of the object." alt="" coords="484,173,685,215"/>
+<area shape="rect" id="node6" href="$classwpp_1_1ConnectivityMonitoring.html#a9b3c5b60b8d1c02781ebb40b697fd672" title="Removes an instance of the object." alt="" coords="480,239,689,280"/>
+<area shape="rect" id="node7" href="$classwpp_1_1FirmwareUpdate.html#aaa6858be93a76190785e0b6e3892efc3" title="Removes an instance of the object." alt="" coords="502,304,667,345"/>
+<area shape="rect" id="node8" href="$classwpp_1_1Object.html#aac32d1cd2ce18535c17559968fb16545" title="The delete callback function for the Lwm2m core." alt="" coords="476,370,693,397"/>
+<area shape="rect" id="node9" href="$classwpp_1_1Object.html#a54e0417f93a65854fb64da983e455367" title="Constructs an Object instance." alt="" coords="5,370,155,397"/>
+<area shape="rect" id="node10" href="$classwpp_1_1Object.html#a7801b78179cd4fa15a6c7d008c64509b" title="The create callback function for the Lwm2m core." alt="" coords="203,395,420,422"/>
+</map>

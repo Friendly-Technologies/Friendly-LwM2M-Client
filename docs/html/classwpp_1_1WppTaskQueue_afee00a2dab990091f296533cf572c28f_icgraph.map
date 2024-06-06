@@ -1,0 +1,4 @@
+<map id="wpp::WppTaskQueue::hardReset" name="wpp::WppTaskQueue::hardReset">
+<area shape="rect" id="node1" title="Blocks task handling, calls of other methods, and deletes all tasks from the queue,..." alt="" coords="264,5,429,47"/>
+<area shape="rect" id="node2" href="$classwpp_1_1WppClient.html#accbdfdf6fd3202c646cc3f2cb9ef76a7" title=" " alt="" coords="5,13,216,39"/>
+</map>

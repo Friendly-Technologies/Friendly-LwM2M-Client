@@ -1,0 +1,5 @@
+<map id="wpp::WppRegistry::lwm2mSecurity" name="wpp::WppRegistry::lwm2mSecurity">
+<area shape="rect" id="node1" title=" " alt="" coords="5,5,255,32"/>
+<area shape="rect" id="node2" href="$classwpp_1_1WppRegistry.html#ada21355749fd54b5bc6c4e7967d5899b" title="Retrieves a pointer to the Object with the given objId." alt="" coords="303,5,489,32"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Object.html#a62b52b04e4aae34b0d04cbc26a5e9c69" title="Gets the object ID." alt="" coords="537,5,721,32"/>
+</map>

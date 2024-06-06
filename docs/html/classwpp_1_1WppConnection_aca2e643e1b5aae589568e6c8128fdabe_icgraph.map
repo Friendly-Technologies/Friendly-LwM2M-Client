@@ -1,0 +1,9 @@
+<map id="wpp::WppConnection::getPacketQueueSize" name="wpp::WppConnection::getPacketQueueSize">
+<area shape="rect" id="node1" title="Retrieves the size of the packet queue." alt="" coords="489,71,652,112"/>
+<area shape="rect" id="node2" href="$classwpp_1_1WppConnection.html#a96b882355a509a3942037811fb8bd454" title="Adds a packet to the packet queue." alt="" coords="273,5,432,47"/>
+<area shape="rect" id="node3" href="$classwpp_1_1WppConnection.html#a6a5d8654b15c05dc7c93b66e2071bfa0" title="Clears the packet queue." alt="" coords="273,71,432,112"/>
+<area shape="rect" id="node6" href="$classwpp_1_1WppConnection.html#af8e8671a361be7a0bb1b53d127a08c07" title="Processes the packets in the packet queue." alt="" coords="264,136,441,177"/>
+<area shape="rect" id="node4" href="$classwpp_1_1WppClient.html#accbdfdf6fd3202c646cc3f2cb9ef76a7" title=" " alt="" coords="5,23,216,50"/>
+<area shape="rect" id="node5" href="$classwpp_1_1WppConnection.html#ab9dce36411f730e581e6760a87192a6f" title=" " alt="" coords="31,75,190,116"/>
+<area shape="rect" id="node7" href="$classwpp_1_1WppClient.html#aafd44d1c81f8ee217675bcd27173b67f" title="Processes the state of the Wakaama core. This function performs the necessary work by the Wakaama cor..." alt="" coords="31,143,191,170"/>
+</map>

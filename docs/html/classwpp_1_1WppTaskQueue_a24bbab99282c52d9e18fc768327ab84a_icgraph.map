@@ -1,0 +1,4 @@
+<map id="wpp::WppTaskQueue::getTaskCnt" name="wpp::WppTaskQueue::getTaskCnt">
+<area shape="rect" id="node1" title="Returns count of tasks in the queue. Tasks count does not immediately updated after request to remove..." alt="" coords="213,5,379,47"/>
+<area shape="rect" id="node2" href="$classwpp_1_1WppClient.html#aafd44d1c81f8ee217675bcd27173b67f" title="Processes the state of the Wakaama core. This function performs the necessary work by the Wakaama cor..." alt="" coords="5,13,165,39"/>
+</map>

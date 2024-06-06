@@ -1,0 +1,10 @@
+<map id="wpp::WppClient::loop" name="wpp::WppClient::loop">
+<area shape="rect" id="node1" title="Processes the state of the Wakaama core. This function performs the necessary work by the Wakaama cor..." alt="" coords="5,115,165,141"/>
+<area shape="rect" id="node2" href="$classwpp_1_1WppClient.html#ab058f0a0d20678d37826c05155a80aad" title="Gets the WppConnection associated with the WppClient." alt="" coords="213,5,416,32"/>
+<area shape="rect" id="node3" href="$classwpp_1_1WppClient.html#ab30f51bab963e5be0cc84b5650e2b764" title="Gets the state of the Wakaama client." alt="" coords="221,56,408,83"/>
+<area shape="rect" id="node4" href="$classwpp_1_1WppTaskQueue.html#a24bbab99282c52d9e18fc768327ab84a" title="Returns count of tasks in the queue. Tasks count does not immediately updated after request to remove..." alt="" coords="232,107,397,149"/>
+<area shape="rect" id="node5" href="$classwpp_1_1WppTaskQueue.html#a03658962e8cd8718b25eab8d3f08aa9b" title="Execute each task in the queue and delete it from queue if task returns false or task state is SHOULD..." alt="" coords="232,173,397,214"/>
+<area shape="rect" id="node6" href="$classwpp_1_1WppConnection.html#af8e8671a361be7a0bb1b53d127a08c07" title="Processes the packets in the packet queue." alt="" coords="226,238,403,279"/>
+<area shape="rect" id="node7" href="$classwpp_1_1WppClient.html#a6e240466820687e8eade9857776d1854" title="Gets the LwM2M context associated with the WppClient." alt="" coords="464,216,668,243"/>
+<area shape="rect" id="node8" href="$classwpp_1_1WppConnection.html#aca2e643e1b5aae589568e6c8128fdabe" title="Retrieves the size of the packet queue." alt="" coords="485,267,647,309"/>
+</map>

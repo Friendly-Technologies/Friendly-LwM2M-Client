@@ -1,0 +1,17 @@
+<map id="wpp::Resource::isExist" name="wpp::Resource::isExist">
+<area shape="rect" id="node1" title="Check if the instance ID is exist." alt="" coords="1011,347,1179,374"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Resource.html#ad3971dfcfb747850eec0553913582c64" title=" " alt="" coords="795,177,942,203"/>
+<area shape="rect" id="node10" href="$classwpp_1_1Resource.html#a9029eb306ba226e37953e3dc659cd452" title="Find first available instance ID that is not used." alt="" coords="775,322,963,349"/>
+<area shape="rect" id="node12" href="$classwpp_1_1Resource.html#a3ea1d9b4d65641538579c526a2cd466c" title="Remove resource instance if resource is MULTIPLE and instance exists, if the resource is SINGLE remov..." alt="" coords="781,373,956,399"/>
+<area shape="rect" id="node13" href="$classwpp_1_1Resource.html#a55e9226776ffe8ac59787f9802154b9b" title="Set data value by copy for the resource (instance)" alt="" coords="796,423,941,450"/>
+<area shape="rect" id="node3" href="$classwpp_1_1ConnectivityMonitoring.html#aea4092d740ed80f672a961ada96f2f1a" title=" " alt="" coords="497,5,706,47"/>
+<area shape="rect" id="node4" href="$classwpp_1_1ConnectivityMonitoring.html#acd11107ef351b3d57555d906716d51a5" title=" " alt="" coords="497,71,706,112"/>
+<area shape="rect" id="node5" href="$classwpp_1_1Instance.html#a97b0c9ccc79aae58a5ab14aa4e813f65" title=" " alt="" coords="508,136,695,177"/>
+<area shape="rect" id="node8" href="$classwpp_1_1Lwm2mServer.html#a18dc6278975e41065cca413cd6028de4" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="501,201,701,243"/>
+<area shape="rect" id="node9" href="$classwpp_1_1Lwm2mServer.html#a4ba2f59b41efa68e77bd492f085ec819" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="476,267,727,308"/>
+<area shape="rect" id="node6" href="$classwpp_1_1Object.html#a5e0297add680474f8db359a829793b78" title="The execute callback function for the Lwm2m core." alt="" coords="203,143,428,170"/>
+<area shape="rect" id="node7" href="$classwpp_1_1Object.html#a54e0417f93a65854fb64da983e455367" title="Constructs an Object instance." alt="" coords="5,143,155,170"/>
+<area shape="rect" id="node11" href="$classwpp_1_1Resource.html#a42835427e93c88187daf1571165ee93a" title="Add new instance with data value by copy for the MULTIPLE resource." alt="" coords="527,333,676,359"/>
+<area shape="rect" id="node14" href="$classwpp_1_1FirmwareUpdate.html#a35b71cbb89880fd9614347a93f34fe95" title="Set the FwInternalDl object for auto downloading firmware." alt="" coords="503,405,700,447"/>
+<area shape="rect" id="node15" href="$classwpp_1_1FirmwareUpdate.html#a67face09853cff99df2af665ace989d4" title="Set the FwUpdater object for updating the firmware package." alt="" coords="519,471,684,512"/>
+</map>

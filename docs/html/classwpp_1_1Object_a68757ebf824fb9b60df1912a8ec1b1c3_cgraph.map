@@ -1,0 +1,10 @@
+<map id="wpp::Object::serverWrite_clb" name="wpp::Object::serverWrite_clb">
+<area shape="rect" id="node1" title="The write callback function for the Lwm2m core." alt="" coords="5,81,215,108"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Object.html#a62b52b04e4aae34b0d04cbc26a5e9c69" title="Gets the object ID." alt="" coords="276,5,460,32"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Object.html#a0367aab216c8d199790ceed0d33f8608" title="Gets an instance of the object." alt="" coords="287,56,449,83"/>
+<area shape="rect" id="node5" href="$classwpp_1_1Object.html#ae5179d81e6137761c9ed9b72b469d1ae" title="Checks if an instance exists." alt="" coords="293,107,443,133"/>
+<area shape="rect" id="node6" href="$classwpp_1_1Instance.html#af584f19b68afa2f0e86100f9ba324271" title=" " alt="" coords="263,157,473,184"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Object.html#aee04ebf1209edf84ca7c08c70bbcb879" title="Gets the iterator to the instance." alt="" coords="524,77,699,104"/>
+<area shape="rect" id="node7" href="$classwpp_1_1ResourceContainer.html#a2c8e73b4748aebf1ddfd322e609f7f2d" title="This method return resource ptr if it exists. If resources does not exist then return NULL." alt="" coords="521,150,701,191"/>
+<area shape="rect" id="node8" href="$classwpp_1_1Resource.html#a5f09c63400dbf8e6e12be7be2af1633a" title=" " alt="" coords="749,157,908,184"/>
+</map>

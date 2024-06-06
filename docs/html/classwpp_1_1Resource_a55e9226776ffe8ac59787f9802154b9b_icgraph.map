@@ -1,0 +1,5 @@
+<map id="wpp::Resource::set" name="wpp::Resource::set">
+<area shape="rect" id="node1" title="Set data value by copy for the resource (instance)" alt="" coords="251,46,396,73"/>
+<area shape="rect" id="node2" href="$classwpp_1_1FirmwareUpdate.html#a35b71cbb89880fd9614347a93f34fe95" title="Set the FwInternalDl object for auto downloading firmware." alt="" coords="5,5,203,47"/>
+<area shape="rect" id="node3" href="$classwpp_1_1FirmwareUpdate.html#a67face09853cff99df2af665ace989d4" title="Set the FwUpdater object for updating the firmware package." alt="" coords="21,71,187,112"/>
+</map>

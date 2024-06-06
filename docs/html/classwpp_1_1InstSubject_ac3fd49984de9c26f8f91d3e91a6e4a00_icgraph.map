@@ -1,0 +1,10 @@
+<map id="wpp::InstSubject::operationNotify" name="wpp::InstSubject::operationNotify">
+<area shape="rect" id="node1" title="Notifies the observers about an operation on an instance resource." alt="" coords="285,201,484,243"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Lwm2mSecurity.html#af600fad36cc8d5ed040ad6dd55a4b4df" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="30,5,213,47"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Lwm2mServer.html#a18dc6278975e41065cca413cd6028de4" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="21,71,221,112"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Device.html#a711b5dfd712b08587978f5cef41f761b" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="14,136,229,177"/>
+<area shape="rect" id="node5" href="$classwpp_1_1Lwm2mAccessControl.html#a6dcb47ed38c16893fa93bceaf3fa7154" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="21,201,222,243"/>
+<area shape="rect" id="node6" href="$classwpp_1_1AudioClip.html#a50bbeaddd07ed21f39dd6b6497bcd53e" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="5,267,237,308"/>
+<area shape="rect" id="node7" href="$classwpp_1_1ConnectivityMonitoring.html#a70bc52853dbce96ff7f305c8c7eae30a" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="17,332,226,373"/>
+<area shape="rect" id="node8" href="$classwpp_1_1FirmwareUpdate.html#a001d544789437e55da336d5a5e36ebdd" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="30,397,213,439"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="wpp::WppGuard::unlock" name="wpp::WppGuard::unlock">
+<area shape="rect" id="node1" title="Unlocks the guard object." alt="" coords="513,5,689,32"/>
+<area shape="rect" id="node2" href="$classwpp_1_1WppClient.html#a7fbfbadc32a19fb8b3df6370e73c854d" title="Gives up ownership of the WppClient." alt="" coords="236,5,465,32"/>
+<area shape="rect" id="node3" href="$classwpp_1_1WppClient.html#a9cda9286f3b2610674a468df69364366" title="Removes the WppClient." alt="" coords="5,5,188,32"/>
+</map>

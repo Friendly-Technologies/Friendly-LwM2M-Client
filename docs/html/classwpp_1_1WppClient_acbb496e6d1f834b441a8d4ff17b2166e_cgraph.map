@@ -1,0 +1,5 @@
+<map id="wpp::WppClient::create" name="wpp::WppClient::create">
+<area shape="rect" id="node1" title="Creates a WppClient with the specified client information, connection, and maximum sleep time." alt="" coords="5,31,179,57"/>
+<area shape="rect" id="node2" href="$classwpp_1_1WppClient.html#ab058f0a0d20678d37826c05155a80aad" title="Gets the WppConnection associated with the WppClient." alt="" coords="227,5,429,32"/>
+<area shape="rect" id="node3" href="$classwpp_1_1WppClient.html#ac80c3ab6f50a522b72d7902e23b9b4b0" title="Checks if the WppClient is created." alt="" coords="231,56,425,83"/>
+</map>

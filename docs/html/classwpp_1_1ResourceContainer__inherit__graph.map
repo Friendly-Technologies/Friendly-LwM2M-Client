@@ -1,0 +1,11 @@
+<map id="wpp::ResourceContainer" name="wpp::ResourceContainer">
+<area shape="rect" id="node1" title=" " alt="" coords="690,5,905,405"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Instance.html" title="Instance is interface class that implements manipulation with derived class resources...." alt="" coords="690,453,905,853"/>
+<area shape="rect" id="node3" href="$classwpp_1_1AudioClip.html" title=" " alt="" coords="5,960,205,1140"/>
+<area shape="rect" id="node4" href="$classwpp_1_1ConnectivityMonitoring.html" title=" " alt="" coords="229,945,440,1155"/>
+<area shape="rect" id="node5" href="$classwpp_1_1Device.html" title=" " alt="" coords="464,960,664,1140"/>
+<area shape="rect" id="node6" href="$classwpp_1_1FirmwareUpdate.html" title=" " alt="" coords="688,931,907,1169"/>
+<area shape="rect" id="node7" href="$classwpp_1_1Lwm2mAccessControl.html" title=" " alt="" coords="931,901,1133,1199"/>
+<area shape="rect" id="node8" href="$classwpp_1_1Lwm2mSecurity.html" title=" " alt="" coords="1157,960,1357,1140"/>
+<area shape="rect" id="node9" href="$classwpp_1_1Lwm2mServer.html" title=" " alt="" coords="1381,960,1581,1140"/>
+</map>

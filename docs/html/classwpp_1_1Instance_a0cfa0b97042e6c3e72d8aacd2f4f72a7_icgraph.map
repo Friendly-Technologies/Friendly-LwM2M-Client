@@ -1,0 +1,5 @@
+<map id="wpp::Instance::readAsServer" name="wpp::Instance::readAsServer">
+<area shape="rect" id="node1" title="This methods is called by the core when the server wants to read, write, discover,..." alt="" coords="457,5,664,32"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Object.html#a0546ac69cde57b2ec29e70a8962e933b" title="The read callback function for the Lwm2m core." alt="" coords="203,5,409,32"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Object.html#a54e0417f93a65854fb64da983e455367" title="Constructs an Object instance." alt="" coords="5,5,155,32"/>
+</map>

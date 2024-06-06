@@ -1,0 +1,12 @@
+<map id="wpp::Instance::getContext" name="wpp::Instance::getContext">
+<area shape="rect" id="node1" title="Return context that can be used by derived class." alt="" coords="553,180,745,207"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Instance.html#a94fab851e42fd9b6e83088a127d7bced" title="Helpfull methods to get client instances." alt="" coords="291,5,469,32"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Instance.html#a8cabda3847adb4cda0166b6dee090466" title="Helpfull methods to get registry instances." alt="" coords="283,56,477,83"/>
+<area shape="rect" id="node6" href="$classwpp_1_1Lwm2mServer.html#a18dc6278975e41065cca413cd6028de4" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="280,107,480,149"/>
+<area shape="rect" id="node7" href="$classwpp_1_1Lwm2mAccessControl.html#a6dcb47ed38c16893fa93bceaf3fa7154" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="279,173,481,214"/>
+<area shape="rect" id="node8" href="$classwpp_1_1Lwm2mServer.html#a4ba2f59b41efa68e77bd492f085ec819" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="255,238,505,279"/>
+<area shape="rect" id="node9" href="$classwpp_1_1Lwm2mAccessControl.html#a92447af7e489f039bc5e7762e893a86c" title="This method must be implemented by the derived class, and handle information about resource operation..." alt="" coords="279,303,481,345"/>
+<area shape="rect" id="node10" href="$classwpp_1_1Lwm2mAccessControl.html#a72240ec5da231de416af8bc6a92932b4" title=" " alt="" coords="279,369,481,410"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Lwm2mAccessControl.html#aca8e8c6cc6e944f6e889141bccf2c203" title="Get Lwm2mAccessControl object instance for target object instance." alt="" coords="5,17,207,58"/>
+<area shape="rect" id="node5" href="$classwpp_1_1Lwm2mAccessControl.html#a05f1c247cf8bf97ab426d96d41a36943" title="Delete Lwm2mAccessControl object instance for target object instance." alt="" coords="5,82,207,123"/>
+</map>

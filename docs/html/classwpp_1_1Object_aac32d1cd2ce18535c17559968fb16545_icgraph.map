@@ -1,0 +1,5 @@
+<map id="wpp::Object::serverDelete_clb" name="wpp::Object::serverDelete_clb">
+<area shape="rect" id="node1" title="The delete callback function for the Lwm2m core." alt="" coords="468,5,685,32"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Object.html#a54e0417f93a65854fb64da983e455367" title="Constructs an Object instance." alt="" coords="5,5,155,32"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Object.html#a7801b78179cd4fa15a6c7d008c64509b" title="The create callback function for the Lwm2m core." alt="" coords="203,31,420,57"/>
+</map>

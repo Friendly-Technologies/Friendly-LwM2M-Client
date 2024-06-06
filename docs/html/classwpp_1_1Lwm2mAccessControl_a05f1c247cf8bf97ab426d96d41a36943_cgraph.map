@@ -1,0 +1,10 @@
+<map id="wpp::Lwm2mAccessControl::remove" name="wpp::Lwm2mAccessControl::remove">
+<area shape="rect" id="node1" title="Delete Lwm2mAccessControl object instance for target object instance." alt="" coords="5,74,207,115"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Instance.html#abe793eaf4ed798fd8c6462d97ba6823e" title=" " alt="" coords="270,5,481,32"/>
+<area shape="rect" id="node3" href="$classwpp_1_1Instance.html#a20fc277ffa400f5cd4d76cd0b97d4f7a" title=" " alt="" coords="277,56,474,83"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Instance.html#a8cabda3847adb4cda0166b6dee090466" title="Helpfull methods to get registry instances." alt="" coords="278,107,473,133"/>
+<area shape="rect" id="node6" href="$classwpp_1_1WppRegistry.html#a834edae1c3b0b8c4c0bb00347a0d2111" title=" " alt="" coords="255,158,496,199"/>
+<area shape="rect" id="node5" href="$classwpp_1_1Instance.html#a9c3b1da44787aeb86f6b21769ae39d5f" title="Return context that can be used by derived class." alt="" coords="544,107,736,133"/>
+<area shape="rect" id="node7" href="$classwpp_1_1WppRegistry.html#ada21355749fd54b5bc6c4e7967d5899b" title="Retrieves a pointer to the Object with the given objId." alt="" coords="547,165,733,192"/>
+<area shape="rect" id="node8" href="$classwpp_1_1Object.html#a62b52b04e4aae34b0d04cbc26a5e9c69" title="Gets the object ID." alt="" coords="784,165,968,192"/>
+</map>

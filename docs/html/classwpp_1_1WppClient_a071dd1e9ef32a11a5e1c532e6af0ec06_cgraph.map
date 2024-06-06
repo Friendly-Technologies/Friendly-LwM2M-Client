@@ -1,0 +1,5 @@
+<map id="wpp::WppClient::takeOwnership" name="wpp::WppClient::takeOwnership">
+<area shape="rect" id="node1" title="Takes ownership of the WppClient." alt="" coords="5,31,235,57"/>
+<area shape="rect" id="node2" href="$classwpp_1_1WppClient.html#ac80c3ab6f50a522b72d7902e23b9b4b0" title="Checks if the WppClient is created." alt="" coords="283,5,477,32"/>
+<area shape="rect" id="node3" href="$classwpp_1_1WppGuard.html#a4911a2fab6c9da802c40156fcbe2a590" title="Tries to lock the guard object." alt="" coords="287,56,473,83"/>
+</map>

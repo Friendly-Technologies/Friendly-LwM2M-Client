@@ -1,0 +1,6 @@
+<map id="wpp::WppTaskQueue::requestToRemoveTask" name="wpp::WppTaskQueue::requestToRemoveTask">
+<area shape="rect" id="node1" title="This function does not immediately delete the task, it only marks it as one that should be deleted at..." alt="" coords="220,57,388,98"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Device.html#a8d689012fbe5c222855cf5762e6ef805" title=" " alt="" coords="5,5,172,32"/>
+<area shape="rect" id="node3" href="$classwpp_1_1FirmwareUpdate.html#a76aea3bfb4b4a0a7cbb229b8e6308615" title=" " alt="" coords="6,57,171,98"/>
+<area shape="rect" id="node4" href="$classwpp_1_1Lwm2mServer.html#a81e01b7ed482ea09a48b473821c23dd0" title=" " alt="" coords="9,122,168,163"/>
+</map>

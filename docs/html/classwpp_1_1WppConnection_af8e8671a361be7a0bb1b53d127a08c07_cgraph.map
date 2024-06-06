@@ -1,0 +1,5 @@
+<map id="wpp::WppConnection::handlePacketsInQueue" name="wpp::WppConnection::handlePacketsInQueue">
+<area shape="rect" id="node1" title="Processes the packets in the packet queue." alt="" coords="5,27,183,69"/>
+<area shape="rect" id="node2" href="$classwpp_1_1WppClient.html#a6e240466820687e8eade9857776d1854" title="Gets the LwM2M context associated with the WppClient." alt="" coords="231,5,435,32"/>
+<area shape="rect" id="node3" href="$classwpp_1_1WppConnection.html#aca2e643e1b5aae589568e6c8128fdabe" title="Retrieves the size of the packet queue." alt="" coords="251,57,414,98"/>
+</map>

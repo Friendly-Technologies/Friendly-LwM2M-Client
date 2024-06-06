@@ -1,0 +1,5 @@
+<map id="wpp::Instance::readAsServer" name="wpp::Instance::readAsServer">
+<area shape="rect" id="node1" title="This methods is called by the core when the server wants to read, write, discover,..." alt="" coords="5,13,212,39"/>
+<area shape="rect" id="node2" href="$classwpp_1_1Instance.html#a7873bcb3f20b4eae620f2531082d62e3" title="This method return list with resources that has been instantiated. If resources does not exist then r..." alt="" coords="260,5,479,47"/>
+<area shape="rect" id="node3" href="$classwpp_1_1ResourceContainer.html#a4bcc994c96fd2a253e2cdd7fbed8920c" title="This method return list with all resources that has been defined." alt="" coords="527,5,707,47"/>
+</map>

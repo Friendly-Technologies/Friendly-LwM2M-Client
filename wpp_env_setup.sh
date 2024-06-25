@@ -92,12 +92,12 @@ fi
 echo -e "Setup clang kit DONE"
 
 echo -e "\nSetup Doxygen"
-./docs/doxygen_setup.sh
+./doxg/doxygen_setup.sh
 echo -e "Setup Doxygen DONE"
 
 # TODO: Move docs generation to cmake file, with converting to .pdf
 echo -e "\nGenerating Doxygen documentation"
-cd docs
+cd doxg
 doxygen Doxygen
 xdg-open html/index.html
 cd ..

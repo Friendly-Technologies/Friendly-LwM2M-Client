@@ -1,4 +1,4 @@
-# Friendly LwM2M Client
+# Friendly LwM2M Client [<img align="right" height="50px" src="https://github.com/Friendly-Technologies/Friendly-LwM2M-Client/logo.png">](http://www.friendly-tech.com/)
 Friendly LwM2M Client  is Eclipse Wakaama-based integrated LWM2M solution
 
 # Full documentation

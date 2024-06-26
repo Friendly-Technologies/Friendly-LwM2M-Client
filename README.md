@@ -9,6 +9,7 @@ This code is provided under the associated license:
 - [Documentation](#documentation)
 - [Features](#features)
 - [Getting Started](#Getting-Started)
+	- [Building from Source](#Building-from-Source)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -32,69 +33,73 @@ Friendly LwM2M Client is an open-source Lightweight machine-to-machine (LwM2M) c
 ### Supported features 
 
 Supported  LwM2M OMA Objects
+
 Mandatory 		
-- LWM2M Security	0	v
-- LwM2M Server	1	v
-- Device	3	v
+- LWM2M Security
+- LwM2M Server
+- Device
+
 Optional 		
-LwM2M Access Control	2	v
-Connectivity Monitoring	4	v
-Firmware Update	5	v
-		
-Supported IPSO Objects 		v
+- LwM2M Access Control
+- Connectivity Monitoring
+- Firmware Update
+- Supported IPSO Objects
 		
 Transport 		
-UDP / DTLS		v
+- UDP/DTLS
 		
-Supported Interfaces & Features 		
+Supported Interfaces & Features		
+
 Bootstrap 		
-Request 		v
-Finish 		v
-Discover 		v
-Read 		v
-Write 		v
-Delete 		v
+- Request
+- Finish
+- Discover
+- Read
+- Write
+- Delete
+
 Registration 		
-Register 		v
-Update 		v
-De-register		v
+- Register
+- Update
+- De-register
+
 Device Management & Service Enablement		
-Read		v
-Discover 		v
-Write 		v
-Execute		v
-Create 		v
-Delete 		v
-Send		v
+- Read
+- Discover
+- Write
+- Execute
+- Create
+- Delete
+- Send
 		
 Information reporting 		
-Observe		v
-Notify		v
-Cancel Observation		v
-Send Operation 		v
+- Observe
+- Notify
+- Cancel Observation
+- Send Operation
 		
 Data Formats 		
-Plain Text		v
-Opaque		v
-CBOR		v
-TLV		v
-JSON		v
-SenML JSON 		v
-SenML CBOR 		v
+- Plain Text
+- Opaque
+- CBOR
+- TLV
+- JSON
+- SenML JSON
+- SenML CBOR
 		
 Security 		
-PSK 		v
-Raw Public Key 		v
-No-Sec mode 		v
+- PSK
+- Raw Public Key
+- No-Sec mode
 		
-Additional fetaures 		
-Access control		v
-Conectivity monitoring 		v
-Firmware update 		v
-CoAP Block transfer 		v
+Additional features 		
+- Access control
+- Connectivity monitoring
+- Firmware update
+- CoAP Block transfer
 
 
-Note that additional features such as: transport layers (TCP/TLS, SMS binding, MQTT, and HTTP transport binding); Composite operations, and Security modes (Certificate and Certificate mode with EST) are commercially available. 
+Note that additional features such as transport layers (TCP/TLS, SMS binding, MQTT, and HTTP transport binding); Composite operations, and Security modes (Certificate and Certificate mode with EST) are commercially available. 
 For more information please contact Friendly Technologies
 
 
@@ -109,6 +114,19 @@ This section should provide instructions on how to build and run the Friendly Lw
 - [CMake](https://cmake.org/) version 3.10 or higher
 - [OpenSSL](https://www.openssl.org/) for DTLS support
 - A C compiler (GCC, Clang, etc.)
+
+
+## Development Quick Start
+For download repository with submodules:  `git clone --recurse-submodules git@github.com:Friendly-Technologies/Friendly-LwM2M-Client.git`
+For running auto setup environment:  `sh ./wpp_env_setup.sh`
+
+For open projects with VS Code:
+1) Start VS Code and go to `File→Open Workspace` from File.
+2) In the open window, specify the path to the file `vs-code-wakaamaplus.code-workspace` located in the `2305-WakaamaPlus` repository.
+3) After the workspace has loaded, go to `Extensions` (Ctrl+Shift+x), set `Recommended` (Text field: @recommended) in the extensions filter, and then install all recommended extensions.
+4) Let’s move on to the `CMake Tool` extension, the open one contains the entire main interface.
+5) Before the first build of the projects, it is necessary to configure the `Kit` in both projects, for this you need to choose `Wpp Linux Kit` (but in general the compiler depends on the target platform) as a compiler for both projects. After the  kit is installed, you can start the first building.
+
 
 ### Building from Source
 

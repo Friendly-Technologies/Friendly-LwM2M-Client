@@ -8,7 +8,7 @@ This code is provided under the associated license:
 - [Introduction](#introduction)
 - [Documentation](#documentation)
 - [Features](#features)
-- [Getting Started](#getting-started)
+- [Getting Started](#Getting-Started)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -98,7 +98,7 @@ Note that additional features such as: transport layers (TCP/TLS, SMS binding, M
 For more information please contact Friendly Technologies
 
 
-##Getting Started 
+## Getting Started 
 This section should provide instructions on how to build and run the Friendly LwM2M client.
 •	Prerequisites: List any required tools, libraries, or dependencies.
 •	Building: Explain how to build the client from source code.

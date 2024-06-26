@@ -6,7 +6,7 @@ This code is provided under the associated license:
 ## Table of Contents
 
 - [Introduction](#introduction)
-- [Documentation](#Full Documentation)
+- [Documentation](#Documentation)
 - [Features](#features)
 - [Getting Started](#Getting Started)
 - [Contributing](#contributing)

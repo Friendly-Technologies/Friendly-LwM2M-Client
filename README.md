@@ -6,7 +6,7 @@ This code is provided under the associated license:
 ## Table of Contents
 
 - [Introduction](#introduction)
-- [Documentation](#Documentation)
+- [Documentation](#documentation)
 - [Features](#features)
 - [Getting Started](#getting-started)
 - [Contributing](#contributing)
@@ -31,11 +31,11 @@ Friendly LwM2M Client is an open-source Lightweight machine-to-machine (LwM2M) c
 
 ### Supported features 
 
-Supported  LwM2M OMA Objects 		
+Supported  LwM2M OMA Objects
 Mandatory 		
-LWM2M Security	0	v
-LwM2M Server	1	v
-Device	3	v
+- LWM2M Security	0	v
+- LwM2M Server	1	v
+- Device	3	v
 Optional 		
 LwM2M Access Control	2	v
 Connectivity Monitoring	4	v

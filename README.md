@@ -8,7 +8,7 @@ This code is provided under the associated license:
 - [Introduction](#introduction)
 - [Documentation](#Documentation)
 - [Features](#features)
-- [Getting Started](#Getting Started)
+- [Getting Started](#Getting-Started)
 - [Contributing](#contributing)
 - [License](#license)
 

@@ -1,7 +1,7 @@
 # Friendly LwM2M Client [<img align="right" height="100px" src="https://github.com/Friendly-Technologies/Friendly-LwM2M-Client/blob/main/logo.png">](http://www.friendly-tech.com/)
 This distribution contains Friendly LwM2M client as a reference for how to use Lightweight Machine to Machine implementations for IoT devices. 
-This code is provided under the associated license: 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+This code is provided under the associated 
+[LICENSE](LICENSE)
 
 ## Table of Contents
 

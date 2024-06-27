@@ -15,7 +15,7 @@
 
 ### Client Specifications
 
-**Licence**: EULA (Free & Unlimited license)\n
+**Licence**: EPL 2.0 and BSD-3\n
 **LwM2M Version**: 1.1\n
 **Supported  LwM2M OMA Objects**: LWM2M Security(v1.1), LwM2M Server(v1.1), Device(v1.2), LwM2M Access Control(v1.1), Connectivity Monitoring(v1.3), Firmware Update(v1.1)\n
 **Transport**: UDP/DTLS\n

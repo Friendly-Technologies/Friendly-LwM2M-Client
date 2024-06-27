@@ -23,8 +23,12 @@ This code is provided under the associated
 Friendly LwM2M Client is an open-source Lightweight machine-to-machine (LwM2M) client implementation designed for IoT devices. LwM2M is a protocol specified by the Open Mobile Alliance (OMA) for remote device management and service enablement for M2M and IoT devices and systems, intended for both resource-constrained and high-performance edge devices.
 
 ## Documentation 
-[Friendly LWM2M Client Full Documentation](https://friendly-technologies.github.io/Friendly-LwM2M-Client/)
-
+[Friendly LWM2M Client](https://friendly-technologies.github.io/Friendly-LwM2M-Client/)
+- [Build Instructions](https://friendly-technologies.github.io/Friendly-LwM2M-Client/build_tag.html)
+- [Architecture](https://friendly-technologies.github.io/Friendly-LwM2M-Client/architecture_tag.html)
+- [Examples of Usage](https://friendly-technologies.github.io/Friendly-LwM2M-Client/examples_tag.html)
+- [Testing](https://friendly-technologies.github.io/Friendly-LwM2M-Client/testing_tag.html)
+- [Code Documentation](https://friendly-technologies.github.io/Friendly-LwM2M-Client/code_tag.html)
 
 
 ## Features
@@ -107,6 +111,7 @@ Additional features
 
 Note that additional features such as transport layers (TCP/TLS, SMS binding, MQTT, and HTTP transport binding); Composite operations, and Security modes (Certificate and Certificate mode with EST) are commercially available. 
 For more information please contact Friendly Technologies
+
 
 
 ## Development Quick Start

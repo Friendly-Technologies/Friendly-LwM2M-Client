@@ -73,7 +73,7 @@ var NAVTREEINDEX =
 "AudioClipConfig_8h.html",
 "SafeQueue_8h.html#a6e8b0fa6ecfdcd173067a08ee6c8cb47",
 "classwpp_1_1InstSubject.html#ae76aea8fa744af319e623d57d88717b1",
-"functions.html"
+"functions_func_t.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

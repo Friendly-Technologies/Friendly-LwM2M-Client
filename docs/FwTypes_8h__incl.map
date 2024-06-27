@@ -1,10 +1,10 @@
-<map id="/home/vs/projects/wakaama/2305&#45;WakaamaPlus/wpp/registry/objects/o_5_firmware_update/FwTypes.h" name="/home/vs/projects/wakaama/2305&#45;WakaamaPlus/wpp/registry/objects/o_5_firmware_update/FwTypes.h">
-<area shape="rect" id="node1" title=" " alt="" coords="183,5,421,76"/>
-<area shape="rect" id="node2" href="$WppTypes_8h.html" title=" " alt="" coords="169,124,269,151"/>
-<area shape="rect" id="node8" href="$FirmwareUpdateConfig_8h.html" title=" " alt="" coords="293,124,476,151"/>
-<area shape="rect" id="node3" title=" " alt="" coords="5,199,68,225"/>
-<area shape="rect" id="node4" title=" " alt="" coords="93,199,151,225"/>
-<area shape="rect" id="node5" title=" " alt="" coords="176,199,263,225"/>
-<area shape="rect" id="node6" title=" " alt="" coords="287,199,355,225"/>
-<area shape="rect" id="node7" title=" " alt="" coords="379,199,478,225"/>
+<map id="FwTypes.h" name="FwTypes.h">
+<area shape="rect" id="node1" title=" " alt="" coords="257,5,347,32"/>
+<area shape="rect" id="node2" href="$WppTypes_8h.html" title=" " alt="" coords="169,80,269,107"/>
+<area shape="rect" id="node8" href="$FirmwareUpdateConfig_8h.html" title=" " alt="" coords="293,80,476,107"/>
+<area shape="rect" id="node3" title=" " alt="" coords="5,155,68,181"/>
+<area shape="rect" id="node4" title=" " alt="" coords="93,155,151,181"/>
+<area shape="rect" id="node5" title=" " alt="" coords="176,155,263,181"/>
+<area shape="rect" id="node6" title=" " alt="" coords="287,155,355,181"/>
+<area shape="rect" id="node7" title=" " alt="" coords="379,155,478,181"/>
 </map>

@@ -5,18 +5,20 @@ This code is provided under the associated
 
 ## Table of Contents
 
-- [Introduction](#introduction)
-- [Documentation](#documentation)
-- [Features](#features)
-- [Development Quick Start](#Development-Quick-Start)
-- [Getting Started](#Getting-Started)
-	- [Prerequisites](#Prerequisites)
-	- [Building from Source](#Building-from-Source)
-	- [Running](#Running)
- 	- [Command-Line Options](#Command-Line-Options)
-  	- [Configuration](#Configuration)
-- [Contributing](#contributing)
-- [License](#license)
+- [Friendly LwM2M Client ](#friendly-lwm2m-client-)
+  - [Table of Contents](#table-of-contents)
+  - [Introduction](#introduction)
+  - [Documentation](#documentation)
+  - [Features](#features)
+    - [Supported features](#supported-features)
+  - [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Setup build environment](#setup-build-environment)
+    - [Command line](#command-line)
+    - [VS Code](#vs-code)
+      - [Configuration](#configuration)
+  - [Contributing](#contributing)
+  - [License](#license)
 
 ## Introduction
 
@@ -29,7 +31,6 @@ Friendly LwM2M Client is an open-source Lightweight machine-to-machine (LwM2M) c
 - [Examples of Usage](https://friendly-technologies.github.io/Friendly-LwM2M-Client/examples_tag.html)
 - [Testing](https://friendly-technologies.github.io/Friendly-LwM2M-Client/testing_tag.html)
 - [Code Documentation](https://friendly-technologies.github.io/Friendly-LwM2M-Client/code_tag.html)
-
 
 ## Features
 
@@ -112,96 +113,82 @@ Additional features
 Note that additional features such as transport layers (TCP/TLS, SMS binding, MQTT, and HTTP transport binding); Composite operations, and Security modes (Certificate and Certificate mode with EST) are commercially available. 
 For more information please contact Friendly Technologies
 
-
-
-## Development Quick Start
-For download repository with submodules:  `git clone --recurse-submodules git@github.com:Friendly-Technologies/Friendly-LwM2M-Client.git`
-For running auto setup environment:  `sh ./wpp_env_setup.sh`
-
-For open projects with VS Code:
-1) Start VS Code and go to `File→Open Workspace` from File.
-2) In the open window, specify the path to the file `vs-code-wakaamaplus.code-workspace` located in the `2305-WakaamaPlus` repository.
-3) After the workspace has loaded, go to `Extensions` (Ctrl+Shift+x), set `Recommended` (Text field: @recommended) in the extensions filter, and then install all recommended extensions.
-4) Let’s move on to the `CMake Tool` extension, the open one contains the entire main interface.
-5) Before the first build of the projects, it is necessary to configure the `Kit` in both projects, for this you need to choose `Wpp Linux Kit` (but in general the compiler depends on the target platform) as a compiler for both projects. After the  kit is installed, you can start the first building.
-
-
-
 ## Getting Started 
-This section should provide instructions on how to build and run the Friendly LwM2M client.
-•	Prerequisites: List any required tools, libraries, or dependencies.
-•	Building: Explain how to build the client from source code.
-•	Running: Provide instructions on how to run the client application, including any configuration options.
+This section provide instructions on how to build and run the Friendly LwM2M client. Also this section will describe the environment requirements, the setup process for the build, and explain the two methods for building and running the Friendly LwM2M client.
+The Friendly LwM2M client can be built and run in two different ways: using VS Code and using the command line.
+The method using VS Code is suitable for developing and modifying example parameters, while the command line is suitable for quick building and exploring the capabilities.
+
+Before proceeding with the description, it should also be noted that this guide will cover running an example that demonstrates the Friendly LwM2M client functionality. The client itself is provided as a library that can be built separately.
 
 ### Prerequisites
 
+- OS Ubuntu 22.04
 - [CMake](https://cmake.org/) version 3.10 or higher
 - [OpenSSL](https://www.openssl.org/) for DTLS support
-- A C compiler (GCC, Clang, etc.)
+- C/C++ compiler (clang-14, clang++-14)
 
-
-### Building from Source
+### Setup build environment
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/yourusername/lwm2m-client.git
-    cd lwm2m-client
+    git clone --recurse-submodules git@github.com:Friendly-Technologies/Friendly-LwM2M-Client.git
+    cd Friendly-LwM2M-Client
     ```
 
-2. Create a build directory and navigate to it:
+2. Setup environment:
     ```sh
-    mkdir build
-    cd build
+    sh ./wpp_env_setup.sh
     ```
 
-3. Run CMake to configure the build environment:
+During step **2**, documentation will also be automatically generated and launched in the browser, so for more information on the structure and usage of the Friendly LwM2M client, you can refer to it.
+
+After successfully completing these steps, we will have a fully configured environment with the loaded source files. The next steps are to build the example and run it. As mentioned earlier, this can be done using one of the two methods: via VS Code or the command line. Each method will be detailed further.
+
+### Command line
+
+1. Create build directory:
     ```sh
-    cmake ..
+    mkdir _build
+    cd _build
     ```
 
-4. Compile the source code:
+2. Generate build scripts with CMake:
     ```sh
-    make
+    cmake .. -DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_C_COMPILER=/usr/bin/clang -DCMAKE_CXX_COMPILER=/usr/bin/clang++
     ```
 
-5. Install the client:
+3. Building:
     ```sh
-    sudo make install
+    cmake --build . --config MinSizeRel --target WppExample -j 14 --
     ```
 
-### Running 
+4. Running:
+    ```sh
+    cd examples
+    ./WppExample
+    ```
 
-After installation, you can start the LwM2M client using the following command:
+### VS Code
 
-```sh
-lwm2m-client --config /path/to/config.json
-```
-
-#### Command-Line Options
-
-- `--config <path>`: Path to the configuration file (default: `config.json`).
-- `--log-level <level>`: Set the log level (e.g., `info`, `debug`, `warn`, `error`).
+1. Download [Visual Studio Code](https://code.visualstudio.com/download).
+2. Start VS Code and open workspace which set up for this project `File → Open Workspace` from File.
+3. In the open window, specify the path to the file `vs-code-wpp.code-workspace` located in the `Friendly-LwM2M-Client` repository.
+4. After the workspace has loaded, go to `Extensions` (Ctrl+Shift+x), set `Recommended` (Text field: @recommended) in the extensions filter, and then install all recommended extensions.
+5. Let’s move on to the `CMake Tool` extension, the open one contains the entire main interface.
+6. Setup `Kit` for `Friendly-LwM2M-Client` project, to do this in the `Configure` section select `Wpp Linux Kit`.
+7. Setup `Build Target`, to do this in the `Build` section select `WppExample`.
+8. Press `Build` button
+9. Launch client, to do this in the `Launch` section select `WppExample`, and press `Run in Terminal` button.
 
 #### Configuration
 
-The client is configured using a JSON file. Below is an example configuration file:
+The generated client example is configured using source file: `Friendly-LwM2M-Client/examples/objects.cpp`. After changing configuration the client example should be build again.
 
-```json
-{
-  "server": {
-    "uri": "coaps://lwm2m-server.com:5684",
-    "lifetime": 300,
-    "security": {
-      "psk": "your_pre_shared_key"
-    }
-  },
-  "device": {
-    "manufacturer": "YourCompany",
-    "model": "YourModel",
-    "serial": "1234567890"
-  }
-}
-```
+By default, `WppExample` has the following configurations:
+1. COAP server: coaps://demodm.friendly-tech.com:5684.
+2. DTLS enabled.
+3. Data formats: CBOR, SENML CBOR, SENML JSON, JSON, TLV.
+4. Objects: DEVICE, LWM2M SERVER, LWM2M SECURITY, CONNECTIVITY MONITORING, LWM2M ACCESS CONTROL, FIRMWARE UPDATE.
 
 ## Contributing
 

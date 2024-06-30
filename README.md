@@ -16,7 +16,7 @@ This code is provided under the associated
     - [Setup build environment](#setup-build-environment)
     - [Command line](#command-line)
     - [VS Code](#vs-code)
-      - [Configuration](#configuration)
+    - [Configuration](#configuration)
   - [Contributing](#contributing)
   - [License](#license)
 
@@ -180,7 +180,7 @@ After successfully completing these steps, we will have a fully configured envir
 8. Press `Build` button
 9. Launch client, to do this in the `Launch` section select `WppExample`, and press `Run in Terminal` button.
 
-#### Configuration
+### Configuration
 
 The generated client example is configured using source file: `Friendly-LwM2M-Client/examples/objects.cpp`. After changing configuration the client example should be build again.
 

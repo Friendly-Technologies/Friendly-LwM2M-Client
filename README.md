@@ -110,7 +110,8 @@ Additional features
 - CoAP Block transfer
 
 
-Note that additional features such as transport layers (TCP/TLS, SMS binding, MQTT, and HTTP transport binding); Composite operations, and Security modes (Certificate and Certificate mode with EST) are commercially available. 
+Note that additional features such as transport layers (TCP/TLS, SMS binding, MQTT, and HTTP transport binding); Composite operations, and Security modes (Certificate and Certificate mode with EST) are commercially available.
+
 For more information please contact [Friendly Technologies](https://friendly-tech.com/products/lwm2m-client-iot/)
 
 ## Getting Started 

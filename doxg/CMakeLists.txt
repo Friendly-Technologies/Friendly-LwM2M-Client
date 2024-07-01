@@ -5,7 +5,7 @@ if(DOXYGEN_FOUND)
     add_custom_target(
         Documentation
         COMMAND ${DOXYGEN_EXECUTABLE} Doxygen
-        COMMAND xdg-open ${CMAKE_CURRENT_SOURCE_DIR}/html/index.html
+        COMMAND xdg-open ${CMAKE_CURRENT_SOURCE_DIR}/../docs/index.html
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMENT "Generating API documentation with Doxygen in the docs directory"
         VERBATIM

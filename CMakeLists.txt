@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.13)
 project(WppClient)
 
 # Add subdirectory with docs target
-add_subdirectory(docs)
+add_subdirectory(doxg)
 # Add subdirectory with wpp library target
 add_subdirectory(wpp)
 # Add subdirectory with examples targets

@@ -1,5 +1,5 @@
 # Friendly LwM2M Client [<img align="right" height="100px" src="https://github.com/Friendly-Technologies/Friendly-LwM2M-Client/blob/main/logo.png">](http://www.friendly-tech.com/)
-This distribution contains Friendly LwM2M client as a reference for how to use Lightweight Machine to Machine implementations for IoT devices. 
+This distribution contains **Friendly LwM2M client** as a reference for how to use Lightweight machine-to-machine implementations for IoT devices. 
 This code is provided under the associated 
 [LICENSE](LICENSE)
 
@@ -111,10 +111,10 @@ Additional features
 
 
 Note that additional features such as transport layers (TCP/TLS, SMS binding, MQTT, and HTTP transport binding); Composite operations, and Security modes (Certificate and Certificate mode with EST) are commercially available. 
-For more information please contact Friendly Technologies
+For more information please contact [Friendly Technologies](https://friendly-tech.com/products/lwm2m-client-iot/)
 
 ## Getting Started 
-This section provide instructions on how to build and run the Friendly LwM2M client. Also this section will describe the environment requirements, the setup process for the build, and explain the two methods for building and running the Friendly LwM2M client.
+This section provides instructions on how to build and run the Friendly LwM2M client. Also, this section will describe the environment requirements, and the setup process for the build, and explain the two methods for building and running the Friendly LwM2M client.
 The Friendly LwM2M client can be built and run in two different ways: using VS Code and using the command line.
 The method using VS Code is suitable for developing and modifying example parameters, while the command line is suitable for quick building and exploring the capabilities.
 
@@ -171,18 +171,18 @@ After successfully completing these steps, we will have a fully configured envir
 ### VS Code
 
 1. Download [Visual Studio Code](https://code.visualstudio.com/download).
-2. Start VS Code and open workspace which set up for this project `File → Open Workspace` from File.
+2. Start VS Code and open workspace which is set up for this project `File → Open Workspace` from File.
 3. In the open window, specify the path to the file `vs-code-wpp.code-workspace` located in the `Friendly-LwM2M-Client` repository.
 4. After the workspace has loaded, go to `Extensions` (Ctrl+Shift+x), set `Recommended` (Text field: @recommended) in the extensions filter, and then install all recommended extensions.
 5. Let’s move on to the `CMake Tool` extension, the open one contains the entire main interface.
 6. Setup `Kit` for `Friendly-LwM2M-Client` project, to do this in the `Configure` section select `Wpp Linux Kit`.
 7. Setup `Build Target`, to do this in the `Build` section select `WppExample`.
 8. Press `Build` button
-9. Launch client, to do this in the `Launch` section select `WppExample`, and press `Run in Terminal` button.
+9. Launch the client, to do this in the `Launch` section select `WppExample`, and press `Run in Terminal` button.
 
 ### Configuration
 
-The generated client example is configured using source file: `Friendly-LwM2M-Client/examples/objects.cpp`. After changing configuration the client example should be build again.
+The generated client example is configured using the source file: `Friendly-LwM2M-Client/examples/objects.cpp`. After changing the configuration, the client example should be built again.
 
 By default, `WppExample` has the following configurations:
 1. COAP server: coaps://demodm.friendly-tech.com:5684.

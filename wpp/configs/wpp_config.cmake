@@ -100,6 +100,14 @@ set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_O_2_LWM2M_ACCESS_CONTROL)
 set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_O_3339_AUDIO_CLIP)
 # Include optional FirmwareUpdate object in the build
 set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_O_5_FIRMWARE_UPDATE)
+# Include optional DigitalOutput object in the build"
+set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_O_3201_DIGITAL_OUTPUT)
+# Include optional PushButton object in the build"
+set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_O_3347_PUSH_BUTTON)
+# Include optional Temperature object in the build"
+set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_O_3303_TEMPERATURE)
+# Include optional Accelerometer object in the build"
+set(WPP_DEFINITIONS ${WPP_DEFINITIONS} OBJ_O_3313_ACCELEROMETER)
 # ---------- Optional objects config block end ----------
 
 

@@ -1,0 +1,23 @@
+{
+    "object_data": {
+        "name": "Push button",
+        "id": "3347",
+        "version": "1.0",
+        "lwm2m_version": "1.0",
+        "is_mandatory": false,
+        "is_multiple": true
+    },
+    "object_names": {
+        "class": "PushButton",
+        "camelcase": "pushButton",
+        "define": "OBJ_O_3347_PUSH_BUTTON",
+        "up_underline": "PUSH_BUTTON"
+    },
+    "object_files": {
+        "impl_h": "PushButton.h",
+        "impl_cpp": "PushButton.cpp",
+        "config": "PushButtonConfig.h",
+        "info": "PushButtonInfo.h",
+        "cmake": "CMakeLists.txt"
+    }
+}

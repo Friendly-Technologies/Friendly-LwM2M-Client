@@ -32,6 +32,18 @@ WppRegistry::WppRegistry(lwm2m_context_t &context): _context(context) {
 	#if OBJ_O_5_FIRMWARE_UPDATE
 	_objects.push_back(new ObjectImpl<FirmwareUpdate>(_context, FIRMWARE_UPDATE_OBJ_INFO));
 	#endif
+	#if OBJ_O_3201_DIGITAL_OUTPUT
+	_objects.push_back(new ObjectImpl<DigitalOutput>(_context, DIGITAL_OUTPUT_OBJ_INFO));
+	#endif
+	#if OBJ_O_3347_PUSH_BUTTON
+	_objects.push_back(new ObjectImpl<PushButton>(_context, PUSH_BUTTON_OBJ_INFO));
+	#endif
+	#if OBJ_O_3303_TEMPERATURE
+	_objects.push_back(new ObjectImpl<Temperature>(_context, TEMPERATURE_OBJ_INFO));
+	#endif
+	#if OBJ_O_3313_ACCELEROMETER
+	_objects.push_back(new ObjectImpl<Accelerometer>(_context, ACCELEROMETER_OBJ_INFO));
+	#endif
 	/* ---------- Optional objects init block end ---------- */
 }
 
@@ -108,6 +120,26 @@ Object & WppRegistry::audioClip() {
 #if OBJ_O_5_FIRMWARE_UPDATE
 Object & WppRegistry::firmwareUpdate() {
 	return *object(OBJ_ID::FIRMWARE_UPDATE);
+}
+#endif
+#if OBJ_O_3201_DIGITAL_OUTPUT
+Object & WppRegistry::digitalOutput() {
+	return *object(OBJ_ID::DIGITAL_OUTPUT);
+}
+#endif
+#if OBJ_O_3347_PUSH_BUTTON
+Object & WppRegistry::pushButton() {
+	return *object(OBJ_ID::PUSH_BUTTON);
+}
+#endif
+#if OBJ_O_3303_TEMPERATURE
+Object & WppRegistry::temperature() {
+	return *object(OBJ_ID::TEMPERATURE);
+}
+#endif
+#if OBJ_O_3313_ACCELEROMETER
+Object & WppRegistry::accelerometer() {
+	return *object(OBJ_ID::ACCELEROMETER);
 }
 #endif
 /* ---------- Optional objects method block end ---------- */

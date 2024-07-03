@@ -88,11 +88,11 @@ TEST_CASE("objectLwm2mServer", "[objectLwm2mServer]")
         REQUIRE(exe(serverMock, Lwm2mServerMock::REGISTRATION_UPDATE_TRIGGER_8, OPAQUE_T()));
 
 #if RES_1_9
-        REQUIRE(WppTaskQueue::getTaskCnt() == 1);
+        REQUIRE(WppTaskQueue::getTaskCnt() == 0);
         serverMock.getBOOTSTRAP_REQUEST_TRIGGER_9();
         REQUIRE(exe(serverMock, Lwm2mServerMock::BOOTSTRAP_REQUEST_TRIGGER_9, OPAQUE_T()));
         REQUIRE(exe(serverMock, Lwm2mServerMock::BOOTSTRAP_REQUEST_TRIGGER_9, OPAQUE_T())); // for else - if exist
-        REQUIRE(WppTaskQueue::getTaskCnt() == 2);
+        REQUIRE(WppTaskQueue::getTaskCnt() == 1);
         std::this_thread::sleep_for(std::chrono::seconds(WPP_TASK_DEF_DELAY_S + 1));
         WppTaskQueue::handleEachTask(*client);
         REQUIRE(WppTaskQueue::getTaskCnt() == 0);

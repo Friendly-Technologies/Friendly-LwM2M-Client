@@ -239,6 +239,8 @@ TEST_CASE("Instance: server operations", "[readAsServer][writeAsServer][executeA
     lwm2m_server_t server = {};
     int numData = 0;
     lwm2m_data_t *dataArray;
+    mockContext.state = STATE_READY;
+
     instance.setDefaultState();
     SECTION("readAsServer: Incorrect parameters")
     {

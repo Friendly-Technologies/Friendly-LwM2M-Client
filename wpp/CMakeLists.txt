@@ -18,8 +18,16 @@ include(configs/wpp_config.cmake)
 # Include file with Wpp sources
 include(wpp.cmake)
 
+# Build options
+option(WPP_BUILD_WITH_EXCEPTIONS "Enable support of Exceptions" OFF)
+option(WPP_BUILD_WITH_RTTI "Enable support of RTTI" OFF)
+option(WPP_BUILD_FOR_64_BIT "Build for 64-bit system or 32-bit" ON)
+option(WPP_BUILD_INDEPENDENT_CODE "Build as independent code" ON)
+
 # Creating target as static library
 add_library(Wpp STATIC)
+# Add Wpp compiler flags
+wpp_setup_compiler(Wpp ${WPP_BUILD_WITH_EXCEPTIONS} ${WPP_BUILD_WITH_RTTI} ${WPP_BUILD_FOR_64_BIT} ${WPP_BUILD_INDEPENDENT_CODE})
 # Set wpp properties
 target_compile_definitions(Wpp PUBLIC ${WPP_DEFINITIONS})
 # Link Wpp sources

@@ -1,0 +1,23 @@
+{
+    "object_data": {
+        "name": "Accelerometer",
+        "id": "3313",
+        "version": "1.0",
+        "lwm2m_version": "1.0",
+        "is_mandatory": false,
+        "is_multiple": true
+    },
+    "object_names": {
+        "class": "Accelerometer",
+        "camelcase": "accelerometer",
+        "define": "OBJ_O_3313_ACCELEROMETER",
+        "up_underline": "ACCELEROMETER"
+    },
+    "object_files": {
+        "impl_h": "Accelerometer.h",
+        "impl_cpp": "Accelerometer.cpp",
+        "config": "AccelerometerConfig.h",
+        "info": "AccelerometerInfo.h",
+        "cmake": "CMakeLists.txt"
+    }
+}

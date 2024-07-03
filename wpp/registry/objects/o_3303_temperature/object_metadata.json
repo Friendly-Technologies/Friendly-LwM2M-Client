@@ -1,0 +1,23 @@
+{
+    "object_data": {
+        "name": "Temperature",
+        "id": "3303",
+        "version": "1.0",
+        "lwm2m_version": "1.0",
+        "is_mandatory": false,
+        "is_multiple": true
+    },
+    "object_names": {
+        "class": "Temperature",
+        "camelcase": "temperature",
+        "define": "OBJ_O_3303_TEMPERATURE",
+        "up_underline": "TEMPERATURE"
+    },
+    "object_files": {
+        "impl_h": "Temperature.h",
+        "impl_cpp": "Temperature.cpp",
+        "config": "TemperatureConfig.h",
+        "info": "TemperatureInfo.h",
+        "cmake": "CMakeLists.txt"
+    }
+}

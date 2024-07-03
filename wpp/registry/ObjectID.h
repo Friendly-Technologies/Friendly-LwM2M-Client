@@ -37,6 +37,18 @@ enum OBJ_ID: ID_T {
 	#ifdef OBJ_O_5_FIRMWARE_UPDATE
 	FIRMWARE_UPDATE = 5,
 	#endif
+	#ifdef OBJ_O_3201_DIGITAL_OUTPUT
+	DIGITAL_OUTPUT = 3201,
+	#endif
+	#ifdef OBJ_O_3347_PUSH_BUTTON
+	PUSH_BUTTON = 3347,
+	#endif
+	#ifdef OBJ_O_3303_TEMPERATURE
+	TEMPERATURE = 3303,
+	#endif
+	#ifdef OBJ_O_3313_ACCELEROMETER
+	ACCELEROMETER = 3313,
+	#endif
 	/* ---------- Optional objects ID block end ---------- */
 
 	MAX_ID = ID_T_MAX_VAL,

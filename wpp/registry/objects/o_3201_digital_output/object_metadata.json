@@ -1,0 +1,23 @@
+{
+    "object_data": {
+        "name": "Digital Output",
+        "id": "3201",
+        "version": "1.0",
+        "lwm2m_version": "1.0",
+        "is_mandatory": false,
+        "is_multiple": true
+    },
+    "object_names": {
+        "class": "DigitalOutput",
+        "camelcase": "digitalOutput",
+        "define": "OBJ_O_3201_DIGITAL_OUTPUT",
+        "up_underline": "DIGITAL_OUTPUT"
+    },
+    "object_files": {
+        "impl_h": "DigitalOutput.h",
+        "impl_cpp": "DigitalOutput.cpp",
+        "config": "DigitalOutputConfig.h",
+        "info": "DigitalOutputInfo.h",
+        "cmake": "CMakeLists.txt"
+    }
+}

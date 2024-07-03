@@ -36,6 +36,18 @@
 #ifdef OBJ_O_5_FIRMWARE_UPDATE
 #include "o_5_firmware_update/FirmwareUpdate.h"
 #endif
+#ifdef OBJ_O_3201_DIGITAL_OUTPUT
+#include "o_3201_digital_output/DigitalOutput.h"
+#endif
+#ifdef OBJ_O_3347_PUSH_BUTTON
+#include "o_3347_push_button/PushButton.h"
+#endif
+#ifdef OBJ_O_3303_TEMPERATURE
+#include "o_3303_temperature/Temperature.h"
+#endif
+#ifdef OBJ_O_3313_ACCELEROMETER
+#include "o_3313_accelerometer/Accelerometer.h"
+#endif
 /* ---------- Optional objects include block end ---------- */
 
 namespace wpp {
@@ -131,6 +143,18 @@ public:
 	#endif
 	#ifdef OBJ_O_5_FIRMWARE_UPDATE
 	Object & firmwareUpdate();
+	#endif
+	#ifdef OBJ_O_3201_DIGITAL_OUTPUT
+	Object & digitalOutput();
+	#endif
+	#ifdef OBJ_O_3347_PUSH_BUTTON
+	Object & pushButton();
+	#endif
+	#ifdef OBJ_O_3303_TEMPERATURE
+	Object & temperature();
+	#endif
+	#ifdef OBJ_O_3313_ACCELEROMETER
+	Object & accelerometer();
 	#endif
 	/* ---------- Optional objects prototype block end ---------- */
 

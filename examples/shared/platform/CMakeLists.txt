@@ -1,9 +1,3 @@
-if (WITH_UDP_DTLS)
-    add_subdirectory(connection_dtls)
-else()
-    add_subdirectory(connection)
-endif()
-
 # Update SOURCES variable from parent scope.
 set(SOURCES ${SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/Guard.cpp )
 set(SOURCES ${SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/Platform.cpp PARENT_SCOPE)

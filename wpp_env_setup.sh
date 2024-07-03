@@ -38,8 +38,10 @@ $CLANG \
 cppcheck \
 llvm \
 libcurl4-openssl-dev \
-cmake
-g++-12"
+cmake \
+g++-12 \
+gcc-aarch64-linux-gnu \
+g++-aarch64-linux-gnu"
 
 ptools="\
 cmake-format \
@@ -73,34 +75,36 @@ if [ -z "$CLANG_PATH" ]; then
 	echo "Error: ${CLANG} not found in PATH."
 	exit 1
 fi
-if [ ! -e "$CLANG_KIT_PATH" ]; then
-	# Create the symbolic link
-	sudo ln -s $CLANG_PATH $CLANG_KIT_PATH
-	echo "$CLANG_KIT_PATH symbolic link created successfully."
-fi
+# Remove existing link
+sudo rm $CLANG_KIT_PATH
+# Create the symbolic link
+sudo ln -s $CLANG_PATH $CLANG_KIT_PATH
+echo "$CLANG_KIT_PATH symbolic link created successfully."
+
 
 CLANGPP_PATH=$(which $CLANGPP)
 if [ -z "$CLANGPP_PATH" ]; then
 	echo "Error: ${CLANGPP} not found in PATH."
 	exit 1
 fi
-if [ ! -e "$CLANGPP_KIT_PATH" ]; then
-	# Create the symbolic link
-	sudo ln -s $CLANGPP_PATH $CLANGPP_KIT_PATH
-	echo "$CLANGPP_KIT_PATH symbolic link created successfully."
-fi
+# Remove existing link
+sudo rm $CLANGPP_KIT_PATH
+# Create the symbolic link
+sudo ln -s $CLANGPP_PATH $CLANGPP_KIT_PATH
+echo "$CLANGPP_KIT_PATH symbolic link created successfully."
+
 echo -e "Setup clang kit DONE"
 
 echo -e "\nSetup Doxygen"
-./doxg/doxygen_setup.sh
+./docs/doxygen_setup.sh
 echo -e "Setup Doxygen DONE"
 
 # TODO: Move docs generation to cmake file, with converting to .pdf
 echo -e "\nGenerating Doxygen documentation"
-cd doxg
+cd docs
 doxygen Doxygen
+xdg-open html/index.html
 cd ..
-xdg-open docs/index.html
 echo -e "Generating Doxygen documentation DONE"
 
 echo -e "\nSetup environment DONE"

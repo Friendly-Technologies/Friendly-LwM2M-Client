@@ -101,8 +101,10 @@ TEST_CASE("objectConnectivityMonitoring", "[objectConnectivityMonitoring]")
         OBJ_LINK_T mockId = {0, 1};
         ConnectivityMonitoringMock connectivitymonitoringMock(mockContext, mockId);
 
+        mockContext.state = STATE_INITIAL;
+
         connectivitymonitoringMock.setDefaultState();
-        connectivitymonitoringMock.serverOperationNotifier(0, ItemOp::TYPE::READ, {0, 0}); // TODO Instance *securityInst
+        connectivitymonitoringMock.serverOperationNotifier(&connectivitymonitoringMock, ItemOp::TYPE::READ, {0, 0}); // TODO Instance *securityInst
         connectivitymonitoringMock.userOperationNotifier(ItemOp::TYPE::WRITE, {10, 10});
     }
 

@@ -99,8 +99,8 @@ echo -e "Setup Doxygen DONE"
 echo -e "\nGenerating Doxygen documentation"
 cd doxg
 doxygen Doxygen
-xdg-open html/index.html
 cd ..
+xdg-open docs/index.html
 echo -e "Generating Doxygen documentation DONE"
 
 echo -e "\nSetup environment DONE"

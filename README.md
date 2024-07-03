@@ -1,4 +1,4 @@
-# Friendly LwM2M Client [<img align="right" height="100px" src="https://github.com/Friendly-Technologies/Friendly-LwM2M-Client/blob/main/logo.png">](http://www.friendly-tech.com/)
+# Friendly LwM2M Client [<img align="right" height="100px" src="https://github.com/Friendly-Technologies/Friendly-LwM2M-Client/blob/main/logo.png">](https://hubs.li/Q02D_GnB0)
 This distribution contains **Friendly LwM2M client** as a reference for how to use Lightweight machine-to-machine implementations for IoT devices. 
 This code is provided under the associated 
 [LICENSE](LICENSE)
@@ -112,7 +112,7 @@ Additional features
 
 Note that additional features such as transport layers (TCP/TLS, SMS binding, MQTT, and HTTP transport binding); Composite operations, and Security modes (Certificate and Certificate mode with EST) are commercially available.
 
-For more information please contact [Friendly Technologies](https://friendly-tech.com/products/lwm2m-client-iot/)
+For more information please contact [Friendly Technologies](https://hubs.li/Q02D_GnZ0)
 
 ## Getting Started 
 This section provides instructions on how to build and run the Friendly LwM2M client. Also, this section will describe the environment requirements, and the setup process for the build, and explain the two methods for building and running the Friendly LwM2M client.

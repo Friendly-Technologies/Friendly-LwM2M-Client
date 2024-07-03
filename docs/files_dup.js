@@ -1,5 +1,11 @@
 var files_dup =
 [
+    [ "Accelerometer.cpp", "Accelerometer_8cpp.html", "Accelerometer_8cpp" ],
+    [ "Accelerometer.h", "Accelerometer_8h.html", [
+      [ "Accelerometer", "classwpp_1_1Accelerometer.html", "classwpp_1_1Accelerometer" ]
+    ] ],
+    [ "AccelerometerConfig.h", "AccelerometerConfig_8h.html", null ],
+    [ "AccelerometerInfo.h", "AccelerometerInfo_8h.html", null ],
     [ "AudioClip.cpp", "AudioClip_8cpp.html", "AudioClip_8cpp" ],
     [ "AudioClip.h", "AudioClip_8h.html", [
       [ "AudioClip", "classwpp_1_1AudioClip.html", "classwpp_1_1AudioClip" ]
@@ -18,6 +24,12 @@ var files_dup =
     ] ],
     [ "DeviceConfig.h", "DeviceConfig_8h.html", "DeviceConfig_8h" ],
     [ "DeviceInfo.h", "DeviceInfo_8h.html", "DeviceInfo_8h" ],
+    [ "DigitalOutput.cpp", "DigitalOutput_8cpp.html", "DigitalOutput_8cpp" ],
+    [ "DigitalOutput.h", "DigitalOutput_8h.html", [
+      [ "DigitalOutput", "classwpp_1_1DigitalOutput.html", "classwpp_1_1DigitalOutput" ]
+    ] ],
+    [ "DigitalOutputConfig.h", "DigitalOutputConfig_8h.html", null ],
+    [ "DigitalOutputInfo.h", "DigitalOutputInfo_8h.html", null ],
     [ "FirmwareUpdate.cpp", "FirmwareUpdate_8cpp.html", "FirmwareUpdate_8cpp" ],
     [ "FirmwareUpdate.h", "FirmwareUpdate_8h.html", [
       [ "FirmwareUpdate", "classwpp_1_1FirmwareUpdate.html", "classwpp_1_1FirmwareUpdate" ]
@@ -81,6 +93,12 @@ var files_dup =
     [ "ObjSubject.h", "ObjSubject_8h.html", [
       [ "ObjSubject", "classwpp_1_1ObjSubject.html", "classwpp_1_1ObjSubject" ]
     ] ],
+    [ "PushButton.cpp", "PushButton_8cpp.html", "PushButton_8cpp" ],
+    [ "PushButton.h", "PushButton_8h.html", [
+      [ "PushButton", "classwpp_1_1PushButton.html", "classwpp_1_1PushButton" ]
+    ] ],
+    [ "PushButtonConfig.h", "PushButtonConfig_8h.html", null ],
+    [ "PushButtonInfo.h", "PushButtonInfo_8h.html", null ],
     [ "Resource.cpp", "Resource_8cpp.html", null ],
     [ "Resource.h", "Resource_8h.html", [
       [ "Resource", "classwpp_1_1Resource.html", "classwpp_1_1Resource" ],
@@ -91,6 +109,12 @@ var files_dup =
       [ "ResourceContainer", "classwpp_1_1ResourceContainer.html", "classwpp_1_1ResourceContainer" ]
     ] ],
     [ "SafeQueue.h", "SafeQueue_8h.html", "SafeQueue_8h" ],
+    [ "Temperature.cpp", "Temperature_8cpp.html", "Temperature_8cpp" ],
+    [ "Temperature.h", "Temperature_8h.html", [
+      [ "Temperature", "classwpp_1_1Temperature.html", "classwpp_1_1Temperature" ]
+    ] ],
+    [ "TemperatureConfig.h", "TemperatureConfig_8h.html", null ],
+    [ "TemperatureInfo.h", "TemperatureInfo_8h.html", null ],
     [ "WppBindings.cpp", "WppBindings_8cpp.html", "WppBindings_8cpp" ],
     [ "WppBindings.h", "WppBindings_8h.html", "WppBindings_8h" ],
     [ "WppClient.cpp", "WppClient_8cpp.html", null ],

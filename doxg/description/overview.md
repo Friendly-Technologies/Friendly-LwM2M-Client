@@ -3,6 +3,7 @@
 **Welcome to the Friendly LWM2M client documentation.** Here you will find an overview of the project, build instructions, architecture details, usage examples, and code documentation.
 
 - [Build Instructions](@ref build_tag)
+- [RPi Setup](@ref rpi_setup_tag)
 - [Architecture](@ref architecture_tag)
 - [Examples of Usage](@ref examples_tag)
 - [Testing](@ref testing_tag)

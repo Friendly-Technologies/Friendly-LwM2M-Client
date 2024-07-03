@@ -26,6 +26,7 @@ var NAVTREE =
 [
   [ "Friendly LWM2M client", "index.html", [
     [ "Build Instructions", "build_tag.html", null ],
+    [ "RPi Setup", "rpi_setup_tag.html", null ],
     [ "Architecture", "architecture_tag.html", null ],
     [ "Examples of Usage", "examples_tag.html", null ],
     [ "Testing", "testing_tag.html", null ],
@@ -70,10 +71,10 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"AudioClipConfig_8h.html",
-"SafeQueue_8h.html#a6e8b0fa6ecfdcd173067a08ee6c8cb47",
-"classwpp_1_1InstSubject.html#ae76aea8fa744af319e623d57d88717b1",
-"functions_func_t.html"
+"AccelerometerConfig_8h.html",
+"ObjectInfo_8h_source.html",
+"classwpp_1_1DigitalOutput.html",
+"classwpp_1_1WppConnection.html#a96b882355a509a3942037811fb8bd454"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

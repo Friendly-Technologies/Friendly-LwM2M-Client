@@ -1,0 +1,4 @@
+<map id="wpp::Temperature::object" name="wpp::Temperature::object">
+<area shape="rect" id="node1" title="Gets the Object reference." alt="" coords="5,5,192,32"/>
+<area shape="rect" id="node2" href="$classwpp_1_1WppClient.html#afb790e827cb2a731ec6be3a97ef1c98a" title="Gets the WppRegistry associated with the WppClient." alt="" coords="240,5,423,32"/>
+</map>

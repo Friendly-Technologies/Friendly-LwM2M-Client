@@ -8,13 +8,17 @@ var hierarchy =
     [ "wpp::InstOpObserver", "classwpp_1_1InstOpObserver.html", null ],
     [ "wpp::InstSubject", "classwpp_1_1InstSubject.html", [
       [ "wpp::Instance", "classwpp_1_1Instance.html", [
+        [ "wpp::Accelerometer", "classwpp_1_1Accelerometer.html", null ],
         [ "wpp::AudioClip", "classwpp_1_1AudioClip.html", null ],
         [ "wpp::ConnectivityMonitoring", "classwpp_1_1ConnectivityMonitoring.html", null ],
         [ "wpp::Device", "classwpp_1_1Device.html", null ],
+        [ "wpp::DigitalOutput", "classwpp_1_1DigitalOutput.html", null ],
         [ "wpp::FirmwareUpdate", "classwpp_1_1FirmwareUpdate.html", null ],
         [ "wpp::Lwm2mAccessControl", "classwpp_1_1Lwm2mAccessControl.html", null ],
         [ "wpp::Lwm2mSecurity", "classwpp_1_1Lwm2mSecurity.html", null ],
-        [ "wpp::Lwm2mServer", "classwpp_1_1Lwm2mServer.html", null ]
+        [ "wpp::Lwm2mServer", "classwpp_1_1Lwm2mServer.html", null ],
+        [ "wpp::PushButton", "classwpp_1_1PushButton.html", null ],
+        [ "wpp::Temperature", "classwpp_1_1Temperature.html", null ]
       ] ]
     ] ],
     [ "wpp::ItemOp", "structwpp_1_1ItemOp.html", null ],

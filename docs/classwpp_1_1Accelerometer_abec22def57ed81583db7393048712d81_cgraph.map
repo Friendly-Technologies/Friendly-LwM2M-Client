@@ -1,0 +1,4 @@
+<map id="wpp::Accelerometer::createInst" name="wpp::Accelerometer::createInst">
+<area shape="rect" id="node1" title="Creates an instance of the object." alt="" coords="5,5,157,47"/>
+<area shape="rect" id="node2" href="$classwpp_1_1WppClient.html#afb790e827cb2a731ec6be3a97ef1c98a" title="Gets the WppRegistry associated with the WppClient." alt="" coords="205,13,388,39"/>
+</map>

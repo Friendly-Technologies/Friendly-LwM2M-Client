@@ -4,6 +4,7 @@
   <navindex>
     <!-- Custom tabs for Markdown pages -->
     <tab type="user" visible="yes" title="Build Instructions" url="@ref build_tag"/>
+    <tab type="user" visible="yes" title="RPi Setup" url="@ref rpi_setup_tag"/>
     <tab type="user" visible="yes" title="Architecture" url="@ref architecture_tag"/>
     <tab type="user" visible="yes" title="Examples of Usage" url="@ref examples_tag"/>
     <tab type="user" visible="yes" title="Testing" url="@ref testing_tag"/>

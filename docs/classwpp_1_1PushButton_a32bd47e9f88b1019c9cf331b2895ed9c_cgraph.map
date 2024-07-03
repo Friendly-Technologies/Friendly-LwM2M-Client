@@ -1,0 +1,4 @@
+<map id="wpp::PushButton::removeInst" name="wpp::PushButton::removeInst">
+<area shape="rect" id="node1" title="Removes an instance of the object." alt="" coords="5,5,219,32"/>
+<area shape="rect" id="node2" href="$classwpp_1_1WppClient.html#afb790e827cb2a731ec6be3a97ef1c98a" title="Gets the WppRegistry associated with the WppClient." alt="" coords="267,5,449,32"/>
+</map>

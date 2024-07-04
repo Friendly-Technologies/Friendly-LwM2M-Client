@@ -132,7 +132,7 @@ void Temperature::resourcesInit() {
 	resource(MAX_RANGE_VALUE_5604)->set<FLOAT_T>(0.0);
 	#endif
 	#if RES_3303_5701
-	resource(SENSOR_UNITS_5701)->set<STRING_T>(0.0);
+	resource(SENSOR_UNITS_5701)->set<STRING_T>("C");
 	#endif
 	#if RES_3303_5605
 	resource(RESET_MIN_AND_MAX_MEASURED_VALUES_5605)->set<EXECUTE_T>(EXECUTE_T());

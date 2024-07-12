@@ -4,6 +4,7 @@
 #include <arpa/inet.h>
 #include <cstring>
 #include <random>
+#include <sys/statvfs.h>
 #include "gpio.h"
 #include "mki217.h"
 
@@ -50,6 +51,19 @@ int generateRandomValue(int min, int max) {
     std::uniform_int_distribution<> dis(min, max);  // Define the range
 
     return dis(gen);  // Generate a random number within the specified range
+}
+
+unsigned long long get_free_space_kb(const char* path) {
+    struct statvfs stat;
+    // Get file system statistics
+    if (statvfs(path, &stat) != 0) {
+        std::cerr << "Failed to get file system statistics for " << path << std::endl;
+        return 0;
+    }
+    // Calculate free space in kB
+    unsigned long long free = stat.f_bfree * stat.f_frsize / 1024;
+
+    return free;
 }
 
 /* ------------- Methods to init objects ------------- */
@@ -132,6 +146,14 @@ void deviceInit(WppClient &client) {
     device->set<STRING_T>(Device::MANUFACTURER_0, "Friendly");
     device->set<STRING_T>(Device::MODEL_NUMBER_1, "Lightweight M2M RPi Client");
     device->set<STRING_T>(Device::SERIAL_NUMBER_2, "9876543210");
+    device->set<INT_T>(Device::BATTERY_LEVEL_9, 100);
+    device->set<INT_T>(Device::MEMORY_FREE_10, get_free_space_kb("/"));
+
+    WppTaskQueue::addTask(1, [](WppClient &client, void *ctx) {
+        Device::instance(client)->set<INT_T>(Device::BATTERY_LEVEL_9, generateRandomValue(90, 100));
+        Device::instance(client)->set<INT_T>(Device::MEMORY_FREE_10, get_free_space_kb("/"));
+        return false;
+    });
 
     #if OBJ_O_2_LWM2M_ACCESS_CONTROL
 	Lwm2mAccessControl::create(Device::object(client), Lwm2mAccessControl::ALL_OBJ_RIGHTS);

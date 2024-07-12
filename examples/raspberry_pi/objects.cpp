@@ -3,6 +3,7 @@
 #include <ifaddrs.h>
 #include <arpa/inet.h>
 #include <cstring>
+#include <random>
 #include "gpio.h"
 #include "mki217.h"
 
@@ -41,6 +42,15 @@ static void getIpAddress(string* ip) {
     freeifaddrs(interfaces);  // free memory
 }
 #endif // OBJ_O_4_CONNECTIVITY_MONITORING
+
+int generateRandomValue(int min, int max) {
+    // Create a random number generator
+    std::random_device rd;   // Seed for the random number generator
+    std::mt19937 gen(rd());  // Mersenne Twister random number generator
+    std::uniform_int_distribution<> dis(min, max);  // Define the range
+
+    return dis(gen);  // Generate a random number within the specified range
+}
 
 /* ------------- Methods to init objects ------------- */
 
@@ -167,8 +177,23 @@ void connMonitoringInit(WppClient &client) {
     STRING_T ip;
     getIpAddress(&ip);
 	connMon->set<INT_T>(ConnectivityMonitoring::NETWORK_BEARER_0, ConnectivityMonitoring::NtwrkBrr::ETHERNET);
-	connMon->set<INT_T>(ConnectivityMonitoring::RADIO_SIGNAL_STRENGTH_2, -20);
+	connMon->set<INT_T>(ConnectivityMonitoring::RADIO_SIGNAL_STRENGTH_2, 0);
     connMon->set<STRING_T>(ConnectivityMonitoring::IP_ADDRESSES_4, 0, ip);
+    connMon->set<INT_T>(ConnectivityMonitoring::LINK_QUALITY_3, 0);
+    connMon->set<INT_T>(ConnectivityMonitoring::CELL_ID_8, generateRandomValue(0, 100000));
+    connMon->set<INT_T>(ConnectivityMonitoring::SIGNALSNR_11, 0);
+
+    WppTaskQueue::addTask(1, [](WppClient &client, void *ctx) {
+        INT_T signalStrength = generateRandomValue(-100, -80); 
+        INT_T linkQuality = generateRandomValue(50, 70);
+        INT_T signalSNR = generateRandomValue(15, 25);
+
+        ConnectivityMonitoring::instance(client)->set<INT_T>(ConnectivityMonitoring::RADIO_SIGNAL_STRENGTH_2, signalStrength);
+        ConnectivityMonitoring::instance(client)->set<INT_T>(ConnectivityMonitoring::LINK_QUALITY_3, linkQuality);
+        ConnectivityMonitoring::instance(client)->set<INT_T>(ConnectivityMonitoring::SIGNALSNR_11, signalSNR);
+
+        return false;
+    });
 
     #if OBJ_O_2_LWM2M_ACCESS_CONTROL
 	Lwm2mAccessControl::create(ConnectivityMonitoring::object(client), Lwm2mAccessControl::ALL_OBJ_RIGHTS);

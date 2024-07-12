@@ -9,14 +9,14 @@
 #ifdef OBJ_O_4_CONNECTIVITY_MONITORING
 
 /* --------------- Config block 0 start --------------- */
-#define RES_4_3 0
+#define RES_4_3 1
 #define RES_4_5 0
 #define RES_4_6 0
 #define RES_4_7 0
-#define RES_4_8 0
+#define RES_4_8 1
 #define RES_4_9 0
 #define RES_4_10 0
-#define RES_4_11 0
+#define RES_4_11 1
 #define RES_4_12 0
 #define RES_4_13 0
 

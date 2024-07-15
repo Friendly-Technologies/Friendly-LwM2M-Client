@@ -4,7 +4,10 @@ var classwpp_1_1ConnectivityMonitoring =
       [ "NETWORK_BEARER_0", "classwpp_1_1ConnectivityMonitoring.html#aa8239c4ca62621e1bf28c7af83d19979aaa6c664bf7a38f244449620cb40e1a2f", null ],
       [ "AVAILABLE_NETWORK_BEARER_1", "classwpp_1_1ConnectivityMonitoring.html#aa8239c4ca62621e1bf28c7af83d19979a45f15b9e55881e7622b8cdaa2719c076", null ],
       [ "RADIO_SIGNAL_STRENGTH_2", "classwpp_1_1ConnectivityMonitoring.html#aa8239c4ca62621e1bf28c7af83d19979a88c18a79ef01b8ee3e94dbc510c424f5", null ],
-      [ "IP_ADDRESSES_4", "classwpp_1_1ConnectivityMonitoring.html#aa8239c4ca62621e1bf28c7af83d19979a9b857f2e1f8893ff0a8ce40da229789a", null ]
+      [ "LINK_QUALITY_3", "classwpp_1_1ConnectivityMonitoring.html#aa8239c4ca62621e1bf28c7af83d19979a40e110164aae2c516f9be80a307132cb", null ],
+      [ "IP_ADDRESSES_4", "classwpp_1_1ConnectivityMonitoring.html#aa8239c4ca62621e1bf28c7af83d19979a9b857f2e1f8893ff0a8ce40da229789a", null ],
+      [ "CELL_ID_8", "classwpp_1_1ConnectivityMonitoring.html#aa8239c4ca62621e1bf28c7af83d19979a441cff5c10227ec62e277de3f408cebb", null ],
+      [ "SIGNALSNR_11", "classwpp_1_1ConnectivityMonitoring.html#aa8239c4ca62621e1bf28c7af83d19979a4466178331b57b4629436b2c6bca2c79", null ]
     ] ],
     [ "NtwrkBrr", "classwpp_1_1ConnectivityMonitoring.html#a690167817d74cee4cefc1a9a64323cd1", [
       [ "GSM", "classwpp_1_1ConnectivityMonitoring.html#a690167817d74cee4cefc1a9a64323cd1a492f10e0f0d58a9a60ed59b9d3c727cc", null ],

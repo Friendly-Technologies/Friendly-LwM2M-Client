@@ -86,7 +86,7 @@ void serverInit(WppClient &client) {
 void securityInit(WppClient &client) {
     client.registry().registerObj(Lwm2mSecurity::object(client));
     wpp::Instance *security = Lwm2mSecurity::createInst(client);
-    string url = "coaps://leshan.eclipseprojects.io:"; //"coaps://leshan.eclipseprojects.io:"
+    string url = "coaps://demodm.friendly-tech.com:"; //"coaps://leshan.eclipseprojects.io:"
 
     // PSK key: 00112233445566778899998877665544
     // RPK public.pem: 3059301306072a8648ce3d020106082a8648ce3d03010703420004bada5475344ba22961a7d965ac518e73481a5f77832bd996c2fa3527e8f3c4248dda621fa9c1348d1365c357357c54869477e387fd2c2675b1c6f28aa506677b
@@ -148,10 +148,12 @@ void deviceInit(WppClient &client) {
     device->set<STRING_T>(Device::SERIAL_NUMBER_2, "9876543210");
     device->set<INT_T>(Device::BATTERY_LEVEL_9, 100);
     device->set<INT_T>(Device::MEMORY_FREE_10, get_free_space_kb("/"));
+    device->set<INT_T>(Device::CPU_UTILIZATION_99, 0);
 
     WppTaskQueue::addTask(1, [](WppClient &client, void *ctx) {
         Device::instance(client)->set<INT_T>(Device::BATTERY_LEVEL_9, generateRandomValue(90, 100));
         Device::instance(client)->set<INT_T>(Device::MEMORY_FREE_10, get_free_space_kb("/"));
+        Device::instance(client)->set<INT_T>(Device::CPU_UTILIZATION_99, generateRandomValue(25, 95));
         return false;
     });
 

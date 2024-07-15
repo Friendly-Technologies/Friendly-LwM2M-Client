@@ -91,6 +91,9 @@ public:
 		#if RES_3_22
 		EXTDEVINFO_22 = 22,
 		#endif
+		#if RES_3_99
+		CPU_UTILIZATION_99 = 99,
+		#endif
 	};
 
 	/* --------------- Code_h block 2 start --------------- */

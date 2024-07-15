@@ -28,6 +28,7 @@
 #define RES_3_20 0
 #define RES_3_21 1
 #define RES_3_22 0
+#define RES_3_99 1
 /* --------------- Config block 0 end --------------- */
 
 #endif // WPP_DEVICE_CONFIG_H

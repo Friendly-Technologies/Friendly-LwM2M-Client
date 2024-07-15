@@ -25,7 +25,7 @@ set(SOURCES main.cpp objects.cpp ${CMAKE_CURRENT_SOURCE_DIR}/drivers/gpio.cpp ${
 set(INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/ ${RPI_LIBRARY_PATH}/includes ${CMAKE_CURRENT_SOURCE_DIR}/drivers)
 
 # General options
-set(RPI_WITH_UDP_DTLS OFF)
+set(RPI_WITH_UDP_DTLS ON)
 
 # Setup connection security
 if (RPI_WITH_UDP_DTLS)

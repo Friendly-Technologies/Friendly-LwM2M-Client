@@ -18,9 +18,13 @@ var classwpp_1_1Device =
       [ "SERIAL_NUMBER_2", "classwpp_1_1Device.html#aa613d0aca0f931b7e5fc83879f326866a3fbe67c47ba4f4ccefb6745b01aab7d6", null ],
       [ "FIRMWARE_VERSION_3", "classwpp_1_1Device.html#aa613d0aca0f931b7e5fc83879f326866a98c703428e41416b94065bc3956c1e9f", null ],
       [ "REBOOT_4", "classwpp_1_1Device.html#aa613d0aca0f931b7e5fc83879f326866a73c65645e48acffe71efb594770fcc97", null ],
+      [ "BATTERY_LEVEL_9", "classwpp_1_1Device.html#aa613d0aca0f931b7e5fc83879f326866adade66c09c7fca8da9c1c4b9f15b7053", null ],
+      [ "MEMORY_FREE_10", "classwpp_1_1Device.html#aa613d0aca0f931b7e5fc83879f326866ae0488f91170671850d87c2f376dcbf58", null ],
       [ "ERROR_CODE_11", "classwpp_1_1Device.html#aa613d0aca0f931b7e5fc83879f326866a8490c86b5d68b38604c4d1da263304b8", null ],
       [ "CURRENT_TIME_13", "classwpp_1_1Device.html#aa613d0aca0f931b7e5fc83879f326866a2298d4e6da9f120dc7214a4c38f6c73f", null ],
-      [ "SUPPORTED_BINDING_AND_MODES_16", "classwpp_1_1Device.html#aa613d0aca0f931b7e5fc83879f326866a2063af00eb615070207fbdb85a83da92", null ]
+      [ "SUPPORTED_BINDING_AND_MODES_16", "classwpp_1_1Device.html#aa613d0aca0f931b7e5fc83879f326866a2063af00eb615070207fbdb85a83da92", null ],
+      [ "MEMORY_TOTAL_21", "classwpp_1_1Device.html#aa613d0aca0f931b7e5fc83879f326866a7c02a145e74f8ce359e3658307df2e30", null ],
+      [ "CPU_UTILIZATION_99", "classwpp_1_1Device.html#aa613d0aca0f931b7e5fc83879f326866a4cb230dcd6339c998d827b3e28303420", null ]
     ] ],
     [ "Device", "classwpp_1_1Device.html#aefabfa826c03dd6d00514cc37b6d5f12", null ],
     [ "~Device", "classwpp_1_1Device.html#a8d689012fbe5c222855cf5762e6ef805", null ],

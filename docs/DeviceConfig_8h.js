@@ -18,5 +18,6 @@ var DeviceConfig_8h =
     [ "RES_3_6", "DeviceConfig_8h.html#ac41dc8e0ed20fe208de847ac7e37db32", null ],
     [ "RES_3_7", "DeviceConfig_8h.html#a8f425767cfeea4941e1f808ac2f940d7", null ],
     [ "RES_3_8", "DeviceConfig_8h.html#a7f7e9ecdf7c0b3b06f4681636c118c06", null ],
-    [ "RES_3_9", "DeviceConfig_8h.html#aa2777cf25673a21b4073ba32d1cba2aa", null ]
+    [ "RES_3_9", "DeviceConfig_8h.html#aa2777cf25673a21b4073ba32d1cba2aa", null ],
+    [ "RES_3_99", "DeviceConfig_8h.html#ae345b199c018b4a028d5e4ba52940438", null ]
 ];

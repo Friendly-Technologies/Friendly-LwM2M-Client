@@ -147,7 +147,10 @@ void Device::resourcesCreate() {
 		#endif                                                                                                                                                                  
 		#if RES_3_22                                                                                                                                                            
 		{EXTDEVINFO_22,                  ItemOp(ItemOp::READ),              IS_SINGLE::MULTIPLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::OBJ_LINK }, 
-		#endif                                                                                                                                                                  
+		#endif  
+		#if RES_3_99
+		{CPU_UTILIZATION_99, 			 ItemOp(ItemOp::READ),              IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },
+		#endif                                                                                                                                                                
 	};
 	setupResources(std::move(resources));
 }
@@ -240,7 +243,11 @@ void Device::resourcesInit() {
 
 	#if RES_3_21                                                                                                                                                                                          
 	resource(MEMORY_TOTAL_21)->set<INT_T>(NO_ERROR);
-	#endif                                                                                                                                                                                                                  
+	#endif                                                 
+
+	#if RES_3_99
+	resource(CPU_UTILIZATION_99)->set<INT_T>(0);
+	#endif                                                                                                                                                                 
 	/* --------------- Code_cpp block 7 end --------------- */
 }
 

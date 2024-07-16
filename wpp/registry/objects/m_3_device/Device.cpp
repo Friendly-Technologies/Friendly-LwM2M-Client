@@ -149,7 +149,7 @@ void Device::resourcesCreate() {
 		{EXTDEVINFO_22,                  ItemOp(ItemOp::READ),              IS_SINGLE::MULTIPLE, IS_MANDATORY::OPTIONAL,  TYPE_ID::OBJ_LINK }, 
 		#endif  
 		#if RES_3_99
-		{CPU_UTILIZATION_99, 			 ItemOp(ItemOp::READ),              IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::INT },
+		{CPU_UTILIZATION_99, 			 ItemOp(ItemOp::READ),              IS_SINGLE::SINGLE,   IS_MANDATORY::OPTIONAL,  TYPE_ID::STRING },
 		#endif                                                                                                                                                                
 	};
 	setupResources(std::move(resources));
@@ -246,7 +246,7 @@ void Device::resourcesInit() {
 	#endif                                                 
 
 	#if RES_3_99
-	resource(CPU_UTILIZATION_99)->set<INT_T>(0);
+	resource(CPU_UTILIZATION_99)->set<STRING_T>("");
 	#endif                                                                                                                                                                 
 	/* --------------- Code_cpp block 7 end --------------- */
 }

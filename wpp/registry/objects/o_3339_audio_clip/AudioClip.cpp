@@ -112,7 +112,7 @@ void AudioClip::resourcesCreate() {
 
 void AudioClip::resourcesInit() {
 	/* --------------- Code_cpp block 7 start --------------- */
-	resource(CLIP_5522)->set<OPAQUE_T>({});
+	resource(CLIP_5522)->set<OPAQUE_T>({0});
 	#if RES_3339_5523
 	resource(TRIGGER_5523)->set<EXECUTE_T>([](Instance& inst, ID_T resId, const OPAQUE_T& data) { return true; });
 	#endif

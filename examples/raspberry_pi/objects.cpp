@@ -148,12 +148,12 @@ void deviceInit(WppClient &client) {
     device->set<STRING_T>(Device::SERIAL_NUMBER_2, "9876543210");
     device->set<INT_T>(Device::BATTERY_LEVEL_9, 100);
     device->set<INT_T>(Device::MEMORY_FREE_10, get_free_space_kb("/"));
-    device->set<INT_T>(Device::CPU_UTILIZATION_99, 0);
+    device->set<STRING_T>(Device::CPU_UTILIZATION_99, "0");
 
     WppTaskQueue::addTask(1, [](WppClient &client, void *ctx) {
         Device::instance(client)->set<INT_T>(Device::BATTERY_LEVEL_9, generateRandomValue(90, 100));
         Device::instance(client)->set<INT_T>(Device::MEMORY_FREE_10, get_free_space_kb("/"));
-        Device::instance(client)->set<INT_T>(Device::CPU_UTILIZATION_99, generateRandomValue(25, 95));
+        Device::instance(client)->set<STRING_T>(Device::CPU_UTILIZATION_99, std::to_string(generateRandomValue(25, 95)));
         return false;
     });
 

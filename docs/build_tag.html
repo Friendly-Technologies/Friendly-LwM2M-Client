@@ -92,10 +92,10 @@ Repos Structure</h2>
 <li><b>HAL</b>. Give abilities to run Wakaama&#160;on different platforms (Android, FreeRTOS etc).</li>
 <li><b>BSP</b>. Integration of the Object Data Model with the specific Client Devices.</li>
 </ul>
-<p>The current [07.06.2023] structure contains only 3 repos (other will be created on ad-hoc basis):</p>
+<p>The current [16.07.2024] structure contains only 2 repos (other will be created on ad-hoc basis):</p>
 <ul>
-<li><em>Friendly LWM2M client</em> Main Development Repo: <a href="https://github.com/Friendly-Technologies/LWM2M">https://github.com/Friendly-Technologies/LWM2M</a></li>
-<li><em>Wakaama Copy</em> [as on 07.06.2023]: <a href="https://github.com/eclipse/wakaama">https://github.com/eclipse/wakaama</a></li>
+<li><em>Friendly LWM2M client</em> Main Development Repo: <a href="https://github.com/Friendly-Technologies/Friendly-LwM2M-Client">https://github.com/Friendly-Technologies/Friendly-LwM2M-Client</a></li>
+<li><em>Friendly-Wakaama</em> Wakaama copy [as on 07.06.2023]: <a href="https://github.com/Friendly-Technologies/Friendly-Wakaama">https://github.com/Friendly-Technologies/Friendly-Wakaama</a></li>
 </ul>
 <div class="image">
 <img src="build_1.png" alt="" width="800"/>
@@ -118,10 +118,10 @@ Automatic setup</h3>
 Source code</h2>
 <h3><a class="anchor" id="autotoc_md1"></a>
 Wpp source code</h3>
-<p>To work with our implementation of the LWM2M library, clone the <em>repository</em> with the submodules using the command below. Our library uses the original Wakaama as a submodule. </p><div class="fragment"><div class="line">git clone --recurse-submodules git@github.com:&lt;repo&gt;</div>
+<p>To work with our implementation of the LWM2M library, clone the <em>repository</em> with the submodules using the command below. Our library uses the original Wakaama as a submodule. </p><div class="fragment"><div class="line">git clone --recurse-submodules git@github.com:Friendly-Technologies/Friendly-LwM2M-Client.git</div>
 </div><!-- fragment --><h3><a class="anchor" id="autotoc_md2"></a>
 Wakaama source code</h3>
-<p>But, if you want to learn to explore a pure implementation of wakaama - clone the <a href="https://github.com/eclipse/wakaama">repository</a> with submodules. </p><div class="fragment"><div class="line">git clone --recurse-submodules git@github.com:eclipse/wakaama.git</div>
+<p>But, if you want to learn to explore a pure implementation of wakaama - clone the <a href="https://github.com/Friendly-Technologies/Friendly-Wakaama">repository</a> with submodules. </p><div class="fragment"><div class="line">git clone --recurse-submodules git@github.com:Friendly-Technologies/Friendly-Wakaama.git</div>
 </div><!-- fragment --><hr  />
  <h2><a class="anchor" id="b_vscodeinstall"></a>
 VS Code installation</h2>
@@ -142,9 +142,9 @@ Project setup stages</h3>
 <li>Download <a href="https://code.visualstudio.com/download">Visual Studio Code</a>.<br  />
  You can use other IDE or use CLI for building and running.</li>
 <li>Download the repository.<br  />
- <code>git clone --recurse-submodules git@github.com:&lt;repo&gt;</code></li>
+ <code>git clone --recurse-submodules git@github.com:Friendly-Technologies/Friendly-LwM2M-Client.git</code></li>
 <li>Go to the <em>root</em> folder.<br  />
- <code>cd ./&lt;repo root&gt;</code></li>
+ <code>cd Friendly-LwM2M-Client</code></li>
 <li>Run the <code>wpp_env_setup.sh</code> script to install the necessary utilities. Use sudo permission to run the script. After successfully downloading, installing, and completing the installation process, the script generates documentation about the WPP library using Doxygen and automatically opens a web page to view the documentation.<br  />
  <code>sudo bash wpp_env_setup.sh</code></li>
 <li>Start <b>VSCode</b> and go to the open workspace which set up for this project <b>File → Open Workspace from File</b>.<br  />

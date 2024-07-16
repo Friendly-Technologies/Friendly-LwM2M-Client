@@ -29,11 +29,11 @@ Ways of future work and improvements:
 * **BSP**. Integration of the Object Data Model with the specific Client Devices.
 
 
-The current \[07.06.2023\] structure contains only 3 repos (other will be created on ad-hoc basis):
+The current \[16.07.2024\] structure contains only 2 repos (other will be created on ad-hoc basis):
 
 
-* _Friendly LWM2M client_ Main Development Repo: [https://github.com/Friendly-Technologies/LWM2M](https://github.com/Friendly-Technologies/LWM2M)
-* _Wakaama Copy_ \[as on 07.06.2023\]: [https://github.com/eclipse/wakaama](https://github.com/eclipse/wakaama)
+* _Friendly LWM2M client_ Main Development Repo: [https://github.com/Friendly-Technologies/Friendly-LwM2M-Client](https://github.com/Friendly-Technologies/Friendly-LwM2M-Client)
+* _Friendly-Wakaama_ Wakaama copy \[as on 07.06.2023\]: [https://github.com/Friendly-Technologies/Friendly-Wakaama](https://github.com/Friendly-Technologies/Friendly-Wakaama)
 
 \image html build_1.png width=800
 
@@ -57,15 +57,15 @@ We also install Python tools for building and testing, such as `cmake`, `pylint`
 
 To work with our implementation of the LWM2M library, clone the *repository* with the submodules using the command below. Our library uses the original Wakaama as a submodule.
 ```
-git clone --recurse-submodules git@github.com:<repo>
+git clone --recurse-submodules git@github.com:Friendly-Technologies/Friendly-LwM2M-Client.git
 ```
 
 
 ### Wakaama source code
 
-But, if you want to learn to explore a pure implementation of wakaama - clone the [repository](https://github.com/eclipse/wakaama) with submodules.
+But, if you want to learn to explore a pure implementation of wakaama - clone the [repository](https://github.com/Friendly-Technologies/Friendly-Wakaama) with submodules.
 ```
-git clone --recurse-submodules git@github.com:eclipse/wakaama.git
+git clone --recurse-submodules git@github.com:Friendly-Technologies/Friendly-Wakaama.git
 ```
 
 ***
@@ -93,10 +93,10 @@ Ubuntu: 18.04.6 / **22.04**
 * Download [Visual Studio Code](https://code.visualstudio.com/download).<br />
   You can use other IDE or use CLI for building and running.
 * Download the repository.<br />
-  `git clone --recurse-submodules git@github.com:<repo>`
+  `git clone --recurse-submodules git@github.com:Friendly-Technologies/Friendly-LwM2M-Client.git`
   
 * Go to the *root* folder.<br />
-  `cd ./<repo root>`
+  `cd Friendly-LwM2M-Client`
 * Run the `wpp_env_setup.sh` script to install the necessary utilities. Use sudo permission to run the script. After successfully downloading, installing, and completing the installation process, the script generates documentation about the WPP library using Doxygen and automatically opens a web page to view the documentation.<br />
   `sudo bash wpp_env_setup.sh`
 * Start **VSCode** and go to the open workspace which set up for this project **File → Open Workspace from File**.<br />

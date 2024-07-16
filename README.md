@@ -11,12 +11,18 @@ This code is provided under the associated
   - [Documentation](#documentation)
   - [Features](#features)
     - [Supported features](#supported-features)
-  - [Getting Started](#getting-started)
+  - [Getting Started with Ubuntu](#getting-started-with-ubuntu)
     - [Prerequisites](#prerequisites)
     - [Setup build environment](#setup-build-environment)
     - [Command line](#command-line)
     - [VS Code](#vs-code)
     - [Configuration](#configuration)
+  - [Getting Started with RPi 4](#getting-started-with-rpi-4)
+    - [Prerequisites](#prerequisites-1)
+    - [Setup build environment](#setup-build-environment-1)
+    - [Command line](#command-line-1)
+    - [VS Code](#vs-code-1)
+    - [Configuration](#configuration-1)
   - [Contributing](#contributing)
   - [License](#license)
 
@@ -27,6 +33,7 @@ Friendly LwM2M Client is an open-source Lightweight machine-to-machine (LwM2M) c
 ## Documentation 
 [Friendly LWM2M Client](https://friendly-technologies.github.io/Friendly-LwM2M-Client/)
 - [Build Instructions](https://friendly-technologies.github.io/Friendly-LwM2M-Client/build_tag.html)
+- [RPi Setup](https://friendly-technologies.github.io/Friendly-LwM2M-Client/rpi_setup_tag.html)
 - [Architecture](https://friendly-technologies.github.io/Friendly-LwM2M-Client/architecture_tag.html)
 - [Examples of Usage](https://friendly-technologies.github.io/Friendly-LwM2M-Client/examples_tag.html)
 - [Testing](https://friendly-technologies.github.io/Friendly-LwM2M-Client/testing_tag.html)
@@ -114,8 +121,9 @@ Note that additional features such as transport layers (TCP/TLS, SMS binding, MQ
 
 For more information please contact [Friendly Technologies](https://hubs.li/Q02D_GnZ0)
 
-## Getting Started 
-This section provides instructions on how to build and run the Friendly LwM2M client. Also, this section will describe the environment requirements, and the setup process for the build, and explain the two methods for building and running the Friendly LwM2M client.
+## Getting Started with Ubuntu
+
+This section provides instructions on how to build and run the Friendly LwM2M client on the Ubuntu 22.04. Also, this section will describe the environment requirements, and the setup process for the build, and explain the two methods for building and running the Friendly LwM2M client.
 The Friendly LwM2M client can be built and run in two different ways: using VS Code and using the command line.
 The method using VS Code is suitable for developing and modifying example parameters, while the command line is suitable for quick building and exploring the capabilities.
 
@@ -160,13 +168,13 @@ After successfully completing these steps, we will have a fully configured envir
 
 3. Building:
     ```sh
-    cmake --build . --config MinSizeRel --target WppExample -j 14 --
+    cmake --build . --config MinSizeRel --target WppLinuxExample -j 14 --
     ```
 
 4. Running:
     ```sh
-    cd examples
-    ./WppExample
+    cd examples/linux
+    ./WppLinuxExample
     ```
 
 ### VS Code
@@ -177,15 +185,110 @@ After successfully completing these steps, we will have a fully configured envir
 4. After the workspace has loaded, go to `Extensions` (Ctrl+Shift+x), set `Recommended` (Text field: @recommended) in the extensions filter, and then install all recommended extensions.
 5. Let’s move on to the `CMake Tool` extension, the open one contains the entire main interface.
 6. Setup `Kit` for `Friendly-LwM2M-Client` project, to do this in the `Configure` section select `Wpp Linux Kit`.
-7. Setup `Build Target`, to do this in the `Build` section select `WppExample`.
+7. Setup `Build Target`, to do this in the `Build` section select `WppLinuxExample`.
 8. Press `Build` button
-9. Launch the client, to do this in the `Launch` section select `WppExample`, and press `Run in Terminal` button.
+9. Launch the client, to do this in the `Launch` section select `WppLinuxExample`, and press `Run in Terminal` button.
 
 ### Configuration
 
-The generated client example is configured using the source file: `Friendly-LwM2M-Client/examples/objects.cpp`. After changing the configuration, the client example should be built again.
+The generated client example is configured using the source file: `Friendly-LwM2M-Client/examples/linux/objects.cpp`. After changing the configuration, the client example should be built again.
 
-By default, `WppExample` has the following configurations:
+By default, `WppLinuxExample` has the following configurations:
+1. COAP server: coaps://demodm.friendly-tech.com:5684.
+2. DTLS enabled.
+3. Data formats: CBOR, SENML CBOR, SENML JSON, JSON, TLV.
+4. Objects: DEVICE, LWM2M SERVER, LWM2M SECURITY, CONNECTIVITY MONITORING, LWM2M ACCESS CONTROL, FIRMWARE UPDATE.
+
+## Getting Started with RPi 4
+
+This section provides instructions on how to build and run the Friendly LwM2M client on the RPi 4 with installed Ubuntu Server. Also, this section will describe the environment requirements, and the setup process for the build, and explain the two methods for building and running the Friendly LwM2M client.
+The Friendly LwM2M client can be built and run in two different ways: using VS Code and using the command line.
+The method using VS Code is suitable for developing and modifying example parameters, while the command line is suitable for quick building and exploring the capabilities.
+
+### Prerequisites
+
+Running environment:
+- Raspberry Pi 4 Model B
+- RPi Ubuntu Server 22.04
+
+Building environment:
+- OS Ubuntu 22.04
+- [CMake](https://cmake.org/) version 3.10 or higher
+- [OpenSSL](https://www.openssl.org/) for DTLS support
+- C/C++ compiler (clang-14, clang++-14)
+
+### Setup build environment
+
+1. Clone the repository:
+    ```sh
+    git clone --recurse-submodules --branch RPi-4-demo git@github.com:Friendly-Technologies/Friendly-LwM2M-Client.git
+    cd Friendly-LwM2M-Client
+    ```
+
+2. Setup environment:
+    ```sh
+    sh ./wpp_env_setup.sh
+    ```
+
+During step **2**, documentation will also be automatically generated and launched in the browser, so for more information on the structure and usage of the Friendly LwM2M client, you can refer to it.
+
+After successfully completing these steps, we will have a fully configured environment with the loaded source files. The next steps are to build the example and run it. As mentioned earlier, this can be done using one of the two methods: via VS Code or the command line. Each method will be detailed further.
+
+### Command line
+
+1. Create build directory:
+    ```sh
+    mkdir _build
+    cd _build
+    ```
+
+2. Generate build scripts with CMake:
+    ```sh
+    cmake .. -DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_C_COMPILER=/usr/bin/clang -DCMAKE_CXX_COMPILER=/usr/bin/clang++
+    ```
+
+3. Building:
+    ```sh
+    cmake --build . --config MinSizeRel --target WppRPiExample -j 14 --
+    ```
+
+4. Running:
+    ```sh
+    cd examples/raspberry_pi
+    scp WppRPiExample wpp@<rpi_ip>:~/
+    ssh wpp@<rpi_ip>
+    sudo apt-get install libgpiod2
+    sudo chmod +x WppRPiExample
+    ./WppRPiExample
+    ```
+
+A detailed guide on flashing, configuring the RPi, creating a service for the automatic startup of WppRPiExample, and assembling the circuit can be found at the following link: [RPi Setup](https://friendly-technologies.github.io/Friendly-LwM2M-Client/rpi_setup_tag.html).
+
+### VS Code
+
+1. Download [Visual Studio Code](https://code.visualstudio.com/download).
+2. Start VS Code and open workspace which is set up for this project `File → Open Workspace` from File.
+3. In the open window, specify the path to the file `vs-code-wpp.code-workspace` located in the `Friendly-LwM2M-Client` repository.
+4. After the workspace has loaded, go to `Extensions` (Ctrl+Shift+x), set `Recommended` (Text field: @recommended) in the extensions filter, and then install all recommended extensions.
+5. Let’s move on to the `CMake Tool` extension, the open one contains the entire main interface.
+6. Setup `Kit` for `Friendly-LwM2M-Client` project, to do this in the `Configure` section select `Wpp Linux Kit`.
+7. Setup `Build Target`, to do this in the `Build` section select `WppRPiExample`.
+8. Press `Build` button
+9. Launch the client:
+     ```sh
+    cd _build/examples/raspberry_pi
+    scp WppRPiExample wpp@<rpi_ip>:~/
+    ssh wpp@<rpi_ip>
+    sudo apt-get install libgpiod2
+    sudo chmod +x WppRPiExample
+    ./WppRPiExample
+    ```
+
+### Configuration
+
+The generated client example is configured using the source file: `Friendly-LwM2M-Client/examples/raspberry_pi/objects.cpp`. After changing the configuration, the client example should be built again.
+
+By default, `WppRPiExample` has the following configurations:
 1. COAP server: coaps://demodm.friendly-tech.com:5684.
 2. DTLS enabled.
 3. Data formats: CBOR, SENML CBOR, SENML JSON, JSON, TLV.

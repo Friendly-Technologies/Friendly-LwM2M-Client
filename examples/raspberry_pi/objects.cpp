@@ -7,6 +7,8 @@
 #include <sys/statvfs.h>
 #include "gpio.h"
 #include "mki217.h"
+#include <fstream>
+#include <sstream>
 
 using namespace std;
 
@@ -64,6 +66,25 @@ unsigned long long get_free_space_kb(const char* path) {
     unsigned long long free = stat.f_bfree * stat.f_frsize / 1024;
 
     return free;
+}
+
+double getCurrentCPUUsage() {
+    std::ifstream file("/proc/stat");
+    std::string line;
+    std::getline(file, line);
+    file.close();
+
+    std::istringstream ss(line);
+    std::string cpu;
+    unsigned long long user, nice, system, idle;
+    ss >> cpu >> user >> nice >> system >> idle;
+
+    unsigned long long totalUser = user + nice;
+    unsigned long long total = totalUser + system + idle;
+
+    double usage = (totalUser * 100.0) / total;
+
+    return usage;
 }
 
 /* ------------- Methods to init objects ------------- */
@@ -153,7 +174,7 @@ void deviceInit(WppClient &client) {
     WppTaskQueue::addTask(1, [](WppClient &client, void *ctx) {
         Device::instance(client)->set<INT_T>(Device::BATTERY_LEVEL_9, generateRandomValue(90, 100));
         Device::instance(client)->set<INT_T>(Device::MEMORY_FREE_10, get_free_space_kb("/"));
-        Device::instance(client)->set<STRING_T>(Device::CPU_UTILIZATION_99, std::to_string(generateRandomValue(25, 95)));
+        Device::instance(client)->set<STRING_T>(Device::CPU_UTILIZATION_99, std::to_string(getCurrentCPUUsage()));
         return false;
     });
 

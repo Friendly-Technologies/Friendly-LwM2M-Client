@@ -41,7 +41,9 @@ libcurl4-openssl-dev \
 cmake \
 g++-12 \
 gcc-aarch64-linux-gnu \
-g++-aarch64-linux-gnu"
+g++-aarch64-linux-gnu \
+libssl-dev"
+
 
 ptools="\
 cmake-format \

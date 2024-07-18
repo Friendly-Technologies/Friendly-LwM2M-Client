@@ -194,7 +194,7 @@ After successfully completing these steps, we will have a fully configured envir
 The generated client example is configured using the source file: `Friendly-LwM2M-Client/examples/linux/objects.cpp`. After changing the configuration, the client example should be built again.
 
 By default, `WppLinuxExample` has the following configurations:
-1. COAP server: coaps://demodm.friendly-tech.com:5684.
+1. COAP server: coaps://qa62.friendly-tech.com:5684.
 2. DTLS enabled.
 3. Data formats: CBOR, SENML CBOR, SENML JSON, JSON, TLV.
 4. Objects: DEVICE, LWM2M SERVER, LWM2M SECURITY, CONNECTIVITY MONITORING, LWM2M ACCESS CONTROL, FIRMWARE UPDATE.
@@ -289,7 +289,7 @@ A detailed guide on flashing, configuring the RPi, creating a service for the au
 The generated client example is configured using the source file: `Friendly-LwM2M-Client/examples/raspberry_pi/objects.cpp`. After changing the configuration, the client example should be built again.
 
 By default, `WppRPiExample` has the following configurations:
-1. COAP server: coaps://demodm.friendly-tech.com:5684.
+1. COAP server: coaps://qa62.friendly-tech.com:5684.
 2. DTLS enabled.
 3. Data formats: CBOR, SENML CBOR, SENML JSON, JSON, TLV.
 4. Objects: DEVICE, LWM2M SERVER, LWM2M SECURITY, CONNECTIVITY MONITORING, LWM2M ACCESS CONTROL, FIRMWARE UPDATE.

@@ -107,7 +107,7 @@ void serverInit(WppClient &client) {
 void securityInit(WppClient &client) {
     client.registry().registerObj(Lwm2mSecurity::object(client));
     wpp::Instance *security = Lwm2mSecurity::createInst(client);
-    string url = "coaps://demodm.friendly-tech.com:"; //"coaps://leshan.eclipseprojects.io:"
+    string url = "coaps://qa62.friendly-tech.com:"; //"coaps://leshan.eclipseprojects.io:"
 
     // PSK key: 00112233445566778899998877665544
     // RPK public.pem: 3059301306072a8648ce3d020106082a8648ce3d03010703420004bada5475344ba22961a7d965ac518e73481a5f77832bd996c2fa3527e8f3c4248dda621fa9c1348d1365c357357c54869477e387fd2c2675b1c6f28aa506677b
